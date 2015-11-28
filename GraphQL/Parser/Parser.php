@@ -1,13 +1,14 @@
 <?php
-/**
- * Date: 23.11.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
+/*
+* This file is a part of graphql-youshido project.
+*
+* @author Portey Vasil <portey@gmail.com>
+* created: 11/23/15 1:22 AM
+*/
 
 namespace Youshido\GraphQL\Parser;
 
-use Youshido\GraphQL\GraphQL\Request;
+use Youshido\GraphQL\Request;
 use Youshido\GraphQL\Parser\Ast\Argument;
 use Youshido\GraphQL\Parser\Ast\Field;
 use Youshido\GraphQL\Parser\Ast\Fragment;

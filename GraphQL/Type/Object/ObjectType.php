@@ -24,7 +24,6 @@ class ObjectType extends AbstractType
     public function __construct($config)
     {
         $this->config = new ObjectTypeConfig($config);
-
     }
 
     public function parseValue($value)
@@ -35,6 +34,11 @@ class ObjectType extends AbstractType
     public function serialize($value)
     {
         return $value;
+    }
+
+    public function getFields()
+    {
+        return $this->fields;
     }
 
 

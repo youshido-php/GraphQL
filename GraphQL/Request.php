@@ -5,7 +5,7 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphQL\GraphQL;
+namespace Youshido\GraphQL;
 
 
 use Youshido\GraphQL\Parser\Ast\Fragment;
