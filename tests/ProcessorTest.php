@@ -11,7 +11,7 @@ namespace Youshido\Tests;
 
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Validator\Validator;
-use Youshido\GraphqQL\Processor;
+use Youshido\GraphQL\Processor;
 
 class ProcessorTest extends \PHPUnit_Framework_TestCase
 {
@@ -29,7 +29,6 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                     'users' => new ObjectType([])
                 ]
             ]);
-
         $validator = new Validator();
         $processor = new Processor($validator);
         $processor->processQuery();

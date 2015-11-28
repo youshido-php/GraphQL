@@ -11,6 +11,8 @@ namespace Youshido\Tests;
 
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
+use Youshido\GraphQL\Type\TypeInterface;
+use Youshido\Tests\DataProvider\TestScalarDataProvider;
 
 class ScalarTypeTest extends \PHPUnit_Framework_TestCase
 {
@@ -19,28 +21,34 @@ class ScalarTypeTest extends \PHPUnit_Framework_TestCase
         require_once __DIR__ . '/../vendor/autoload.php';
     }
 
+    public function testTypeName()
+    {
+        foreach(TestScalarDataProvider::getTypesList() as $typeName) {
+            $className = 'Youshido\GraphQL\Type\Scalar\\' . $typeName . 'Type';
+            /** @var TypeInterface $object */
+            $object = new $className();
+            $this->assertEquals($typeName, $object->getName());
+        }
+
+    }
 
     public function testStringCoercion()
     {
         $object = new StringType();
 
-        $this->assertEquals('String', $object->getName());
-        $this->assertEquals('Test', $object->parseValue('Test'));
-        $this->assertEquals('1', $object->parseValue(1));
-        $this->assertEquals('true', $object->parseValue(true));
-        $this->assertEquals('false', $object->parseValue(false));
+        foreach(TestScalarDataProvider::getStringTestData() as list($data,$expectedResult)) {
+            $this->assertEquals($expectedResult, $object->parseValue($data));
+        }
     }
 
     public function testIntCoercion()
     {
         $object = new IntType();
 
-        $this->assertEquals(1, $object->parseValue(1));
-        $this->assertEquals(-5, $object->parseValue(-5));
-        $this->assertEquals(null, $object->parseValue("1"));
-        $this->assertEquals(null, $object->parseValue('Test'));
-        $this->assertEquals(null, $object->parseValue(false));
-        $this->assertEquals(null, $object->parseValue(1.5));
+        foreach(TestScalarDataProvider::getIntTestData() as list($data,$expectedResult)) {
+            $this->assertEquals($expectedResult, $object->parseValue($data));
+        }
+
     }
 
 }

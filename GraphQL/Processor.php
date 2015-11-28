@@ -7,7 +7,7 @@
 * created: 11/28/15 1:05 AM
 */
 
-namespace Youshido\GraphqQL;
+namespace Youshido\GraphQL;
 
 use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Request;
