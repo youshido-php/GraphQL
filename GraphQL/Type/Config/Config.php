@@ -19,7 +19,7 @@ class Config
     /**
      * @var array
      */
-    protected $config = [];
+    protected $data = [];
 
     protected $valid = true;
 
@@ -29,24 +29,27 @@ class Config
 
     /**
      * TypeConfig constructor.
-     * @param array $config
+     * @param array $configData
      * @param mixed $contextObject
      * @throws ConfigurationException
      * @throws ValidationException
      */
-    public function __construct($config, $contextObject = null)
+    public function __construct($configData, $contextObject = null)
     {
-        if (!is_array($config)) {
+        if (!is_array($configData)) {
             throw new ConfigurationException('Config for Type should be an array');
         }
 
         $this->contextObject = $contextObject;
-        $this->config        = $config;
+        $this->data          = $configData;
         $this->validator     = new Validator($contextObject);
-        if (!$this->validator->validate($this->config, $this->getRules())) {
-            throw new ValidationException('Config is not valid for ' . get_class($contextObject). "\n" . implode("\n", $this->validator->getErrorsArray()));
+        if (!$this->validator->validate($this->data, $this->getRules())) {
+            throw new ValidationException('Config is not valid for ' . get_class($contextObject) . "\n" . implode("\n", $this->validator->getErrorsArray()));
         }
+        $this->setupType();
     }
+
+    protected function setupType() { }
 
     public function getRules()
     {

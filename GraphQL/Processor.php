@@ -9,7 +9,10 @@
 
 namespace Youshido\GraphQL;
 
+use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Parser;
+use Youshido\GraphQL\Type\Object\ObjectType;
+use Youshido\GraphQL\Validator\Exception\ResolveException;
 use Youshido\GraphQL\Validator\ValidatorInterface;
 
 class Processor
@@ -31,36 +34,60 @@ class Processor
 
     public function processQuery($queryString, $variables = [])
     {
-        $this->preProcess();
+        $this->validator->clearErrors();
 
         try {
             $request = $this->createRequestFromString($queryString);
 
-            $querySchema = $this->getSchema();
+//            $querySchema = $this->getSchema();
 
 //        $fieldListBuilder = new FieldListBuilder();
 //        $querySchema->getFields($fieldListBuilder);
 
             $data = [];
 
+            // @todo invoke variables
+
             foreach ($request->getQueries() as $query) {
-                $data = array_merge($data, $this->executeQuery($query, $variables));
+                if ($queryResult = $this->executeQuery($query, $this->getSchema()->getQueryType())) {
+                    $data = array_merge($data, $queryResult);
+                };
             }
 
             $this->data = $data;
 
         } catch (\Exception $e) {
-            $this->errorList->addError($e);
+            $this->validator->addError($e);
         }
     }
 
-    protected function executeQuery($query, $variables = []) {
-        return [$query->getName() => []];
-    }
-
-    protected function preProcess()
+    /**
+     * @param Query|Field $query
+     * @param ObjectType  $currentLevelSchema
+     * @param null        $contextValue
+     * @return array|bool|mixed
+     */
+    protected function executeQuery($query, $currentLevelSchema, $contextValue = null)
     {
-        $this->validator->clearErrors();
+        if (!$currentLevelSchema->hasField($query->getName())) {
+            $this->validator->addError(new ResolveException(sprintf('Field "%s" not found in schema', $query->getName())));
+            return false;
+        }
+
+        $queryType = $currentLevelSchema->getField($query->getName());
+        if ($queryType instanceof Field) {
+            $value = $queryType->getType()->serialize($contextValue[$queryType->getName()]);
+        } else {
+            /** @var ObjectType $queryType */
+            $resolvedValue = $queryType->resolve();
+            $value         = [];
+            foreach ($query->getFields() as $field) {
+                $value = array_merge($value, $this->executeQuery($field, $queryType, $resolvedValue));
+            }
+        }
+
+
+        return [$queryType->getName() => $value];
     }
 
     protected function createRequestFromString($query)
@@ -86,9 +113,9 @@ class Processor
      * TODO: this code not end result, just test
      *
      * @param ListBuilderInterface $listBuilder
-     * @param Query|Field $query
-     * @param null $value
-     * @param array $data
+     * @param Query|Field          $query
+     * @param null                 $value
+     * @param array                $data
      */
     protected function executeQueryOld(ListBuilderInterface $listBuilder, $query, $value = null, &$data)
     {
@@ -171,7 +198,7 @@ class Processor
         }
 
         if ($this->validator->hasErrors()) {
-            $result['errors'] = $this->validator->getErrors();
+            $result['errors'] = $this->validator->getErrorsArray();
         }
 
         return $result;

@@ -27,9 +27,21 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             [
                 'query' => new ObjectType(
                     [
-                        'name'   => '123',
+                        'name'   => 'OneFileQuery',
                         'fields' => [
-                            'users' => new ObjectType(['name' => 'TestObject'])
+                            'users' => new ObjectType([
+                                  'name' => 'users',
+                                  'fields' => [
+                                      'id'  => ['type' => 'int'],
+                                      'name'  => ['type' => 'string']
+                                  ],
+                                  'resolve' => function() {
+                                      return [
+                                          'id' => 1,
+                                          'name' => 'Alex'
+                                      ];
+                                  }
+                              ])
                         ]
                     ])
             ]);
@@ -41,6 +53,8 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $processor->setSchema($schema);
         $processor->processQuery($queryString);
+
+        print_r($processor->getResponseData());
 
     }
 

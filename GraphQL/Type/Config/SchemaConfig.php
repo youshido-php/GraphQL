@@ -9,8 +9,23 @@
 namespace Youshido\GraphQL\Type\Config;
 
 
+use Youshido\GraphQL\Type\Object\ObjectType;
+
 class SchemaConfig extends Config
 {
+
+    /**
+     * @return ObjectType
+     */
+    public function getQuery()
+    {
+        return $this->data['query'];
+    }
+
+    public function getMutation()
+    {
+        return !empty($this->data['mutation']) ? $this->data['mutation'] : null;
+    }
 
     public function getRules()
     {

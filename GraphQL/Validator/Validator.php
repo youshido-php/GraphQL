@@ -23,6 +23,8 @@ class Validator implements ValidatorInterface
 
     protected $contextObject;
 
+    protected $extraFieldsAllowed = false;
+
     /** @var ValidationRuleInterface[] */
     protected $validationRules = [];
 
@@ -32,9 +34,14 @@ class Validator implements ValidatorInterface
         $this->initializeRules();
     }
 
-    public function validate($data, $rules = [])
+    public function validate($data, $rules = [], $extraFieldsAllowed = null)
     {
+        if ($extraFieldsAllowed !== null) $this->setExtraFieldsAllowed($extraFieldsAllowed);
+
+        $processedFields = [];
         foreach ($rules as $fieldName => $fieldRules) {
+            $processedFields[] = $fieldName;
+
             /** Custom validation of 'required' property */
             if (array_key_exists('required', $fieldRules)) {
                 unset($fieldRules['required']);
@@ -59,6 +66,15 @@ class Validator implements ValidatorInterface
                 }
             }
         }
+        if ($extraFieldsAllowed) {
+            foreach(array_keys($data) as $fieldName) {
+                if (!in_array($fieldName, $processedFields)) {
+                    $this->addError(
+                        new ValidationException('Field \'' . $fieldName . '\' is not expected in ' . $this->getContextName()));
+
+                }
+            }
+        }
         return $this->isValid();
     }
 
@@ -77,7 +93,7 @@ class Validator implements ValidatorInterface
             $class = substr($class, strrpos($class, '\\')+1);
             return $class;
         } else {
-            return $this->contextObject;
+            return $this->contextObject ? $this->contextObject : '(context)';
         }
     }
 
@@ -129,5 +145,25 @@ class Validator implements ValidatorInterface
         $this->errors = [];
         return $this;
     }
+
+    /**
+     * @return boolean
+     */
+    public function isExtraFieldsAllowed()
+    {
+        return $this->extraFieldsAllowed;
+    }
+
+    /**
+     * @param boolean $extraFieldsAllowed
+     * @return Validator
+     */
+    public function setExtraFieldsAllowed($extraFieldsAllowed)
+    {
+        $this->extraFieldsAllowed = $extraFieldsAllowed;
+        return $this;
+    }
+
+
 
 }

@@ -12,6 +12,9 @@ interface ValidatorInterface
 {
 
     public function validate($data, $rules = []);
+
+    public function addError(\Exception $exception);
+
     public function hasErrors();
     public function getErrors();
     public function clearErrors();
