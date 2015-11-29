@@ -31,6 +31,11 @@ class Query
         $this->fields    = $fields;
     }
 
+    public function getName()
+    {
+        return $this->name;
+    }
+
     public function hasArguments()
     {
         return (bool)count($this->arguments);

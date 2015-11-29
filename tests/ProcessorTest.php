@@ -9,6 +9,7 @@
 namespace Youshido\Tests;
 
 
+use Youshido\GraphQL\Schema;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Validator\Validator;
 use Youshido\GraphQL\Processor;
@@ -22,16 +23,24 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
     public function testProcessor()
     {
-        $rootQuery = new ObjectType(
+        $schema = new Schema(
             [
-                'name'   => 'RootQuery',
-                'fields' => [
-                    'users' => new ObjectType([])
-                ]
+                'query' => new ObjectType(
+                    [
+                        'name'   => '123',
+                        'fields' => [
+                            'users' => new ObjectType(['name' => 'TestObject'])
+                        ]
+                    ])
             ]);
+
+        $queryString = '{ users { name } }';
+
         $validator = new Validator();
         $processor = new Processor($validator);
-        $processor->processQuery();
+
+        $processor->setSchema($schema);
+        $processor->processQuery($queryString);
 
     }
 

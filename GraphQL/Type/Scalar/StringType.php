@@ -36,5 +36,10 @@ class StringType extends AbstractScalarType
         return (string)$value;
     }
 
+    public function isValidValue($value)
+    {
+        return is_string($value);
+    }
+
 
 }

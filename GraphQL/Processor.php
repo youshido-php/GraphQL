@@ -10,8 +10,6 @@
 namespace Youshido\GraphQL;
 
 use Youshido\GraphQL\Parser\Parser;
-use Youshido\GraphQL\Request;
-use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Validator\ValidatorInterface;
 
 class Processor
@@ -23,8 +21,8 @@ class Processor
     /** @var ValidatorInterface */
     private $validator;
 
-    /** @var string */
-    private $querySchemaClass;
+    /** @var Schema */
+    private $schema;
 
     public function __construct(ValidatorInterface $validator)
     {
@@ -38,10 +36,26 @@ class Processor
         try {
             $request = $this->createRequestFromString($queryString);
 
-            $this->execute($request, $variables);
+            $querySchema = $this->getSchema();
+
+//        $fieldListBuilder = new FieldListBuilder();
+//        $querySchema->getFields($fieldListBuilder);
+
+            $data = [];
+
+            foreach ($request->getQueries() as $query) {
+                $data = array_merge($data, $this->executeQuery($query, $variables));
+            }
+
+            $this->data = $data;
+
         } catch (\Exception $e) {
             $this->errorList->addError($e);
         }
+    }
+
+    protected function executeQuery($query, $variables = []) {
+        return [$query->getName() => []];
     }
 
     protected function preProcess()
@@ -57,51 +71,16 @@ class Processor
         return $parser->parse();
     }
 
-    protected function execute(Request $request, $variables = [])
+    public function getSchema()
     {
-        $querySchema = $this->getQuerySchema();
-        $this->validator->validate($querySchema);
-
-        $fieldListBuilder = new FieldListBuilder();
-        $querySchema->getFields($fieldListBuilder);
-
-        $data = [];
-
-        foreach ($request->getQueries() as $query) {
-            $this->executeQuery($fieldListBuilder, $query, null, $data);
-        }
-
-        $this->data = $data;
+        return $this->schema;
     }
 
-    public function getQuerySchema()
+    public function setSchema(Schema $schema)
     {
-        $valid = true;
-        if (!$this->getQuerySchemaClass() || !class_exists($this->getQuerySchemaClass())) {
-            $valid = false;
-        }
-
-        if ($valid) {
-            $querySchemaClass = $this->getQuerySchemaClass();
-            $querySchema      = new $querySchemaClass();
-
-            if (in_array('Youshido\GraphQL\Schema\SchemaInterface', class_implements($querySchemaClass))) {
-                return $querySchema;
-            }
-        }
-
-        throw new \Exception('Not valid object was set as query schema');
+        $this->schema = $schema;
     }
 
-    public function getQuerySchemaClass()
-    {
-        return $this->querySchemaClass;
-    }
-
-    public function setQuerySchema(ObjectType $querySchemaClass)
-    {
-        $this->querySchemaClass = $querySchemaClass;
-    }
 
     /**
      * TODO: this code not end result, just test
@@ -111,7 +90,7 @@ class Processor
      * @param null $value
      * @param array $data
      */
-    protected function executeQuery(ListBuilderInterface $listBuilder, $query, $value = null, &$data)
+    protected function executeQueryOld(ListBuilderInterface $listBuilder, $query, $value = null, &$data)
     {
         if ($listBuilder->has($query->getName())) {
             $querySchema = $listBuilder->get($query->getName());

@@ -9,14 +9,14 @@
 namespace Youshido\GraphQL\Type;
 
 
-use Youshido\GraphQL\Type\Config\TypeConfig;
+use Youshido\GraphQL\Type\Config\Config;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 abstract class AbstractType implements TypeInterface
 {
 
     /**
-     * @var TypeConfig
+     * @var Config
      */
     protected $config;
 
@@ -42,5 +42,12 @@ abstract class AbstractType implements TypeInterface
     {
         return $value;
     }
+
+    public function __toString()
+    {
+        return $this->getName();
+    }
+
+    abstract public function isValidValue($value);
 
 }

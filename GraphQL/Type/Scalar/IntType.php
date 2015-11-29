@@ -29,14 +29,16 @@ class IntType extends AbstractScalarType
             return null;
         }
         return $value;
-        /**
-         * { user(id: 1) }
-         */
     }
 
     public function serialize($value)
     {
         return (int)$value;
+    }
+
+    public function isValidValue($value)
+    {
+        return is_integer($value);
     }
 
 

@@ -5,7 +5,7 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphQLBundle\Validator\Exception;
+namespace Youshido\GraphQL\Validator\Exception;
 
 
 class ValidationException extends \Exception

@@ -17,13 +17,15 @@ class ObjectType extends AbstractType
 
     protected $name = "Object";
 
+    protected $fields = [];
+
     /**
      * ObjectType constructor.
      * @param $config
      */
     public function __construct($config)
     {
-        $this->config = new ObjectTypeConfig($config);
+        $this->config = new ObjectTypeConfig($config, $this);
     }
 
     public function parseValue($value)
@@ -41,5 +43,9 @@ class ObjectType extends AbstractType
         return $this->fields;
     }
 
+    public function isValidValue($value)
+    {
+        return (get_class($value) == get_class($this));
+    }
 
 }
