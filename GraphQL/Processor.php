@@ -24,19 +24,19 @@ class Processor
 {
 
     /** @var  array */
-    private $data;
+    protected $data;
 
     /** @var ValidatorInterface */
-    private $validator;
+    protected $validator;
 
     /** @var Schema */
-    private $schema;
+    protected $schema;
 
     /** @var PropertyAccessor */
-    private $propertyAccessor;
+    protected $propertyAccessor;
 
     /** @var Request */
-    private $request;
+    protected $request;
 
     public function __construct(ValidatorInterface $validator)
     {
@@ -101,11 +101,17 @@ class Processor
             }
 
             /** @var ObjectType $queryType */
-            $resolvedValue = $queryType->resolve($contextValue, $this->parseArgumentsValues($queryType, $query));
+            $resolvedValue = $this->resolveValue($queryType, $contextValue, $query);
+            $alias         = $query->hasAlias() ? $query->getAlias() : $query->getName();
 
-            $alias = $query->hasAlias() ? $query->getAlias() : $query->getName();
+            if (!$this->validateResolvedValue($resolvedValue, $currentLevelSchema->getKind())) {
+                $this->validator->addError(new ResolveException(sprintf('Not valid resolved value for schema "%s"', $queryType->getName())));
+
+                return [$alias => null];
+            }
+
             $value = [];
-            if ($currentLevelSchema->getKind() == TypeKind::ListKind) {
+            if ($currentLevelSchema->getKind() == TypeKind::KIND_LIST) {
                 foreach ($resolvedValue as $resolvedValueItem) {
                     $value[$alias][] = [];
                     $index           = count($value[$alias]) - 1;
@@ -121,6 +127,18 @@ class Processor
         }
 
         return [$alias => $value];
+    }
+
+    /**
+     * @param $queryType    ObjectType
+     * @param $contextValue mixed
+     * @param $query        Query
+     *
+     * @return mixed
+     */
+    protected function resolveValue($queryType, $contextValue, $query)
+    {
+        return $queryType->resolve($contextValue, $this->parseArgumentsValues($queryType, $query));
     }
 
     /**
@@ -216,6 +234,18 @@ class Processor
         }
 
         return true;
+    }
+
+    protected function validateResolvedValue($value, $kind)
+    {
+        switch($kind) {
+            case TypeKind::KIND_OBJECT:
+                return is_object($value);
+            case TypeKind::KIND_LIST:
+                return is_array($value);
+        }
+
+        return false;
     }
 
     public function getSchema()

@@ -172,5 +172,4 @@ class Validator implements ValidatorInterface
         return $this;
     }
 
-
 }

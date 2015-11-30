@@ -24,7 +24,7 @@ abstract class AbstractScalarType extends AbstractType
 
     final public function getKind()
     {
-        return TypeKind::ScalarKind;
+        return TypeKind::KIND_SCALAR;
     }
 
 }

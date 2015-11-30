@@ -64,7 +64,7 @@ class ObjectType extends AbstractType
 
     public function getKind()
     {
-        return TypeKind::ObjectKind;
+        return TypeKind::KIND_OBJECT;
     }
 
     /**

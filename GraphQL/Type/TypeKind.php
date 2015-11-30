@@ -11,9 +11,9 @@ namespace Youshido\GraphQL\Type;
 
 class TypeKind
 {
-    const ScalarKind = 'SCALAR';
-    const ObjectKind = 'OBJECT';
-    const ListKind = 'LIST';
-    const EnumKind = 'ENUM';
-    const UnionKind = 'UNION';
+    const KIND_SCALAR = 'SCALAR';
+    const KIND_OBJECT = 'OBJECT';
+    const KIND_LIST   = 'LIST';
+    const KIND_ENUM   = 'ENUM';
+    const KIND_UNION  = 'UNION';
 }

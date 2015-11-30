@@ -115,7 +115,7 @@ class ObjectTypeConfig extends Config
             $type = TypeMap::getTypeObject($type);
         }
 
-        if ($type->getKind() == TypeKind::ScalarKind) {
+        if ($type->getKind() == TypeKind::KIND_SCALAR) {
             $config['name'] = $name;
             $config['type'] = $type;
             $field          = new Field($config);
