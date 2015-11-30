@@ -24,7 +24,7 @@ class Parser extends Tokenizer
 
     public function parse()
     {
-        $request = new Request();
+        $data = ['queries' => [], 'mutations' => [], 'fragments' => []];
 
         while (!$this->end()) {
             $tokenType = $this->getCurrentTokenType();
@@ -32,20 +32,20 @@ class Parser extends Tokenizer
             switch ($tokenType) {
                 case Token::TYPE_LBRACE:
                 case Token::TYPE_QUERY:
-                    $request->addQueries($this->parseBody());
+                    $data = array_merge($data, ['queries' => $this->parseBody()]);
                     break;
 
                 case Token::TYPE_MUTATION:
-                    $request->addMutations($this->parseBody(Token::TYPE_MUTATION));
+                    $data = array_merge($data, ['mutations' => $this->parseBody(Token::TYPE_MUTATION)]);
                     break;
 
                 case Token::TYPE_FRAGMENT:
-                    $request->addFragment($this->parseFragment());
+                    $data['fragments'][] = $this->parseFragment();
                     break;
             }
         }
 
-        return $request;
+        return $data;
     }
 
     protected function getCurrentTokenType()

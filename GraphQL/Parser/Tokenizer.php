@@ -15,7 +15,7 @@ class Tokenizer
     protected $lineStart = 0;
     protected $lookAhead;
 
-    public function __construct($source)
+    public function setSource($source)
     {
         $this->source    = $source;
         $this->lookAhead = $this->next();

@@ -12,6 +12,7 @@ namespace Youshido\GraphQL;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Youshido\GraphQL\Parser\Ast\Query;
+use Youshido\GraphQL\Parser\Ast\Variable;
 use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Object\ObjectType;
@@ -34,6 +35,9 @@ class Processor
     /** @var PropertyAccessor */
     private $propertyAccessor;
 
+    /** @var Request */
+    private $request;
+
     public function __construct(ValidatorInterface $validator)
     {
         $this->validator = $validator;
@@ -44,33 +48,32 @@ class Processor
     public function processQuery($queryString, $variables = [])
     {
         $this->validator->clearErrors();
+        $data = [];
 
         try {
-            $request = $this->createRequestFromString($queryString);
+            $this->parseAndCreateRequest($queryString, $variables);
 
-            $data = [];
-
-            // @todo invoke variables
-
-            foreach ($request->getQueries() as $query) {
+            foreach ($this->request->getQueries() as $query) {
                 if ($queryResult = $this->executeQuery($query, $this->getSchema()->getQueryType())) {
                     $data = array_merge($data, $queryResult);
                 };
             }
 
             $this->data = $data;
-
         } catch (\Exception $e) {
             $this->validator->addError($e);
         }
     }
 
-    protected function createRequestFromString($query)
+    protected function parseAndCreateRequest($query, $variables = [])
     {
-        $parser = new Parser($query);
+        $parser = new Parser();
 
-        /** @todo: Parser parse and then getRequest or Request::createFrom... */
-        return $parser->parse();
+        $parser->setSource($query);
+        $data = $parser->parse();
+
+        $this->request = new Request($data);
+        $this->request->setVariables($variables);
     }
 
     /**
@@ -185,6 +188,16 @@ class Processor
 
             /** @var AbstractType $argumentType */
             $argumentType = $queryType->getArguments()[$argument->getName()]->getType();
+            if ($argument->getValue() instanceof Variable) {
+                if ($this->request->hasVariable($argument->getName())) {
+                    $argument->getValue()->setValue($this->request->getVariable($argument->getName()));
+                }else{
+                    $this->validator->addError(new ResolveException(sprintf('Variable "%s" not exist for query "%s"', $argument->getName(), $queryType->getName())));
+
+                    return false;
+                }
+            }
+
             if (!$argumentType->isValidValue($argumentType->parseValue($argument->getValue()->getValue()))) {
                 $this->validator->addError(new ResolveException(sprintf('Not valid type for argument "%s" in query "%s"', $argument->getName(), $queryType->getName())));
 
