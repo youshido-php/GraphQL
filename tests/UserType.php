@@ -9,7 +9,6 @@
 namespace Youshido\tests;
 
 
-use Youshido\GraphQL\Builder\ListBuilderInterface;
 use Youshido\GraphQL\Type\Config\ObjectTypeConfig;
 use Youshido\GraphQL\Type\Object\ObjectType;
 

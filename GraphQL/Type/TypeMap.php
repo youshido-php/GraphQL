@@ -9,30 +9,12 @@
 namespace Youshido\GraphQL\Type;
 
 
-use Youshido\GraphQL\Type\Object\ObjectType;
+use Youshido\GraphQL\Type\Scalar\BooleanType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
 class TypeMap
 {
-
-    /**
-     * @return AbstractType[]
-     */
-    public static function getSystemTypes()
-    {
-        return [
-            'int'    => new IntType(),
-            'string' => new StringType(),
-        ];
-    }
-
-    public static function isTypeAllowed($type)
-    {
-        $types = self::getSystemTypes();
-
-        return array_key_exists($type, $types);
-    }
 
     public static function getTypeObject($type)
     {
@@ -43,6 +25,25 @@ class TypeMap
         } else {
             return null;
         }
+    }
+
+    public static function isTypeAllowed($type)
+    {
+        $types = self::getSystemTypes();
+
+        return array_key_exists($type, $types);
+    }
+
+    /**
+     * @return AbstractType[]
+     */
+    public static function getSystemTypes()
+    {
+        return [
+            'int'     => new IntType(),
+            'string'  => new StringType(),
+            'boolean' => new BooleanType(),
+        ];
     }
 
 }
