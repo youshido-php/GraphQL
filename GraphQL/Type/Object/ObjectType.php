@@ -31,11 +31,13 @@ class ObjectType extends AbstractType
         }
         $this->config = new ObjectTypeConfig($config, $this);
 
-        $this->name   = $this->config->getName();
+        $this->name = $this->config->getName();
         $this->buildFields($this->config);
     }
 
-    protected function buildFields(ObjectTypeConfig $config) {}
+    protected function buildFields(ObjectTypeConfig $config)
+    {
+    }
 
     public function parseValue($value)
     {
@@ -50,6 +52,7 @@ class ObjectType extends AbstractType
     public function resolve($args = [])
     {
         $callable = $this->config->getResolveFunction();
+
         return is_callable($callable) ? $callable($args) : null;
     }
 

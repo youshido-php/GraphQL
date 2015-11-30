@@ -16,7 +16,9 @@ interface ValidatorInterface
     public function addError(\Exception $exception);
 
     public function hasErrors();
+
     public function getErrors();
+
     public function clearErrors();
 
 }

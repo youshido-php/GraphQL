@@ -49,7 +49,9 @@ class Config
         $this->setupType();
     }
 
-    protected function setupType() { }
+    protected function setupType()
+    {
+    }
 
     public function getRules()
     {

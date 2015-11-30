@@ -30,7 +30,7 @@ class SchemaConfig extends Config
     public function getRules()
     {
         return [
-            'query' => ['type' => 'Object', 'required' => true],
+            'query'    => ['type' => 'Object', 'required' => true],
             'mutation' => ['type' => 'Object'],
         ];
     }

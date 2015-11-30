@@ -10,8 +10,8 @@ namespace Youshido\GraphQL\Parser;
 class Tokenizer
 {
     protected $source;
-    protected $pos       = 0;
-    protected $line      = 1;
+    protected $pos = 0;
+    protected $line = 1;
     protected $lineStart = 0;
     protected $lookAhead;
 

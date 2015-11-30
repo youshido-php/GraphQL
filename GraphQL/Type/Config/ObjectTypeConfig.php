@@ -50,7 +50,7 @@ class ObjectTypeConfig extends Config
         if ($type->getKind() == TypeKind::ScalarKind) {
             $config['name'] = $name;
             $config['type'] = $type;
-            $field = new Field($config);
+            $field          = new Field($config);
         } else {
             $field = $type;
         }

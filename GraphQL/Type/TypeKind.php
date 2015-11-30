@@ -13,7 +13,7 @@ class TypeKind
 {
     const ScalarKind = 'SCALAR';
     const ObjectKind = 'OBJECT';
-    const ListKind   = 'LIST';
-    const EnumKind   = 'ENUM';
-    const UnionKind  = 'UNION';
+    const ListKind = 'LIST';
+    const EnumKind = 'ENUM';
+    const UnionKind = 'UNION';
 }

@@ -63,12 +63,12 @@ class Validator implements ValidatorInterface
                 if (!$this->validationRules[$ruleName]->validate($data[$fieldName], $ruleInfo)) {
                     $this->addError(
                         new ValidationException('Field \'' . $fieldName . '\' of ' . $this->getContextName()
-                                                . ' expected to be ' . $ruleName . ': \'' . (string)$ruleInfo . '\', but got: ' . $data[$fieldName]));
+                            . ' expected to be ' . $ruleName . ': \'' . (string)$ruleInfo . '\', but got: ' . $data[$fieldName]));
                 }
             }
         }
         if ($extraFieldsAllowed) {
-            foreach(array_keys($data) as $fieldName) {
+            foreach (array_keys($data) as $fieldName) {
                 if (!in_array($fieldName, $processedFields)) {
                     $this->addError(
                         new ValidationException('Field \'' . $fieldName . '\' is not expected in ' . $this->getContextName()));
@@ -76,6 +76,7 @@ class Validator implements ValidatorInterface
                 }
             }
         }
+
         return $this->isValid();
     }
 
@@ -91,7 +92,8 @@ class Validator implements ValidatorInterface
     {
         if (is_object($this->contextObject)) {
             $class = get_class($this->contextObject);
-            $class = substr($class, strrpos($class, '\\')+1);
+            $class = substr($class, strrpos($class, '\\') + 1);
+
             return $class;
         } else {
             return $this->contextObject ? $this->contextObject : '(context)';
@@ -101,12 +103,14 @@ class Validator implements ValidatorInterface
     public function setRules($rules)
     {
         $this->rules = (array)$rules;
+
         return $this;
     }
 
     public function setRuleForField($fieldName, $rule)
     {
         $this->rules[$fieldName] = $rule;
+
         return $this;
     }
 
@@ -144,6 +148,7 @@ class Validator implements ValidatorInterface
     public function clearErrors()
     {
         $this->errors = [];
+
         return $this;
     }
 
@@ -162,9 +167,9 @@ class Validator implements ValidatorInterface
     public function setExtraFieldsAllowed($extraFieldsAllowed)
     {
         $this->extraFieldsAllowed = $extraFieldsAllowed;
+
         return $this;
     }
-
 
 
 }

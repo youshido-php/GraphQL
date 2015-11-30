@@ -30,6 +30,7 @@ class TypeMap
     public static function isTypeAllowed($type)
     {
         $types = self::getSystemTypes();
+
         return array_key_exists($type, $types);
     }
 
@@ -37,6 +38,7 @@ class TypeMap
     {
         if (self::isTypeAllowed($type)) {
             $types = self::getSystemTypes();
+
             return clone $types[$type];
         } else {
             return null;

@@ -19,11 +19,11 @@ class FieldListBuilder extends ListBuilder
         $listBuilder = parent::add($name, $type, $options);
 
         if ($type instanceof ListType) {
-            if(isset($options['resolve']) && is_callable($options['resolve'])){
+            if (isset($options['resolve']) && is_callable($options['resolve'])) {
                 $listBuilder->get($name)->getType()->setResolveFunction($options['resolve']);
             }
 
-            if(isset($options['type'])){
+            if (isset($options['type'])) {
                 $listBuilder->get($name)->getType()->setType($options['type']);
             }
         }

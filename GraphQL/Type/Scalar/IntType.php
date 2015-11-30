@@ -14,10 +14,10 @@ class IntType extends AbstractScalarType
 
     public function getDescription()
     {
-        return  'The `Int` scalar type represents non-fractional signed whole numeric ' .
-                'values. Int can represent values between -(2^53 - 1) and 2^53 - 1 since ' .
-                'represented in JSON as double-precision floating point numbers specified' .
-                'by [IEEE 754](http://en.wikipedia.org/wiki/IEEE_floating_point).';
+        return 'The `Int` scalar type represents non-fractional signed whole numeric ' .
+        'values. Int can represent values between -(2^53 - 1) and 2^53 - 1 since ' .
+        'represented in JSON as double-precision floating point numbers specified' .
+        'by [IEEE 754](http://en.wikipedia.org/wiki/IEEE_floating_point).';
     }
 
     public function parseValue($value)
@@ -25,6 +25,7 @@ class IntType extends AbstractScalarType
         if (!is_integer($value)) {
             return null;
         }
+
         return $value;
     }
 

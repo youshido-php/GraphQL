@@ -22,6 +22,7 @@ class TypeValidationRule implements ValidationRuleInterface
         if (is_object($ruleInfo)) {
             $className = get_class($data);
             $className = substr($className, strrpos($className, '\\') + 1, -4);
+
             return ($className == $ruleInfo);
         } elseif (is_string($ruleInfo)) {
             /** @todo need to be completely rewritten */

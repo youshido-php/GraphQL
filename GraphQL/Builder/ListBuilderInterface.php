@@ -17,7 +17,7 @@ interface ListBuilderInterface
     /**
      * @param                       $name
      * @param TypeInterface|string  $type
-     * @param array $config
+     * @param array                 $config
      *
      * @return  ListBuilderInterface
      */

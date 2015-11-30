@@ -31,11 +31,11 @@ class FieldConfig extends Config
     public function getRules()
     {
         return [
-            'name' => ['type' => 'string', 'required' => true],
-            'type' => ['required' => true],
-            'args' => ['type' => 'array'],
-            'description' => ['type' => 'string'],
-            'resolve' => ['type' => 'callable'],
+            'name'              => ['type' => 'string', 'required' => true],
+            'type'              => ['required' => true],
+            'args'              => ['type' => 'array'],
+            'description'       => ['type' => 'string'],
+            'resolve'           => ['type' => 'callable'],
             'deprecationReason' => ['type' => 'string'],
         ];
     }

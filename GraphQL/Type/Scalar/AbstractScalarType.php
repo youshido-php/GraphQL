@@ -18,6 +18,7 @@ abstract class AbstractScalarType extends AbstractType
     public function getName()
     {
         $className = get_class($this);
+
         return substr($className, strrpos($className, '\\') + 1);
     }
 

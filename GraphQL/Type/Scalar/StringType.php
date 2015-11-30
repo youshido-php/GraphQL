@@ -33,6 +33,7 @@ class StringType extends AbstractScalarType
         if ($value === false) {
             return 'false';
         }
+
         return (string)$value;
     }
 

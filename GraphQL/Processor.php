@@ -66,6 +66,7 @@ class Processor
     {
         if (!$currentLevelSchema->hasField($query->getName())) {
             $this->validator->addError(new ResolveException(sprintf('Field "%s" not found in schema', $query->getName())));
+
             return false;
         }
 

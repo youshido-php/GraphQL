@@ -22,10 +22,12 @@ abstract class AbstractType implements TypeInterface
 
     protected $name;
 
-    function getName() {
+    function getName()
+    {
         if (!$this->name) {
             throw new ConfigurationException("Type has to have a name");
         }
+
         return $this->name;
     }
 
@@ -34,7 +36,8 @@ abstract class AbstractType implements TypeInterface
         return $this->config;
     }
 
-    function getDescription() {
+    function getDescription()
+    {
         return "This Type doesn't have a description yet";
     }
 
