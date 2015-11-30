@@ -28,12 +28,18 @@ class FieldConfig extends Config
         return $this->data['type'];
     }
 
+    public function isRequired()
+    {
+        return !empty($this->data['required']) ? $this->data['required'] : false;
+    }
+
     public function getRules()
     {
         return [
             'name'              => ['type' => 'string', 'required' => true],
             'type'              => ['required' => true],
             'args'              => ['type' => 'array'],
+            'required'          => ['type' => 'boolean'],
             'description'       => ['type' => 'string'],
             'resolve'           => ['type' => 'callable'],
             'deprecationReason' => ['type' => 'string'],

@@ -92,8 +92,12 @@ class Processor
             $preResolvedValue = $this->getPreResolvedValue($contextValue, $query);
             $value            = $queryType->getType()->serialize($preResolvedValue);
         } else {
+            if (!$this->validateArguments($queryType, $query)) {
+                return null;
+            }
+
             /** @var ObjectType $queryType */
-            $resolvedValue = $queryType->resolve();
+            $resolvedValue = $queryType->resolve($contextValue, $query->getKeyValueArguments());
 
             $alias = $query->hasAlias() ? $query->getAlias() : $query->getName();
             $value = [];
@@ -136,6 +140,40 @@ class Processor
         }
 
         return $value;
+    }
+
+    /**
+     * @param $queryType ObjectType
+     * @param $query     Query
+     *
+     * @return bool
+     */
+    protected function validateArguments($queryType, $query)
+    {
+        $requiredArguments = array_filter($queryType->getArguments(), function ($argument) {
+            /** @var $argument Field */
+            return $argument->getConfig()->isRequired();
+        });
+
+        foreach ($query->getArguments() as $argument) {
+            if (!array_key_exists($argument->getName(), $queryType->getArguments())) {
+                $this->validator->addError(new ResolveException(sprintf('Unknown argument "%s" on field "%s".', $argument->getName(), $queryType->getName())));
+
+                return false;
+            }
+
+            if(array_key_exists($argument->getName(), $requiredArguments)){
+                unset($requiredArguments[$argument->getName()]);
+            }
+        }
+
+        if (count($requiredArguments)) {
+            $this->validator->addError(new ResolveException(sprintf('Require "%s" arguments to query "%s"', implode(', ', array_keys($requiredArguments)), $query->getName())));
+
+            return false;
+        }
+
+        return true;
     }
 
     public function getSchema()

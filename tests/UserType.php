@@ -22,6 +22,15 @@ class UserType extends ObjectType
             ->addField('name', 'string');
     }
 
+    protected function buildArguments(ObjectTypeConfig $config)
+    {
+        $config
+            ->addArgument('id', 'int', [
+                'required' => true
+            ]);
+    }
+
+
     public function resolve($args = [])
     {
         return [

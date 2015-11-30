@@ -11,7 +11,10 @@ namespace Youshido\GraphQL\Parser\Ast;
 class Argument
 {
 
+    /** @var string */
     private $name;
+
+    /** @var  Literal */
     private $value;
 
     public function __construct($name, $value)
@@ -37,7 +40,7 @@ class Argument
     }
 
     /**
-     * @return mixed
+     * @return Literal
      */
     public function getValue()
     {

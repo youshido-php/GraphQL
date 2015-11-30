@@ -21,8 +21,6 @@ class Config
      */
     protected $data = [];
 
-    protected $valid = true;
-
     protected $contextObject;
 
     protected $validator;

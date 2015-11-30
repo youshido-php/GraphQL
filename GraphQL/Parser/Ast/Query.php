@@ -49,6 +49,17 @@ class Query
         return $this->arguments;
     }
 
+    public function getKeyValueArguments()
+    {
+        $arguments = [];
+
+        foreach ($this->getArguments() as $argument) {
+            $arguments[$argument->getName()] = $argument->getValue()->getValue();
+        }
+
+        return $arguments;
+    }
+
     /**
      * @return Field[]|Query[]
      */

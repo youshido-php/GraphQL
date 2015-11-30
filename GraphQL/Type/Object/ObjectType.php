@@ -29,13 +29,19 @@ class ObjectType extends AbstractType
         if (empty($config) && (get_class($this) != 'Youshido\GraphQL\Type\Object\ObjectType')) {
             $config['name'] = $this->getName();
         }
-        $this->config = new ObjectTypeConfig($config, $this);
 
-        $this->name = $this->config->getName();
+        $this->config = new ObjectTypeConfig($config, $this);
+        $this->name   = $this->config->getName();
+
         $this->buildFields($this->config);
+        $this->buildArguments($this->config);
     }
 
     protected function buildFields(ObjectTypeConfig $config)
+    {
+    }
+
+    protected function buildArguments(ObjectTypeConfig $config)
     {
     }
 
@@ -49,14 +55,14 @@ class ObjectType extends AbstractType
         throw new ResolveException('You can not serialize object value directly');
     }
 
-    public function resolve($args = [])
+    public function resolve($value = null, $args = [])
     {
         $callable = $this->config->getResolveFunction();
 
-        return is_callable($callable) ? $callable($args) : null;
+        return is_callable($callable) ? $callable($value, $args) : null;
     }
 
-    final public function getKind()
+    public function getKind()
     {
         return TypeKind::ObjectKind;
     }
@@ -72,6 +78,21 @@ class ObjectType extends AbstractType
     public function getFields()
     {
         return $this->config->getFields();
+    }
+
+    public function hasArgument($name)
+    {
+        return $this->config->hasArgument($name);
+    }
+
+    public function getArgument($name)
+    {
+        return $this->config->getArgument($name);
+    }
+
+    public function getArguments()
+    {
+        return $this->config->getArguments();
     }
 
     public function hasField($fieldName)

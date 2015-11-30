@@ -67,6 +67,7 @@ class Validator implements ValidatorInterface
                 }
             }
         }
+
         if ($extraFieldsAllowed) {
             foreach (array_keys($data) as $fieldName) {
                 if (!in_array($fieldName, $processedFields)) {
