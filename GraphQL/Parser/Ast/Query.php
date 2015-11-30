@@ -64,4 +64,15 @@ class Query
     {
         $this->fields = $fields;
     }
+
+    public function getAlias()
+    {
+        return $this->alias;
+    }
+
+    public function hasAlias()
+    {
+        return $this->alias ? true : false;
+    }
+
 }

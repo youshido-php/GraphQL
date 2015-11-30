@@ -9,9 +9,12 @@
 
 namespace Youshido\GraphQL;
 
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Type\Object\ObjectType;
+use Youshido\GraphQL\Type\TypeKind;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 use Youshido\GraphQL\Validator\ValidatorInterface;
 
@@ -27,9 +30,14 @@ class Processor
     /** @var Schema */
     private $schema;
 
+    /** @var PropertyAccessor */
+    private $propertyAccessor;
+
     public function __construct(ValidatorInterface $validator)
     {
         $this->validator = $validator;
+
+        $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
     }
 
     public function processQuery($queryString, $variables = [])
@@ -56,6 +64,14 @@ class Processor
         }
     }
 
+    protected function createRequestFromString($query)
+    {
+        $parser = new Parser($query);
+
+        /** @todo: Parser parse and then getRequest or Request::createFrom... */
+        return $parser->parse();
+    }
+
     /**
      * @param Query|Field $query
      * @param ObjectType  $currentLevelSchema
@@ -67,31 +83,59 @@ class Processor
         if (!$currentLevelSchema->hasField($query->getName())) {
             $this->validator->addError(new ResolveException(sprintf('Field "%s" not found in schema', $query->getName())));
 
-            return false;
+            return null;
         }
 
         $queryType = $currentLevelSchema->getField($query->getName());
         if ($queryType instanceof Field) {
-            $value = $queryType->getType()->serialize($contextValue[$queryType->getName()]);
+            $alias            = $query->getName();
+            $preResolvedValue = $this->getPreResolvedValue($contextValue, $query);
+            $value            = $queryType->getType()->serialize($preResolvedValue);
         } else {
             /** @var ObjectType $queryType */
             $resolvedValue = $queryType->resolve();
-            $value         = [];
-            foreach ($query->getFields() as $field) {
-                $value = array_merge($value, $this->executeQuery($field, $queryType, $resolvedValue));
+
+            $alias = $query->hasAlias() ? $query->getAlias() : $query->getName();
+            $value = [];
+            if ($currentLevelSchema->getKind() == TypeKind::ListKind) {
+                foreach ($resolvedValue as $resolvedValueItem) {
+                    $value[$alias][] = [];
+                    $index           = count($value[$alias]) - 1;
+                    foreach ($query->getFields() as $field) {
+                        $value[$alias][$index] = array_merge($value[$alias][$index], $this->executeQuery($field, $queryType, $resolvedValueItem));
+                    }
+                }
+            } else {
+                foreach ($query->getFields() as $field) {
+                    $value = array_merge($value, $this->executeQuery($field, $queryType, $resolvedValue));
+                }
             }
         }
 
-
-        return [$queryType->getName() => $value];
+        return [$alias => $value];
     }
 
-    protected function createRequestFromString($query)
+    /**
+     * @param $value
+     * @param $query Field
+     *
+     * @throws \Exception
+     *
+     * @return mixed
+     */
+    protected function getPreResolvedValue($value, $query)
     {
-        $parser = new Parser($query);
+        if (is_array($value)) {
+            if (array_key_exists($query->getName(), $value)) {
+                return $value[$query->getName()];
+            } else {
+                throw new \Exception('Not found in resolve result', $query->getName());
+            }
+        } elseif (is_object($value)) {
+            return $this->propertyAccessor->getValue($value, $query->getName());
+        }
 
-        /** @todo: Parser parse and then getRequest or Request::createFrom... */
-        return $parser->parse();
+        return $value;
     }
 
     public function getSchema()
@@ -103,7 +147,6 @@ class Processor
     {
         $this->schema = $schema;
     }
-
 
     public function getErrors()
     {
