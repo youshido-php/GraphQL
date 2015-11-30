@@ -13,6 +13,7 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Parser;
+use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeKind;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
@@ -144,13 +145,13 @@ class Processor
 
     /**
      * @param $queryType ObjectType
-    *  @param $query Query
+     * @param $query     Query
      *
      * @return array
      */
     public function parseArgumentsValues($queryType, $query)
     {
-        $args = [];
+        $args      = [];
         $arguments = $queryType->getArguments();
 
         foreach ($query->getArguments() as $argument) {
@@ -182,7 +183,15 @@ class Processor
                 return false;
             }
 
-            if(array_key_exists($argument->getName(), $requiredArguments)){
+            /** @var AbstractType $argumentType */
+            $argumentType = $queryType->getArguments()[$argument->getName()]->getType();
+            if (!$argumentType->isValidValue($argumentType->parseValue($argument->getValue()->getValue()))) {
+                $this->validator->addError(new ResolveException(sprintf('Not valid type for argument "%s" in query "%s"', $argument->getName(), $queryType->getName())));
+
+                return false;
+            }
+
+            if (array_key_exists($argument->getName(), $requiredArguments)) {
                 unset($requiredArguments[$argument->getName()]);
             }
         }

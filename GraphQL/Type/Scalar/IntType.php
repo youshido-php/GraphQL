@@ -22,7 +22,11 @@ class IntType extends AbstractScalarType
 
     public function parseValue($value)
     {
-        return (int) $value;
+        if (!is_integer($value) && !is_double($value)) {
+            return null;
+        }
+
+        return (int)$value;
     }
 
     public function serialize($value)
