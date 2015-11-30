@@ -14,7 +14,7 @@ class Argument
     /** @var string */
     private $name;
 
-    /** @var  Literal */
+    /** @var  Literal|Variable */
     private $value;
 
     public function __construct($name, $value)
@@ -40,7 +40,7 @@ class Argument
     }
 
     /**
-     * @return Literal
+     * @return Literal|Variable
      */
     public function getValue()
     {

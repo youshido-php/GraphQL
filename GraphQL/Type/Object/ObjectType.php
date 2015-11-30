@@ -75,6 +75,9 @@ class ObjectType extends AbstractType
         return $this->config;
     }
 
+    /**
+     * @return Field[]
+     */
     public function getFields()
     {
         return $this->config->getFields();
@@ -90,6 +93,9 @@ class ObjectType extends AbstractType
         return $this->config->getArgument($name);
     }
 
+    /**
+     * @return Field[]
+     */
     public function getArguments()
     {
         return $this->config->getArguments();

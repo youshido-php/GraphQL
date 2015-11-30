@@ -60,12 +60,12 @@ class ObjectTypeConfig extends Config
 
     public function addArgument($name, $type, $config = [])
     {
-        if (!TypeMap::isTypeAllowed($type)) {
+        if (!is_string($type) || !TypeMap::isTypeAllowed($type)) {
             throw new ConfigurationException('Argument input type ' . $type . ' is not supported');
         }
 
         $config['name'] = $name;
-        $config['type'] = $type;
+        $config['type'] = TypeMap::getTypeObject($type);
 
         $this->arguments[$name] = new Field($config);
 

@@ -97,7 +97,7 @@ class Processor
             }
 
             /** @var ObjectType $queryType */
-            $resolvedValue = $queryType->resolve($contextValue, $query->getKeyValueArguments());
+            $resolvedValue = $queryType->resolve($contextValue, $this->parseArgumentsValues($queryType, $query));
 
             $alias = $query->hasAlias() ? $query->getAlias() : $query->getName();
             $value = [];
@@ -140,6 +140,26 @@ class Processor
         }
 
         return $value;
+    }
+
+    /**
+     * @param $queryType ObjectType
+    *  @param $query Query
+     *
+     * @return array
+     */
+    public function parseArgumentsValues($queryType, $query)
+    {
+        $args = [];
+        $arguments = $queryType->getArguments();
+
+        foreach ($query->getArguments() as $argument) {
+            $type = $arguments[$argument->getName()]->getConfig()->getType();
+
+            $args[$argument->getName()] = $type->parseValue($argument->getValue()->getValue());
+        }
+
+        return $args;
     }
 
     /**
