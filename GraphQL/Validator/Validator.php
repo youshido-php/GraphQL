@@ -47,8 +47,9 @@ class Validator implements ValidatorInterface
                 unset($fieldRules['required']);
                 if (!array_key_exists($fieldName, $data)) {
                     $this->addError(new ValidationException('Field \'' . $fieldName . '\' of ' . $this->getContextName() . ' is required'));
+                    continue;
                 }
-            } elseif (!in_array($fieldName, $data)) {
+            } elseif (!array_key_exists($fieldName, $data)) {
                 continue;
             }
 

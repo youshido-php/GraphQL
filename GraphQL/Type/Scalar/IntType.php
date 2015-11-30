@@ -20,12 +20,9 @@ class IntType extends AbstractScalarType
                 'by [IEEE 754](http://en.wikipedia.org/wiki/IEEE_floating_point).';
     }
 
-    public function parseValue($value, $errorList = null)
+    public function parseValue($value)
     {
         if (!is_integer($value)) {
-//            $errorList->addError(new ValidationException(
-//                                     sprintf('Argument \"%s\" expected type \"Int\"', $name)
-//                                 ));
             return null;
         }
         return $value;

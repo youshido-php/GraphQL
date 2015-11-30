@@ -10,6 +10,7 @@ namespace Youshido\GraphQL;
 
 
 use Youshido\GraphQL\Type\Config\SchemaConfig;
+use Youshido\GraphQL\Type\Object\ObjectType;
 
 class Schema
 {
@@ -26,6 +27,13 @@ class Schema
     {
         return $this->config->getQuery();
     }
+
+    public function addQuery(ObjectType $query, $name = '')
+    {
+        if (empty($name)) $name = $query->getName();
+        $this->getQueryType()->getConfig()->addField($name, $query);
+    }
+
 
     public function getMutationType()
     {

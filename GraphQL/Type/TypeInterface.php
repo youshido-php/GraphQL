@@ -17,6 +17,11 @@ Interface TypeInterface
     public function getName();
 
     /**
+     * @return String predefined type kind
+     */
+    public function getKind();
+
+    /**
      * @return String type description
      */
     public function getDescription();

@@ -12,33 +12,67 @@ namespace Youshido\GraphQL\Type\Config;
 use Youshido\GraphQL\Field;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\StringType;
+use Youshido\GraphQL\Type\TypeKind;
+use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 class ObjectTypeConfig extends Config
 {
 
+    protected $fields = [];
+
     protected function setupType()
     {
-        foreach ($this->getFields() as $fieldName => $fieldInfo) {
-            if ($fieldInfo instanceof Field || $fieldInfo instanceof ObjectType) continue;
+        $sourceFields = empty($this->data['fields']) ? [] : $this->data['fields'];
+        foreach ($sourceFields as $fieldName => $fieldInfo) {
+            if ($fieldInfo instanceof Field || $fieldInfo instanceof ObjectType) {
+                $this->fields[$fieldName] = $fieldInfo;
+                continue;
+            };
 
-            $fieldObject = new Field();
-            // @todo it's just for test
-            $typeClassName = 'Youshido\\GraphQL\\Type\\Scalar\\' . ucfirst($fieldInfo['type']) . 'Type';
-            $fieldObject->setName($fieldName)->setConfig($fieldInfo)->setType(new $typeClassName());
-            $this->data['fields'][$fieldName] = $fieldObject;
+            $this->addField($fieldName, $fieldInfo['type'], $fieldInfo);
         }
 
     }
-
 
     public function getName()
     {
         return $this->data['name'];
     }
 
+    public function addField($name, $type, $config = [])
+    {
+        if (is_string($type)) {
+            if (!TypeMap::isTypeAllowed($type)) throw new ConfigurationException('You can\'t pass ' . $type . ' as a string type.');
+            $type = TypeMap::getTypeObject($type);
+        }
+
+        if ($type->getKind() == TypeKind::ScalarKind) {
+            $config['name'] = $name;
+            $config['type'] = $type;
+            $field = new Field($config);
+        } else {
+            $field = $type;
+        }
+
+        $this->fields[$name] = $field;
+
+        return $this;
+    }
+
+    public function getField($name)
+    {
+        return $this->hasField($name) ? $this->fields[$name] : null;
+    }
+
+    public function hasField($name)
+    {
+        return array_key_exists($name, $this->fields);
+    }
+
     public function getFields()
     {
-        return empty($this->data['fields']) ? [] : $this->data['fields'];
+        return $this->fields;
     }
 
     public function getResolveFunction()

@@ -29,6 +29,11 @@ abstract class AbstractType implements TypeInterface
         return $this->name;
     }
 
+    public function getConfig()
+    {
+        return $this->config;
+    }
+
     function getDescription() {
         return "This Type doesn't have a description yet";
     }

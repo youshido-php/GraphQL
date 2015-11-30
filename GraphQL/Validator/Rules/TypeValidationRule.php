@@ -12,33 +12,28 @@ namespace Youshido\GraphQL\Validator\Rules;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
+use Youshido\GraphQL\Type\TypeMap;
 
 class TypeValidationRule implements ValidationRuleInterface
 {
 
     public function validate($data, $ruleInfo)
     {
-        if (array_key_exists($ruleInfo, $this->getAllowedTypes())) {
-            $typeObject = $this->getAllowedTypes()[$ruleInfo];
-            return $typeObject->isValidValue($data);
-        } elseif (is_object($data)) {
+        if (is_object($ruleInfo)) {
             $className = get_class($data);
             $className = substr($className, strrpos($className, '\\') + 1, -4);
             return ($className == $ruleInfo);
+        } elseif (is_string($ruleInfo)) {
+            /** @todo need to be completely rewritten */
+            $ruleInfo = strtolower($ruleInfo);
+            if (TypeMap::isTypeAllowed($ruleInfo)) {
+                return TypeMap::getTypeObject($ruleInfo)->isValidValue($data);
+            } elseif ($ruleInfo == 'object') {
+                return is_object($data);
+            }
         } else {
             return false;
         }
-    }
-
-    /**
-     * @return AbstractType[]
-     */
-    public function getAllowedTypes()
-    {
-        return [
-            'int'    => new IntType(),
-            'string' => new StringType(),
-        ];
     }
 
 }

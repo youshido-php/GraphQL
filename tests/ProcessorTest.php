@@ -29,7 +29,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                     [
                         'name'   => 'OneFileQuery',
                         'fields' => [
-                            'users' => new ObjectType([
+                            'latest' => new ObjectType([
                                   'name' => 'users',
                                   'fields' => [
                                       'id'  => ['type' => 'int'],
@@ -41,19 +41,24 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                                           'name' => 'Alex'
                                       ];
                                   }
-                              ])
+                              ]),
                         ]
                     ])
             ]);
 
-        $queryString = '{ users { name } }';
+        $schema->addQuery(new UserType(), 'user');
+        $schema->addQuery(new UserType(), 'user');
+
 
         $validator = new Validator();
         $processor = new Processor($validator);
 
         $processor->setSchema($schema);
-        $processor->processQuery($queryString);
 
+        $processor->processQuery('{ latest { name } }');
+        print_r($processor->getResponseData());
+
+        $processor->processQuery('{ user { id, name } }');
         print_r($processor->getResponseData());
 
     }
