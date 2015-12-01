@@ -112,13 +112,9 @@ class ObjectTypeConfig extends Config
             $type = TypeMap::getScalarTypeObject($type);
         }
 
-        if ($type->getKind() == TypeMap::KIND_SCALAR) {
-            $config['name'] = $name;
-            $config['type'] = $type;
-            $field          = new Field($config);
-        } else {
-            $field = $type;
-        }
+        $config['name'] = $name;
+        $config['type'] = $type;
+        $field          = new Field($config);
 
         $this->fields[$name] = $field;
 

@@ -9,27 +9,19 @@
 namespace Youshido\GraphQL\Type;
 
 
-use Youshido\GraphQL\Type\Config\Config;
+use Youshido\GraphQL\Field;
+use Youshido\GraphQL\Type\Config\ObjectTypeConfig;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 abstract class AbstractType implements TypeInterface
 {
 
     /**
-     * @var Config
+     * @var ObjectTypeConfig
      */
     protected $config;
 
     protected $name;
-
-    function getName()
-    {
-        if (!$this->name) {
-            throw new ConfigurationException("Type has to have a name");
-        }
-
-        return $this->name;
-    }
 
     public function getConfig()
     {
@@ -56,6 +48,50 @@ abstract class AbstractType implements TypeInterface
         return $this->getName();
     }
 
+    function getName()
+    {
+        if (!$this->name) {
+            throw new ConfigurationException("Type has to have a name");
+        }
+
+        return $this->name;
+    }
+
     abstract public function isValidValue($value);
 
+    /**
+     * @return Field[]
+     */
+    public function getFields()
+    {
+        return $this->config->getFields();
+    }
+
+    public function hasArgument($name)
+    {
+        return $this->config->hasArgument($name);
+    }
+
+    public function getArgument($name)
+    {
+        return $this->config->getArgument($name);
+    }
+
+    /**
+     * @return Field[]
+     */
+    public function getArguments()
+    {
+        return $this->config->getArguments();
+    }
+
+    public function hasField($fieldName)
+    {
+        return $this->config->hasField($fieldName);
+    }
+
+    public function getField($fieldName)
+    {
+        return $this->config->getField($fieldName);
+    }
 }

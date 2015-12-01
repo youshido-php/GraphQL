@@ -8,8 +8,6 @@
 
 namespace Youshido\GraphQL\Type\Object;
 
-
-use Youshido\GraphQL\Field;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Config\ObjectTypeConfig;
 use Youshido\GraphQL\Type\TypeMap;
@@ -73,42 +71,6 @@ class ObjectType extends AbstractType
     public function getConfig()
     {
         return $this->config;
-    }
-
-    /**
-     * @return Field[]
-     */
-    public function getFields()
-    {
-        return $this->config->getFields();
-    }
-
-    public function hasArgument($name)
-    {
-        return $this->config->hasArgument($name);
-    }
-
-    public function getArgument($name)
-    {
-        return $this->config->getArgument($name);
-    }
-
-    /**
-     * @return Field[]
-     */
-    public function getArguments()
-    {
-        return $this->config->getArguments();
-    }
-
-    public function hasField($fieldName)
-    {
-        return $this->config->hasField($fieldName);
-    }
-
-    public function getField($fieldName)
-    {
-        return $this->config->getField($fieldName);
     }
 
     public function isValidValue($value)

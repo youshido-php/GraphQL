@@ -9,9 +9,10 @@
 namespace Youshido\GraphQL\Type\Config;
 
 
+use Youshido\GraphQL\Field;
 use Youshido\GraphQL\Type\TypeMap;
 
-class ListTypeConfig extends Config
+class ListTypeConfig extends ObjectTypeConfig
 {
     public function getRules()
     {
@@ -20,5 +21,27 @@ class ListTypeConfig extends Config
             'type'    => ['type' => TypeMap::TYPE_OBJECT_TYPE, 'required' => true],
             'resolve' => ['type' => TypeMap::TYPE_FUNCTION],
         ];
+    }
+
+
+    //todo: code below is not fully corrected, because type = int then error
+
+    /**
+     * @param $name
+     * @return Field
+     */
+    public function getField($name)
+    {
+        return $this->data['type']->getField($name);
+    }
+
+    public function hasField($name)
+    {
+        return $this->data['type']->hasField($name);
+    }
+
+    public function getFields()
+    {
+        return $this->data['type']->getFields();
     }
 }

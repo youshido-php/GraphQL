@@ -92,11 +92,11 @@ class Processor
         }
 
         /** @var ObjectType|Field $queryType */
-        $queryType = $currentLevelSchema->getField($query->getName());
-        if ($queryType instanceof Field) {
+        $queryType = $currentLevelSchema->getField($query->getName())->getType();
+        if (get_class($query) == 'Youshido\GraphQL\Parser\Ast\Field') {
             $alias            = $query->getName();
             $preResolvedValue = $this->getPreResolvedValue($contextValue, $query);
-            $value            = $queryType->getType()->serialize($preResolvedValue);
+            $value            = $queryType->serialize($preResolvedValue);
         } else {
             if (!$this->validator->validateArguments($queryType, $query, $this->request)) {
                 return null;
@@ -112,12 +112,12 @@ class Processor
             }
 
             $value = [];
-            if ($currentLevelSchema->getKind() == TypeMap::KIND_LIST) {
+            if ($queryType->getKind() == TypeMap::KIND_LIST) {
                 foreach ($resolvedValue as $resolvedValueItem) {
-                    $value[$alias][] = [];
-                    $index           = count($value[$alias]) - 1;
+                    $value[] = [];
+                    $index   = count($value) - 1;
 
-                    $value[$alias][$index] = $this->processQueryFields($query, $queryType, $resolvedValueItem, $value[$alias][$index]);
+                    $value[$index] = $this->processQueryFields($query, $queryType, $resolvedValueItem, $value[$index]);
                 }
             } else {
                 $value = $this->processQueryFields($query, $queryType, $resolvedValue, $value);
