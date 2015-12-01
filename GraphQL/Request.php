@@ -15,9 +15,16 @@ use Youshido\GraphQL\Parser\Ast\Query;
 class Request
 {
 
+    /** @var  Query[] */
     private $queries = [];
+
+    /** @var Fragment[] */
     private $fragments = [];
+
+    /** @var Mutation[] */
     private $mutations = [];
+
+    /** @var array */
     private $variables = [];
 
     public function __construct($data = [])
@@ -35,19 +42,33 @@ class Request
         }
     }
 
+    public function addQueries($queries)
+    {
+        foreach ($queries as $query) {
+            $this->queries[] = $query;
+        }
+    }
+
+    public function addMutations($mutations)
+    {
+        foreach ($mutations as $mutation) {
+            $this->mutations[] = $mutation;
+        }
+    }
+
+    public function addFragments($fragments)
+    {
+        foreach ($fragments as $fragment) {
+            $this->fragments[] = $fragment;
+        }
+    }
+
     /**
      * @return Query[]
      */
     public function getQueries()
     {
         return $this->queries;
-    }
-
-    public function addQueries($queries)
-    {
-        foreach ($queries as $query) {
-            $this->queries[] = $query;
-        }
     }
 
     /**
@@ -69,20 +90,6 @@ class Request
     public function getMutations()
     {
         return $this->mutations;
-    }
-
-    public function addMutations($mutations)
-    {
-        foreach ($mutations as $mutation) {
-            $this->mutations[] = $mutation;
-        }
-    }
-
-    public function addFragments($fragments)
-    {
-        foreach ($fragments as $fragment) {
-            $this->fragments[] = $fragment;
-        }
     }
 
     /**
@@ -109,13 +116,29 @@ class Request
         $this->variables = $variables;
     }
 
+    public function getVariable($name)
+    {
+        return $this->hasVariable($name) ? $this->variables[$name] : null;
+    }
+
     public function hasVariable($name)
     {
         return array_key_exists($name, $this->variables);
     }
 
-    public function getVariable($name)
+    /**
+     * @param $name
+     *
+     * @return null|Fragment
+     */
+    public function getFragment($name)
     {
-        return $this->hasVariable($name) ? $this->variables[$name] : null;
+        foreach ($this->fragments as $fragment) {
+            if ($fragment->getName() == $name) {
+                return $fragment;
+            }
+        }
+
+        return null;
     }
 }

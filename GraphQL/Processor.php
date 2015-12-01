@@ -11,6 +11,7 @@ namespace Youshido\GraphQL;
 
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Type\Object\ObjectType;
@@ -59,6 +60,8 @@ class Processor
 
             $this->data = $data;
         } catch (\Exception $e) {
+            $this->validator->clearErrors(); //todo: rethink here (used this for critic exception)
+
             $this->validator->addError($e);
         }
     }
@@ -99,7 +102,6 @@ class Processor
                 return null;
             }
 
-            /** @var ObjectType $queryType */
             $resolvedValue = $this->resolveValue($queryType, $contextValue, $query);
             $alias         = $query->hasAlias() ? $query->getAlias() : $query->getName();
 
@@ -114,30 +116,15 @@ class Processor
                 foreach ($resolvedValue as $resolvedValueItem) {
                     $value[$alias][] = [];
                     $index           = count($value[$alias]) - 1;
-                    foreach ($query->getFields() as $field) {
-                        $value[$alias][$index] = array_merge($value[$alias][$index], $this->executeQuery($field, $queryType, $resolvedValueItem));
-                    }
+
+                    $value[$alias][$index] = $this->processQueryFields($query, $queryType, $resolvedValueItem, $value[$alias][$index]);
                 }
             } else {
-                foreach ($query->getFields() as $field) {
-                    $value = array_merge($value, $this->executeQuery($field, $queryType, $resolvedValue));
-                }
+                $value = $this->processQueryFields($query, $queryType, $resolvedValue, $value);
             }
         }
 
         return [$alias => $value];
-    }
-
-    /**
-     * @param $queryType    ObjectType
-     * @param $contextValue mixed
-     * @param $query        Query
-     *
-     * @return mixed
-     */
-    protected function resolveValue($queryType, $contextValue, $query)
-    {
-        return $queryType->resolve($contextValue, $this->parseArgumentsValues($queryType, $query));
     }
 
     /**
@@ -164,6 +151,18 @@ class Processor
     }
 
     /**
+     * @param $queryType    ObjectType
+     * @param $contextValue mixed
+     * @param $query        Query
+     *
+     * @return mixed
+     */
+    protected function resolveValue($queryType, $contextValue, $query)
+    {
+        return $queryType->resolve($contextValue, $this->parseArgumentsValues($queryType, $query));
+    }
+
+    /**
      * @param $queryType ObjectType
      * @param $query     Query
      *
@@ -181,6 +180,50 @@ class Processor
         }
 
         return $args;
+    }
+
+    /**
+     * @param $query         Query
+     * @param $queryType     ObjectType|Field
+     * @param $resolvedValue mixed
+     * @param $value         array
+     *
+     * @throws \Exception
+     *
+     * @return array
+     */
+    protected function processQueryFields($query, $queryType, $resolvedValue, $value)
+    {
+        foreach ($query->getFields() as $field) {
+            if ($field instanceof FragmentReference) {
+                if (!$fragment = $this->request->getFragment($field->getName())) {
+                    throw new \Exception(sprintf('Fragment reference "%s" not found', $field->getName()));
+                }
+
+                if ($fragment->getModel() !== $queryType->getName()) {
+                    throw new \Exception(sprintf('Fragment reference "%s" not found on model "%s"', $field->getName(), $queryType->getName()));
+                }
+
+                foreach ($fragment->getFields() as $fragmentField) {
+                    $value = $this->collectValue($value, $this->executeQuery($fragmentField, $queryType, $resolvedValue));
+                }
+            } else {
+                $value = $this->collectValue($value, $this->executeQuery($field, $queryType, $resolvedValue));
+            }
+        }
+
+        return $value;
+    }
+
+    protected function collectValue($value, $queryValue)
+    {
+        if ($queryValue && is_array($queryValue)) {
+            $value = array_merge($value, $queryValue);
+        } else {
+            $value = $queryValue;
+        }
+
+        return $value;
     }
 
     public function getSchema()

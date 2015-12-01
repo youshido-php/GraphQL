@@ -11,6 +11,7 @@ namespace Youshido\GraphQL\Parser\Ast;
 class FragmentReference
 {
 
+    /** @var  string */
     protected $name;
 
     /**
@@ -21,5 +22,22 @@ class FragmentReference
     {
         $this->name = $name;
     }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
 
 }

@@ -16,7 +16,7 @@ class Fragment
     protected $model;
 
     /** @var Field[]|Query[] */
-    protected $children;
+    protected $fields;
 
     /** @var bool */
     private $used = false;
@@ -30,9 +30,9 @@ class Fragment
      */
     public function __construct($name, $model, $children)
     {
-        $this->name     = $name;
-        $this->model    = $model;
-        $this->children = $children;
+        $this->name   = $name;
+        $this->model  = $model;
+        $this->fields = $children;
     }
 
     /**
@@ -65,5 +65,37 @@ class Fragment
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getModel()
+    {
+        return $this->model;
+    }
+
+    /**
+     * @param mixed $model
+     */
+    public function setModel($model)
+    {
+        $this->model = $model;
+    }
+
+    /**
+     * @return Field[]|Query[]
+     */
+    public function getFields()
+    {
+        return $this->fields;
+    }
+
+    /**
+     * @param Field[]|Query[] $fields
+     */
+    public function setFields($fields)
+    {
+        $this->fields = $fields;
     }
 }
