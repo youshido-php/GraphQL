@@ -28,6 +28,8 @@ class Token
     const TYPE_RBRACE = '}';
     const TYPE_LPAREN = '(';
     const TYPE_RPAREN = ')';
+    const TYPE_LSQUARE_BRACE = '[';
+    const TYPE_RSQUARE_BRACE = ']';
     const TYPE_COLON = ' = ';
     const TYPE_COMMA = ',';
     const TYPE_AMP = '&';
@@ -57,6 +59,18 @@ class Token
 
     public function getData()
     {
+        if ($this->getType() == self::TYPE_TRUE) {
+            return true;
+        }
+
+        if ($this->getType() == self::TYPE_FALSE) {
+            return false;
+        }
+
+        if ($this->getType() == self::TYPE_NULL) {
+            return null;
+        }
+
         return $this->data;
     }
 

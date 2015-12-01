@@ -8,7 +8,7 @@
 
 namespace Youshido\GraphQL\Parser;
 
-use Youshido\GraphQL\Request;
+use Youshido\GraphQL\Parser\Ast\InputList;
 use Youshido\GraphQL\Parser\Ast\Argument;
 use Youshido\GraphQL\Parser\Ast\Field;
 use Youshido\GraphQL\Parser\Ast\Fragment;
@@ -178,6 +178,12 @@ class Parser extends Tokenizer
     protected function parseValue()
     {
         switch ($this->lookAhead->getType()) {
+            case Token::TYPE_LSQUARE_BRACE:
+                return $this->parseList();
+
+            case Token::TYPE_LBRACE:
+                return $this->parseObject();
+
             case Token::TYPE_AMP:
                 return $this->parseReference();
 
@@ -195,6 +201,34 @@ class Parser extends Tokenizer
         }
 
         throw $this->createUnexpected($this->lookAhead);
+    }
+
+    protected function parseList()
+    {
+        $this->eat(Token::TYPE_LSQUARE_BRACE);
+
+        $list = [];
+        while (!$this->match(Token::TYPE_RSQUARE_BRACE) && !$this->end()) {
+            $list[] = $this->parseListValue();
+
+            if ($this->lookAhead->getType() != Token::TYPE_RSQUARE_BRACE) {
+                $this->expect(Token::TYPE_COMMA);
+            }
+        }
+
+        $this->expect(Token::TYPE_RSQUARE_BRACE);
+
+        return new InputList($list);
+    }
+
+    protected function parseListValue()
+    {
+        return $this->lex()->getData();
+    }
+
+    protected function parseObject()
+    {
+        return [];
     }
 
     protected function parseVariable()

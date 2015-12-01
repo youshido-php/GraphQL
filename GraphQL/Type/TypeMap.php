@@ -15,7 +15,6 @@ use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 class TypeMap
 {
 
-    /** @todo think of removing TypeKind class and moving KINDS to this one */
     const KIND_SCALAR = 'SCALAR';
     const KIND_OBJECT = 'OBJECT';
     const KIND_LIST   = 'LIST';

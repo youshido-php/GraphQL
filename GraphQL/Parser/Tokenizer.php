@@ -13,6 +13,8 @@ class Tokenizer
     protected $pos = 0;
     protected $line = 1;
     protected $lineStart = 0;
+
+    /** @var  Token */
     protected $lookAhead;
 
     public function setSource($source)
@@ -101,6 +103,14 @@ class Tokenizer
                 ++$this->pos;
 
                 return new Token(Token::TYPE_COMMA);
+            case Token::TYPE_LSQUARE_BRACE:
+                ++$this->pos;
+
+                return new Token(Token::TYPE_LSQUARE_BRACE);
+            case Token::TYPE_RSQUARE_BRACE:
+                ++$this->pos;
+
+                return new Token(Token::TYPE_RSQUARE_BRACE);
             case ':':
                 ++$this->pos;
 
