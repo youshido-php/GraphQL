@@ -12,7 +12,7 @@ namespace Youshido\GraphQL\Type\Object;
 use Youshido\GraphQL\Field;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Config\ObjectTypeConfig;
-use Youshido\GraphQL\Type\TypeKind;
+use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 
 class ObjectType extends AbstractType
@@ -64,7 +64,7 @@ class ObjectType extends AbstractType
 
     public function getKind()
     {
-        return TypeKind::KIND_OBJECT;
+        return TypeMap::KIND_OBJECT;
     }
 
     /**

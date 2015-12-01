@@ -11,8 +11,6 @@ namespace Youshido\GraphQL\Type\Config;
 
 use Youshido\GraphQL\Field;
 use Youshido\GraphQL\Type\Object\ObjectType;
-use Youshido\GraphQL\Type\Scalar\StringType;
-use Youshido\GraphQL\Type\TypeKind;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
@@ -114,7 +112,7 @@ class ObjectTypeConfig extends Config
             $type = TypeMap::getScalarTypeObject($type);
         }
 
-        if ($type->getKind() == TypeKind::KIND_SCALAR) {
+        if ($type->getKind() == TypeMap::KIND_SCALAR) {
             $config['name'] = $name;
             $config['type'] = $type;
             $field          = new Field($config);

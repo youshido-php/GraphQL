@@ -8,11 +8,11 @@
 namespace Youshido\GraphQL\Validator;
 
 
+use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainer;
 use Youshido\GraphQL\Field;
 use Youshido\GraphQL\Parser\Ast\Variable;
 use Youshido\GraphQL\Type\AbstractType;
-use Youshido\GraphQL\Type\TypeKind;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 
 class ResolveValidator extends ErrorContainer implements ResolveValidatorInterface
@@ -73,9 +73,9 @@ class ResolveValidator extends ErrorContainer implements ResolveValidatorInterfa
     public function validateResolvedValue($value, $kind)
     {
         switch ($kind) {
-            case TypeKind::KIND_OBJECT:
+            case TypeMap::KIND_OBJECT:
                 return is_object($value);
-            case TypeKind::KIND_LIST:
+            case TypeMap::KIND_LIST:
                 return is_array($value);
         }
 

@@ -31,7 +31,7 @@ class ListType extends AbstractType
 
     final public function getKind()
     {
-        return TypeKind::KIND_LIST;
+        return TypeMap::KIND_LIST;
     }
 
 }

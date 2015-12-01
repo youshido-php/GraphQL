@@ -9,11 +9,7 @@
 namespace Youshido\GraphQL\Validator\Rules;
 
 
-use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Object\ObjectType;
-use Youshido\GraphQL\Type\Scalar\IntType;
-use Youshido\GraphQL\Type\Scalar\StringType;
-use Youshido\GraphQL\Type\TypeKind;
 use Youshido\GraphQL\Type\TypeMap;
 
 class TypeValidationRule implements ValidationRuleInterface

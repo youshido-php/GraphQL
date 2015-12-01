@@ -15,7 +15,7 @@ use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Type\Object\ObjectType;
-use Youshido\GraphQL\Type\TypeKind;
+use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 use Youshido\GraphQL\Validator\ResolveValidatorInterface;
 
@@ -112,7 +112,7 @@ class Processor
             }
 
             $value = [];
-            if ($currentLevelSchema->getKind() == TypeKind::KIND_LIST) {
+            if ($currentLevelSchema->getKind() == TypeMap::KIND_LIST) {
                 foreach ($resolvedValue as $resolvedValueItem) {
                     $value[$alias][] = [];
                     $index           = count($value[$alias]) - 1;
