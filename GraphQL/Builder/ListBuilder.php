@@ -25,7 +25,7 @@ class ListBuilder implements ListBuilderInterface
     {
         if (is_string($type)) {
             if (!TypeMap::isTypeAllowed($type)) throw new ConfigurationException('You can\'t pass ' . $type . ' as a string type.');
-            $type = TypeMap::getTypeObject($type);
+            $type = TypeMap::getScalarTypeObject($type);
         }
 
         $field = new Field();

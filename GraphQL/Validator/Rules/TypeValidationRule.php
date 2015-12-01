@@ -10,8 +10,10 @@ namespace Youshido\GraphQL\Validator\Rules;
 
 
 use Youshido\GraphQL\Type\AbstractType;
+use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
+use Youshido\GraphQL\Type\TypeKind;
 use Youshido\GraphQL\Type\TypeMap;
 
 class TypeValidationRule implements ValidationRuleInterface
@@ -27,10 +29,25 @@ class TypeValidationRule implements ValidationRuleInterface
         } elseif (is_string($ruleInfo)) {
             /** @todo need to be completely rewritten */
             $ruleInfo = strtolower($ruleInfo);
-            if (TypeMap::isTypeAllowed($ruleInfo)) {
-                return TypeMap::getTypeObject($ruleInfo)->isValidValue($data);
-            } elseif ($ruleInfo == 'object') {
-                return is_object($data);
+
+            switch ($ruleInfo) {
+                case TypeMap::TYPE_ANY:
+                    return true;
+                    break;
+                case TypeMap::TYPE_OBJECT:
+                    return is_object($data);
+
+                case TypeMap::TYPE_OBJECT_TYPE:
+                    return $data instanceof ObjectType;
+
+                case TypeMap::TYPE_FUNCTION:
+                    return is_callable($data);
+
+                default:
+                    if (TypeMap::isScalarType($ruleInfo)) {
+                        return TypeMap::getScalarTypeObject($ruleInfo)->isValidValue($data);
+                    }
+                    break;
             }
         } else {
             return false;

@@ -39,7 +39,7 @@ class Schema
     {
     }
 
-    public function addQuery(ObjectType $query, $name = '')
+    public function addQuery(ObjectType $query)
     {
         if (empty($name)) {
             $name = $query->getName();

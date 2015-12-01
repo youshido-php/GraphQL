@@ -56,6 +56,10 @@ class Config
         return [];
     }
 
+    public function getName()
+    {
+        return empty($this->data['name']) ? null : $this->data['name'];
+    }
     /**
      * @return boolean
      */

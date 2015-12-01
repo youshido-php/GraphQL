@@ -19,6 +19,8 @@ interface ValidatorInterface
 
     public function getErrors();
 
+    public function getErrorsArray();
+
     public function clearErrors();
 
 }

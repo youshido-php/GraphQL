@@ -189,6 +189,7 @@ class Processor
      * @param $query     Query
      *
      * @return bool
+     * @todo: Need to move it from here I guess.. to much trouble being here
      */
     protected function validateArguments($queryType, $query)
     {

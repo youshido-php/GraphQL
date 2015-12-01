@@ -23,11 +23,10 @@ class ObjectTypeConfig extends Config
 
     protected $arguments = [];
 
-    public function getName()
-    {
-        return $this->data['name'];
-    }
-
+    /**
+     * @param $name
+     * @return Field
+     */
     public function getField($name)
     {
         return $this->hasField($name) ? $this->fields[$name] : null;
@@ -60,12 +59,12 @@ class ObjectTypeConfig extends Config
 
     public function addArgument($name, $type, $config = [])
     {
-        if (!is_string($type) || !TypeMap::isTypeAllowed($type)) {
+        if (!is_string($type) || !TypeMap::isInputType($type)) {
             throw new ConfigurationException('Argument input type ' . $type . ' is not supported');
         }
 
         $config['name'] = $name;
-        $config['type'] = TypeMap::getTypeObject($type);
+        $config['type'] = TypeMap::getScalarTypeObject($type);
 
         $this->arguments[$name] = new Field($config);
 
@@ -112,7 +111,7 @@ class ObjectTypeConfig extends Config
                 throw new ConfigurationException('You can\'t pass ' . $type . ' as a string type.');
             }
 
-            $type = TypeMap::getTypeObject($type);
+            $type = TypeMap::getScalarTypeObject($type);
         }
 
         if ($type->getKind() == TypeKind::KIND_SCALAR) {

@@ -63,7 +63,7 @@ class Validator implements ValidatorInterface
                 if (!$this->validationRules[$ruleName]->validate($data[$fieldName], $ruleInfo)) {
                     $this->addError(
                         new ValidationException('Field \'' . $fieldName . '\' of ' . $this->getContextName()
-                            . ' expected to be ' . $ruleName . ': \'' . (string)$ruleInfo . '\', but got: ' . $data[$fieldName]));
+                                                . ' expected to be ' . $ruleName . ': \'' . (string)$ruleInfo . '\', but got: ' . $data[$fieldName]));
                 }
             }
         }
