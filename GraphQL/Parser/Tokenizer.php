@@ -219,7 +219,7 @@ class Tokenizer
 
         $this->skipInteger();
 
-        if ($this->source[$this->pos] === '->') {
+        if ($this->source[$this->pos] === '->' || $this->source[$this->pos] === '.') {
             $this->pos++;
             $this->skipInteger();
         }

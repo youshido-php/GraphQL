@@ -45,7 +45,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 ]
             ],
             [
-                '{ user (id: 10, name: "max" ) { id, name } }',
+                '{ user (id: 10, name: "max", float: 123.123 ) { id, name } }',
                 [
                     'queries'   => [
                         new Query(
@@ -53,7 +53,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                             null,
                             [
                                 new Argument('id', new Literal('10')),
-                                new Argument('name', new Literal('max'))
+                                new Argument('name', new Literal('max')),
+                                new Argument('float', new Literal('123.123'))
                             ],
                             [
                                 new Field('id'),
