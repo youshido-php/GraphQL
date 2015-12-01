@@ -6,20 +6,18 @@
 * created: 11/28/15 2:25 AM
 */
 
-namespace Youshido\GraphQL\Validator;
+namespace Youshido\GraphQL\Validator\Config;
 
 
+use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainer;
 use Youshido\GraphQL\Validator\Rules\TypeValidationRule;
 use Youshido\GraphQL\Validator\Rules\ValidationRuleInterface;
 use Youshido\GraphQL\Validator\Exception\ValidationException;
 
-class Validator implements ValidatorInterface
+class ConfigValidator extends ErrorContainer implements ConfigValidatorInterface
 {
 
     protected $rules = [];
-
-    /** @var \Exception[] */
-    protected $errors = [];
 
     protected $contextObject;
 
@@ -115,43 +113,13 @@ class Validator implements ValidatorInterface
         return $this;
     }
 
-    public function addError(\Exception $exception)
-    {
-        $this->errors[] = $exception;
-    }
 
-    public function hasErrors()
-    {
-        return !empty($this->errors);
-    }
 
     public function isValid()
     {
         return !$this->hasErrors();
     }
 
-    public function getErrors()
-    {
-        return $this->errors;
-    }
-
-    public function getErrorsArray()
-    {
-        $errors = [];
-
-        foreach ($this->errors as $error) {
-            $errors[] = is_object($error) ? $error->getMessage() : $error;
-        }
-
-        return $errors;
-    }
-
-    public function clearErrors()
-    {
-        $this->errors = [];
-
-        return $this;
-    }
 
     /**
      * @return boolean
@@ -163,7 +131,8 @@ class Validator implements ValidatorInterface
 
     /**
      * @param boolean $extraFieldsAllowed
-     * @return Validator
+     *
+     * @return ConfigValidator
      */
     public function setExtraFieldsAllowed($extraFieldsAllowed)
     {

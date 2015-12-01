@@ -9,9 +9,10 @@
 namespace Youshido\GraphQL\Type\Config;
 
 
+use Youshido\GraphQL\Validator\Config\ConfigValidator;
+use Youshido\GraphQL\Validator\Config\ConfigValidatorInterface;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 use Youshido\GraphQL\Validator\Exception\ValidationException;
-use Youshido\GraphQL\Validator\Validator;
 
 class Config
 {
@@ -23,12 +24,14 @@ class Config
 
     protected $contextObject;
 
+    /** @var ConfigValidatorInterface */
     protected $validator;
 
     /**
      * TypeConfig constructor.
      * @param array $configData
      * @param mixed $contextObject
+     *
      * @throws ConfigurationException
      * @throws ValidationException
      */
@@ -40,15 +43,11 @@ class Config
 
         $this->contextObject = $contextObject;
         $this->data          = $configData;
-        $this->validator     = new Validator($contextObject);
+        $this->validator     = new ConfigValidator($contextObject);
         if (!$this->validator->validate($this->data, $this->getRules())) {
             throw new ValidationException('Config is not valid for ' . get_class($contextObject) . "\n" . implode("\n", $this->validator->getErrorsArray()));
         }
         $this->setupType();
-    }
-
-    protected function setupType()
-    {
     }
 
     public function getRules()
@@ -56,10 +55,15 @@ class Config
         return [];
     }
 
+    protected function setupType()
+    {
+    }
+
     public function getName()
     {
         return empty($this->data['name']) ? null : $this->data['name'];
     }
+
     /**
      * @return boolean
      */

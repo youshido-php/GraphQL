@@ -5,13 +5,11 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphQL\Validator;
+namespace Youshido\GraphQL\Validator\ErrorContainer;
 
 
-interface ValidatorInterface
+interface ErrorContainerInterface
 {
-
-    public function validate($data, $rules = []);
 
     public function addError(\Exception $exception);
 

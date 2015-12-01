@@ -12,13 +12,11 @@ namespace Youshido\GraphQL;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Youshido\GraphQL\Parser\Ast\Query;
-use Youshido\GraphQL\Parser\Ast\Variable;
 use Youshido\GraphQL\Parser\Parser;
-use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeKind;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
-use Youshido\GraphQL\Validator\ValidatorInterface;
+use Youshido\GraphQL\Validator\ResolveValidatorInterface;
 
 class Processor
 {
@@ -26,7 +24,7 @@ class Processor
     /** @var  array */
     protected $data;
 
-    /** @var ValidatorInterface */
+    /** @var ResolveValidatorInterface */
     protected $validator;
 
     /** @var Schema */
@@ -38,7 +36,7 @@ class Processor
     /** @var Request */
     protected $request;
 
-    public function __construct(ValidatorInterface $validator)
+    public function __construct(ResolveValidatorInterface $validator)
     {
         $this->validator = $validator;
 
@@ -90,13 +88,14 @@ class Processor
             return null;
         }
 
+        /** @var ObjectType|Field $queryType */
         $queryType = $currentLevelSchema->getField($query->getName());
         if ($queryType instanceof Field) {
             $alias            = $query->getName();
             $preResolvedValue = $this->getPreResolvedValue($contextValue, $query);
             $value            = $queryType->getType()->serialize($preResolvedValue);
         } else {
-            if (!$this->validateArguments($queryType, $query)) {
+            if (!$this->validator->validateArguments($queryType, $query, $this->request)) {
                 return null;
             }
 
@@ -104,7 +103,7 @@ class Processor
             $resolvedValue = $this->resolveValue($queryType, $contextValue, $query);
             $alias         = $query->hasAlias() ? $query->getAlias() : $query->getName();
 
-            if (!$this->validateResolvedValue($resolvedValue, $currentLevelSchema->getKind())) {
+            if (!$this->validator->validateResolvedValue($resolvedValue, $currentLevelSchema->getKind())) {
                 $this->validator->addError(new ResolveException(sprintf('Not valid resolved value for schema "%s"', $queryType->getName())));
 
                 return [$alias => null];
@@ -184,71 +183,6 @@ class Processor
         return $args;
     }
 
-    /**
-     * @param $queryType ObjectType
-     * @param $query     Query
-     *
-     * @return bool
-     * @todo: Need to move it from here I guess.. to much trouble being here
-     */
-    protected function validateArguments($queryType, $query)
-    {
-        $requiredArguments = array_filter($queryType->getArguments(), function ($argument) {
-            /** @var $argument Field */
-            return $argument->getConfig()->isRequired();
-        });
-
-        foreach ($query->getArguments() as $argument) {
-            if (!array_key_exists($argument->getName(), $queryType->getArguments())) {
-                $this->validator->addError(new ResolveException(sprintf('Unknown argument "%s" on field "%s".', $argument->getName(), $queryType->getName())));
-
-                return false;
-            }
-
-            /** @var AbstractType $argumentType */
-            $argumentType = $queryType->getArguments()[$argument->getName()]->getType();
-            if ($argument->getValue() instanceof Variable) {
-                if ($this->request->hasVariable($argument->getName())) {
-                    $argument->getValue()->setValue($this->request->getVariable($argument->getName()));
-                }else{
-                    $this->validator->addError(new ResolveException(sprintf('Variable "%s" not exist for query "%s"', $argument->getName(), $queryType->getName())));
-
-                    return false;
-                }
-            }
-
-            if (!$argumentType->isValidValue($argumentType->parseValue($argument->getValue()->getValue()))) {
-                $this->validator->addError(new ResolveException(sprintf('Not valid type for argument "%s" in query "%s"', $argument->getName(), $queryType->getName())));
-
-                return false;
-            }
-
-            if (array_key_exists($argument->getName(), $requiredArguments)) {
-                unset($requiredArguments[$argument->getName()]);
-            }
-        }
-
-        if (count($requiredArguments)) {
-            $this->validator->addError(new ResolveException(sprintf('Require "%s" arguments to query "%s"', implode(', ', array_keys($requiredArguments)), $query->getName())));
-
-            return false;
-        }
-
-        return true;
-    }
-
-    protected function validateResolvedValue($value, $kind)
-    {
-        switch($kind) {
-            case TypeKind::KIND_OBJECT:
-                return is_object($value);
-            case TypeKind::KIND_LIST:
-                return is_array($value);
-        }
-
-        return false;
-    }
-
     public function getSchema()
     {
         return $this->schema;
@@ -259,9 +193,12 @@ class Processor
         $this->schema = $schema;
     }
 
-    public function getErrors()
+    /**
+     * @return ResolveValidatorInterface
+     */
+    public function getValidator()
     {
-        return $this->validator->getErrors();
+        return $this->validator;
     }
 
     public function getResponseData()
