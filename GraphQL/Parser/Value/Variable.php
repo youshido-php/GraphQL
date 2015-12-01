@@ -5,9 +5,9 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphQL\Parser\Ast;
+namespace Youshido\GraphQL\Parser\Value;
 
-class Variable
+class Variable implements ValueInterface
 {
 
     private $name;

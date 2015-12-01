@@ -111,7 +111,7 @@ class Tokenizer
                 ++$this->pos;
 
                 return new Token(Token::TYPE_RSQUARE_BRACE);
-            case ':':
+            case Token::TYPE_COLON:
                 ++$this->pos;
 
                 return new Token(Token::TYPE_COLON);

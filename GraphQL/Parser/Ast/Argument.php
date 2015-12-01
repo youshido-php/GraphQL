@@ -8,13 +8,15 @@
 namespace Youshido\GraphQL\Parser\Ast;
 
 
+use Youshido\GraphQL\Parser\Value\ValueInterface;
+
 class Argument
 {
 
     /** @var string */
     private $name;
 
-    /** @var  Literal|Variable */
+    /** @var  ValueInterface */
     private $value;
 
     public function __construct($name, $value)
@@ -40,7 +42,7 @@ class Argument
     }
 
     /**
-     * @return Literal|Variable
+     * @return ValueInterface
      */
     public function getValue()
     {

@@ -11,7 +11,7 @@ namespace Youshido\GraphQL\Validator;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainer;
 use Youshido\GraphQL\Field;
-use Youshido\GraphQL\Parser\Ast\Variable;
+use Youshido\GraphQL\Parser\Value\Variable;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 

@@ -30,7 +30,7 @@ class Token
     const TYPE_RPAREN = ')';
     const TYPE_LSQUARE_BRACE = '[';
     const TYPE_RSQUARE_BRACE = ']';
-    const TYPE_COLON = ' = ';
+    const TYPE_COLON = ':';
     const TYPE_COMMA = ',';
     const TYPE_AMP = '&';
     const TYPE_POINT = '.';

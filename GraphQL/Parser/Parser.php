@@ -8,16 +8,17 @@
 
 namespace Youshido\GraphQL\Parser;
 
-use Youshido\GraphQL\Parser\Ast\InputList;
+use Youshido\GraphQL\Parser\Value\InputList;
 use Youshido\GraphQL\Parser\Ast\Argument;
 use Youshido\GraphQL\Parser\Ast\Field;
 use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
-use Youshido\GraphQL\Parser\Ast\Literal;
+use Youshido\GraphQL\Parser\Value\InputObject;
+use Youshido\GraphQL\Parser\Value\Literal;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Ast\Reference;
-use Youshido\GraphQL\Parser\Ast\Variable;
+use Youshido\GraphQL\Parser\Value\Variable;
 
 class Parser extends Tokenizer
 {
@@ -203,7 +204,7 @@ class Parser extends Tokenizer
         throw $this->createUnexpected($this->lookAhead);
     }
 
-    protected function parseList()
+    protected function parseList($createType = true)
     {
         $this->eat(Token::TYPE_LSQUARE_BRACE);
 
@@ -218,17 +219,57 @@ class Parser extends Tokenizer
 
         $this->expect(Token::TYPE_RSQUARE_BRACE);
 
-        return new InputList($list);
+        return $createType ? new InputList($list) : $list;
     }
 
     protected function parseListValue()
     {
-        return $this->lex()->getData();
+        switch ($this->lookAhead->getType()) {
+            case Token::TYPE_NUMBER:
+                return $this->expect(Token::TYPE_NUMBER)->getData();
+
+            case Token::TYPE_STRING:
+                return $this->expect(Token::TYPE_STRING)->getData();
+
+            case Token::TYPE_LBRACE:
+                return $this->parseObject(false);
+
+            case Token::TYPE_LSQUARE_BRACE:
+                return $this->parseList(false);
+
+            case Token::TYPE_TRUE:
+                return $this->expect(Token::TYPE_TRUE)->getData();
+
+            case Token::TYPE_FALSE:
+                return $this->expect(Token::TYPE_FALSE)->getData();
+
+            case Token::TYPE_NULL:
+                return $this->expect(Token::TYPE_NULL)->getData();
+        }
+
+        throw new \Exception('Can\'t parse argument');
     }
 
-    protected function parseObject()
+    protected function parseObject($createType = true)
     {
-        return [];
+        $this->eat(Token::TYPE_LBRACE);
+
+        $object = [];
+        while (!$this->match(Token::TYPE_RBRACE) && !$this->end()) {
+            $key = $this->expect(Token::TYPE_STRING)->getData();
+            $this->expect(Token::TYPE_COLON);
+            $value = $this->parseListValue();
+
+            if ($this->lookAhead->getType() != Token::TYPE_RBRACE) {
+                $this->expect(Token::TYPE_COMMA);
+            }
+
+            $object[$key] = $value;
+        }
+
+        $this->eat(Token::TYPE_RBRACE);
+
+        return $createType ? new InputObject($object) : $object;
     }
 
     protected function parseVariable()

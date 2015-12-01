@@ -5,10 +5,10 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphQL\Parser\Ast;
+namespace Youshido\GraphQL\Parser\Value;
 
 
-class Literal
+class Literal implements ValueInterface
 {
 
     private $value;
@@ -23,4 +23,11 @@ class Literal
         return $this->value;
     }
 
+    /**
+     * @param string $value
+     */
+    public function setValue($value)
+    {
+        $this->value = $value;
+    }
 }
