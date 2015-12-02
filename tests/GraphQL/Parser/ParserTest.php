@@ -37,26 +37,26 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     public function mutationProvider()
     {
         return [
-//            [
-//                'mutation { createUser ( email: "test@test.com", active: true ) { id } }',
-//                [
-//                    'queries'   => [],
-//                    'mutations' => [
-//                        new Mutation(
-//                            'createUser',
-//                            null,
-//                            [
-//                                new Argument('email', new Literal('test@test.com')),
-//                                new Argument('active', new Literal(true)),
-//                            ],
-//                            [
-//                                new Field('id')
-//                            ]
-//                        )
-//                    ],
-//                    'fragments' => []
-//                ]
-//            ],
+            [
+                'mutation { createUser ( email: "test@test.com", active: true ) { id } }',
+                [
+                    'queries'   => [],
+                    'mutations' => [
+                        new Mutation(
+                            'createUser',
+                            null,
+                            [
+                                new Argument('email', new Literal('test@test.com')),
+                                new Argument('active', new Literal(true)),
+                            ],
+                            [
+                                new Field('id')
+                            ]
+                        )
+                    ],
+                    'fragments' => []
+                ]
+            ],
             [
                 'mutation { test : createUser (id: 4) }',
                 [
