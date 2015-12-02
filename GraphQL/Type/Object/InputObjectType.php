@@ -44,13 +44,13 @@ class InputObjectType extends ObjectType
             return false;
         }
 
-        $requiredFields = array_filter($this->getFields(), function ($field) {
+        $requiredFields = array_filter($this->getConfig()->getFields(), function ($field) {
             /** @var Field $field */
             return $field->getConfig()->isRequired();
         });
 
         foreach ($value as $valueKey => $valueItem) {
-            if (!$this->hasField($valueKey) || !$this->getField($valueKey)->getType()->isValidValue($valueItem)) {
+            if (!$this->getConfig()->hasField($valueKey) || !$this->getConfig()->getField($valueKey)->getType()->isValidValue($valueItem)) {
                 return false;
             }
 

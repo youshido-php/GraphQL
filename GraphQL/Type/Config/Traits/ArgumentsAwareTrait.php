@@ -31,16 +31,29 @@ trait ArgumentsAwareTrait
         return $this;
     }
 
+    /**
+     * @param $name
+     *
+     * @return InputField
+     */
     public function getArgument($name)
     {
         return $this->hasArgument($name) ? $this->arguments[$name] : null;
     }
 
+    /**
+     * @param $name
+     *
+     * @return bool
+     */
     public function hasArgument($name)
     {
         return array_key_exists($name, $this->arguments);
     }
 
+    /**
+     * @return InputField[]
+     */
     public function getArguments()
     {
         return $this->arguments;

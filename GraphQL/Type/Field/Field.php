@@ -34,6 +34,9 @@ class Field
         return $this->config->getType();
     }
 
+    /**
+     * @return FieldConfig
+     */
     public function getConfig()
     {
         return $this->config;

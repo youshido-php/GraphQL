@@ -42,7 +42,6 @@ class TypeMap
 
     public static function isInputType($type)
     {
-        /** @todo add ObjectInputType */
         if (is_object($type)) {
             return ($type instanceof AbstractScalarType) || ($type instanceof InputObjectType);
         } else {

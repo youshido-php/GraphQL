@@ -25,20 +25,20 @@ class ResolveValidator implements ResolveValidatorInterface
      */
     public function validateArguments($queryType, $query, $request)
     {
-        $requiredArguments = array_filter($queryType->getArguments(), function ($argument) {
+        $requiredArguments = array_filter($queryType->getConfig()->getArguments(), function ($argument) {
             /** @var $argument Field */
             return $argument->getConfig()->isRequired();
         });
 
         foreach ($query->getArguments() as $argument) {
-            if (!array_key_exists($argument->getName(), $queryType->getArguments())) {
+            if (!array_key_exists($argument->getName(), $queryType->getConfig()->getArguments())) {
                 $this->addError(new ResolveException(sprintf('Unknown argument "%s" on field "%s".', $argument->getName(), $queryType->getName())));
 
                 return false;
             }
 
             /** @var AbstractType $argumentType */
-            $argumentType = $queryType->getArguments()[$argument->getName()]->getType();
+            $argumentType = $queryType->getConfig()->getArgument($argument->getName())->getType();
             if ($argument->getValue() instanceof Variable) {
                 if ($request->hasVariable($argument->getName())) {
                     $argument->getValue()->setValue($request->getVariable($argument->getName()));

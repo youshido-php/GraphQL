@@ -39,6 +39,7 @@ trait FieldsAwareTrait
 
     /**
      * @param $name
+     *
      * @return Field
      */
     public function getField($name)
@@ -46,11 +47,19 @@ trait FieldsAwareTrait
         return $this->hasField($name) ? $this->fields[$name] : null;
     }
 
+    /**
+     * @param $name
+     *
+     * @return bool
+     */
     public function hasField($name)
     {
         return array_key_exists($name, $this->fields);
     }
 
+    /**
+     * @return Field[]
+     */
     public function getFields()
     {
         return $this->fields;

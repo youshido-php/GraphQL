@@ -11,7 +11,6 @@ namespace Youshido\GraphQL\Type;
 
 use Youshido\GraphQL\Type\Config\Object\InputObjectTypeConfig;
 use Youshido\GraphQL\Type\Config\Object\ObjectTypeConfig;
-use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 abstract class AbstractType implements TypeInterface
@@ -26,7 +25,6 @@ abstract class AbstractType implements TypeInterface
 
     /**
      * @return ObjectTypeConfig|InputObjectTypeConfig
-     * @todo: refactor hierarchy
      */
     public function getConfig()
     {
@@ -60,41 +58,5 @@ abstract class AbstractType implements TypeInterface
         }
 
         return $this->name;
-    }
-
-    /**
-     * @return Field[]
-     */
-    public function getFields()
-    {
-        return $this->config->getFields();
-    }
-
-    public function hasArgument($name)
-    {
-        return $this->config->hasArgument($name);
-    }
-
-    public function getArgument($name)
-    {
-        return $this->config->getArgument($name);
-    }
-
-    /**
-     * @return Field[]
-     */
-    public function getArguments()
-    {
-        return $this->config->getArguments();
-    }
-
-    public function hasField($fieldName)
-    {
-        return $this->config->hasField($fieldName);
-    }
-
-    public function getField($fieldName)
-    {
-        return $this->config->getField($fieldName);
     }
 }

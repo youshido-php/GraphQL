@@ -10,6 +10,7 @@ namespace Youshido\GraphQL\Type\Config\Object;
 
 
 use Youshido\GraphQL\Type\Field\Field;
+use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 
 class ListTypeConfig extends ObjectTypeConfig
@@ -23,25 +24,30 @@ class ListTypeConfig extends ObjectTypeConfig
         ];
     }
 
-
-    //todo: code below is not fully corrected, because type = int then error
-
     /**
      * @param $name
      * @return Field
      */
     public function getField($name)
     {
-        return $this->data['item']->getField($name);
+        return $this->getItemConfig()->getField($name);
     }
 
     public function hasField($name)
     {
-        return $this->data['item']->hasField($name);
+        return $this->getItemConfig()->hasField($name);
     }
 
     public function getFields()
     {
-        return $this->data['item']->getFields();
+        return $this->getItemConfig()->getFields();
+    }
+
+    /**
+     * @return ObjectTypeConfig
+     */
+    public function getItemConfig()
+    {
+        return $this->get('item')->getConfig();
     }
 }

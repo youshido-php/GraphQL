@@ -10,10 +10,20 @@ namespace Youshido\GraphQL\Type\Scalar;
 
 
 use Youshido\GraphQL\Type\AbstractType;
+use Youshido\GraphQL\Type\Config\Object\ScalarTypeConfig;
 use Youshido\GraphQL\Type\TypeMap;
 
 abstract class AbstractScalarType extends AbstractType
 {
+
+    public function __construct($config = [])
+    {
+        if (!isset($config['name'])) {
+            $config['name'] = $this->getName();
+        }
+
+        $this->config = new ScalarTypeConfig($config, $this);
+    }
 
     public function getName()
     {

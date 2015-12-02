@@ -86,14 +86,14 @@ class Processor
      */
     protected function executeMutation($mutation, $objectType)
     {
-        if (!$objectType->hasField($mutation->getName())) {
+        if (!$objectType->getConfig()->hasField($mutation->getName())) {
             $this->resolveValidator->addError(new ResolveException(sprintf('Field "%s" not found in schema', $mutation->getName())));
 
             return null;
         }
 
         /** @var InputObjectType $inputType */
-        $inputType = $objectType->getField($mutation->getName())->getType();
+        $inputType = $objectType->getConfig()->getField($mutation->getName())->getType();
 
         if (!$this->resolveValidator->validateArguments($inputType, $mutation, $this->request)) {
             return null;
@@ -137,14 +137,14 @@ class Processor
      */
     protected function executeQuery($query, $currentLevelSchema, $contextValue = null)
     {
-        if (!$currentLevelSchema->hasField($query->getName())) {
+        if (!$currentLevelSchema->getConfig()->hasField($query->getName())) {
             $this->resolveValidator->addError(new ResolveException(sprintf('Field "%s" not found in schema', $query->getName())));
 
             return null;
         }
 
         /** @var ObjectType|Field $queryType */
-        $queryType = $currentLevelSchema->getField($query->getName())->getType();
+        $queryType = $currentLevelSchema->getConfig()->getField($query->getName())->getType();
         if (get_class($query) == 'Youshido\GraphQL\Parser\Ast\Field') {
             $alias            = $query->getName();
             $preResolvedValue = $this->getPreResolvedValue($contextValue, $query);
@@ -223,7 +223,7 @@ class Processor
     public function parseArgumentsValues($queryType, $query)
     {
         $args      = [];
-        $arguments = $queryType->getArguments();
+        $arguments = $queryType->getConfig()->getArguments();
 
         foreach ($query->getArguments() as $argument) {
             $type = $arguments[$argument->getName()]->getConfig()->getType();
