@@ -62,8 +62,6 @@ abstract class AbstractType implements TypeInterface
         return $this->name;
     }
 
-    abstract public function isValidValue($value);
-
     /**
      * @return Field[]
      */

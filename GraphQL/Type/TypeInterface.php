@@ -9,6 +9,8 @@
 namespace Youshido\GraphQL\Type;
 
 
+use Youshido\GraphQL\Type\Field\Field;
+
 Interface TypeInterface
 {
     /**
@@ -41,4 +43,49 @@ Interface TypeInterface
      * @return mixed
      */
     public function serialize($value);
+
+    /**
+     * @return null|Field[]
+     */
+    public function getFields();
+
+    /**
+     * @return null|Field[]
+     */
+    public function getArguments();
+
+    /**
+     * @param $name string
+     *
+     * @return bool
+     */
+    public function hasField($name);
+
+    /**
+     * @param $name string
+     *
+     * @return bool
+     */
+    public function hasArgument($name);
+
+    /**
+     * @param $name string
+     *
+     * @return Field|null
+     */
+    public function getField($name);
+
+    /**
+     * @param $name string
+     *
+     * @return Field|null
+     */
+    public function getArgument($name);
+
+    /**
+     * @param $value mixed
+     *
+     * @return bool
+     */
+    public function isValidValue($value);
 }

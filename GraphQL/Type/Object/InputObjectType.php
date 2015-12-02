@@ -10,6 +10,7 @@ namespace Youshido\GraphQL\Type\Object;
 
 
 use Youshido\GraphQL\Type\Config\InputObjectTypeConfig;
+use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 class InputObjectType extends ObjectType
@@ -21,7 +22,7 @@ class InputObjectType extends ObjectType
     public function __construct($config = [])
     {
         if (empty($config) && (get_class($this) != 'Youshido\GraphQL\Type\Object\InputObjectType')) {
-            $config['name'] = $this->getName();
+            $config['name']        = $this->getName();
             $config['output_type'] = $this->getOutputType();
         }
 
@@ -35,5 +36,29 @@ class InputObjectType extends ObjectType
     public function getOutputType()
     {
         throw new ConfigurationException('You must define output type');
+    }
+
+    public function isValidValue($value)
+    {
+        if (!is_array($value)) {
+            return false;
+        }
+
+        $requiredFields = array_filter($this->getFields(), function ($field) {
+            /** @var Field $field */
+            return $field->getConfig()->isRequired();
+        });
+
+        foreach ($value as $valueKey => $valueItem) {
+            if (!$this->hasField($valueKey) || !$this->getField($valueKey)->getType()->isValidValue($valueItem)) {
+                return false;
+            }
+
+            if (array_key_exists($valueKey, $requiredFields)) {
+                unset($requiredFields[$valueKey]);
+            }
+        }
+
+        return !(count($requiredFields) > 0);
     }
 }

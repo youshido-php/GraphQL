@@ -9,6 +9,7 @@
 namespace Youshido\GraphQL\Type\Config;
 
 
+use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 
 class InputObjectTypeConfig extends ObjectTypeConfig
@@ -24,6 +25,9 @@ class InputObjectTypeConfig extends ObjectTypeConfig
         ];
     }
 
+    /**
+     * @return TypeInterface
+     */
     public function getOutputType()
     {
         return $this->data['output_type'];

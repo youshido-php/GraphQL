@@ -14,21 +14,19 @@ use Youshido\GraphQL\Type\Config\Traits\ArgumentsAwareTrait;
 use Youshido\GraphQL\Type\Config\Traits\FieldsAwareTrait;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
-use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 class ObjectTypeConfig extends Config implements TypeConfigInterface
 {
 
     use FieldsAwareTrait, ArgumentsAwareTrait;
 
-
     public function getRules()
     {
         return [
-            'name'      => ['type' => TypeMap::TYPE_STRING, 'required' => true],
-            'fields'    => ['type' => TypeMap::TYPE_ARRAY_OF_FIELDS],
-            'arguments' => ['type' => TypeMap::TYPE_ARRAY_OF_INPUTS],
-            'resolve'   => ['type' => TypeMap::TYPE_FUNCTION],
+            'name'    => ['type' => TypeMap::TYPE_STRING, 'required' => true],
+            'fields'  => ['type' => TypeMap::TYPE_ARRAY_OF_FIELDS],
+            'args'    => ['type' => TypeMap::TYPE_ARRAY_OF_INPUTS],
+            'resolve' => ['type' => TypeMap::TYPE_FUNCTION],
         ];
     }
 

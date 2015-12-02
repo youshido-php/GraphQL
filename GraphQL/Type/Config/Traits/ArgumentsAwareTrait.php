@@ -9,7 +9,6 @@
 namespace Youshido\GraphQL\Type\Config\Traits;
 
 
-use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Field\InputField;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
@@ -20,12 +19,12 @@ trait ArgumentsAwareTrait
 
     public function addArgument($name, $type, $config = [])
     {
-        if (!is_string($type) || !TypeMap::isInputType($type)) {
+        if (!TypeMap::isInputType($type)) {
             throw new ConfigurationException('Argument input type ' . $type . ' is not supported');
         }
 
         $config['name'] = $name;
-        $config['type'] = TypeMap::getScalarTypeObject($type);
+        $config['type'] = is_string($type) ? TypeMap::getScalarTypeObject($type) : $type;
 
         $this->arguments[$name] = new InputField($config);
 

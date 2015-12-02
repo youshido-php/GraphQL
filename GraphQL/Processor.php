@@ -18,6 +18,7 @@ use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Object\InputObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
+use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidatorInterface;
@@ -235,7 +236,7 @@ class Processor
 
     /**
      * @param $query         Query
-     * @param $queryType     ObjectType|Field
+     * @param $queryType     ObjectType|TypeInterface|Field
      * @param $resolvedValue mixed
      * @param $value         array
      *

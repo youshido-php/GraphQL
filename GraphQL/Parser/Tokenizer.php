@@ -320,7 +320,7 @@ class Tokenizer
 
     protected function createUnexpected(Token $token)
     {
-        switch ($token) {
+        switch ($token->getType()) {
             case Token::TYPE_END:
                 return $this->createError('Unexpected end of input');
             case Token::TYPE_NUMBER:
