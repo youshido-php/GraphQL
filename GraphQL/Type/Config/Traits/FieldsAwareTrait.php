@@ -9,7 +9,7 @@
 namespace Youshido\GraphQL\Type\Config\Traits;
 
 
-use Youshido\GraphQL\Parser\Ast\Field;
+use Youshido\GraphQL\Field;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 

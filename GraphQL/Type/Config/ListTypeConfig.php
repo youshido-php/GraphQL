@@ -18,7 +18,7 @@ class ListTypeConfig extends ObjectTypeConfig
     {
         return [
             'name'    => ['type' => TypeMap::TYPE_STRING, 'required' => true],
-            'type'    => ['type' => TypeMap::TYPE_OBJECT_TYPE, 'required' => true],
+            'item'    => ['type' => TypeMap::TYPE_OBJECT_TYPE, 'required' => true],
             'resolve' => ['type' => TypeMap::TYPE_FUNCTION],
         ];
     }

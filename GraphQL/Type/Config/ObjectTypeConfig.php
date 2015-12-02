@@ -10,6 +10,7 @@ namespace Youshido\GraphQL\Type\Config;
 
 
 use Youshido\GraphQL\Field;
+use Youshido\GraphQL\Type\Config\Traits\ArgumentsAwareTrait;
 use Youshido\GraphQL\Type\Config\Traits\FieldsAwareTrait;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
@@ -18,38 +19,7 @@ use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 class ObjectTypeConfig extends Config
 {
 
-    use FieldsAwareTrait;
-
-    protected $arguments = [];
-
-    public function getArgument($name)
-    {
-        return $this->hasArgument($name) ? $this->arguments[$name] : null;
-    }
-
-    public function hasArgument($name)
-    {
-        return array_key_exists($name, $this->arguments);
-    }
-
-    public function getArguments()
-    {
-        return $this->arguments;
-    }
-
-    public function addArgument($name, $type, $config = [])
-    {
-        if (!is_string($type) || !TypeMap::isInputType($type)) {
-            throw new ConfigurationException('Argument input type ' . $type . ' is not supported');
-        }
-
-        $config['name'] = $name;
-        $config['type'] = TypeMap::getScalarTypeObject($type);
-
-        $this->arguments[$name] = new Field($config);
-
-        return $this;
-    }
+    use FieldsAwareTrait, ArgumentsAwareTrait;
 
     public function getResolveFunction()
     {
