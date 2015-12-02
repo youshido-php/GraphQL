@@ -8,7 +8,7 @@
 namespace Youshido\GraphQL\Type\Field;
 
 
-use Youshido\GraphQL\Type\Config\FieldConfig;
+use Youshido\GraphQL\Type\Config\Field\FieldConfig;
 
 class Field
 {

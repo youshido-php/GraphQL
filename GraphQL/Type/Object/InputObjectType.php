@@ -9,7 +9,7 @@
 namespace Youshido\GraphQL\Type\Object;
 
 
-use Youshido\GraphQL\Type\Config\InputObjectTypeConfig;
+use Youshido\GraphQL\Type\Config\Object\InputObjectTypeConfig;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 

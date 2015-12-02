@@ -6,10 +6,9 @@
 * created: 11/30/15 1:30 AM
 */
 
-namespace Youshido\GraphQL\Type\Config;
+namespace Youshido\GraphQL\Type\Config\Field;
 
-
-use Youshido\GraphQL\Type\Object\ObjectType;
+use Youshido\GraphQL\Type\Config\Config;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 

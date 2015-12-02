@@ -6,7 +6,7 @@
 * created: 12/1/15 11:13 PM
 */
 
-namespace Youshido\GraphQL\Type\Config;
+namespace Youshido\GraphQL\Type\Config\Object;
 
 
 use Youshido\GraphQL\Type\TypeInterface;

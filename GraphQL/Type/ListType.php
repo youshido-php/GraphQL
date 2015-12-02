@@ -9,7 +9,7 @@
 namespace Youshido\GraphQL\Type;
 
 
-use Youshido\GraphQL\Type\Config\ListTypeConfig;
+use Youshido\GraphQL\Type\Config\Object\ListTypeConfig;
 
 class ListType extends AbstractType
 {

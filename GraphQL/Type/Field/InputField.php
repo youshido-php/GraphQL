@@ -9,7 +9,7 @@
 namespace Youshido\GraphQL\Type\Field;
 
 
-use Youshido\GraphQL\Type\Config\InputFieldConfig;
+use Youshido\GraphQL\Type\Config\Field\InputFieldConfig;
 
 class InputField extends Field
 {

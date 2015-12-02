@@ -9,9 +9,9 @@
 namespace Youshido\GraphQL\Type;
 
 
-use Youshido\GraphQL\Type\Config\InputObjectTypeConfig;
+use Youshido\GraphQL\Type\Config\Object\InputObjectTypeConfig;
+use Youshido\GraphQL\Type\Config\Object\ObjectTypeConfig;
 use Youshido\GraphQL\Type\Field\Field;
-use Youshido\GraphQL\Type\Config\ObjectTypeConfig;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 abstract class AbstractType implements TypeInterface

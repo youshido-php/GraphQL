@@ -9,8 +9,7 @@
 namespace Youshido\GraphQL\Type\Object;
 
 use Youshido\GraphQL\Type\AbstractType;
-use Youshido\GraphQL\Type\Config\Config;
-use Youshido\GraphQL\Type\Config\ObjectTypeConfig;
+use Youshido\GraphQL\Type\Config\Object\ObjectTypeConfig;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ResolveException;

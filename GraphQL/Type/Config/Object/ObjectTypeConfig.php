@@ -6,9 +6,11 @@
 * created: 11/27/15 2:32 AM
 */
 
-namespace Youshido\GraphQL\Type\Config;
+namespace Youshido\GraphQL\Type\Config\Object;
 
 
+use Youshido\GraphQL\Type\Config\Config;
+use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Config\Traits\ArgumentsAwareTrait;
 use Youshido\GraphQL\Type\Config\Traits\FieldsAwareTrait;

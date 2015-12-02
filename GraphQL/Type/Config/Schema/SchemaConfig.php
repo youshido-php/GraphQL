@@ -6,9 +6,10 @@
 * created: 11/28/15 3:53 PM
 */
 
-namespace Youshido\GraphQL\Type\Config;
+namespace Youshido\GraphQL\Type\Config\Schema;
 
 
+use Youshido\GraphQL\Type\Config\Config;
 use Youshido\GraphQL\Type\Object\InputObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;

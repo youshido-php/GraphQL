@@ -6,7 +6,7 @@
 * created: 12/1/15 1:22 AM
 */
 
-namespace Youshido\GraphQL\Type\Config;
+namespace Youshido\GraphQL\Type\Config\Object;
 
 
 use Youshido\GraphQL\Type\Field\Field;

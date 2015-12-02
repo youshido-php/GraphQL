@@ -6,9 +6,10 @@
 * created: 12/1/15 11:28 PM
 */
 
-namespace Youshido\GraphQL\Type\Config;
+namespace Youshido\GraphQL\Type\Config\Field;
 
 
+use Youshido\GraphQL\Type\Config\Config;
 use Youshido\GraphQL\Type\TypeMap;
 
 class InputFieldConfig extends Config

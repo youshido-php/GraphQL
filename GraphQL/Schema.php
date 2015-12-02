@@ -8,7 +8,7 @@
 
 namespace Youshido\GraphQL;
 
-use Youshido\GraphQL\Type\Config\SchemaConfig;
+use Youshido\GraphQL\Type\Config\Schema\SchemaConfig;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Object\InputObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
