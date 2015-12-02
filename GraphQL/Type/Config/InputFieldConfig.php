@@ -24,4 +24,9 @@ class InputFieldConfig extends Config
         ];
     }
 
+    public function getDefaultValue()
+    {
+        return $this->get('default');
+    }
+
 }

@@ -15,6 +15,14 @@ use Youshido\GraphQL\Type\TypeMap;
 class SchemaConfig extends Config
 {
 
+    public function getRules()
+    {
+        return [
+            'query'    => ['type' => TypeMap::TYPE_OBJECT_TYPE, 'required' => true],
+            'mutation' => ['type' => TypeMap::TYPE_OBJECT_TYPE],
+        ];
+    }
+
     /**
      * @return ObjectType
      */
@@ -25,15 +33,8 @@ class SchemaConfig extends Config
 
     public function getMutation()
     {
-        return !empty($this->data['mutation']) ? $this->data['mutation'] : null;
+        return  $this->get('mutation');
     }
 
-    public function getRules()
-    {
-        return [
-            'query'    => ['type' => TypeMap::TYPE_OBJECT_TYPE, 'required' => true],
-            'mutation' => ['type' => TypeMap::TYPE_OBJECT_TYPE],
-        ];
-    }
 
 }

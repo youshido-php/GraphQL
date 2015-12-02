@@ -16,10 +16,19 @@ use Youshido\GraphQL\Type\TypeMap;
 class FieldConfig extends Config
 {
 
-    public function getName()
+    public function getRules()
     {
-        return $this->data['name'];
+        return [
+            'name'              => ['type' => TypeMap::TYPE_STRING, 'required' => true],
+            'type'              => ['type' => TypeMap::TYPE_ANY, 'required' => true],
+            'args'              => ['type' => TypeMap::TYPE_ARRAY],
+            'required'          => ['type' => TypeMap::TYPE_BOOLEAN],
+            'description'       => ['type' => TypeMap::TYPE_STRING],
+            'resolve'           => ['type' => TypeMap::TYPE_FUNCTION],
+            'deprecationReason' => ['type' => TypeMap::TYPE_STRING],
+        ];
     }
+
 
     /**
      * @return TypeInterface
@@ -31,20 +40,8 @@ class FieldConfig extends Config
 
     public function isRequired()
     {
-        return !empty($this->data['required']) ? $this->data['required'] : false;
+        return  $this->get('required', false);
     }
 
-    public function getRules()
-    {
-        return [
-            'name'              => ['type' => TypeMap::TYPE_STRING, 'required' => true],
-            'type'              => ['type' => TypeMap::TYPE_ANY, 'required' => true],
-            'args'              => ['type' => 'array'],
-            'required'          => ['type' => TypeMap::TYPE_BOOLEAN],
-            'description'       => ['type' => TypeMap::TYPE_STRING],
-            'resolve'           => ['type' => TypeMap::TYPE_FUNCTION],
-            'deprecationReason' => ['type' => TypeMap::TYPE_STRING],
-        ];
-    }
 
 }

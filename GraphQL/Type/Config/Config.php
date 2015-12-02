@@ -14,6 +14,12 @@ use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidatorInterface;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 use Youshido\GraphQL\Validator\Exception\ValidationException;
 
+/**
+ * Class Config
+ * @package Youshido\GraphQL\Type\Config
+ *
+ * @method string getName()
+ */
 class Config
 {
 
@@ -59,9 +65,9 @@ class Config
     {
     }
 
-    public function getName()
+    public function get($key, $defaultValue = null)
     {
-        return empty($this->data['name']) ? null : $this->data['name'];
+        return array_key_exists($key, $this->data) ? $this->data[$key] : $defaultValue;
     }
 
     /**
@@ -70,6 +76,21 @@ class Config
     public function isValid()
     {
         return $this->validator->isValid();
+    }
+
+    public function __call($method, $arguments)
+    {
+        $propertyName = false;
+
+        if (substr($method, 0, 3) == 'get') {
+            $propertyName = lcfirst(substr($method, 3));
+        } elseif (substr($method, 0, 2) == 'is') {
+            $propertyName = lcfirst(substr($method, 2));
+        }
+        if ($propertyName) {
+            return $this->get($propertyName);
+        }
+        throw new \Exception('Call to undefined method ' . $method);
     }
 
 

@@ -21,10 +21,6 @@ class ObjectTypeConfig extends Config
 
     use FieldsAwareTrait, ArgumentsAwareTrait;
 
-    public function getResolveFunction()
-    {
-        return empty($this->data['resolve']) ? null : $this->data['resolve'];
-    }
 
     public function getRules()
     {
@@ -34,6 +30,11 @@ class ObjectTypeConfig extends Config
             'arguments' => [],
             'resolve'   => [],
         ];
+    }
+
+    public function getResolveFunction()
+    {
+        return empty($this->data['resolve']) ? null : $this->data['resolve'];
     }
 
     protected function setupType()
