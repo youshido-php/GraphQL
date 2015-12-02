@@ -54,7 +54,7 @@ class Parser extends Tokenizer
         return $this->lookAhead->getType();
     }
 
-    protected function parseBody($token = Token::TYPE_QUERY)
+    protected function parseBody($token = Token::TYPE_QUERY, $highLevel = true)
     {
         $fields = [];
         $first  = true;
@@ -79,7 +79,7 @@ class Parser extends Tokenizer
 
                 $fields[] = $this->parseFragmentReference();
             } else {
-                $fields[] = $this->parseBodyItem($token);
+                $fields[] = $this->parseBodyItem($token, $highLevel);
             }
         }
 
@@ -120,7 +120,7 @@ class Parser extends Tokenizer
         return $this->expect(Token::TYPE_IDENTIFIER)->getData();
     }
 
-    protected function parseBodyItem($type = Token::TYPE_QUERY)
+    protected function parseBodyItem($type = Token::TYPE_QUERY, $highLevel = true)
     {
         $name  = $this->parseIdentifier();
         $alias = null;
@@ -130,17 +130,21 @@ class Parser extends Tokenizer
             $name  = $this->parseIdentifier();
         }
 
-        $params = $this->match(Token::TYPE_LPAREN) ? $this->parseArgumentList() : [];
+        $arguments = $this->match(Token::TYPE_LPAREN) ? $this->parseArgumentList() : [];
 
         if ($this->match(Token::TYPE_LBRACE)) {
-            $fields = $this->parseBody();
+            $fields = $this->parseBody($type, false);
 
             if ($type == Token::TYPE_QUERY) {
-                return new Query($name, $alias, $params, $fields);
+                return new Query($name, $alias, $arguments, $fields);
             } else {
-                return new Mutation($name, $alias, $params, $fields);
+                return new Mutation($name, $alias, $arguments, $fields);
             }
         } else {
+            if($highLevel && $type == Token::TYPE_MUTATION){
+                return new Mutation($name, $alias, $arguments);
+            }
+
             return new Field($name, $alias);
         }
     }
@@ -198,7 +202,7 @@ class Parser extends Tokenizer
             case Token::TYPE_NULL:
             case Token::TYPE_TRUE:
             case Token::TYPE_FALSE:
-                return new Literal(json_encode($this->lex()->getData()));
+                return new Literal($this->lex()->getData());
         }
 
         throw $this->createUnexpected($this->lookAhead);

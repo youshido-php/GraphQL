@@ -19,6 +19,7 @@ class ResolveValidator implements ResolveValidatorInterface
 {
 
     use ErrorContainerTrait;
+
     /**
      * @inheritdoc
      */

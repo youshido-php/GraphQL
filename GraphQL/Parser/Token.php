@@ -48,8 +48,21 @@ class Token
 
     public function __construct($type, $data = null)
     {
-        $this->data = $data;
         $this->type = $type;
+        $this->data = $data;
+
+        if ($this->getType() == self::TYPE_TRUE) {
+            $this->data = true;
+        }
+
+        if ($this->getType() == self::TYPE_FALSE) {
+            $this->data = false;
+        }
+
+        if ($this->getType() == self::TYPE_NULL) {
+            $this->data = null;
+        }
+
     }
 
     public function toString()
@@ -59,18 +72,6 @@ class Token
 
     public function getData()
     {
-        if ($this->getType() == self::TYPE_TRUE) {
-            return true;
-        }
-
-        if ($this->getType() == self::TYPE_FALSE) {
-            return false;
-        }
-
-        if ($this->getType() == self::TYPE_NULL) {
-            return null;
-        }
-
         return $this->data;
     }
 

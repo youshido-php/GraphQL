@@ -6,7 +6,7 @@
 * created: 11/28/15 6:11 PM
 */
 
-namespace Youshido\GraphQL\Validator\Rules;
+namespace Youshido\GraphQL\Validator\ConfigValidator\Rules;
 
 
 interface ValidationRuleInterface

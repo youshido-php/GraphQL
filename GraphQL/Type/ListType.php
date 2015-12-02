@@ -18,7 +18,7 @@ class ListType extends AbstractType
     {
         if (empty($config) && (get_class($this) != 'Youshido\GraphQL\Type\Object\ListType')) {
             $config['name'] = $this->getName();
-            $config['type'] = $this->getType();
+            $config['item'] = $this->getItem();
         }
 
         $this->config = new ListTypeConfig($config, $this);
@@ -42,7 +42,7 @@ class ListType extends AbstractType
         return is_callable($callable) ? $callable($value, $args) : null;
     }
 
-    public function getType()
+    public function getItem()
     {
         throw new \Exception('You must define type of List Item');
     }

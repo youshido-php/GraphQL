@@ -16,7 +16,7 @@ use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
-class ObjectTypeConfig extends Config
+class ObjectTypeConfig extends Config implements TypeConfigInterface
 {
 
     use FieldsAwareTrait, ArgumentsAwareTrait;

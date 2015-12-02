@@ -69,6 +69,14 @@ class Query
     }
 
     /**
+     * @return bool
+     */
+    public function hasFields()
+    {
+        return (bool) count($this->fields);
+    }
+
+    /**
      * @param Field[]|Query[] $fields
      */
     public function setFields($fields)

@@ -8,9 +8,9 @@
 
 namespace Youshido\GraphQL;
 
-
-use Youshido\GraphQL\Type\Config\ObjectTypeConfig;
 use Youshido\GraphQL\Type\Config\SchemaConfig;
+use Youshido\GraphQL\Type\Config\TypeConfigInterface;
+use Youshido\GraphQL\Type\Object\InputObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 
 class Schema
@@ -25,9 +25,14 @@ class Schema
             $config['query'] = new ObjectType(['name' => $this->getRootQueryTypeName()]);
         }
 
+        if (!array_key_exists('mutation', $config)) {
+            $config['mutation'] = new InputObjectType(['name' => $this->getRootQueryTypeName()]);
+        }
+
         $this->config = new SchemaConfig($config, $this);
 
         $this->buildTypes($this->config->getQuery()->getConfig());
+        $this->buildMutations($this->config->getMutation()->getConfig());
     }
 
     public function getRootQueryTypeName()
@@ -35,7 +40,11 @@ class Schema
         return 'RootQueryType';
     }
 
-    public function buildTypes(ObjectTypeConfig $config)
+    public function buildTypes(TypeConfigInterface $config)
+    {
+    }
+
+    public function buildMutations(TypeConfigInterface $config)
     {
     }
 

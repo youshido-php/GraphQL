@@ -11,6 +11,7 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 
 use Youshido\GraphQL\Parser\Ast\Argument;
 use Youshido\GraphQL\Parser\Ast\Field;
+use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Value\InputList;
 use Youshido\GraphQL\Parser\Value\InputObject;
 use Youshido\GraphQL\Parser\Value\Literal;
@@ -21,7 +22,63 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
-     * @dataProvider provider
+     * @dataProvider mutationProvider
+     */
+    public function testMutations($query, $structure)
+    {
+        $parser = new Parser();
+        $parser->setSource($query);
+
+        $parsedStructure = $parser->parse();
+
+        $this->assertEquals($parsedStructure, $structure);
+    }
+
+    public function mutationProvider()
+    {
+        return [
+//            [
+//                'mutation { createUser ( email: "test@test.com", active: true ) { id } }',
+//                [
+//                    'queries'   => [],
+//                    'mutations' => [
+//                        new Mutation(
+//                            'createUser',
+//                            null,
+//                            [
+//                                new Argument('email', new Literal('test@test.com')),
+//                                new Argument('active', new Literal(true)),
+//                            ],
+//                            [
+//                                new Field('id')
+//                            ]
+//                        )
+//                    ],
+//                    'fragments' => []
+//                ]
+//            ],
+            [
+                'mutation { test : createUser (id: 4) }',
+                [
+                    'queries'   => [],
+                    'mutations' => [
+                        new Mutation(
+                            'createUser',
+                            'test',
+                            [
+                                new Argument('id', new Literal(4)),
+                            ],
+                            []
+                        )
+                    ],
+                    'fragments' => []
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider queryProvider
      */
     public function testParser($query, $structure)
     {
@@ -34,7 +91,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     }
 
 
-    public function provider()
+    public function queryProvider()
     {
         return [
             [

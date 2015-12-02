@@ -95,6 +95,22 @@ class Request
     /**
      * @return bool
      */
+    public function hasQueries()
+    {
+        return (bool) count($this->queries);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasMutations()
+    {
+        return (bool) count($this->mutations);
+    }
+
+    /**
+     * @return bool
+     */
     public function hasFragments()
     {
         return (bool)count($this->fragments);

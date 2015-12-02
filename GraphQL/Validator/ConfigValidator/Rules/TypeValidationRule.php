@@ -6,7 +6,7 @@
 * created: 11/28/15 6:07 PM
 */
 
-namespace Youshido\GraphQL\Validator\Rules;
+namespace Youshido\GraphQL\Validator\ConfigValidator\Rules;
 
 
 use Youshido\GraphQL\Type\Config\FieldConfig;

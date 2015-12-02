@@ -12,9 +12,11 @@ namespace Youshido\GraphQL;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
+use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Type\Field\Field;
+use Youshido\GraphQL\Type\Object\InputObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
@@ -48,23 +50,71 @@ class Processor
     public function processQuery($queryString, $variables = [])
     {
         $this->resolveValidator->clearErrors();
-        $data = [];
+        $this->data = [];
 
         try {
             $this->parseAndCreateRequest($queryString, $variables);
 
-            foreach ($this->request->getQueries() as $query) {
-                if ($queryResult = $this->executeQuery($query, $this->getSchema()->getQueryType())) {
-                    $data = array_merge($data, $queryResult);
-                };
+            if($this->request->hasQueries()){
+                foreach ($this->request->getQueries() as $query) {
+                    if ($queryResult = $this->executeQuery($query, $this->getSchema()->getQueryType())) {
+                        $this->data = array_merge($this->data, $queryResult);
+                    };
+                }
             }
 
-            $this->data = $data;
+            if($this->request->hasMutations()){
+                foreach($this->request->getMutations() as $mutation){
+                    if ($mutationResult = $this->executeMutation($mutation, $this->getSchema()->getMutationType())) {
+                        $this->data = array_merge($this->data, $mutationResult);
+                    }
+                }
+            }
         } catch (\Exception $e) {
-            $this->resolveValidator->clearErrors(); //todo: rethink here (used this for critic exception)
+            $this->resolveValidator->clearErrors();
 
             $this->resolveValidator->addError($e);
         }
+    }
+
+    /**
+     * @param Mutation        $mutation
+     * @param InputObjectType $objectType
+     *
+     * @return array|bool|mixed
+     */
+    protected function executeMutation($mutation, $objectType)
+    {
+        if (!$objectType->hasField($mutation->getName())) {
+            $this->resolveValidator->addError(new ResolveException(sprintf('Field "%s" not found in schema', $mutation->getName())));
+
+            return null;
+        }
+
+        /** @var InputObjectType $inputType */
+        $inputType = $objectType->getField($mutation->getName())->getType();
+
+        if (!$this->resolveValidator->validateArguments($inputType, $mutation, $this->request)) {
+            return null;
+        }
+
+        $alias         = $mutation->hasAlias() ? $mutation->getAlias() : $mutation->getName();
+        $resolvedValue = $this->resolveValue($inputType, null, $mutation);
+
+        if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $inputType->getKind())) {
+            $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolved value for mutation "%s"', $inputType->getName())));
+
+            return [$alias => null];
+        }
+
+        $value = null;
+        if ($mutation->hasFields()) {
+            $outputType = $inputType->getConfig()->getOutputType();
+
+            $value = $this->processQueryFields($mutation, $outputType, $resolvedValue, []);
+        }
+
+        return [$alias => $value];
     }
 
     protected function parseAndCreateRequest($query, $variables = [])
@@ -107,7 +157,7 @@ class Processor
             $alias         = $query->hasAlias() ? $query->getAlias() : $query->getName();
 
             if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $currentLevelSchema->getKind())) {
-                $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolved value for schema "%s"', $queryType->getName())));
+                $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolved value for query "%s"', $queryType->getName())));
 
                 return [$alias => null];
             }

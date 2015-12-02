@@ -10,8 +10,8 @@ namespace Youshido\GraphQL\Validator\ConfigValidator;
 
 
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
-use Youshido\GraphQL\Validator\Rules\TypeValidationRule;
-use Youshido\GraphQL\Validator\Rules\ValidationRuleInterface;
+use Youshido\GraphQL\Validator\ConfigValidator\Rules\TypeValidationRule;
+use Youshido\GraphQL\Validator\ConfigValidator\Rules\ValidationRuleInterface;
 use Youshido\GraphQL\Validator\Exception\ValidationException;
 
 class ConfigValidator implements ConfigValidatorInterface

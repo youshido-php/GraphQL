@@ -9,6 +9,7 @@
 namespace Youshido\GraphQL\Type;
 
 
+use Youshido\GraphQL\Type\Config\InputObjectTypeConfig;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Config\ObjectTypeConfig;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
@@ -17,14 +18,14 @@ abstract class AbstractType implements TypeInterface
 {
 
     /**
-     * @var ObjectTypeConfig
+     * @var ObjectTypeConfig|InputObjectTypeConfig
      */
     protected $config;
 
     protected $name;
 
     /**
-     * @return ObjectTypeConfig
+     * @return ObjectTypeConfig|InputObjectTypeConfig
      * @todo: refactor hierarchy
      */
     public function getConfig()

@@ -9,7 +9,9 @@
 namespace Youshido\GraphQL\Type\Object;
 
 use Youshido\GraphQL\Type\AbstractType;
+use Youshido\GraphQL\Type\Config\Config;
 use Youshido\GraphQL\Type\Config\ObjectTypeConfig;
+use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 
@@ -35,11 +37,11 @@ class ObjectType extends AbstractType
         $this->buildArguments($this->config);
     }
 
-    protected function buildFields(ObjectTypeConfig $config)
+    protected function buildFields(TypeConfigInterface $config)
     {
     }
 
-    protected function buildArguments(ObjectTypeConfig $config)
+    protected function buildArguments(TypeConfigInterface $config)
     {
     }
 

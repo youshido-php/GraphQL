@@ -9,6 +9,7 @@
 namespace Youshido\GraphQL\Type\Config;
 
 
+use Youshido\GraphQL\Type\Object\InputObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 
@@ -31,6 +32,9 @@ class SchemaConfig extends Config
         return $this->data['query'];
     }
 
+    /**
+     * @return InputObjectType
+     */
     public function getMutation()
     {
         return  $this->get('mutation');
