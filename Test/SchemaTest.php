@@ -38,9 +38,14 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
     {
         $listType = new ListType(
             [
-                'name'    => 'users',
-                'type'    => new UserType(),
-                'resolve' => function ($object, $args = []) {
+                'name'      => 'users',
+                'item'      => new UserType(),
+                'arguments' => [
+                    'count' => [
+                        'type' => 'int'
+                    ]
+                ],
+                'resolve'   => function ($object, $args = []) {
 
                 }
             ]);

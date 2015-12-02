@@ -42,7 +42,7 @@ class TypeMap
     {
         /** @todo add ObjectInputType */
         if (is_object($type)) {
-            return $type instanceof AbstractScalarType || $type instanceof InputObjectType;
+            return ($type instanceof AbstractScalarType) || ($type instanceof InputObjectType);
         } else {
             return self::isScalarType($type);
         }

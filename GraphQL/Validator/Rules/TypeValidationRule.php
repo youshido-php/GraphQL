@@ -52,7 +52,7 @@ class TypeValidationRule implements ValidationRuleInterface
                     break;
 
                 case TypeMap::TYPE_ANY_INPUT:
-                    return TypeMap::isInputType($ruleInfo);
+                    return TypeMap::isInputType($data);
                     break;
 
                 default:
