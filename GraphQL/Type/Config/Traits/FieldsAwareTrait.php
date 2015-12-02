@@ -25,7 +25,7 @@ trait FieldsAwareTrait
                 throw new ConfigurationException('You can\'t pass ' . $type . ' as a string type.');
             }
 
-            $type = TypeMap::getScalarTypeObject($type, $config);
+            $type = TypeMap::getScalarTypeObject($type);
         }
 
         $config['name'] = $name;

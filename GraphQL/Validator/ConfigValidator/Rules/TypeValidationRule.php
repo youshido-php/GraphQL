@@ -9,8 +9,8 @@
 namespace Youshido\GraphQL\Validator\ConfigValidator\Rules;
 
 
-use Youshido\GraphQL\Type\Config\FieldConfig;
-use Youshido\GraphQL\Type\Config\InputFieldConfig;
+use Youshido\GraphQL\Type\Config\Field\FieldConfig;
+use Youshido\GraphQL\Type\Config\Field\InputFieldConfig;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Field\InputField;
 use Youshido\GraphQL\Type\Object\ObjectType;

@@ -38,6 +38,8 @@ class TypeMap
     const TYPE_ANY_OBJECT      = 'any_object';
     const TYPE_ANY_INPUT       = 'any_input';
 
+    private static $scalarObjectsCache = [];
+
     public static function isInputType($type)
     {
         if (is_object($type)) {
@@ -48,17 +50,19 @@ class TypeMap
     }
 
     /**
-     * @param string $typeAlias
-     * @param array  $config
+     * @param string $type
      *
      * @return ObjectType
      */
-    public static function getScalarTypeObject($typeAlias, $config = [])
+    public static function getScalarTypeObject($type)
     {
-        if (self::isScalarType($typeAlias)) {
-            $className = 'Youshido\GraphQL\Type\Scalar\\' . ucfirst($typeAlias) . 'Type';
+        if (self::isScalarType($type)) {
+            if (empty(self::$scalarObjectsCache[$type])) {
+                $className                       = 'Youshido\GraphQL\Type\Scalar\\' . ucfirst($type) . 'Type';
+                self::$scalarObjectsCache[$type] = new $className();
+            }
 
-            return new $className($config);
+            return self::$scalarObjectsCache[$type];
         } else {
             return null;
         }

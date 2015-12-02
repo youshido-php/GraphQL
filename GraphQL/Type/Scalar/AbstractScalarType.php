@@ -16,15 +16,6 @@ use Youshido\GraphQL\Type\TypeMap;
 abstract class AbstractScalarType extends AbstractType
 {
 
-    public function __construct($config = [])
-    {
-        if (!isset($config['name'])) {
-            $config['name'] = $this->getName();
-        }
-
-        $this->config = new ScalarTypeConfig($config, $this);
-    }
-
     public function getName()
     {
         $className = get_class($this);
@@ -35,13 +26,6 @@ abstract class AbstractScalarType extends AbstractType
     final public function getKind()
     {
         return TypeMap::KIND_SCALAR;
-    }
-
-    public function resolve($value = null, $args = [])
-    {
-        $callable = $this->config->getResolveFunction();
-
-        return is_callable($callable) ? $callable($value, $args) : $this->serialize($value);
     }
 
 }
