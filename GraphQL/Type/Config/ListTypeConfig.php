@@ -32,16 +32,16 @@ class ListTypeConfig extends ObjectTypeConfig
      */
     public function getField($name)
     {
-        return $this->data['type']->getField($name);
+        return $this->data['item']->getField($name);
     }
 
     public function hasField($name)
     {
-        return $this->data['type']->hasField($name);
+        return $this->data['item']->hasField($name);
     }
 
     public function getFields()
     {
-        return $this->data['type']->getFields();
+        return $this->data['item']->getFields();
     }
 }
