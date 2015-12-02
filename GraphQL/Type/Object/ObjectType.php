@@ -60,18 +60,11 @@ class ObjectType extends AbstractType
         return is_callable($callable) ? $callable($value, $args) : null;
     }
 
-    public function getKind()
+    final public function getKind()
     {
         return TypeMap::KIND_OBJECT;
     }
 
-    /**
-     * @return ObjectTypeConfig
-     */
-    public function getConfig()
-    {
-        return $this->config;
-    }
 
     public function isValidValue($value)
     {

@@ -27,14 +27,14 @@ class ObjectTypeConfig extends Config
         return [
             'name'      => ['type' => TypeMap::TYPE_STRING, 'required' => true],
             'fields'    => ['type' => TypeMap::TYPE_ARRAY_OF_FIELDS],
-            'arguments' => [],
-            'resolve'   => [],
+            'arguments' => ['type' => TypeMap::TYPE_ARRAY_OF_INPUTS],
+            'resolve'   => ['type' => TypeMap::TYPE_FUNCTION],
         ];
     }
 
     public function getResolveFunction()
     {
-        return empty($this->data['resolve']) ? null : $this->data['resolve'];
+        return $this->get('resolve');
     }
 
     protected function setupType()

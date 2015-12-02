@@ -23,6 +23,10 @@ abstract class AbstractType implements TypeInterface
 
     protected $name;
 
+    /**
+     * @return ObjectTypeConfig
+     * @todo: refactor hierarchy
+     */
     public function getConfig()
     {
         return $this->config;

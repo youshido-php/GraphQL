@@ -10,7 +10,9 @@ namespace Youshido\GraphQL\Validator\Rules;
 
 
 use Youshido\GraphQL\Type\Config\FieldConfig;
+use Youshido\GraphQL\Type\Config\InputFieldConfig;
 use Youshido\GraphQL\Type\Field\Field;
+use Youshido\GraphQL\Type\Field\InputField;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
@@ -58,6 +60,10 @@ class TypeValidationRule implements ValidationRuleInterface
                     return $this->isArrayOfFields($data);
                     break;
 
+                case TypeMap::TYPE_ARRAY_OF_INPUTS:
+                    return $this->isArrayOfInputs($data);
+                    break;
+
                 case TypeMap::TYPE_ANY_INPUT:
                     return TypeMap::isInputType($data);
                     break;
@@ -83,6 +89,16 @@ class TypeValidationRule implements ValidationRuleInterface
         return true;
     }
 
+    private function isArrayOfInputs($data)
+    {
+        if (!is_array($data)) return false;
+
+        foreach ($data as $name => $item) {
+            if (!$this->isInputField($item, $name)) return false;
+        }
+        return true;
+    }
+
     private function isField($data, $name = null)
     {
         if ((is_object($data) && $data instanceof Field)) return true;
@@ -92,6 +108,22 @@ class TypeValidationRule implements ValidationRuleInterface
             if (empty($data['name'])) $data['name'] = $name;
 
             $config = new FieldConfig($data);
+            return $config->isValid();
+        } catch (ConfigurationException $e) {
+        }
+
+        return false;
+    }
+
+    private function isInputField($data, $name = null)
+    {
+        if ((is_object($data) && $data instanceof InputField)) return true;
+
+        try {
+            /** @todo need to change it to optimize performance */
+            if (empty($data['name'])) $data['name'] = $name;
+
+            $config = new InputFieldConfig($data);
             return $config->isValid();
         } catch (ConfigurationException $e) {
         }

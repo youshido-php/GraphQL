@@ -9,7 +9,18 @@
 namespace Youshido\GraphQL\Type\Config;
 
 
-class InputObjectTypeConfig extends Config
+use Youshido\GraphQL\Type\TypeMap;
+
+class InputObjectTypeConfig extends ObjectTypeConfig
 {
+
+    public function getRules()
+    {
+        return [
+            'name'        => ['type' => TypeMap::TYPE_STRING, 'required' => true],
+            'fields'      => ['type' => TypeMap::TYPE_ARRAY_OF_INPUTS, 'required' => true],
+            'description' => ['type' => TypeMap::TYPE_STRING],
+        ];
+    }
 
 }
