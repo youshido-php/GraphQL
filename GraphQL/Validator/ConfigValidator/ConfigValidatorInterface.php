@@ -5,7 +5,7 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphQL\Validator\Config;
+namespace Youshido\GraphQL\Validator\ConfigValidator;
 
 
 interface ConfigValidatorInterface

@@ -5,19 +5,20 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphQL\Validator;
+namespace Youshido\GraphQL\Validator\ResolveValidator;
 
 
 use Youshido\GraphQL\Type\TypeMap;
-use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainer;
+use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
 use Youshido\GraphQL\Field;
 use Youshido\GraphQL\Parser\Value\Variable;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 
-class ResolveValidator extends ErrorContainer implements ResolveValidatorInterface
+class ResolveValidator implements ResolveValidatorInterface
 {
 
+    use ErrorContainerTrait;
     /**
      * @inheritdoc
      */

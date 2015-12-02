@@ -8,7 +8,7 @@
 namespace Youshido\GraphQL\Validator\ErrorContainer;
 
 
-class ErrorContainer implements ErrorContainerInterface
+trait ErrorContainerTrait
 {
 
     /** @var \Exception[] */

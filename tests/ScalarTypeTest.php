@@ -7,6 +7,7 @@
 */
 
 namespace Youshido\Tests;
+require_once __DIR__ . '/../vendor/autoload.php';
 
 
 use Youshido\GraphQL\Type\Scalar\IntType;
@@ -16,10 +17,6 @@ use Youshido\Tests\DataProvider\TestScalarDataProvider;
 
 class ScalarTypeTest extends \PHPUnit_Framework_TestCase
 {
-    public static function setUpBeforeClass()
-    {
-        require_once __DIR__ . '/../vendor/autoload.php';
-    }
 
     public function testTypeName()
     {

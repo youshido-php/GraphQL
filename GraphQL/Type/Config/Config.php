@@ -9,8 +9,8 @@
 namespace Youshido\GraphQL\Type\Config;
 
 
-use Youshido\GraphQL\Validator\Config\ConfigValidator;
-use Youshido\GraphQL\Validator\Config\ConfigValidatorInterface;
+use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
+use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidatorInterface;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 use Youshido\GraphQL\Validator\Exception\ValidationException;
 

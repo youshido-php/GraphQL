@@ -10,6 +10,7 @@ namespace Youshido\GraphQL\Type\Config;
 
 
 use Youshido\GraphQL\Field;
+use Youshido\GraphQL\Type\Config\Traits\FieldsAwareTrait;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
@@ -17,32 +18,13 @@ use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 class ObjectTypeConfig extends Config
 {
 
-    protected $fields = [];
+    use FieldsAwareTrait;
 
     protected $arguments = [];
 
-    /**
-     * @param $name
-     * @return Field
-     */
-    public function getField($name)
-    {
-        return $this->hasField($name) ? $this->fields[$name] : null;
-    }
-
-    public function hasField($name)
-    {
-        return array_key_exists($name, $this->fields);
-    }
-
-    public function getFields()
-    {
-        return $this->fields;
-    }
-
     public function getArgument($name)
     {
-        return $this->hasArgument($name) ? $this->fields[$name] : null;
+        return $this->hasArgument($name) ? $this->arguments[$name] : null;
     }
 
     public function hasArgument($name)
@@ -101,25 +83,5 @@ class ObjectTypeConfig extends Config
             $this->addArgument($argumentName, $argumentInfo['type'], $argumentInfo);
         }
     }
-
-    public function addField($name, $type, $config = [])
-    {
-        if (is_string($type)) {
-            if (!TypeMap::isTypeAllowed($type)) {
-                throw new ConfigurationException('You can\'t pass ' . $type . ' as a string type.');
-            }
-
-            $type = TypeMap::getScalarTypeObject($type);
-        }
-
-        $config['name'] = $name;
-        $config['type'] = $type;
-        $field          = new Field($config);
-
-        $this->fields[$name] = $field;
-
-        return $this;
-    }
-
 
 }

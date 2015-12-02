@@ -17,7 +17,7 @@ use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
-use Youshido\GraphQL\Validator\ResolveValidatorInterface;
+use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidatorInterface;
 
 class Processor
 {
@@ -26,7 +26,7 @@ class Processor
     protected $data;
 
     /** @var ResolveValidatorInterface */
-    protected $validator;
+    protected $resolveValidator;
 
     /** @var Schema */
     protected $schema;
@@ -39,14 +39,14 @@ class Processor
 
     public function __construct(ResolveValidatorInterface $validator)
     {
-        $this->validator = $validator;
+        $this->resolveValidator = $validator;
 
         $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
     }
 
     public function processQuery($queryString, $variables = [])
     {
-        $this->validator->clearErrors();
+        $this->resolveValidator->clearErrors();
         $data = [];
 
         try {
@@ -60,9 +60,9 @@ class Processor
 
             $this->data = $data;
         } catch (\Exception $e) {
-            $this->validator->clearErrors(); //todo: rethink here (used this for critic exception)
+            $this->resolveValidator->clearErrors(); //todo: rethink here (used this for critic exception)
 
-            $this->validator->addError($e);
+            $this->resolveValidator->addError($e);
         }
     }
 
@@ -86,7 +86,7 @@ class Processor
     protected function executeQuery($query, $currentLevelSchema, $contextValue = null)
     {
         if (!$currentLevelSchema->hasField($query->getName())) {
-            $this->validator->addError(new ResolveException(sprintf('Field "%s" not found in schema', $query->getName())));
+            $this->resolveValidator->addError(new ResolveException(sprintf('Field "%s" not found in schema', $query->getName())));
 
             return null;
         }
@@ -98,15 +98,15 @@ class Processor
             $preResolvedValue = $this->getPreResolvedValue($contextValue, $query);
             $value            = $queryType->serialize($preResolvedValue);
         } else {
-            if (!$this->validator->validateArguments($queryType, $query, $this->request)) {
+            if (!$this->resolveValidator->validateArguments($queryType, $query, $this->request)) {
                 return null;
             }
 
             $resolvedValue = $this->resolveValue($queryType, $contextValue, $query);
             $alias         = $query->hasAlias() ? $query->getAlias() : $query->getName();
 
-            if (!$this->validator->validateResolvedValue($resolvedValue, $currentLevelSchema->getKind())) {
-                $this->validator->addError(new ResolveException(sprintf('Not valid resolved value for schema "%s"', $queryType->getName())));
+            if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $currentLevelSchema->getKind())) {
+                $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolved value for schema "%s"', $queryType->getName())));
 
                 return [$alias => null];
             }
@@ -239,9 +239,9 @@ class Processor
     /**
      * @return ResolveValidatorInterface
      */
-    public function getValidator()
+    public function getResolveValidator()
     {
-        return $this->validator;
+        return $this->resolveValidator;
     }
 
     public function getResponseData()
@@ -252,8 +252,8 @@ class Processor
             $result['data'] = $this->data;
         }
 
-        if ($this->validator->hasErrors()) {
-            $result['errors'] = $this->validator->getErrorsArray();
+        if ($this->resolveValidator->hasErrors()) {
+            $result['errors'] = $this->resolveValidator->getErrorsArray();
         }
 
         return $result;

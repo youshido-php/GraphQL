@@ -6,16 +6,18 @@
 * created: 11/28/15 2:25 AM
 */
 
-namespace Youshido\GraphQL\Validator\Config;
+namespace Youshido\GraphQL\Validator\ConfigValidator;
 
 
-use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainer;
+use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
 use Youshido\GraphQL\Validator\Rules\TypeValidationRule;
 use Youshido\GraphQL\Validator\Rules\ValidationRuleInterface;
 use Youshido\GraphQL\Validator\Exception\ValidationException;
 
-class ConfigValidator extends ErrorContainer implements ConfigValidatorInterface
+class ConfigValidator implements ConfigValidatorInterface
 {
+
+    use ErrorContainerTrait;
 
     protected $rules = [];
 

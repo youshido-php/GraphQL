@@ -5,7 +5,7 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphQL\Validator;
+namespace Youshido\GraphQL\Validator\ResolveValidator;
 
 
 use Youshido\GraphQL\Parser\Ast\Query;
