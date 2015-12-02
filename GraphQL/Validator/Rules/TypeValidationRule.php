@@ -9,8 +9,11 @@
 namespace Youshido\GraphQL\Validator\Rules;
 
 
+use Youshido\GraphQL\Type\Config\FieldConfig;
+use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 class TypeValidationRule implements ValidationRuleInterface
 {
@@ -51,6 +54,10 @@ class TypeValidationRule implements ValidationRuleInterface
                     return is_array($data);
                     break;
 
+                case TypeMap::TYPE_ARRAY_OF_FIELDS:
+                    return $this->isArrayOfFields($data);
+                    break;
+
                 case TypeMap::TYPE_ANY_INPUT:
                     return TypeMap::isInputType($data);
                     break;
@@ -64,6 +71,32 @@ class TypeValidationRule implements ValidationRuleInterface
         } else {
             return false;
         }
+    }
+
+    private function isArrayOfFields($data)
+    {
+        if (!is_array($data)) return false;
+
+        foreach ($data as $name => $item) {
+            if (!$this->isField($item, $name)) return false;
+        }
+        return true;
+    }
+
+    private function isField($data, $name = null)
+    {
+        if ((is_object($data) && $data instanceof Field)) return true;
+
+        try {
+            /** @todo need to change it to optimize performance */
+            if (empty($data['name'])) $data['name'] = $name;
+
+            $config = new FieldConfig($data);
+            return $config->isValid();
+        } catch (ConfigurationException $e) {
+        }
+
+        return false;
     }
 
 }

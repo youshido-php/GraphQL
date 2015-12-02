@@ -30,7 +30,7 @@ class ObjectTypeConfig extends Config
     {
         return [
             'name'      => ['type' => TypeMap::TYPE_STRING, 'required' => true],
-            'fields'    => [],
+            'fields'    => ['type' => TypeMap::TYPE_ARRAY_OF_FIELDS],
             'arguments' => [],
             'resolve'   => [],
         ];
