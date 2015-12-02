@@ -42,6 +42,14 @@ Interface TypeInterface
     public function serialize($value);
 
     /**
+     * @param null  $value
+     * @param array $args
+     *
+     * @return mixed
+     */
+    public function resolve($value = null, $args = []);
+
+    /**
      * @param $value mixed
      *
      * @return bool

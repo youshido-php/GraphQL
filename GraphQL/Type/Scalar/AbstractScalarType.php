@@ -37,4 +37,11 @@ abstract class AbstractScalarType extends AbstractType
         return TypeMap::KIND_SCALAR;
     }
 
+    public function resolve($value = null, $args = [])
+    {
+        $callable = $this->config->getResolveFunction();
+
+        return is_callable($callable) ? $callable($value, $args) : $this->serialize($value);
+    }
+
 }

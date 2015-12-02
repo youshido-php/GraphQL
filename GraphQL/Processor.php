@@ -148,7 +148,7 @@ class Processor
         if (get_class($query) == 'Youshido\GraphQL\Parser\Ast\Field') {
             $alias            = $query->getName();
             $preResolvedValue = $this->getPreResolvedValue($contextValue, $query);
-            $value            = $queryType->serialize($preResolvedValue);
+            $value            = $this->resolveValue($queryType, $preResolvedValue, $query);
         } else {
             if (!$this->resolveValidator->validateArguments($queryType, $query, $this->request)) {
                 return null;
@@ -222,6 +222,10 @@ class Processor
      */
     public function parseArgumentsValues($queryType, $query)
     {
+        if($query instanceof \Youshido\GraphQL\Parser\Ast\Field){
+            return [];
+        }
+
         $args      = [];
         $arguments = $queryType->getConfig()->getArguments();
 
