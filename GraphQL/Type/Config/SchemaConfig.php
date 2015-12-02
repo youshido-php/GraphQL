@@ -10,6 +10,7 @@ namespace Youshido\GraphQL\Type\Config;
 
 
 use Youshido\GraphQL\Type\Object\ObjectType;
+use Youshido\GraphQL\Type\TypeMap;
 
 class SchemaConfig extends Config
 {
@@ -30,8 +31,8 @@ class SchemaConfig extends Config
     public function getRules()
     {
         return [
-            'query'    => ['type' => 'Object', 'required' => true],
-            'mutation' => ['type' => 'Object'],
+            'query'    => ['type' => TypeMap::TYPE_OBJECT_TYPE, 'required' => true],
+            'mutation' => ['type' => TypeMap::TYPE_OBJECT_TYPE],
         ];
     }
 

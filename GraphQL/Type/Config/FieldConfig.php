@@ -11,6 +11,7 @@ namespace Youshido\GraphQL\Type\Config;
 
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeInterface;
+use Youshido\GraphQL\Type\TypeMap;
 
 class FieldConfig extends Config
 {
@@ -36,13 +37,13 @@ class FieldConfig extends Config
     public function getRules()
     {
         return [
-            'name'              => ['type' => 'string', 'required' => true],
-            'type'              => ['required' => true],
+            'name'              => ['type' => TypeMap::TYPE_STRING, 'required' => true],
+            'type'              => ['type' => TypeMap::TYPE_ANY, 'required' => true],
             'args'              => ['type' => 'array'],
-            'required'          => ['type' => 'boolean'],
-            'description'       => ['type' => 'string'],
-            'resolve'           => ['type' => 'callable'],
-            'deprecationReason' => ['type' => 'string'],
+            'required'          => ['type' => TypeMap::TYPE_BOOLEAN],
+            'description'       => ['type' => TypeMap::TYPE_STRING],
+            'resolve'           => ['type' => TypeMap::TYPE_FUNCTION],
+            'deprecationReason' => ['type' => TypeMap::TYPE_STRING],
         ];
     }
 

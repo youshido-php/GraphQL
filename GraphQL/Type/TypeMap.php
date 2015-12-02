@@ -9,6 +9,7 @@
 namespace Youshido\GraphQL\Type;
 
 
+use Youshido\GraphQL\Type\Object\InputObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 
@@ -28,10 +29,12 @@ class TypeMap
     const TYPE_ID      = 'id';
 
     const TYPE_FUNCTION    = 'function';
-    const TYPE_OBJECT      = 'object';
     const TYPE_OBJECT_TYPE = 'object_type';
     const TYPE_LIST        = 'list';
+    const TYPE_ARRAY       = 'array';
     const TYPE_ANY         = 'any';
+    const TYPE_ANY_OBJECT  = 'any_object';
+    const TYPE_ANY_INPUT   = 'any_input';
 
     private static $scalarObjectsCache = [];
 
@@ -39,7 +42,7 @@ class TypeMap
     {
         /** @todo add ObjectInputType */
         if (is_object($type)) {
-            return $type instanceof AbstractScalarType;
+            return $type instanceof AbstractScalarType || $type instanceof InputObjectType;
         } else {
             return self::isScalarType($type);
         }

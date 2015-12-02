@@ -10,7 +10,7 @@ namespace Youshido\GraphQL\Validator\ResolveValidator;
 
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
-use Youshido\GraphQL\Field;
+use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Parser\Value\Variable;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Validator\Exception\ResolveException;

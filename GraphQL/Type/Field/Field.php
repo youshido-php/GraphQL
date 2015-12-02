@@ -5,11 +5,10 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphQL;
+namespace Youshido\GraphQL\Type\Field;
 
 
 use Youshido\GraphQL\Type\Config\FieldConfig;
-use Youshido\GraphQL\Type\TypeInterface;
 
 class Field
 {

@@ -9,7 +9,7 @@
 namespace Youshido\GraphQL\Type\Config;
 
 
-use Youshido\GraphQL\Field;
+use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Config\Traits\ArgumentsAwareTrait;
 use Youshido\GraphQL\Type\Config\Traits\FieldsAwareTrait;
 use Youshido\GraphQL\Type\Object\ObjectType;
@@ -29,7 +29,7 @@ class ObjectTypeConfig extends Config
     public function getRules()
     {
         return [
-            'name'      => ['type' => 'string', 'required' => true],
+            'name'      => ['type' => TypeMap::TYPE_STRING, 'required' => true],
             'fields'    => [],
             'arguments' => [],
             'resolve'   => [],

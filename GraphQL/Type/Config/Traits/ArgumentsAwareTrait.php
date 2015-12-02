@@ -9,7 +9,8 @@
 namespace Youshido\GraphQL\Type\Config\Traits;
 
 
-use Youshido\GraphQL\Field;
+use Youshido\GraphQL\Type\Field\Field;
+use Youshido\GraphQL\Type\Field\InputField;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
@@ -26,7 +27,7 @@ trait ArgumentsAwareTrait
         $config['name'] = $name;
         $config['type'] = TypeMap::getScalarTypeObject($type);
 
-        $this->arguments[$name] = new Field($config);
+        $this->arguments[$name] = new InputField($config);
 
         return $this;
     }

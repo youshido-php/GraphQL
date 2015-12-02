@@ -7,44 +7,39 @@
 */
 
 namespace Youshido\Tests;
+require_once __DIR__ . '/../vendor/autoload.php';
 
 
 use Youshido\GraphQL\Schema;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Processor;
-use Youshido\GraphQL\Validator\ResolveValidator;
+use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
+use Youshido\Tests\DataProvider\UserType;
 
 class ProcessorTest extends \PHPUnit_Framework_TestCase
 {
-    public static function setUpBeforeClass()
-    {
-        require_once __DIR__ . '/../vendor/autoload.php';
-    }
+
 
     public function testProcessor()
     {
-        $schema = new Schema(
-            [
-                'query' => new ObjectType(
-                    [
-                        'name'   => 'OneFileQuery',
-                        'fields' => [
-                            'latest' => new ObjectType([
-                                  'name' => 'users',
-                                  'fields' => [
-                                      'id'  => ['type' => 'int'],
-                                      'name'  => ['type' => 'string']
-                                  ],
-                                  'resolve' => function() {
-                                      return [
-                                          'id' => 1,
-                                          'name' => 'Alex'
-                                      ];
-                                  }
-                              ]),
-                        ]
-                    ])
-            ]);
+        $schema = new Schema();
+        $schema->addQuery(
+            new ObjectType(
+                [
+                    'name'    => 'latest',
+                    'fields'  => [
+                        'id'   => ['type' => 'int'],
+                        'name' => ['type' => 'string']
+                    ],
+                    'resolve' => function () {
+                        return [
+                            'id'   => 1,
+                            'name' => 'Alex'
+                        ];
+                    }
+                ]));
+
+        $schema->addQuery(new UserType());
 
         $validator = new ResolveValidator();
         $processor = new Processor($validator);
@@ -54,7 +49,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->processQuery('{ latest { name } }');
         print_r($processor->getResponseData());
 
-        $processor->processQuery('{ user { id, name } }');
+        $processor->processQuery('{ user(id:1) { id, name } }');
         print_r($processor->getResponseData());
 
     }
