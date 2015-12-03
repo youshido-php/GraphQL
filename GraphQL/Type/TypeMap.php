@@ -28,15 +28,16 @@ class TypeMap
     const TYPE_BOOLEAN = 'boolean';
     const TYPE_ID      = 'id';
 
-    const TYPE_FUNCTION        = 'function';
-    const TYPE_OBJECT_TYPE     = 'object_type';
-    const TYPE_LIST            = 'list';
-    const TYPE_ARRAY           = 'array';
-    const TYPE_ARRAY_OF_FIELDS = 'array_of_fields';
-    const TYPE_ARRAY_OF_INPUTS = 'array_of_inputs';
-    const TYPE_ANY             = 'any';
-    const TYPE_ANY_OBJECT      = 'any_object';
-    const TYPE_ANY_INPUT       = 'any_input';
+    const TYPE_FUNCTION          = 'function';
+    const TYPE_OBJECT_TYPE       = 'object_type';
+    const TYPE_OBJECT_INPUT_TYPE = 'object_input_type';
+    const TYPE_LIST              = 'list';
+    const TYPE_ARRAY             = 'array';
+    const TYPE_ARRAY_OF_FIELDS   = 'array_of_fields';
+    const TYPE_ARRAY_OF_INPUTS   = 'array_of_inputs';
+    const TYPE_ANY               = 'any';
+    const TYPE_ANY_OBJECT        = 'any_object';
+    const TYPE_ANY_INPUT         = 'any_input';
 
     private static $scalarObjectsCache = [];
 

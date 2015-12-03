@@ -23,22 +23,17 @@ class Schema
     public function __construct($config = [])
     {
         if (!array_key_exists('query', $config)) {
-            $config['query'] = new ObjectType(['name' => $this->getRootQueryTypeName()]);
+            $config['query'] = new ObjectType(['name' => $this->getName()]);
         }
 
         if (!array_key_exists('mutation', $config)) {
-            $config['mutation'] = new InputObjectType(['name' => $this->getRootQueryTypeName()]);
+            $config['mutation'] = new InputObjectType(['name' => $this->getName()]);
         }
 
         $this->config = new SchemaConfig($config, $this);
 
         $this->buildTypes($this->config->getQuery()->getConfig());
         $this->buildMutations($this->config->getMutation()->getConfig());
-    }
-
-    public function getRootQueryTypeName()
-    {
-        return 'RootQueryType';
     }
 
     public function buildTypes(TypeConfigInterface $config)
@@ -59,14 +54,20 @@ class Schema
         $this->getQueryType()->getConfig()->addField($name, $query);
     }
 
-    public function getQueryType()
+    final public function getQueryType()
     {
         return $this->config->getQuery();
     }
 
-    public function getMutationType()
+    final public function getMutationType()
     {
         return $this->config->getMutation();
+    }
+
+    public function getName()
+    {
+        $defaultName = 'RootSchema';
+        return $this->config ? $this->config->get('name', $defaultName) : $defaultName;
     }
 
 }

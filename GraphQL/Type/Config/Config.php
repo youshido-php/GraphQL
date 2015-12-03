@@ -53,7 +53,7 @@ class Config
         if (!$this->validator->validate($this->data, $this->getRules())) {
             throw new ConfigurationException('Config is not valid for ' . get_class($contextObject) . "\n" . implode("\n", $this->validator->getErrorsArray()));
         }
-        $this->setupType();
+        $this->build();
     }
 
     public function getRules()
@@ -61,7 +61,7 @@ class Config
         return [];
     }
 
-    protected function setupType()
+    protected function build()
     {
     }
 

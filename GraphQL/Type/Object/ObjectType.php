@@ -16,6 +16,10 @@ use Youshido\GraphQL\Validator\Exception\ResolveException;
 
 final class ObjectType extends AbstractObjectType
 {
-    protected function buildFields(TypeConfigInterface $config) {}
-    protected function buildArguments(TypeConfigInterface $config) {}
+
+    protected $name = 'GenericObject';
+
+    protected function buildFields(TypeConfigInterface $config) { }
+
+    protected function buildArguments(TypeConfigInterface $config) { }
 }

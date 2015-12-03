@@ -22,6 +22,7 @@ class SchemaConfig extends Config
         return [
             'query'    => ['type' => TypeMap::TYPE_OBJECT_TYPE, 'required' => true],
             'mutation' => ['type' => TypeMap::TYPE_OBJECT_TYPE],
+            'name'     => ['type' => TypeMap::TYPE_STRING],
         ];
     }
 
@@ -38,7 +39,12 @@ class SchemaConfig extends Config
      */
     public function getMutation()
     {
-        return  $this->get('mutation');
+        return $this->get('mutation');
+    }
+
+    public function getName()
+    {
+        return $this->get('name', 'Schema');
     }
 
 

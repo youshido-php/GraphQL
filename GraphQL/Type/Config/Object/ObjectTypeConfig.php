@@ -9,6 +9,7 @@
 namespace Youshido\GraphQL\Type\Config\Object;
 
 
+use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Config\Config;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Field\Field;
@@ -37,11 +38,11 @@ class ObjectTypeConfig extends Config implements TypeConfigInterface
         return $this->get('resolve');
     }
 
-    protected function setupType()
+    protected function build()
     {
         $sourceFields = empty($this->data['fields']) ? [] : $this->data['fields'];
         foreach ($sourceFields as $fieldName => $fieldInfo) {
-            if ($fieldInfo instanceof Field || $fieldInfo instanceof ObjectType) {
+            if ($fieldInfo instanceof Field || $fieldInfo instanceof AbstractType) {
                 $this->fields[$fieldName] = $fieldInfo;
                 continue;
             };

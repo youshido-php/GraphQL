@@ -18,7 +18,7 @@ use Youshido\GraphQL\Validator\Exception\ResolveException;
 abstract class AbstractObjectType extends AbstractType
 {
 
-    protected $name = "Object";
+    protected $name;
 
     /**
      * ObjectType constructor.
@@ -26,7 +26,7 @@ abstract class AbstractObjectType extends AbstractType
      */
     public function __construct($config = [])
     {
-        if (empty($config) && (get_class($this) != 'Youshido\GraphQL\Type\Object\ObjectType')) {
+        if (empty($config)) {
             $config['name'] = $this->getName();
         }
 
@@ -37,6 +37,7 @@ abstract class AbstractObjectType extends AbstractType
         $this->buildArguments($this->config);
     }
 
+    // @todo: I would keep only one method build() everywhere (I changed it in config)
     abstract protected function buildFields(TypeConfigInterface $config);
 
     abstract protected function buildArguments(TypeConfigInterface $config);

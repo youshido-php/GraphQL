@@ -9,10 +9,12 @@
 namespace Youshido\GraphQL\Validator\ConfigValidator\Rules;
 
 
+use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Config\Field\FieldConfig;
 use Youshido\GraphQL\Type\Config\Field\InputFieldConfig;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Field\InputField;
+use Youshido\GraphQL\Type\Object\AbstractInputObjectType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
@@ -43,6 +45,10 @@ class TypeValidationRule implements ValidationRuleInterface
 
                 case TypeMap::TYPE_OBJECT_TYPE:
                     return $data instanceof AbstractObjectType;
+                    break;
+
+                case TypeMap::TYPE_OBJECT_INPUT_TYPE:
+                    return $data instanceof AbstractInputObjectType;
                     break;
 
                 case TypeMap::TYPE_FUNCTION:
@@ -102,7 +108,9 @@ class TypeValidationRule implements ValidationRuleInterface
 
     private function isField($data, $name = null)
     {
-        if ((is_object($data) && $data instanceof Field)) return true;
+        if (is_object($data)) {
+            return !!(($data instanceof Field) || ($data instanceof AbstractType));
+        }
 
         try {
             /** @todo need to change it to optimize performance */
@@ -118,8 +126,9 @@ class TypeValidationRule implements ValidationRuleInterface
 
     private function isInputField($data, $name = null)
     {
-        if ((is_object($data) && $data instanceof InputField)) return true;
-
+        if (is_object($data)) {
+            return !!(($data instanceof InputField) || ($data instanceof AbstractInputObjectType));
+        }
         try {
             /** @todo need to change it to optimize performance */
             if (empty($data['name'])) $data['name'] = $name;

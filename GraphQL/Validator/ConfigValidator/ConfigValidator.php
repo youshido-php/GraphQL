@@ -68,7 +68,7 @@ class ConfigValidator implements ConfigValidatorInterface
             }
         }
 
-        if ($extraFieldsAllowed) {
+        if (!$this->extraFieldsAllowed) {
             foreach (array_keys($data) as $fieldName) {
                 if (!in_array($fieldName, $processedFields)) {
                     $this->addError(

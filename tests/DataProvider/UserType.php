@@ -9,20 +9,20 @@
 namespace Youshido\Tests\DataProvider;
 
 
-use Youshido\GraphQL\Type\Config\ObjectTypeConfig;
-use Youshido\GraphQL\Type\Object\ObjectType;
+use Youshido\GraphQL\Type\Config\TypeConfigInterface;
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
 
-class UserType extends ObjectType
+class UserType extends AbstractObjectType
 {
 
-    public function buildFields(ObjectTypeConfig $config)
+    public function buildFields(TypeConfigInterface $config)
     {
         $config
             ->addField('id', 'int')
             ->addField('name', 'string');
     }
 
-    protected function buildArguments(ObjectTypeConfig $config)
+    protected function buildArguments(TypeConfigInterface $config)
     {
         $config
             ->addArgument('id', 'int', [
