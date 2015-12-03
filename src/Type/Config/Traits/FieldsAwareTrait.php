@@ -17,7 +17,6 @@ trait FieldsAwareTrait
 {
     protected $fields = [];
 
-
     public function addField($name, $type, $config = [])
     {
         if (is_string($type)) {

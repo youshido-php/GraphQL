@@ -11,6 +11,7 @@ namespace Youshido\GraphQL\Type;
 
 use Youshido\GraphQL\Type\Config\Object\InputObjectTypeConfig;
 use Youshido\GraphQL\Type\Config\Object\ObjectTypeConfig;
+use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 
 abstract class AbstractType implements TypeInterface
 {
@@ -20,6 +21,8 @@ abstract class AbstractType implements TypeInterface
      */
     protected $config;
 
+    protected $isBuild = false;
+
     protected $name;
 
     /**
@@ -27,12 +30,22 @@ abstract class AbstractType implements TypeInterface
      */
     public function getConfig()
     {
+        $this->checkBuild();
         return $this->config;
     }
 
+    public function checkBuild() {
+        if (!$this->isBuild) {
+            $this->isBuild = true;
+            $this->build($this->config);
+        }
+    }
+
+    protected function build(TypeConfigInterface $config) {}
+
     function getDescription()
     {
-        return "";
+        return $this->getConfig()->get('description', '');
     }
 
     public function parseValue($value)

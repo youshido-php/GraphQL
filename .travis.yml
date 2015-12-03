@@ -17,5 +17,6 @@ notifications:
   email:
     recipients:
       - portey@gmail.com
+      - a@viniychuk.com
     on_success: change
     on_failure: always
