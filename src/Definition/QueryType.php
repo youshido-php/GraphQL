@@ -17,7 +17,7 @@ class QueryType extends AbstractObjectType
     {
         $config
             ->addField('kind', 'string')
-            ->addField('kind', 'name')
+            ->addField('kind', 'string')
             ->addField('description', 'string')
             ->addField('ofType', new QueryType())
             ->addField('inputFields', new InputValueListType())

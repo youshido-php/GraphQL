@@ -45,12 +45,8 @@ class Schema
     {
     }
 
-    public function addQuery(AbstractObjectType $query)
+    public function addQuery($name, AbstractObjectType $query)
     {
-        if (empty($name)) {
-            $name = $query->getName();
-        }
-
         $this->getQueryType()->getConfig()->addField($name, $query);
     }
 

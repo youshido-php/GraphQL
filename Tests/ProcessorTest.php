@@ -24,7 +24,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     public function testProcessor($query, $response)
     {
         $schema = new Schema();
-        $schema->addQuery(
+        $schema->addQuery('latest',
             new ObjectType(
                 [
                     'name'    => 'latest',
@@ -40,7 +40,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                     }
                 ]));
 
-        $schema->addQuery(new UserType());
+        $schema->addQuery('user', new UserType());
 
         $validator = new ResolveValidator();
         $processor = new Processor($validator);
