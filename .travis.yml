@@ -11,7 +11,7 @@ before_install:
 install: composer update --prefer-dist --no-interaction
 
 script:
-  - phpunit --coverage-text
+  - ./vendor/bin/phpunit --coverage-text
 
 notifications:
   email:
