@@ -8,18 +8,29 @@
 
 namespace Youshido\GraphQL\Type\Object;
 
-use Youshido\GraphQL\Type\AbstractType;
-use Youshido\GraphQL\Type\Config\Object\ObjectTypeConfig;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
-use Youshido\GraphQL\Type\TypeMap;
-use Youshido\GraphQL\Validator\Exception\ResolveException;
+use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 final class ObjectType extends AbstractObjectType
 {
 
     protected $name = 'GenericObject';
 
-    protected function buildFields(TypeConfigInterface $config) { }
+    protected function build(TypeConfigInterface $config) { }
 
-    protected function buildArguments(TypeConfigInterface $config) { }
+    function getName()
+    {
+        if (!$this->name) {
+            throw new ConfigurationException("Type has to have a name");
+        }
+
+        return $this->name;
+    }
+
+    public function resolve($value = null, $args = [])
+    {
+        $callable = $this->config->getResolveFunction();
+
+        return is_callable($callable) ? $callable($value, $args) : null;
+    }
 }

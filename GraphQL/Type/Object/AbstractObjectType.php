@@ -18,8 +18,6 @@ use Youshido\GraphQL\Validator\Exception\ResolveException;
 abstract class AbstractObjectType extends AbstractType
 {
 
-    protected $name;
-
     /**
      * ObjectType constructor.
      * @param $config
@@ -33,14 +31,12 @@ abstract class AbstractObjectType extends AbstractType
         $this->config = new ObjectTypeConfig($config, $this);
         $this->name   = $this->config->getName();
 
-        $this->buildFields($this->config);
-        $this->buildArguments($this->config);
+        $this->build($this->config);
     }
 
-    // @todo: I would keep only one method build() everywhere (I changed it in config)
-    abstract protected function buildFields(TypeConfigInterface $config);
+    abstract protected function build(TypeConfigInterface $config);
 
-    abstract protected function buildArguments(TypeConfigInterface $config);
+    abstract public function resolve($value = null, $args = []);
 
     public function parseValue($value)
     {
@@ -52,14 +48,7 @@ abstract class AbstractObjectType extends AbstractType
         throw new ResolveException('You can not serialize object value directly');
     }
 
-    public function resolve($value = null, $args = [])
-    {
-        $callable = $this->config->getResolveFunction();
-
-        return is_callable($callable) ? $callable($value, $args) : null;
-    }
-
-    final public function getKind()
+    public function getKind()
     {
         return TypeMap::KIND_OBJECT;
     }

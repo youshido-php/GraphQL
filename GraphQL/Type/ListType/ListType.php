@@ -3,15 +3,22 @@
 * This file is a part of graphql-youshido project.
 *
 * @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 12/1/15 10:25 PM
+* created: 12/1/15 1:22 AM
 */
 
-namespace Youshido\GraphQL\Type\Object;
+namespace Youshido\GraphQL\Type\ListType;
+
 
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
-final class InputObjectType extends AbstractInputObjectType
+class ListType extends AbstractListType
 {
+
+
+    public function getItem()
+    {
+        throw new \Exception('You must define type of List Item');
+    }
 
     function getName()
     {
@@ -27,10 +34,5 @@ final class InputObjectType extends AbstractInputObjectType
         $callable = $this->config->getResolveFunction();
 
         return is_callable($callable) ? $callable($value, $args) : null;
-    }
-
-    protected function getOutputType()
-    {
-        throw new ConfigurationException('You must define output type');
     }
 }

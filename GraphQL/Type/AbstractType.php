@@ -11,7 +11,6 @@ namespace Youshido\GraphQL\Type;
 
 use Youshido\GraphQL\Type\Config\Object\InputObjectTypeConfig;
 use Youshido\GraphQL\Type\Config\Object\ObjectTypeConfig;
-use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 abstract class AbstractType implements TypeInterface
 {
@@ -33,7 +32,7 @@ abstract class AbstractType implements TypeInterface
 
     function getDescription()
     {
-        return "This Type doesn't have a description yet";
+        return "";
     }
 
     public function parseValue($value)
@@ -49,14 +48,5 @@ abstract class AbstractType implements TypeInterface
     public function __toString()
     {
         return $this->getName();
-    }
-
-    function getName()
-    {
-        if (!$this->name) {
-            throw new ConfigurationException("Type has to have a name");
-        }
-
-        return $this->name;
     }
 }

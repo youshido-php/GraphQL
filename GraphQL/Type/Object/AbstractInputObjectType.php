@@ -10,8 +10,8 @@ namespace Youshido\GraphQL\Type\Object;
 
 
 use Youshido\GraphQL\Type\Config\Object\InputObjectTypeConfig;
+use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Field\Field;
-use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 abstract class AbstractInputObjectType extends AbstractObjectType
 {
@@ -29,14 +29,10 @@ abstract class AbstractInputObjectType extends AbstractObjectType
         $this->config = new InputObjectTypeConfig($config, $this);
         $this->name   = $this->config->getName();
 
-        $this->buildFields($this->config);
-        $this->buildArguments($this->config);
+        $this->build($this->config);
     }
 
-    public function getOutputType()
-    {
-        throw new ConfigurationException('You must define output type');
-    }
+    abstract protected function getOutputType();
 
     public function isValidValue($value)
     {
@@ -60,6 +56,10 @@ abstract class AbstractInputObjectType extends AbstractObjectType
         }
 
         return !(count($requiredFields) > 0);
+    }
+
+    protected function build(TypeConfigInterface $config)
+    {
     }
 
 }

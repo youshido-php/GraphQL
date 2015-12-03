@@ -92,7 +92,7 @@ class Processor
             return null;
         }
 
-        /** @var InputObjectType $inputType */
+        /** @var ObjectType $inputType */
         $inputType = $objectType->getConfig()->getField($mutation->getName())->getType();
 
         if (!$this->resolveValidator->validateArguments($inputType, $mutation, $this->request)) {
