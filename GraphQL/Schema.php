@@ -10,6 +10,7 @@ namespace Youshido\GraphQL;
 
 use Youshido\GraphQL\Type\Config\Schema\SchemaConfig;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\InputObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 
@@ -44,11 +45,12 @@ class Schema
     {
     }
 
+    // @todo why do we need an extra method here ?
     public function buildMutations(TypeConfigInterface $config)
     {
     }
 
-    public function addQuery(ObjectType $query)
+    public function addQuery(AbstractObjectType $query)
     {
         if (empty($name)) {
             $name = $query->getName();

@@ -13,6 +13,7 @@ use Youshido\GraphQL\Type\Config\Field\FieldConfig;
 use Youshido\GraphQL\Type\Config\Field\InputFieldConfig;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Field\InputField;
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
@@ -41,7 +42,7 @@ class TypeValidationRule implements ValidationRuleInterface
                     break;
 
                 case TypeMap::TYPE_OBJECT_TYPE:
-                    return $data instanceof ObjectType;
+                    return $data instanceof AbstractObjectType;
                     break;
 
                 case TypeMap::TYPE_FUNCTION:

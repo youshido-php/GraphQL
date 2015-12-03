@@ -56,7 +56,7 @@ class Processor
         try {
             $this->parseAndCreateRequest($queryString, $variables);
 
-            if($this->request->hasQueries()){
+            if ($this->request->hasQueries()) {
                 foreach ($this->request->getQueries() as $query) {
                     if ($queryResult = $this->executeQuery($query, $this->getSchema()->getQueryType())) {
                         $this->data = array_merge($this->data, $queryResult);
@@ -64,8 +64,8 @@ class Processor
                 }
             }
 
-            if($this->request->hasMutations()){
-                foreach($this->request->getMutations() as $mutation){
+            if ($this->request->hasMutations()) {
+                foreach ($this->request->getMutations() as $mutation) {
                     if ($mutationResult = $this->executeMutation($mutation, $this->getSchema()->getMutationType())) {
                         $this->data = array_merge($this->data, $mutationResult);
                     }
@@ -222,7 +222,7 @@ class Processor
      */
     public function parseArgumentsValues($queryType, $query)
     {
-        if($query instanceof \Youshido\GraphQL\Parser\Ast\Field){
+        if ($query instanceof \Youshido\GraphQL\Parser\Ast\Field) {
             return [];
         }
 
