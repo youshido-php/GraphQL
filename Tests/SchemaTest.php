@@ -7,10 +7,8 @@
 */
 
 namespace Youshido\Tests;
-require_once __DIR__ . '/../vendor/autoload.php';
 
-
-use Youshido\GraphQL\Type\ListType;
+use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\Tests\DataProvider\UserType;
@@ -29,9 +27,9 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
             ]);
 
         $this->assertEquals("users", $userType->getName());
-        $this->assertEquals("id", $userType->getField("id")->getName());
+        $this->assertEquals("id", $userType->getConfig()->getField("id")->getName());
         $this->assertEquals(TypeMap::KIND_OBJECT, $userType->getKind());
-        $this->assertInstanceOf('Youshido\GraphQL\Type\Scalar\IntType', $userType->getField("id")->getType());
+        $this->assertInstanceOf('Youshido\GraphQL\Type\Scalar\IntType', $userType->getConfig()->getField("id")->getType());
     }
 
     public function testListSchema()
@@ -40,7 +38,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
             [
                 'name'      => 'users',
                 'item'      => new UserType(),
-                'arguments' => [
+                'args' => [
                     'count' => [
                         'type' => 'int'
                     ]

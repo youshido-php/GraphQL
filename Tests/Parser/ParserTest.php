@@ -6,8 +6,6 @@
  */
 
 namespace Youshido\tests\GraphQL\Parser;
-require_once __DIR__ . '/../../../vendor/autoload.php';
-
 
 use Youshido\GraphQL\Parser\Ast\Argument;
 use Youshido\GraphQL\Parser\Ast\Field;

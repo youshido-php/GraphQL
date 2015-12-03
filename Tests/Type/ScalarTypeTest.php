@@ -7,7 +7,6 @@
 */
 
 namespace Youshido\Tests;
-require_once __DIR__ . '/../../vendor/autoload.php';
 
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
@@ -20,7 +19,7 @@ class ScalarTypeTest extends \PHPUnit_Framework_TestCase
     public function testTypeName()
     {
         foreach(TestScalarDataProvider::getTypesList() as $typeName) {
-            $className = 'Youshido\GraphQL\Type\Scalar\\' . $typeName . 'Type';
+            $className = 'Youshido\GraphQL\Type\Scalar\\' . $typeName;
             /** @var TypeInterface $object */
             $object = new $className();
             $this->assertEquals($typeName, $object->getName());

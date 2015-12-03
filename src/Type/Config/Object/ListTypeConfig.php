@@ -10,7 +10,6 @@ namespace Youshido\GraphQL\Type\Config\Object;
 
 
 use Youshido\GraphQL\Type\Field\Field;
-use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 
 class ListTypeConfig extends ObjectTypeConfig
@@ -21,6 +20,7 @@ class ListTypeConfig extends ObjectTypeConfig
             'name'    => ['type' => TypeMap::TYPE_STRING],
             'item'    => ['type' => TypeMap::TYPE_OBJECT_TYPE, 'required' => true],
             'resolve' => ['type' => TypeMap::TYPE_FUNCTION],
+            'args'    => ['type' => TypeMap::TYPE_ARRAY_OF_INPUTS],
         ];
     }
 

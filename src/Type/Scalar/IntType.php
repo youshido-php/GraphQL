@@ -22,7 +22,7 @@ class IntType extends AbstractScalarType
 
     public function parseValue($value)
     {
-        if (!is_integer($value) && !is_double($value)) {
+        if (!is_integer($value)) {
             return null;
         }
 

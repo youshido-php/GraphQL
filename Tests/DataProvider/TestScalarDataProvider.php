@@ -16,8 +16,8 @@ class TestScalarDataProvider
     public static function getTypesList()
     {
         return [
-            "Int",
-            "String"
+            "IntType",
+            "StringType"
         ];
     }
 

@@ -7,13 +7,13 @@
 */
 
 namespace Youshido\Tests\Type;
-use Youshido\GraphQL\Type\ListType;
+
+
+use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\InputObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\Tests\DataProvider\UserType;
-
-require_once __DIR__ . '/../../vendor/autoload.php';
 
 
 class ObjectTypeTest extends \PHPUnit_Framework_TestCase
@@ -41,7 +41,7 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
             [
                 'name'      => 'users',
                 'item'      => new UserType(),
-                'arguments' => [
+                'args' => [
                     'count' => [
                         'type' => 'int'
                     ]

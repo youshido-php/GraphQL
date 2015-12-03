@@ -14,7 +14,6 @@ use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 class ListType extends AbstractListType
 {
 
-
     public function getItem()
     {
         throw new \Exception('You must define type of List Item');

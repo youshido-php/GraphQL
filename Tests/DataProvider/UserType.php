@@ -15,15 +15,12 @@ use Youshido\GraphQL\Type\Object\AbstractObjectType;
 class UserType extends AbstractObjectType
 {
 
-    public function buildFields(TypeConfigInterface $config)
+    public function build(TypeConfigInterface $config)
     {
         $config
             ->addField('id', 'int')
             ->addField('name', 'string');
-    }
 
-    protected function buildArguments(TypeConfigInterface $config)
-    {
         $config
             ->addArgument('id', 'int', [
                 'required' => true

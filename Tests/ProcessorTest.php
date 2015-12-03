@@ -7,8 +7,6 @@
 */
 
 namespace Youshido\Tests;
-require_once __DIR__ . '/../vendor/autoload.php';
-
 
 use Youshido\GraphQL\Schema;
 use Youshido\GraphQL\Type\Object\ObjectType;
@@ -20,7 +18,10 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 {
 
 
-    public function testProcessor()
+    /**
+     * @dataProvider schemaProvider
+     */
+    public function testProcessor($query, $response)
     {
         $schema = new Schema();
         $schema->addQuery(
@@ -45,13 +46,31 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor = new Processor($validator);
 
         $processor->setSchema($schema);
+        $processor->processQuery($query);
 
-        $processor->processQuery('{ latest { name } }');
-        print_r($processor->getResponseData());
+        $this->assertEquals(
+            $processor->getResponseData(),
+            $response
+        );
+    }
 
-        $processor->processQuery('{ user(id:1) { id, name } }');
-        print_r($processor->getResponseData());
-
+    public function schemaProvider()
+    {
+        return [
+            [
+                '{ latest { name } }',
+                [
+                    'data' => ['latest' => null],
+                    'errors' => ['Not valid resolved value for query "latest"']
+                ]
+            ],
+            [
+                '{ user(id:1) { id, name } }',
+                [
+                    'errors' => ['Not valid type for argument "id" in query "user"']
+                ]
+            ]
+        ];
     }
 
 }
