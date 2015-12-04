@@ -14,14 +14,10 @@ use Youshido\GraphQL\Type\ListType\ListType;
 
 class TestSchema extends Schema
 {
-    public function buildTypes(TypeConfigInterface $config)
+    public function build(TypeConfigInterface $config)
     {
         $config
             ->addField('users', new ListType(['item' => new UserType()]));
-    }
-
-    public function buildMutations(TypeConfigInterface $config)
-    {
     }
 
     public function getName()

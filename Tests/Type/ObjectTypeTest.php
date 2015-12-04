@@ -38,14 +38,14 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
     {
         $listType = new ListType(
             [
-                'name'      => 'users',
-                'item'      => new UserType(),
-                'args' => [
+                'name'    => 'users',
+                'item'    => new UserType(),
+                'args'    => [
                     'count' => [
                         'type' => 'int'
                     ]
                 ],
-                'resolve'   => function ($object, $args = []) {
+                'resolve' => function () {
 
                 }
             ]);

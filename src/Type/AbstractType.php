@@ -23,7 +23,7 @@ abstract class AbstractType implements TypeInterface
 
     protected $isBuild = false;
 
-    function getDescription()
+    public function getDescription()
     {
         return $this->getConfig()->get('description', '');
     }

@@ -97,7 +97,7 @@ class TypeValidationRule implements ValidationRuleInterface
     private function isField($data, $name = null)
     {
         if (is_object($data)) {
-            return !!(($data instanceof Field) || ($data instanceof AbstractType));
+            return ($data instanceof Field) || ($data instanceof AbstractType);
         }
 
         try {
@@ -116,7 +116,7 @@ class TypeValidationRule implements ValidationRuleInterface
     private function isInputField($data, $name = null)
     {
         if (is_object($data)) {
-            return !!(($data instanceof InputField) || ($data instanceof AbstractInputObjectType));
+            return ($data instanceof InputField) || ($data instanceof AbstractInputObjectType);
         }
         try {
             /** @todo need to change it to optimize performance */

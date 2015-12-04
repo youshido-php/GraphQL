@@ -32,16 +32,10 @@ class Schema
 
         $this->config = new SchemaConfig($config, $this);
 
-        $this->buildTypes($this->config->getQuery()->getConfig());
-        $this->buildMutations($this->config->getMutation()->getConfig());
+        $this->build($this->getQueryType()->getConfig());
     }
 
-    public function buildTypes(TypeConfigInterface $config)
-    {
-    }
-
-    // @todo why do we need an extra method here ?
-    public function buildMutations(TypeConfigInterface $config)
+    public function build(TypeConfigInterface $config)
     {
     }
 
