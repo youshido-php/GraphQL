@@ -19,9 +19,9 @@ class InputObjectTypeConfig extends ObjectTypeConfig
     {
         return [
             'name'        => ['type' => TypeMap::TYPE_STRING, 'required' => true],
-            'output'      => ['type' => TypeMap::TYPE_OBJECT_TYPE],
-            'fields'      => ['type' => TypeMap::TYPE_ARRAY_OF_INPUTS],
             'description' => ['type' => TypeMap::TYPE_STRING],
+            'fields'      => ['type' => TypeMap::TYPE_ARRAY_OF_INPUTS],
+            'output'      => ['type' => TypeMap::TYPE_OBJECT_TYPE],
         ];
     }
 

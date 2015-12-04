@@ -88,8 +88,7 @@ class Processor
      */
     protected function executeMutation($mutation, $objectType)
     {
-        if (!$objectType->getConfig()->hasField($mutation->getName())) {
-            $this->resolveValidator->addError(new ResolveException(sprintf('Field "%s" not found in schema', $mutation->getName())));
+        if (!$this->checkFieldExist($objectType, $mutation)) {
 
             return null;
         }
@@ -139,8 +138,7 @@ class Processor
      */
     protected function executeQuery($query, $currentLevelSchema, $contextValue = null)
     {
-        if (!$currentLevelSchema->getConfig()->hasField($query->getName())) {
-            $this->resolveValidator->addError(new ResolveException(sprintf('Field "%s" not found in schema', $query->getName())));
+        if (!$this->checkFieldExist($currentLevelSchema, $query)) {
 
             return null;
         }
@@ -180,6 +178,22 @@ class Processor
         }
 
         return [$alias => $value];
+    }
+
+    /**
+     * @param $objectType InputObjectType|ObjectType
+     * @param $query Mutation|Query
+     * @return null
+     */
+    private function checkFieldExist($objectType, $query)
+    {
+        if (!$objectType->getConfig()->hasField($query->getName())) {
+            $this->resolveValidator->addError(new ResolveException(sprintf('Field "%s" not found in schema', $query->getName())));
+
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -310,7 +324,7 @@ class Processor
     {
         $result = [];
 
-        if ($this->data) {
+        if (!empty($this->data)) {
             $result['data'] = $this->data;
         }
 

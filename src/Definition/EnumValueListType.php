@@ -13,7 +13,7 @@ use Youshido\GraphQL\Type\ListType\AbstractListType;
 class EnumValueListType extends AbstractListType
 {
 
-    function getName()
+    public function getName()
     {
         return '__EnumValueList';
     }

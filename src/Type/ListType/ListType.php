@@ -9,29 +9,17 @@
 namespace Youshido\GraphQL\Type\ListType;
 
 
+use Youshido\GraphQL\Type\Traits\FinalTypesConfigTrait;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
-class ListType extends AbstractListType
+final class ListType extends AbstractListType
 {
+
+    use FinalTypesConfigTrait;
 
     public function getItem()
     {
-        throw new \Exception('You must define type of List Item');
+        throw new ConfigurationException('You must define type of List Item');
     }
 
-    function getName()
-    {
-        if (!$this->name) {
-            throw new ConfigurationException("Type has to have a name");
-        }
-
-        return $this->name;
-    }
-
-    public function resolve($value = null, $args = [])
-    {
-        $callable = $this->config->getResolveFunction();
-
-        return is_callable($callable) ? $callable($value, $args) : null;
-    }
 }

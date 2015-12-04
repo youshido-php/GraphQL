@@ -16,7 +16,6 @@ use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Field\InputField;
 use Youshido\GraphQL\Type\Object\AbstractInputObjectType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
-use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 

@@ -8,7 +8,6 @@
 namespace Youshido\GraphQL\Definition;
 
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
-use Youshido\GraphQL\Type\Object\AbstractObjectType;
 
 class TypeDefinitionType extends QueryType
 {

@@ -11,7 +11,6 @@ namespace Youshido\GraphQL\Type\Object;
 
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Config\Object\ObjectTypeConfig;
-use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 
@@ -29,7 +28,6 @@ abstract class AbstractObjectType extends AbstractType
         }
 
         $this->config = new ObjectTypeConfig($config, $this);
-        $this->name   = $this->config->getName();
     }
 
 

@@ -24,10 +24,9 @@ abstract class AbstractListType extends AbstractObjectType
         }
 
         $this->config = new ListTypeConfig($config, $this);
-        $this->name   = $this->config->getName();
     }
 
-    abstract function getName();
+    abstract public function getName();
 
     abstract public function getItem();
 

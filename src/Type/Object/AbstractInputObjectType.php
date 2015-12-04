@@ -27,9 +27,6 @@ abstract class AbstractInputObjectType extends AbstractObjectType
         }
 
         $this->config = new InputObjectTypeConfig($config, $this);
-        $this->name   = $this->config->getName();
-
-        $this->build($this->config);
     }
 
     abstract protected function getOutputType();
@@ -40,8 +37,7 @@ abstract class AbstractInputObjectType extends AbstractObjectType
             return false;
         }
 
-        $requiredFields = array_filter($this->getConfig()->getFields(), function ($field) {
-            /** @var Field $field */
+        $requiredFields = array_filter($this->getConfig()->getFields(), function (Field $field) {
             return $field->getConfig()->isRequired();
         });
 

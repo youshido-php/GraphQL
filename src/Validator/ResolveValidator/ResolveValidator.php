@@ -25,8 +25,7 @@ class ResolveValidator implements ResolveValidatorInterface
      */
     public function validateArguments($queryType, $query, $request)
     {
-        $requiredArguments = array_filter($queryType->getConfig()->getArguments(), function ($argument) {
-            /** @var $argument Field */
+        $requiredArguments = array_filter($queryType->getConfig()->getArguments(), function (Field $argument) {
             return $argument->getConfig()->isRequired();
         });
 

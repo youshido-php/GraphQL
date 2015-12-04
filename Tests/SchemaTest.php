@@ -17,6 +17,9 @@ use Youshido\Tests\DataProvider\UserType;
 class SchemaTest extends \PHPUnit_Framework_TestCase
 {
 
+    /**
+     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     */
     public function testInvalidConfigExtraField()
     {
         $invalidSchemaConfig = [
@@ -24,9 +27,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
             'fields' => []
         ];
 
-        $this->setExpectedException('Youshido\GraphQL\Validator\Exception\ConfigurationException');
         new Schema($invalidSchemaConfig);
-
     }
 
     public function testInlineCreated()

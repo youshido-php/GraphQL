@@ -1,7 +1,7 @@
 {
   "name": "youshido/graphql",
   "description": "Pure PHP GraphQL",
-  "license": "mit",
+  "license": "MIT",
   "authors": [
     {
       "name": "Alexandr Viniychuk",

@@ -10,6 +10,7 @@ namespace Youshido\GraphQL\Parser\Value;
 class Variable implements ValueInterface
 {
 
+    /** @var  string */
     private $name;
 
     private $value;

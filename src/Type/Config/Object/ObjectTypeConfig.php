@@ -26,10 +26,11 @@ class ObjectTypeConfig extends Config implements TypeConfigInterface
     public function getRules()
     {
         return [
-            'name'    => ['type' => TypeMap::TYPE_STRING, 'required' => true],
-            'fields'  => ['type' => TypeMap::TYPE_ARRAY_OF_FIELDS],
-            'args'    => ['type' => TypeMap::TYPE_ARRAY_OF_INPUTS],
-            'resolve' => ['type' => TypeMap::TYPE_FUNCTION],
+            'name'        => ['type' => TypeMap::TYPE_STRING, 'required' => true],
+            'description' => ['type' => TypeMap::TYPE_STRING],
+            'fields'      => ['type' => TypeMap::TYPE_ARRAY_OF_FIELDS],
+            'args'        => ['type' => TypeMap::TYPE_ARRAY_OF_INPUTS],
+            'resolve'     => ['type' => TypeMap::TYPE_FUNCTION],
         ];
     }
 
