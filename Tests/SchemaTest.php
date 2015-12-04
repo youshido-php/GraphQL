@@ -7,12 +7,12 @@
 */
 
 namespace Youshido\Tests;
-require_once __DIR__ . '/../vendor/autoload.php';
+//require_once __DIR__. '/../vendor/autoload.php';
 
 use Youshido\GraphQL\Schema;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\ObjectType;
-use Youshido\Tests\DataProvider\GeoSchema;
+use Youshido\Tests\DataProvider\TestSchema;
 use Youshido\Tests\DataProvider\UserType;
 
 class SchemaTest extends \PHPUnit_Framework_TestCase
@@ -49,7 +49,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
 
     public function testClassUsage()
     {
-        $schema = new GeoSchema();
+        $schema = new TestSchema();
         $this->assertEquals('GeoSchema', $schema->getName());
 
         $fields = $schema->getQueryType()->getConfig()->getFields();
