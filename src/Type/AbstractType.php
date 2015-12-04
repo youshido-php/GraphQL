@@ -34,14 +34,15 @@ abstract class AbstractType implements TypeInterface
         return $this->config;
     }
 
-    public function checkBuild() {
+    public function checkBuild()
+    {
         if (!$this->isBuild) {
             $this->isBuild = true;
             $this->build($this->config);
         }
     }
 
-    protected function build(TypeConfigInterface $config) {}
+    protected function build(TypeConfigInterface $config) { }
 
     function getDescription()
     {

@@ -73,7 +73,7 @@ class Query
      */
     public function hasFields()
     {
-        return (bool) count($this->fields);
+        return (bool)count($this->fields);
     }
 
     /**

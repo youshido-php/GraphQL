@@ -39,7 +39,7 @@ class FieldConfig extends Config
 
     public function isRequired()
     {
-        return  $this->get('required', false);
+        return $this->get('required', false);
     }
 
 

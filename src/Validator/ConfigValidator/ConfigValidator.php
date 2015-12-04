@@ -116,7 +116,6 @@ class ConfigValidator implements ConfigValidatorInterface
     }
 
 
-
     public function isValid()
     {
         return !$this->hasErrors();

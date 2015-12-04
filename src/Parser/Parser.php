@@ -141,7 +141,7 @@ class Parser extends Tokenizer
                 return new Mutation($name, $alias, $arguments, $fields);
             }
         } else {
-            if($highLevel && $type == Token::TYPE_MUTATION){
+            if ($highLevel && $type == Token::TYPE_MUTATION) {
                 return new Mutation($name, $alias, $arguments);
             }
 

@@ -295,7 +295,7 @@ class Processor
         $this->schema = $schema;
 
         $this->schema->addQuery('__schema', new SchemaType());
-        $this->schema->addQuery('__type',   new TypeDefinitionType());
+        $this->schema->addQuery('__type', new TypeDefinitionType());
     }
 
     /**

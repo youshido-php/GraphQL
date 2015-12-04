@@ -97,7 +97,7 @@ class Request
      */
     public function hasQueries()
     {
-        return (bool) count($this->queries);
+        return (bool)count($this->queries);
     }
 
     /**
@@ -105,7 +105,7 @@ class Request
      */
     public function hasMutations()
     {
-        return (bool) count($this->mutations);
+        return (bool)count($this->mutations);
     }
 
     /**

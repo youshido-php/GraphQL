@@ -25,20 +25,20 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     {
         $schema = new Schema();
         $schema->addQuery('latest',
-            new ObjectType(
-                [
-                    'name'    => 'latest',
-                    'fields'  => [
-                        'id'   => ['type' => 'int'],
-                        'name' => ['type' => 'string']
-                    ],
-                    'resolve' => function () {
-                        return [
-                            'id'   => 1,
-                            'name' => 'Alex'
-                        ];
-                    }
-                ]));
+                          new ObjectType(
+                              [
+                                  'name'    => 'latest',
+                                  'fields'  => [
+                                      'id'   => ['type' => 'int'],
+                                      'name' => ['type' => 'string']
+                                  ],
+                                  'resolve' => function () {
+                                      return [
+                                          'id'   => 1,
+                                          'name' => 'Alex'
+                                      ];
+                                  }
+                              ]));
 
         $schema->addQuery('user', new UserType());
 
@@ -60,7 +60,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             [
                 '{ latest { name } }',
                 [
-                    'data' => ['latest' => null],
+                    'data'   => ['latest' => null],
                     'errors' => ['Not valid resolved value for query "latest"']
                 ]
             ],
