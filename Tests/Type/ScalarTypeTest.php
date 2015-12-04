@@ -7,7 +7,6 @@
 */
 
 namespace Youshido\Tests;
-//require_once __DIR__. '/../../vendor/autoload.php';
 
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;

@@ -7,7 +7,6 @@
 */
 
 namespace Youshido\Tests;
-//require_once __DIR__. '/../vendor/autoload.php';
 
 use Youshido\GraphQL\Schema;
 use Youshido\GraphQL\Type\ListType\ListType;
@@ -21,7 +20,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
     public function testInvalidConfigExtraField()
     {
         $invalidSchemaConfig = [
-            'name'   => 'GeoSchema',
+            'name'   => 'TestSChema',
             'fields' => []
         ];
 
@@ -50,7 +49,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
     public function testClassUsage()
     {
         $schema = new TestSchema();
-        $this->assertEquals('GeoSchema', $schema->getName());
+        $this->assertEquals('TestSchema', $schema->getName());
 
         $fields = $schema->getQueryType()->getConfig()->getFields();
         $this->assertEquals(1, count($fields));
