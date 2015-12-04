@@ -94,7 +94,7 @@ class Processor
             return null;
         }
 
-        /** @var ObjectType $inputType */
+        /** @var InputObjectType $inputType */
         $inputType = $objectType->getConfig()->getField($mutation->getName())->getType();
 
         if (!$this->resolveValidator->validateArguments($inputType, $mutation, $this->request)) {
@@ -145,7 +145,8 @@ class Processor
             return null;
         }
 
-        /** @var ObjectType|Field $queryType */
+        /** @todo need to check if the correct field class is used here */
+        /** @var ObjectType $queryType */
         $queryType = $currentLevelSchema->getConfig()->getField($query->getName())->getType();
         if (get_class($query) == 'Youshido\GraphQL\Parser\Ast\Field') {
             $alias            = $query->getName();

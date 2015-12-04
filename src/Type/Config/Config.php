@@ -87,7 +87,7 @@ class Config
         } elseif (substr($method, 0, 2) == 'is') {
             $propertyName = lcfirst(substr($method, 2));
         }
-        if ($propertyName) {
+        if ($propertyName !== false) {
             return $this->get($propertyName);
         }
         throw new \Exception('Call to undefined method ' . $method);
