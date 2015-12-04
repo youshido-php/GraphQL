@@ -17,6 +17,89 @@ use Youshido\Tests\DataProvider\UserType;
 class ProcessorTest extends \PHPUnit_Framework_TestCase
 {
 
+    /**
+     * @param $query
+     * @param $response
+     *
+     * @dataProvider predefinedSchemaProvider
+     */
+    public function testPredefinedQueries($query, $response)
+    {
+        $schema = new Schema([
+            'query' => new ObjectType([
+                'name'        => 'TestSchema',
+                'description' => 'Root of TestSchema'
+            ])
+        ]);
+        $schema->addQuery('latest',
+            new ObjectType(
+                [
+                    'name'    => 'latest',
+                    'fields'  => [
+                        'id'   => ['type' => 'int'],
+                        'name' => ['type' => 'string']
+                    ],
+                    'resolve' => function () {
+                        return [
+                            'id'   => 1,
+                            'name' => 'Alex'
+                        ];
+                    }
+                ]));
+
+        $validator = new ResolveValidator();
+        $processor = new Processor($validator);
+
+        $processor->setSchema($schema);
+
+        $processor->processQuery($query);
+
+        $this->assertEquals($processor->getResponseData(), $response);
+    }
+
+
+    public function predefinedSchemaProvider()
+    {
+        return [
+            [
+                '{
+                  __schema {
+                    queryType {
+                      kind,
+                      name,
+                      description,
+                      interfaces {
+                        name
+                      },
+                      possibleTypes {
+                        name
+                      },
+                      inputFields {
+                        name
+                      },
+                      ofType{
+                        name
+                      }
+                    }
+                  }
+                }',
+                ['data' => [
+                    '__schema' => [
+                        'queryType' => [
+                            'kind'          => 'OBJECT',
+                            'name'          => 'TestSchema',
+                            'description'   => 'Root of TestSchema',
+                            'interfaces'    => [],
+                            'possibleTypes' => [],
+                            'inputFields'   => [],
+                            'ofType'        => []
+                        ]
+                    ]
+                ]]
+            ]
+        ];
+    }
+
 
     /**
      * @dataProvider schemaProvider
@@ -25,20 +108,20 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     {
         $schema = new Schema();
         $schema->addQuery('latest',
-                          new ObjectType(
-                              [
-                                  'name'    => 'latest',
-                                  'fields'  => [
-                                      'id'   => ['type' => 'int'],
-                                      'name' => ['type' => 'string']
-                                  ],
-                                  'resolve' => function () {
-                                      return [
-                                          'id'   => 1,
-                                          'name' => 'Alex'
-                                      ];
-                                  }
-                              ]));
+            new ObjectType(
+                [
+                    'name'    => 'latest',
+                    'fields'  => [
+                        'id'   => ['type' => 'int'],
+                        'name' => ['type' => 'string']
+                    ],
+                    'resolve' => function () {
+                        return [
+                            'id'   => 1,
+                            'name' => 'Alex'
+                        ];
+                    }
+                ]));
 
         $schema->addQuery('user', new UserType());
 
@@ -60,14 +143,13 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             [
                 '{ latest { name } }',
                 [
-                    'data'   => ['latest' => null],
-                    'errors' => ['Not valid resolved value for query "latest"']
+                    'data' => ['latest' => null]
                 ]
             ],
             [
                 '{ user(id:1) { id, name } }',
                 [
-                    'errors' => ['Not valid type for argument "id" in query "user"']
+                    'data' => ['user' => ['id' => 1, 'name' => 'John']]
                 ]
             ]
         ];

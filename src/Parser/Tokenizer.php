@@ -219,24 +219,18 @@ class Tokenizer
 
         $this->skipInteger();
 
-        if ($this->source[$this->pos] === '->' || $this->source[$this->pos] === '.') {
+        if ($this->source[$this->pos] === '.') {
             $this->pos++;
             $this->skipInteger();
         }
 
-        $ch = $this->source[$this->pos];
-        if ($ch === 'e' || $ch === 'E') {
-            $this->pos++;
+        $value = substr($this->source, $start, $this->pos - $start);
 
-            $ch = $this->source[$this->pos];
-            if ($ch === '+' || $ch === '-') {
-                $this->pos++;
-            }
-
-            $this->skipInteger();
+        if(strpos($value, '.') === false){
+            $value = (int) $value;
+        } else {
+            $value = (float) $value;
         }
-
-        $value = (float)substr($this->source, $start, $this->pos);
 
         return new Token(Token::TYPE_NUMBER, $value);
     }

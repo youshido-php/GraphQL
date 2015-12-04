@@ -8,23 +8,23 @@
 namespace Youshido\GraphQL\Definition;
 
 
-use Youshido\GraphQL\Type\ListType\AbstractListType;
-
-class InputValueListType extends AbstractListType
+class PossibleOfListType extends QueryListType
 {
 
     public function getName()
     {
-        return '____InputValuesList';
+        return '__PossibleOfList';
     }
 
     public function getItem()
     {
-        return new InputValueType();
+        return new PossibleOfType();
     }
 
     public function resolve($value = null, $args = [])
     {
         return [];
     }
+
+
 }

@@ -9,13 +9,16 @@ namespace Youshido\GraphQL\Definition;
 
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Definition\Traits\SchemaContainableTrait;
 
 class SchemaType extends AbstractObjectType
 {
 
+    use SchemaContainableTrait;
+
     public function resolve($value = null, $args = [])
     {
-        return $value;
+        return $this->getSchema();
     }
 
     /**

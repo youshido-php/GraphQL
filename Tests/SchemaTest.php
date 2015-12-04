@@ -56,6 +56,5 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, count($fields));
 
         $this->assertEquals('users', $fields['users']->getName());
-
     }
 }

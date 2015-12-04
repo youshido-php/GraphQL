@@ -20,7 +20,7 @@ class FieldListType extends AbstractListType
 
     public function getItem()
     {
-        new FieldType();
+        return new FieldType();
     }
 
     public function resolve($value = null, $args = [])

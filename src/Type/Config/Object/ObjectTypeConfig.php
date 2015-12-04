@@ -34,11 +34,6 @@ class ObjectTypeConfig extends Config implements TypeConfigInterface
         ];
     }
 
-    public function getResolveFunction()
-    {
-        return $this->get('resolve');
-    }
-
     protected function build()
     {
         $sourceFields = empty($this->data['fields']) ? [] : $this->data['fields'];

@@ -8,9 +8,12 @@
 namespace Youshido\GraphQL\Definition;
 
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
+use Youshido\GraphQL\Definition\Traits\SchemaContainableTrait;
 
 class TypeDefinitionType extends QueryType
 {
+
+    use SchemaContainableTrait;
 
     protected function build(TypeConfigInterface $config)
     {

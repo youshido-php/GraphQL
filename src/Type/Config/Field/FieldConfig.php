@@ -9,6 +9,7 @@
 namespace Youshido\GraphQL\Type\Config\Field;
 
 use Youshido\GraphQL\Type\Config\Config;
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 
@@ -28,9 +29,19 @@ class FieldConfig extends Config
         ];
     }
 
+    public function resolve($value = null, $args = [])
+    {
+        $resolveFunction = $this->get('resolve', null);
+
+        if($resolveFunction && is_callable($resolveFunction)) {
+           return $resolveFunction($value, $args);
+        }
+
+        return $this->getType()->resolve($value, $args);
+    }
 
     /**
-     * @return TypeInterface
+     * @return TypeInterface|AbstractObjectType
      */
     public function getType()
     {

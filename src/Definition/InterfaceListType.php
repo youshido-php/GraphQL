@@ -8,23 +8,23 @@
 namespace Youshido\GraphQL\Definition;
 
 
-use Youshido\GraphQL\Type\ListType\AbstractListType;
-
-class InputValueListType extends AbstractListType
+class InterfaceListType extends QueryListType
 {
 
     public function getName()
     {
-        return '____InputValuesList';
+        return '__InterfaceList';
     }
 
     public function getItem()
     {
-        return new InputValueType();
+        return new InterfaceType();
     }
 
     public function resolve($value = null, $args = [])
     {
         return [];
     }
+
+
 }

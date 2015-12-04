@@ -18,6 +18,7 @@ use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Type\Field\Field;
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\InputObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeInterface;
@@ -93,25 +94,25 @@ class Processor
             return null;
         }
 
-        /** @var InputObjectType $inputType */
-        $inputType = $objectType->getConfig()->getField($mutation->getName())->getType();
+        /** @var Field $field */
+        $field = $objectType->getConfig()->getField($mutation->getName());
 
-        if (!$this->resolveValidator->validateArguments($inputType, $mutation, $this->request)) {
+        if (!$this->resolveValidator->validateArguments($field->getType(), $mutation, $this->request)) {
             return null;
         }
 
         $alias         = $mutation->hasAlias() ? $mutation->getAlias() : $mutation->getName();
-        $resolvedValue = $this->resolveValue($inputType, null, $mutation);
+        $resolvedValue = $this->resolveValue($field, null, $mutation);
 
-        if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $inputType->getKind())) {
-            $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolved value for mutation "%s"', $inputType->getName())));
+        if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $field->getType()->getKind())) {
+            $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolved value for mutation "%s"', $field->getType()->getName())));
 
             return [$alias => null];
         }
 
         $value = null;
         if ($mutation->hasFields()) {
-            $outputType = $inputType->getConfig()->getOutputType();
+            $outputType = $field->getType()->getConfig()->getOutputType();
 
             $value = $this->processQueryFields($mutation, $outputType, $resolvedValue, []);
         }
@@ -144,36 +145,40 @@ class Processor
         }
 
         /** @todo need to check if the correct field class is used here */
-        /** @var ObjectType $queryType */
-        $queryType = $currentLevelSchema->getConfig()->getField($query->getName())->getType();
+        /** @var Field $field */
+        $field = $currentLevelSchema->getConfig()->getField($query->getName());
         if (get_class($query) == 'Youshido\GraphQL\Parser\Ast\Field') {
             $alias            = $query->getName();
             $preResolvedValue = $this->getPreResolvedValue($contextValue, $query);
-            $value            = $queryType->serialize($preResolvedValue);
+            $value            = $field->getType()->serialize($preResolvedValue);
         } else {
-            if (!$this->resolveValidator->validateArguments($queryType, $query, $this->request)) {
+            if (!$this->resolveValidator->validateArguments($field->getType(), $query, $this->request)) {
                 return null;
             }
 
-            $resolvedValue = $this->resolveValue($queryType, $contextValue, $query);
+            $resolvedValue = $this->resolveValue($field, $contextValue, $query);
             $alias         = $query->hasAlias() ? $query->getAlias() : $query->getName();
 
-            if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $currentLevelSchema->getKind())) {
-                $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolved value for query "%s"', $queryType->getName())));
+            if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $field->getType()->getKind())) {
+                $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolved value for query "%s"', $field->getType()->getName())));
 
                 return [$alias => null];
             }
 
             $value = [];
-            if ($queryType->getKind() == TypeMap::KIND_LIST) {
-                foreach ($resolvedValue as $resolvedValueItem) {
-                    $value[] = [];
-                    $index   = count($value) - 1;
+            if($resolvedValue){
+                if ($field->getType()->getKind() == TypeMap::KIND_LIST) {
+                    foreach ($resolvedValue as $resolvedValueItem) {
+                        $value[] = [];
+                        $index   = count($value) - 1;
 
-                    $value[$index] = $this->processQueryFields($query, $queryType, $resolvedValueItem, $value[$index]);
+                        $value[$index] = $this->processQueryFields($query, $field->getType(), $resolvedValueItem, $value[$index]);
+                    }
+                } else {
+                    $value = $this->processQueryFields($query, $field->getType(), $resolvedValue, $value);
                 }
             } else {
-                $value = $this->processQueryFields($query, $queryType, $resolvedValue, $value);
+                $value = $resolvedValue;
             }
         }
 
@@ -220,19 +225,19 @@ class Processor
     }
 
     /**
-     * @param $queryType    ObjectType
+     * @param $field    Field
      * @param $contextValue mixed
      * @param $query        Query
      *
      * @return mixed
      */
-    protected function resolveValue($queryType, $contextValue, $query)
+    protected function resolveValue($field, $contextValue, $query)
     {
-        return $queryType->resolve($contextValue, $this->parseArgumentsValues($queryType, $query));
+        return $field->getConfig()->resolve($contextValue, $this->parseArgumentsValues($field->getConfig()->getType(), $query));
     }
 
     /**
-     * @param $queryType ObjectType
+     * @param $queryType AbstractObjectType
      * @param $query     Query
      *
      * @return array
@@ -308,8 +313,14 @@ class Processor
     {
         $this->schema = $schema;
 
-        $this->schema->addQuery('__schema', new SchemaType());
-        $this->schema->addQuery('__type', new TypeDefinitionType());
+        $__schema = new SchemaType();
+        $__schema->setSchema($schema);
+
+        $__type = new TypeDefinitionType();
+        $__type->setSchema($schema);
+
+        $this->schema->addQuery('__schema', $__schema);
+        $this->schema->addQuery('__type', $__type);
     }
 
     /**
