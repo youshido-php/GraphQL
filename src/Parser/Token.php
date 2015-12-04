@@ -33,6 +33,7 @@ class Token
     const TYPE_COLON         = ':';
     const TYPE_COMMA         = ',';
     const TYPE_AMP           = '&';
+    const TYPE_VARIABLE      = '$';
     const TYPE_POINT         = '.';
 
     // Keywords

@@ -122,9 +122,14 @@ class Tokenizer
                 }
 
                 break;
+
+            case Token::TYPE_VARIABLE:
+                ++$this->pos;
+
+                return new Token(Token::TYPE_VARIABLE);
         }
 
-        if ($ch === '_' || $ch === '$' || 'a' <= $ch && $ch <= 'z' || 'A' <= $ch && $ch <= 'Z') {
+        if ($ch === '_' || 'a' <= $ch && $ch <= 'z' || 'A' <= $ch && $ch <= 'Z') {
             return $this->scanWord();
         }
 

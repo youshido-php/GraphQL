@@ -15,6 +15,7 @@ use Youshido\GraphQL\Parser\Value\InputObject;
 use Youshido\GraphQL\Parser\Value\Literal;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Parser;
+use Youshido\GraphQL\Parser\Value\Variable;
 
 class ParserTest extends \PHPUnit_Framework_TestCase
 {
@@ -35,6 +36,22 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     public function mutationProvider()
     {
         return [
+            [
+                '{ query ( teas: $variable ) { alias: name } }',
+                [
+                    'queries' => [
+                        new Query('query', null,
+                            [
+                                new Argument('teas', new Variable('variable'))
+                            ],
+                            [
+                                new Field('name', 'alias')
+                            ])
+                    ],
+                    'mutations' => [],
+                    'fragments' => []
+                ]
+            ],
             [
                 '{ query { alias: name } }',
                 [

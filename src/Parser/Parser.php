@@ -17,7 +17,6 @@ use Youshido\GraphQL\Parser\Value\InputObject;
 use Youshido\GraphQL\Parser\Value\Literal;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
-use Youshido\GraphQL\Parser\Ast\Reference;
 use Youshido\GraphQL\Parser\Value\Variable;
 
 class Parser extends Tokenizer
@@ -108,10 +107,10 @@ class Parser extends Tokenizer
 
     protected function parseReference()
     {
-        $this->expect(Token::TYPE_AMP);
+        $this->expectMulti([Token::TYPE_AMP, Token::TYPE_VARIABLE]);
 
         if ($this->match(Token::TYPE_NUMBER) || $this->match(Token::TYPE_IDENTIFIER)) {
-            return new Reference($this->lex()->getData());
+            return new Variable($this->lex()->getData());
         }
 
         throw $this->createUnexpected($this->lookAhead);
@@ -204,6 +203,7 @@ class Parser extends Tokenizer
                 return $this->parseObject();
 
             case Token::TYPE_AMP:
+            case Token::TYPE_VARIABLE:
                 return $this->parseReference();
 
             case Token::TYPE_LT:
