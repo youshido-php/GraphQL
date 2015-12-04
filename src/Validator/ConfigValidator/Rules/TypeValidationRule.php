@@ -119,6 +119,7 @@ class TypeValidationRule implements ValidationRuleInterface
             $config = new FieldConfig($data);
             return $config->isValid();
         } catch (ConfigurationException $e) {
+            /** just need to return false in this case */
         }
 
         return false;
@@ -136,6 +137,7 @@ class TypeValidationRule implements ValidationRuleInterface
             $config = new InputFieldConfig($data);
             return $config->isValid();
         } catch (ConfigurationException $e) {
+            /** just need to return false in this case */
         }
 
         return false;
