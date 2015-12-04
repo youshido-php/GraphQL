@@ -32,6 +32,6 @@ class TypeDefinitionType extends QueryType
      */
     public function getName()
     {
-        return '__TypeArgument';
+        return '__Type';
     }
 }

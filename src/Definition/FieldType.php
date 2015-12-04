@@ -9,6 +9,7 @@ namespace Youshido\GraphQL\Definition;
 
 
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
+use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 
 class FieldType extends AbstractObjectType
@@ -27,7 +28,8 @@ class FieldType extends AbstractObjectType
 
     public function resolve($value = null, $args = [])
     {
-        // TODO: Implement resolve() method.
+        /** @var $value Field */
+        return $value->getType();
     }
 
     /**

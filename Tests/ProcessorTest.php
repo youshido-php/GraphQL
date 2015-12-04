@@ -45,7 +45,13 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                             'name' => 'Alex'
                         ];
                     }
-                ]));
+                ]),
+            [
+                'description' => 'latest description',
+                'deprecationReason' => 'for test',
+                'isDeprecated' => true,
+            ]
+        );
 
         $validator = new ResolveValidator();
         $processor = new Processor($validator);
@@ -54,13 +60,46 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $processor->processQuery($query);
 
+        $a = $processor->getResponseData();
+
         $this->assertEquals($processor->getResponseData(), $response);
     }
-
 
     public function predefinedSchemaProvider()
     {
         return [
+            [
+                '{
+                  test : __schema {
+                    queryType {
+                      kind,
+                      name,
+                      fields {
+                        name,
+                        isDeprecated,
+                        deprecationReason,
+                        description,
+                        type {
+                          name
+                        }
+                      }
+                    }
+                  }
+                }',
+                ['data' => [
+                    'test' => [
+                        'queryType' => [
+                            'name'   => 'TestSchema',
+                            'kind'   => 'OBJECT',
+                            'fields' => [
+                                ['name' => 'latest', 'isDeprecated' => true, 'deprecationReason' => 'for test', 'description' => 'for test', 'type' => ['name' => 'latest']],
+                                ['name' => '__schema', 'isDeprecated' => false, 'deprecationReason' => '', 'description' => '', 'type' => ['name' => '__Schema']],
+                                ['name' => '__type', 'isDeprecated' => false, 'deprecationReason' => '', 'description' => '', 'type' => ['name' => '__Type']]
+                            ]
+                        ]
+                    ]
+                ]]
+            ],
             [
                 '{
                   __schema {

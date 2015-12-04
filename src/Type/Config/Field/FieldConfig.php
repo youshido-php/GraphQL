@@ -25,6 +25,7 @@ class FieldConfig extends Config
             'required'          => ['type' => TypeMap::TYPE_BOOLEAN],
             'description'       => ['type' => TypeMap::TYPE_STRING],
             'resolve'           => ['type' => TypeMap::TYPE_FUNCTION],
+            'isDeprecated'      => ['type' => TypeMap::TYPE_BOOLEAN],
             'deprecationReason' => ['type' => TypeMap::TYPE_STRING],
         ];
     }
@@ -47,11 +48,5 @@ class FieldConfig extends Config
     {
         return $this->data['type'];
     }
-
-    public function isRequired()
-    {
-        return $this->get('required', false);
-    }
-
 
 }

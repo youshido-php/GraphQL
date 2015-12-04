@@ -9,6 +9,7 @@ namespace Youshido\GraphQL\Definition;
 
 
 use Youshido\GraphQL\Type\ListType\AbstractListType;
+use Youshido\GraphQL\Type\Object\ObjectType;
 
 class FieldListType extends AbstractListType
 {
@@ -25,6 +26,7 @@ class FieldListType extends AbstractListType
 
     public function resolve($value = null, $args = [])
     {
-        // TODO: Implement resolve() method.
+        /** @var ObjectType $value */
+        return $value->getConfig()->getFields();
     }
 }

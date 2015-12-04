@@ -156,8 +156,13 @@ class Processor
                 return null;
             }
 
-            $resolvedValue = $this->resolveValue($field, $contextValue, $query);
-            $alias         = $query->hasAlias() ? $query->getAlias() : $query->getName();
+            if ($currentLevelSchema->getKind() == TypeMap::KIND_LIST) {
+                $resolvedValue = $this->resolveValueByType($currentLevelSchema->getConfig()->get('item'), $contextValue, $query);
+            } else {
+                $resolvedValue = $this->resolveValue($field, $contextValue, $query);
+            }
+
+            $alias = $query->hasAlias() ? $query->getAlias() : $query->getName();
 
             if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $field->getType()->getKind())) {
                 $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolved value for query "%s"', $field->getType()->getName())));
@@ -234,6 +239,18 @@ class Processor
     protected function resolveValue($field, $contextValue, $query)
     {
         return $field->getConfig()->resolve($contextValue, $this->parseArgumentsValues($field->getConfig()->getType(), $query));
+    }
+
+    /**
+     * @param $type    TypeInterface|AbstractObjectType
+     * @param $contextValue mixed
+     * @param $query        Query
+     *
+     * @return mixed
+     */
+    protected function resolveValueByType($type, $contextValue, $query)
+    {
+        return $type->resolve($contextValue, $this->parseArgumentsValues($type, $query));
     }
 
     /**

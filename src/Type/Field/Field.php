@@ -42,4 +42,20 @@ class Field
         return $this->config;
     }
 
+    //todo: rethink logic below
+
+    public function getIsDeprecated()
+    {
+        return $this->getConfig()->get('isDeprecated', false);
+    }
+
+    public function getDeprecationReason()
+    {
+        return $this->getConfig()->get('deprecationReason', null);
+    }
+
+    public function getDescription()
+    {
+        return $this->getConfig()->get('deprecationReason', null);
+    }
 }

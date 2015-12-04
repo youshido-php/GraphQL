@@ -38,7 +38,7 @@ abstract class AbstractInputObjectType extends AbstractObjectType
         }
 
         $requiredFields = array_filter($this->getConfig()->getFields(), function (Field $field) {
-            return $field->getConfig()->isRequired();
+            return $field->getConfig()->get('required');
         });
 
         foreach ($value as $valueKey => $valueItem) {
