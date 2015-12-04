@@ -97,6 +97,15 @@ class Parser extends Tokenizer
         throw $this->createUnexpected($this->lookAhead);
     }
 
+    protected function expectMulti($types)
+    {
+        if ($this->matchMulti($types)) {
+            return $this->lex();
+        }
+
+        throw $this->createUnexpected($this->lookAhead);
+    }
+
     protected function parseReference()
     {
         $this->expect(Token::TYPE_AMP);
@@ -117,7 +126,12 @@ class Parser extends Tokenizer
 
     protected function parseIdentifier()
     {
-        return $this->expect(Token::TYPE_IDENTIFIER)->getData();
+        return $this->expectMulti([
+            Token::TYPE_IDENTIFIER,
+            Token::TYPE_MUTATION,
+            Token::TYPE_QUERY,
+            Token::TYPE_FRAGMENT,
+        ])->getData();
     }
 
     protected function parseBodyItem($type = Token::TYPE_QUERY, $highLevel = true)
@@ -312,6 +326,17 @@ class Parser extends Tokenizer
         }
 
         return null;
+    }
+
+    protected function matchMulti($types)
+    {
+        foreach ($types as $type) {
+            if ($this->lookAhead->getType() == $type) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     protected function match($type)

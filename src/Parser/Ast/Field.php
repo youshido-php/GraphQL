@@ -13,9 +13,13 @@ class Field
     /** @var string */
     private $name;
 
-    public function __construct($name)
+    /** @var null|string  */
+    private $alias = null;
+
+    public function __construct($name, $alias = null)
     {
-        $this->name = $name;
+        $this->name  = $name;
+        $this->alias = $alias;
     }
 
     /**
@@ -34,5 +38,19 @@ class Field
         $this->name = $name;
     }
 
+    /**
+     * @return null|string
+     */
+    public function getAlias()
+    {
+        return $this->alias;
+    }
 
+    /**
+     * @param null|string $alias
+     */
+    public function setAlias($alias)
+    {
+        $this->alias = $alias;
+    }
 }

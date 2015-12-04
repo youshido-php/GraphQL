@@ -36,6 +36,16 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [
+                '{ query { alias: name } }',
+                [
+                    'queries' => [
+                        new Query('query', null, [], [new Field('name', 'alias')])
+                    ],
+                    'mutations' => [],
+                    'fragments' => []
+                ]
+            ],
+            [
                 'mutation { createUser ( email: "test@test.com", active: true ) { id } }',
                 [
                     'queries'   => [],
