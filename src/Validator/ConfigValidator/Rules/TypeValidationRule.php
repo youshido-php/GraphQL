@@ -36,49 +36,38 @@ class TypeValidationRule implements ValidationRuleInterface
             switch ($ruleInfo) {
                 case TypeMap::TYPE_ANY:
                     return true;
-                    break;
 
                 case TypeMap::TYPE_ANY_OBJECT:
                     return is_object($data);
-                    break;
 
                 case TypeMap::TYPE_OBJECT_TYPE:
                     return $data instanceof AbstractObjectType;
-                    break;
 
                 case TypeMap::TYPE_OBJECT_INPUT_TYPE:
                     return $data instanceof AbstractInputObjectType;
-                    break;
 
                 case TypeMap::TYPE_FUNCTION:
                     return is_callable($data);
-                    break;
 
                 case TypeMap::TYPE_BOOLEAN:
                     return is_bool($data);
-                    break;
 
                 case TypeMap::TYPE_ARRAY:
                     return is_array($data);
-                    break;
 
                 case TypeMap::TYPE_ARRAY_OF_FIELDS:
                     return $this->isArrayOfFields($data);
-                    break;
 
                 case TypeMap::TYPE_ARRAY_OF_INPUTS:
                     return $this->isArrayOfInputs($data);
-                    break;
 
                 case TypeMap::TYPE_ANY_INPUT:
                     return TypeMap::isInputType($data);
-                    break;
 
                 default:
                     if (TypeMap::isScalarType($ruleInfo)) {
                         return TypeMap::getScalarTypeObject($ruleInfo)->isValidValue($data);
                     }
-                    break;
             }
         } else {
             return false;
