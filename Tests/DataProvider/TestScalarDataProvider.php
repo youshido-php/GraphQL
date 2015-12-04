@@ -12,17 +12,18 @@ class TestScalarDataProvider
 {
 
 
-    public static function getTypesList()
+    public static function getsList()
     {
         return [
-            "IntType",
-            "StringType",
-            "BooleanType",
-            "FloatType"
+            "Int",
+            "String",
+            "Boolean",
+            "Float",
+            "Id"
         ];
     }
 
-    public static function getIntTypeTestData()
+    public static function getIntTestData()
     {
         /** input, serialization, isValid */
         return [
@@ -44,7 +45,7 @@ class TestScalarDataProvider
         ];
     }
 
-    public static function getFloatTypeTestData()
+    public static function getFloatTestData()
     {
         return [
             [1, 1.0, true],
@@ -59,7 +60,7 @@ class TestScalarDataProvider
         ];
     }
 
-    public static function getStringTypeTestData()
+    public static function getStringTestData()
     {
         return [
             ["string", "string", true],
@@ -70,7 +71,7 @@ class TestScalarDataProvider
         ];
     }
 
-    public static function getBooleanTypeTestData()
+    public static function getBooleanTestData()
     {
         return [
             ["string", true, false],
@@ -80,6 +81,15 @@ class TestScalarDataProvider
             [null, false, false],
             [true, true, true],
             [false, false, true],
+        ];
+    }
+
+    public static function getIdTestData()
+    {
+        return [
+            ["string-id", "string-id", true],
+            ["", null, false],
+            [1, "1", true],
         ];
     }
 

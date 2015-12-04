@@ -11,6 +11,7 @@ namespace Youshido\Tests;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\TypeInterface;
+use Youshido\GraphQL\Type\TypeMap;
 use Youshido\Tests\DataProvider\TestScalarDataProvider;
 
 class ScalarTypeTest extends \PHPUnit_Framework_TestCase
@@ -18,8 +19,8 @@ class ScalarTypeTest extends \PHPUnit_Framework_TestCase
 
     public function testTypeName()
     {
-        foreach(TestScalarDataProvider::getTypesList() as $typeName) {
-            $className = 'Youshido\GraphQL\Type\Scalar\\' . $typeName;
+        foreach(TypeMap::getScalarTypes() as $typeName) {
+            $className = 'Youshido\GraphQL\Type\Scalar\\' . $typeName . 'Type';
             /** @var TypeInterface $object */
             $object = new $className();
             $this->assertEquals($typeName, $object->getName());
@@ -28,8 +29,8 @@ class ScalarTypeTest extends \PHPUnit_Framework_TestCase
 
     public function testScalarPrimitives()
     {
-        foreach(TestScalarDataProvider::getTypesList() as $typeName) {
-            $className = 'Youshido\GraphQL\Type\Scalar\\' . $typeName;
+        foreach(TypeMap::getScalarTypes() as $typeName) {
+            $className = 'Youshido\GraphQL\Type\Scalar\\' . $typeName . 'Type';
             /** @var TypeInterface $object */
             $object = new $className();
             $testDataMethod = 'get' . $typeName . 'TestData';

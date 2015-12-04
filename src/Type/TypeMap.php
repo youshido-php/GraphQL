@@ -74,11 +74,6 @@ class TypeMap
         return in_array(strtolower($typeName), self::getScalarTypes());
     }
 
-    public static function isTypeAllowed($typeName)
-    {
-        return in_array($typeName, self::getScalarTypes());
-    }
-
     /**
      * @return AbstractType[]
      */

@@ -20,7 +20,7 @@ trait FieldsAwareTrait
     public function addField($name, $type, $config = [])
     {
         if (is_string($type)) {
-            if (!TypeMap::isTypeAllowed($type)) {
+            if (!TypeMap::isScalarType($type)) {
                 throw new ConfigurationException('You can\'t pass ' . $type . ' as a string type.');
             }
 
