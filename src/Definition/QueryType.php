@@ -9,6 +9,7 @@ namespace Youshido\GraphQL\Definition;
 
 use Youshido\GraphQL\Schema;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
+use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 
 class QueryType extends AbstractObjectType
@@ -34,8 +35,12 @@ class QueryType extends AbstractObjectType
 
     public function resolve($value = null, $args = [])
     {
-        /** @var Schema  $value */
-        return $value->getQueryType();
+        /** @var Schema|Field  $value */
+        if($value instanceof Schema){
+            return $value->getQueryType();
+        }
+
+        return $value->getConfig()->getType();
     }
 
     /**

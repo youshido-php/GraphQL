@@ -19,7 +19,7 @@ abstract class AbstractScalarType extends AbstractType
     {
         $className = get_class($this);
 
-        return strtolower(substr($className, strrpos($className, '\\') + 1, -4));
+        return substr($className, strrpos($className, '\\') + 1, -4);
     }
 
     final public function getKind()

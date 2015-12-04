@@ -8,8 +8,6 @@
 
 namespace Youshido\Tests;
 
-use Youshido\GraphQL\Type\Scalar\IntType;
-use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\Tests\DataProvider\TestScalarDataProvider;
@@ -19,24 +17,24 @@ class ScalarTypeTest extends \PHPUnit_Framework_TestCase
 
     public function testTypeName()
     {
-        foreach(TypeMap::getScalarTypes() as $typeName) {
+        foreach (TypeMap::getScalarTypes() as $typeName) {
             $className = 'Youshido\GraphQL\Type\Scalar\\' . ucfirst($typeName) . 'Type';
             /** @var TypeInterface $object */
             $object = new $className();
-            $this->assertEquals($typeName, $object->getName());
+            $this->assertEquals(ucfirst($typeName), $object->getName());
         }
     }
 
     public function testScalarPrimitives()
     {
-        foreach(TypeMap::getScalarTypes() as $typeName) {
+        foreach (TypeMap::getScalarTypes() as $typeName) {
             $className = 'Youshido\GraphQL\Type\Scalar\\' . ucfirst($typeName) . 'Type';
             /** @var TypeInterface $object */
-            $object = new $className();
+            $object         = new $className();
             $testDataMethod = 'get' . $typeName . 'TestData';
             $this->checkDescription($object);
 
-            foreach(call_user_func(array('Youshido\Tests\DataProvider\TestScalarDataProvider', $testDataMethod)) as list($data, $serialized, $isValid)) {
+            foreach (call_user_func(['Youshido\Tests\DataProvider\TestScalarDataProvider', $testDataMethod]) as list($data, $serialized, $isValid)) {
 
                 $this->checkSerialization($object, $data, $serialized);
 
@@ -49,14 +47,14 @@ class ScalarTypeTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    private function checkSerialization(TypeInterface $object, $input, $expected)
-    {
-        $this->assertEquals($expected, $object->serialize($input), $object->getName() . ' serialize for: ' . serialize($input));
-    }
-
     private function checkDescription(TypeInterface $object)
     {
         $this->assertNotEmpty($object->getDescription());
+    }
+
+    private function checkSerialization(TypeInterface $object, $input, $expected)
+    {
+        $this->assertEquals($expected, $object->serialize($input), $object->getName() . ' serialize for: ' . serialize($input));
     }
 
 }

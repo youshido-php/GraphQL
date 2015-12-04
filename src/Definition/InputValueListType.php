@@ -15,7 +15,7 @@ class InputValueListType extends AbstractListType
 
     public function getName()
     {
-        return '____InputValuesList';
+        return '__InputValuesList';
     }
 
     public function getItem()

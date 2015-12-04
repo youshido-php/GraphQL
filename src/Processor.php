@@ -145,6 +145,7 @@ class Processor
         }
 
         /** @todo need to check if the correct field class is used here */
+
         /** @var Field $field */
         $field = $currentLevelSchema->getConfig()->getField($query->getName());
         if (get_class($query) == 'Youshido\GraphQL\Parser\Ast\Field') {
@@ -156,13 +157,8 @@ class Processor
                 return null;
             }
 
-            if ($currentLevelSchema->getKind() == TypeMap::KIND_LIST) {
-                $resolvedValue = $this->resolveValueByType($currentLevelSchema->getConfig()->get('item'), $contextValue, $query);
-            } else {
-                $resolvedValue = $this->resolveValue($field, $contextValue, $query);
-            }
-
-            $alias = $query->hasAlias() ? $query->getAlias() : $query->getName();
+            $resolvedValue = $this->resolveValue($field, $contextValue, $query);
+            $alias         = $query->hasAlias() ? $query->getAlias() : $query->getName();
 
             if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $field->getType()->getKind())) {
                 $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolved value for query "%s"', $field->getType()->getName())));

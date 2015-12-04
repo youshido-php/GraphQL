@@ -31,7 +31,7 @@ class TypeMapTest extends \PHPUnit_Framework_TestCase
         foreach($this->getScalarTypes() as $type) {
             $object = TypeMap::getScalarTypeObject($type);
             $this->assertEquals($object->getKind(), TypeMap::KIND_SCALAR);
-            $this->assertEquals($object->getName(), $type);
+            $this->assertEquals($object->getName(), ucfirst($type));
         }
     }
 

@@ -70,6 +70,39 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         return [
             [
                 '{
+                    __schema {
+                        types {
+                            name,
+                            fields {
+                                name
+                            }
+                        }
+                    }
+                }',
+                [
+                    'data' => [
+                        '__schema' => [
+                            'types' => [
+                                ['name' => 'latest', 'fields' => [['name' => 'id'], ['name' => 'name']]],
+                                ['name' => 'Int', 'fields' => []],
+                                ['name' => 'String', 'fields' => []],
+                                ['name' => '__Schema', 'fields' => [['name' => 'queryType'], ['name' => 'mutationType'], ['name' => 'types']]],
+                                ['name' => '__Type', 'fields' => [['name' => 'name'], ['name' => 'kind'], ['name' => 'description'], ['name' => 'ofType'], ['name' => 'inputFields'], ['name' => 'enumValues'], ['name' => 'fields'], ['name' => 'interfaces'], ['name' => 'possibleTypes']]],
+                                ['name' => '__TypeList', 'fields' => [['name' => 'name'], ['name' => 'kind'], ['name' => 'description'], ['name' => 'ofType'], ['name' => 'inputFields'], ['name' => 'enumValues'], ['name' => 'fields'], ['name' => 'interfaces'], ['name' => 'possibleTypes']]],
+                                ['name' => '__InputValuesList', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'type'], ['name' => 'defaultValue']]],
+                                ['name' => '__EnumValueList', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'deprecationReason'], ['name' => 'isDeprecated']]],
+                                ['name' => 'Boolean', 'fields' => []],
+                                ['name' => '__FieldList', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'isDeprecated'], ['name' => 'deprecationReason'], ['name' => 'type'], ['name' => 'args']]],
+                                ['name' => '__ArgumentList', 'fields' => [['name' => 'name'], ['name' => 'description']]],
+                                ['name' => '__InterfaceList', 'fields' => [['name' => 'name'], ['name' => 'kind'], ['name' => 'description'], ['name' => 'ofType'], ['name' => 'inputFields'], ['name' => 'enumValues'], ['name' => 'fields'], ['name' => 'interfaces'], ['name' => 'possibleTypes']]],
+                                ['name' => '__PossibleOfList', 'fields' => [['name' => 'name'], ['name' => 'kind'], ['name' => 'description'], ['name' => 'ofType'], ['name' => 'inputFields'], ['name' => 'enumValues'], ['name' => 'fields'], ['name' => 'interfaces'], ['name' => 'possibleTypes']]],
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            [
+                '{
                   test : __schema {
                     queryType {
                       kind,
