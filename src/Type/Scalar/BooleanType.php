@@ -17,6 +17,11 @@ class BooleanType extends AbstractScalarType
         return $this->getBooleanValue($value);
     }
 
+    public function serialize($value)
+    {
+        return $this->getBooleanValue($value);
+    }
+
     /**
      * @param $value
      *
@@ -34,15 +39,15 @@ class BooleanType extends AbstractScalarType
         return (bool)$value;
     }
 
-    public function serialize($value)
-    {
-        return $this->getBooleanValue($value);
-    }
 
     public function isValidValue($value)
     {
         return is_bool($value);
     }
 
+    public function getDescription()
+    {
+        return 'The `Boolean` scalar type represents `true` or `false`.';
+    }
 
 }

@@ -24,26 +24,29 @@ class ScalarTypeTest extends \PHPUnit_Framework_TestCase
             $object = new $className();
             $this->assertEquals($typeName, $object->getName());
         }
-
     }
 
-    public function testStringCoercion()
+    public function testScalarPrimitives()
     {
-        $object = new StringType();
+        foreach(TestScalarDataProvider::getTypesList() as $typeName) {
+            $className = 'Youshido\GraphQL\Type\Scalar\\' . $typeName;
+            /** @var TypeInterface $object */
+            $object = new $className();
+            $testDataMethod = 'get' . $typeName . 'TestData';
+            foreach(call_user_func(array('Youshido\Tests\DataProvider\TestScalarDataProvider', $testDataMethod)) as list($data,$expectedResult)) {
 
-        foreach(TestScalarDataProvider::getStringTestData() as list($data,$expectedResult)) {
-            $this->assertEquals($expectedResult, $object->parseValue($data));
+                $this->assertEquals($expectedResult, $object->parseValue($data));
+
+                $this->assertNotEmpty($object->getDescription());
+
+                if ($expectedResult === $data) {
+                    $this->assertTrue($object->isValidValue($data), $typeName . ' validation for :' . serialize($data));
+                } else {
+                    $this->assertFalse($object->isValidValue($data));
+                }
+            }
+
         }
-    }
-
-    public function testIntCoercion()
-    {
-        $object = new IntType();
-
-        foreach(TestScalarDataProvider::getIntTestData() as list($data,$expectedResult)) {
-            $this->assertEquals($expectedResult, $object->parseValue($data));
-        }
-
     }
 
 }

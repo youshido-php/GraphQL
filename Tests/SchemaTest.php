@@ -8,49 +8,53 @@
 
 namespace Youshido\Tests;
 
+use Youshido\GraphQL\Schema;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\ObjectType;
-use Youshido\GraphQL\Type\TypeMap;
+use Youshido\Tests\DataProvider\GeoSchema;
 use Youshido\Tests\DataProvider\UserType;
 
 class SchemaTest extends \PHPUnit_Framework_TestCase
 {
 
-    public function testObjectSchema()
+    public function testInvalidConfigExtraField()
     {
-        $userType = new ObjectType(
-            [
-                'name'   => 'users',
-                'fields' => [
-                    'id' => ['type' => TypeMap::TYPE_INT]
-                ]
-            ]);
+        $invalidSchemaConfig = [
+            'name'   => 'GeoSchema',
+            'fields' => []
+        ];
 
-        $this->assertEquals("users", $userType->getName());
-        $this->assertEquals("id", $userType->getConfig()->getField("id")->getName());
-        $this->assertEquals(TypeMap::KIND_OBJECT, $userType->getKind());
-        $this->assertInstanceOf('Youshido\GraphQL\Type\Scalar\IntType', $userType->getConfig()->getField("id")->getType());
-    }
-
-    public function testListSchema()
-    {
-        $listType = new ListType(
-            [
-                'name'      => 'users',
-                'item'      => new UserType(),
-                'args' => [
-                    'count' => [
-                        'type' => 'int'
-                    ]
-                ],
-                'resolve'   => function ($object, $args = []) {
-
-                }
-            ]);
-
-        $this->assertEquals("users", $listType->getName());
-        $this->assertEquals(TypeMap::KIND_LIST, $listType->getKind());
+        $this->setExpectedException('Youshido\GraphQL\Validator\Exception\ConfigurationException');
+        new Schema($invalidSchemaConfig);
 
     }
 
+    public function testInlineCreated()
+    {
+        $schema = new Schema(
+            [
+                'name'  => 'GeoSchema',
+                'query' => new ObjectType(
+                    [
+                        'name'   => 'RootQuery',
+                        'fields' => [
+                            'users' => new ListType(['item' => new UserType()])
+                        ]
+                    ])
+            ]);
+
+        $this->assertEquals('GeoSchema', $schema->getName());
+    }
+
+    public function testClassUsage()
+    {
+        $schema = new GeoSchema();
+        $this->assertEquals('GeoSchema', $schema->getName());
+
+        $fields = $schema->getQueryType()->getConfig()->getFields();
+        $this->assertEquals(1, count($fields));
+
+        $this->assertEquals('users', $fields['users']->getName());
+
+    }
 }

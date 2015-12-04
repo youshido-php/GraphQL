@@ -17,11 +17,12 @@ class TestScalarDataProvider
     {
         return [
             "IntType",
-            "StringType"
+            "StringType",
+            "BooleanType"
         ];
     }
 
-    public static function getIntTestData()
+    public static function getIntTypeTestData()
     {
         return [
             [1, 1],
@@ -33,13 +34,24 @@ class TestScalarDataProvider
         ];
     }
 
-    public static function getStringTestData()
+    public static function getStringTypeTestData()
     {
         return [
             ["Test", "Test"],
             [1, "1"],
             [true, "true"],
             [false, "false"],
+        ];
+    }
+
+    public static function getBooleanTypeTestData()
+    {
+        return [
+            [true, true],
+            [false, false],
+            ["true", true],
+            ["false", false],
+            [null, false],
         ];
     }
 

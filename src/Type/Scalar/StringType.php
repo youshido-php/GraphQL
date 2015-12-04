@@ -11,6 +11,7 @@ namespace Youshido\GraphQL\Type\Scalar;
 
 class StringType extends AbstractScalarType
 {
+
     public function parseValue($value)
     {
         return $this->getStringValue($value);
@@ -42,5 +43,11 @@ class StringType extends AbstractScalarType
         return is_string($value);
     }
 
+    public function getDescription()
+    {
+        return 'The `String` scalar type represents textual data, represented as UTF-8 ' .
+               'character sequences. The String type is most often used by GraphQL to ' .
+               'represent free-form human-readable text.';
+    }
 
 }
