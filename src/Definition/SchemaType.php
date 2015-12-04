@@ -33,7 +33,7 @@ class SchemaType extends AbstractObjectType
     {
         $config
             ->addField('queryType', new QueryType())
-            ->addField('mutationType', new QueryType())
+            ->addField('mutationType', new MutationType())
             ->addField('types', new QueryListType());
     }
 }
