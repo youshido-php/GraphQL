@@ -7,6 +7,7 @@
 */
 
 namespace Youshido\Tests;
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use Youshido\GraphQL\Schema;
 use Youshido\GraphQL\Type\Object\ObjectType;

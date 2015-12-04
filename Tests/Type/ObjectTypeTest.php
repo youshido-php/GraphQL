@@ -7,7 +7,7 @@
 */
 
 namespace Youshido\Tests\Type;
-
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\InputObjectType;
