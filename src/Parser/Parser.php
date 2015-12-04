@@ -27,7 +27,7 @@ class Parser extends Tokenizer
         $data = ['queries' => [], 'mutations' => [], 'fragments' => []];
 
         while (!$this->end()) {
-            $tokenType = $this->getCurrentTokenType();
+            $tokenType = $this->peek()->getType();
 
             switch ($tokenType) {
                 case Token::TYPE_LBRACE:
@@ -42,15 +42,13 @@ class Parser extends Tokenizer
                 case Token::TYPE_FRAGMENT:
                     $data['fragments'][] = $this->parseFragment();
                     break;
+
+                default:
+                    throw new SyntaxErrorException();
             }
         }
 
         return $data;
-    }
-
-    protected function getCurrentTokenType()
-    {
-        return $this->lookAhead->getType();
     }
 
     protected function parseBody($token = Token::TYPE_QUERY, $highLevel = true)
@@ -58,7 +56,7 @@ class Parser extends Tokenizer
         $fields = [];
         $first  = true;
 
-        if ($this->getCurrentTokenType() == $token) {
+        if ($this->peek()->getType() == $token) {
             $this->lex();
         }
 
@@ -71,9 +69,7 @@ class Parser extends Tokenizer
                 $this->expect(Token::TYPE_COMMA);
             }
 
-            if ($this->match(Token::TYPE_AMP)) {
-                $fields[] = $this->parseReference();
-            } elseif ($this->match(Token::TYPE_FRAGMENT_REFERENCE)) {
+            if ($this->match(Token::TYPE_FRAGMENT_REFERENCE)) {
                 $this->lex();
 
                 $fields[] = $this->parseFragmentReference();
@@ -93,7 +89,7 @@ class Parser extends Tokenizer
             return $this->lex();
         }
 
-        throw $this->createUnexpected($this->lookAhead);
+        throw $this->createUnexpected($this->peek());
     }
 
     protected function expectMulti($types)
@@ -102,7 +98,7 @@ class Parser extends Tokenizer
             return $this->lex();
         }
 
-        throw $this->createUnexpected($this->lookAhead);
+        throw $this->createUnexpected($this->peek());
     }
 
     protected function parseReference()
@@ -113,7 +109,7 @@ class Parser extends Tokenizer
             return new Variable($this->lex()->getData());
         }
 
-        throw $this->createUnexpected($this->lookAhead);
+        throw $this->createUnexpected($this->peek());
     }
 
     protected function parseFragmentReference()
@@ -265,7 +261,7 @@ class Parser extends Tokenizer
                 return $this->expect(Token::TYPE_NULL)->getData();
         }
 
-        throw new \Exception('Can\'t parse argument');
+        throw new SyntaxErrorException('Can\'t parse argument');
     }
 
     protected function parseObject($createType = true)
@@ -278,7 +274,7 @@ class Parser extends Tokenizer
             $this->expect(Token::TYPE_COLON);
             $value = $this->parseListValue();
 
-            if ($this->lookAhead->getType() != Token::TYPE_RBRACE) {
+            if ($this->peek()->getType() != Token::TYPE_RBRACE) {
                 $this->expect(Token::TYPE_COMMA);
             }
 
@@ -312,13 +308,6 @@ class Parser extends Tokenizer
         return new Fragment($name, $model, $fields);
     }
 
-    protected function eatIdentifier()
-    {
-        $token = $this->eat(Token::TYPE_IDENTIFIER);
-
-        return $token ? $token->getData() : null;
-    }
-
     protected function eat($type)
     {
         if ($this->match($type)) {
@@ -331,7 +320,7 @@ class Parser extends Tokenizer
     protected function matchMulti($types)
     {
         foreach ($types as $type) {
-            if ($this->lookAhead->getType() == $type) {
+            if ($this->peek()->getType() == $type) {
                 return true;
             }
         }
@@ -341,6 +330,6 @@ class Parser extends Tokenizer
 
     protected function match($type)
     {
-        return $this->lookAhead->getType() === $type;
+        return $this->peek()->getType() === $type;
     }
 }

@@ -29,10 +29,12 @@ class Tokenizer
 
         $line      = $this->line;
         $lineStart = $this->lineStart;
+
+        /** @var Token $token */
         $token     = $this->scan();
 
-        $token->line   = $line;
-        $token->column = $this->pos - $lineStart;
+        $token->setLine($line);
+        $token->setColumn($this->pos - $lineStart);
 
         return $token;
     }
@@ -206,9 +208,6 @@ class Tokenizer
 
             case 'on':
                 return Token::TYPE_ON;
-
-            case 'as':
-                return Token::TYPE_AS;
         }
 
         return Token::TYPE_IDENTIFIER;
@@ -218,9 +217,6 @@ class Tokenizer
     {
         $start = $this->pos;
 
-        if ($this->source[$this->pos] === '-') {
-            $this->pos++;
-        }
 
         $this->skipInteger();
 
@@ -330,6 +326,6 @@ class Tokenizer
                 return $this->createError('Unexpected identifier');
         }
 
-        return new \Exception('Unexpected token');
+        return new SyntaxErrorException('Unexpected token');
     }
 }

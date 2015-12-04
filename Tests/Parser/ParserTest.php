@@ -9,6 +9,8 @@ namespace Youshido\tests\GraphQL\Parser;
 
 use Youshido\GraphQL\Parser\Ast\Argument;
 use Youshido\GraphQL\Parser\Ast\Field;
+use Youshido\GraphQL\Parser\Ast\Fragment;
+use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Value\InputList;
 use Youshido\GraphQL\Parser\Value\InputObject;
@@ -19,6 +21,35 @@ use Youshido\GraphQL\Parser\Value\Variable;
 
 class ParserTest extends \PHPUnit_Framework_TestCase
 {
+
+    /**
+     * @param $query string
+     *
+     * @dataProvider wrongQueriesProvider
+     * @expectedException Youshido\GraphQL\Parser\SyntaxErrorException
+     */
+    public function testWrongQueries($query)
+    {
+        $parser = new Parser();
+
+        $parser->setSource($query);
+        $parser->parse();
+    }
+
+    public function wrongQueriesProvider()
+    {
+        return [
+            ['{ test { id,, asd } }'],
+            ['{ test { id,, } }'],
+            ['{ test (a: $a, b: <basd>) { id }'],
+            ['{ test (asd: [..., asd]) { id } }'],
+            ['{ test (asd: { "a": 4, b: 5}) { id } }'],
+            ['{ test (asd: { "a": 4, "m": null, "asd": false  "b": 5, "c" : { a }}) { id } }'],
+            ['asdasd'],
+            ['mutation { test(asd: ... ){ ...,asd, asd } }'],
+            ['mutation { test( asd: $,as ){ ...,asd, asd } }']
+        ];
+    }
 
     /**
      * @dataProvider mutationProvider
@@ -125,6 +156,22 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     'queries'   => [],
                     'mutations' => [],
                     'fragments' => []
+                ]
+            ],
+            [
+                '{ test { ...userDataFragment } } fragment userDataFragment on User { id, name, email }',
+                [
+                    'queries'   => [
+                        new Query('test', null, [], [new FragmentReference('userDataFragment')])
+                    ],
+                    'mutations' => [],
+                    'fragments' => [
+                        new Fragment('userDataFragment', 'User', [
+                            new Field('id'),
+                            new Field('name'),
+                            new Field('email')
+                        ])
+                    ]
                 ]
             ],
             [

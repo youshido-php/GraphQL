@@ -9,19 +9,18 @@ namespace Youshido\GraphQL\Parser;
 
 class Token
 {
-    // Special
+
     const TYPE_END        = 'end';
     const TYPE_IDENTIFIER = 'identifier';
     const TYPE_NUMBER     = 'number';
     const TYPE_STRING     = 'string';
     const TYPE_ON         = 'on';
 
-    const TYPE_QUERY    = 'query';
-    const TYPE_MUTATION = 'mutation';
-    const TYPE_FRAGMENT = 'fragment';
+    const TYPE_QUERY              = 'query';
+    const TYPE_MUTATION           = 'mutation';
+    const TYPE_FRAGMENT           = 'fragment';
+    const TYPE_FRAGMENT_REFERENCE = '...';
 
-
-    // Punctuators
     const TYPE_LT            = '<';
     const TYPE_GT            = '>';
     const TYPE_LBRACE        = '{';
@@ -36,16 +35,19 @@ class Token
     const TYPE_VARIABLE      = '$';
     const TYPE_POINT         = '.';
 
-    // Keywords
     const TYPE_NULL  = 'null';
     const TYPE_TRUE  = 'true';
     const TYPE_FALSE = 'false';
-    /** @deprecated */
-    const TYPE_AS                 = 'as';
-    const TYPE_FRAGMENT_REFERENCE = '...';
 
+
+    /** @var mixed */
     private $data;
+    /** @var  string */
     private $type;
+    /** @var int */
+    private $line;
+    /** @var int */
+    private $column;
 
     public function __construct($type, $data = null)
     {
@@ -66,18 +68,36 @@ class Token
 
     }
 
-    public function toString()
-    {
-        return "<" . $this->getData() . ", " . $this->getType() . ">";
-    }
-
+    /**
+     * @return mixed
+     */
     public function getData()
     {
         return $this->data;
     }
 
+    /**
+     * @return string
+     */
     public function getType()
     {
         return $this->type;
     }
+
+    /**
+     * @param int $line
+     */
+    public function setLine($line)
+    {
+        $this->line = $line;
+    }
+
+    /**
+     * @param int $column
+     */
+    public function setColumn($column)
+    {
+        $this->column = $column;
+    }
+
 }
