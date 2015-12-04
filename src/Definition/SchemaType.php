@@ -35,8 +35,5 @@ class SchemaType extends AbstractObjectType
             ->addField('queryType', new QueryType())
             ->addField('mutationType', new QueryType())
             ->addField('types', new QueryListType());
-
-        //todo: not realization at all
-//            ->addField('directives', new DirectiveType());
     }
 }

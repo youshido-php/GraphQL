@@ -35,6 +35,9 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             new ObjectType(
                 [
                     'name'    => 'latest',
+                    'args'    => [
+                        'id' => ['type' => 'int']
+                    ],
                     'fields'  => [
                         'id'   => ['type' => 'int'],
                         'name' => ['type' => 'string']
@@ -60,14 +63,30 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $processor->processQuery($query);
 
-        $a = $processor->getResponseData();
-
         $this->assertEquals($processor->getResponseData(), $response);
     }
 
     public function predefinedSchemaProvider()
     {
         return [
+//            [
+//                '{ __type (name: "latest") { name, args { name, type { name } } } }',
+//                []
+//            ],
+            [
+                '{ __type { name } }',
+                [
+                    'errors' => ['Require "name" arguments to query "__type"']
+                ]
+            ],
+            [
+                '{ __type (name: "__Type") { name } }',
+                [
+                    'data' => [
+                        '__type' => ['name' => '__Type']
+                    ]
+                ]
+            ],
             [
                 '{
                     __schema {

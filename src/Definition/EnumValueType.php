@@ -25,7 +25,7 @@ class EnumValueType extends AbstractObjectType
 
     public function resolve($value = null, $args = [])
     {
-        // TODO: Implement resolve() method.
+        return null;
     }
 
     /**
