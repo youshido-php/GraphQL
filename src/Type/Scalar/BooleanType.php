@@ -14,20 +14,10 @@ class BooleanType extends AbstractScalarType
 
     public function parseValue($value)
     {
-        return $this->getBooleanValue($value);
+        return $this->serialize($value);
     }
 
     public function serialize($value)
-    {
-        return $this->getBooleanValue($value);
-    }
-
-    /**
-     * @param $value
-     *
-     * @return bool
-     */
-    public function getBooleanValue($value)
     {
         if ($value === 'true') {
             return true;
@@ -38,7 +28,6 @@ class BooleanType extends AbstractScalarType
 
         return (bool)$value;
     }
-
 
     public function isValidValue($value)
     {

@@ -33,20 +33,29 @@ class ScalarTypeTest extends \PHPUnit_Framework_TestCase
             /** @var TypeInterface $object */
             $object = new $className();
             $testDataMethod = 'get' . $typeName . 'TestData';
-            foreach(call_user_func(array('Youshido\Tests\DataProvider\TestScalarDataProvider', $testDataMethod)) as list($data,$expectedResult)) {
+            $this->checkDescription($object);
 
-                $this->assertEquals($expectedResult, $object->parseValue($data));
+            foreach(call_user_func(array('Youshido\Tests\DataProvider\TestScalarDataProvider', $testDataMethod)) as list($data, $serialized, $isValid)) {
 
-                $this->assertNotEmpty($object->getDescription());
+                $this->checkSerialization($object, $data, $serialized);
 
-                if ($expectedResult === $data) {
+                if ($isValid) {
                     $this->assertTrue($object->isValidValue($data), $typeName . ' validation for :' . serialize($data));
                 } else {
-                    $this->assertFalse($object->isValidValue($data));
+                    $this->assertFalse($object->isValidValue($data), $typeName . ' validation for :' . serialize($data));
                 }
             }
-
         }
+    }
+
+    private function checkSerialization(TypeInterface $object, $input, $expected)
+    {
+        $this->assertEquals($expected, $object->serialize($input), $object->getName() . ' serialize for: ' . serialize($input));
+    }
+
+    private function checkDescription(TypeInterface $object)
+    {
+        $this->assertNotEmpty($object->getDescription());
     }
 
 }

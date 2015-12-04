@@ -14,19 +14,10 @@ class StringType extends AbstractScalarType
 
     public function parseValue($value)
     {
-        return $this->getStringValue($value);
+        return $this->serialize($value);
     }
 
     public function serialize($value)
-    {
-        return $this->getStringValue($value);
-    }
-
-    /**
-     * @param $value
-     * @return string
-     */
-    public function getStringValue($value)
     {
         if ($value === true) {
             return 'true';

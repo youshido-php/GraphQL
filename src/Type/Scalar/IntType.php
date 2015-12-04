@@ -12,15 +12,6 @@ namespace Youshido\GraphQL\Type\Scalar;
 class IntType extends AbstractScalarType
 {
 
-    public function parseValue($value)
-    {
-        if (!is_integer($value)) {
-            return null;
-        }
-
-        return (int)$value;
-    }
-
     public function serialize($value)
     {
         return (int)$value;
@@ -28,7 +19,7 @@ class IntType extends AbstractScalarType
 
     public function isValidValue($value)
     {
-        return is_integer($value);
+        return is_int($value);
     }
 
 
