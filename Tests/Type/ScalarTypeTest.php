@@ -20,7 +20,7 @@ class ScalarTypeTest extends \PHPUnit_Framework_TestCase
     public function testTypeName()
     {
         foreach(TypeMap::getScalarTypes() as $typeName) {
-            $className = 'Youshido\GraphQL\Type\Scalar\\' . $typeName . 'Type';
+            $className = 'Youshido\GraphQL\Type\Scalar\\' . ucfirst($typeName) . 'Type';
             /** @var TypeInterface $object */
             $object = new $className();
             $this->assertEquals($typeName, $object->getName());
@@ -30,7 +30,7 @@ class ScalarTypeTest extends \PHPUnit_Framework_TestCase
     public function testScalarPrimitives()
     {
         foreach(TypeMap::getScalarTypes() as $typeName) {
-            $className = 'Youshido\GraphQL\Type\Scalar\\' . $typeName . 'Type';
+            $className = 'Youshido\GraphQL\Type\Scalar\\' . ucfirst($typeName) . 'Type';
             /** @var TypeInterface $object */
             $object = new $className();
             $testDataMethod = 'get' . $typeName . 'TestData';
