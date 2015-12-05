@@ -36,20 +36,8 @@ class ObjectTypeConfig extends Config implements TypeConfigInterface
 
     protected function build()
     {
-        $sourceFields = empty($this->data['fields']) ? [] : $this->data['fields'];
-        foreach ($sourceFields as $fieldName => $fieldInfo) {
-            if ($fieldInfo instanceof Field || $fieldInfo instanceof AbstractType) {
-                $this->fields[$fieldName] = $fieldInfo;
-                continue;
-            };
-
-            $this->addField($fieldName, $fieldInfo['type'], $fieldInfo);
-        }
-
-        $sourceArguments = empty($this->data['arguments']) ? [] : $this->data['arguments'];
-        foreach ($sourceArguments as $argumentName => $argumentInfo) {
-            $this->addArgument($argumentName, $argumentInfo['type'], $argumentInfo);
-        }
+        $this->buildFields();
+        $this->buildArguments();
     }
 
 }

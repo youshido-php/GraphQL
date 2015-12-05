@@ -34,8 +34,8 @@ class FieldConfig extends Config
     {
         $resolveFunction = $this->get('resolve', null);
 
-        if($resolveFunction && is_callable($resolveFunction)) {
-           return $resolveFunction($value, $args);
+        if ($resolveFunction && is_callable($resolveFunction)) {
+            return $resolveFunction($value, $args);
         }
 
         return $this->getType()->resolve($value, $args);

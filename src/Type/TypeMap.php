@@ -16,11 +16,13 @@ use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 class TypeMap
 {
 
-    const KIND_SCALAR = 'SCALAR';
-    const KIND_OBJECT = 'OBJECT';
-    const KIND_LIST   = 'LIST';
-    const KIND_ENUM   = 'ENUM';
-    const KIND_UNION  = 'UNION';
+    const KIND_SCALAR       = 'SCALAR';
+    const KIND_OBJECT       = 'OBJECT';
+    const KIND_INTERFACE    = 'INTERFACE';
+    const KIND_UNION        = 'UNION';
+    const KIND_ENUM         = 'ENUM';
+    const KIND_INPUT_OBJECT = 'INPUT_OBJECT';
+    const KIND_LIST         = 'LIST';
 
     const TYPE_INT     = 'int';
     const TYPE_FLOAT   = 'float';

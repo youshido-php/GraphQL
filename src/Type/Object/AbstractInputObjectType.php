@@ -12,6 +12,7 @@ namespace Youshido\GraphQL\Type\Object;
 use Youshido\GraphQL\Type\Config\Object\InputObjectTypeConfig;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Field\Field;
+use Youshido\GraphQL\Type\TypeMap;
 
 abstract class AbstractInputObjectType extends AbstractObjectType
 {
@@ -56,6 +57,11 @@ abstract class AbstractInputObjectType extends AbstractObjectType
 
     protected function build(TypeConfigInterface $config)
     {
+    }
+
+    public function getKind()
+    {
+        return TypeMap::KIND_INPUT_OBJECT;
     }
 
 }

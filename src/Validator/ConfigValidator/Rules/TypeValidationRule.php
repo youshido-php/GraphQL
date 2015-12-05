@@ -81,6 +81,7 @@ class TypeValidationRule implements ValidationRuleInterface
         foreach ($data as $name => $item) {
             if (!$this->isField($item, $name)) return false;
         }
+
         return true;
     }
 
@@ -91,6 +92,7 @@ class TypeValidationRule implements ValidationRuleInterface
         foreach ($data as $name => $item) {
             if (!$this->isInputField($item, $name)) return false;
         }
+
         return true;
     }
 
@@ -105,6 +107,7 @@ class TypeValidationRule implements ValidationRuleInterface
             if (empty($data['name'])) $data['name'] = $name;
 
             $config = new FieldConfig($data);
+
             return $config->isValid();
         } catch (ConfigurationException $e) {
             /** just need to return false in this case */
@@ -123,6 +126,7 @@ class TypeValidationRule implements ValidationRuleInterface
             if (empty($data['name'])) $data['name'] = $name;
 
             $config = new InputFieldConfig($data);
+
             return $config->isValid();
         } catch (ConfigurationException $e) {
             /** just need to return false in this case */

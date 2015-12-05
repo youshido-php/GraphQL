@@ -13,7 +13,7 @@ class Field
     /** @var string */
     private $name;
 
-    /** @var null|string  */
+    /** @var null|string */
     private $alias = null;
 
     public function __construct($name, $alias = null)

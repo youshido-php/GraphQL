@@ -167,7 +167,7 @@ class Processor
             }
 
             $value = [];
-            if($resolvedValue){
+            if ($resolvedValue) {
                 if ($field->getType()->getKind() == TypeMap::KIND_LIST) {
                     foreach ($resolvedValue as $resolvedValueItem) {
                         $value[] = [];
@@ -188,7 +188,7 @@ class Processor
 
     /**
      * @param $objectType InputObjectType|ObjectType
-     * @param $query Mutation|Query
+     * @param $query      Mutation|Query
      * @return null
      */
     private function checkFieldExist($objectType, $query)
@@ -226,7 +226,7 @@ class Processor
     }
 
     /**
-     * @param $field    Field
+     * @param $field        Field
      * @param $contextValue mixed
      * @param $query        Query
      *
@@ -238,7 +238,7 @@ class Processor
     }
 
     /**
-     * @param $type    TypeInterface|AbstractObjectType
+     * @param $type         TypeInterface|AbstractObjectType
      * @param $contextValue mixed
      * @param $query        Query
      *

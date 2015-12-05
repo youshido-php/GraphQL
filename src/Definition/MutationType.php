@@ -17,8 +17,8 @@ class MutationType extends QueryType
 
     public function resolve($value = null, $args = [])
     {
-        /** @var Schema|Field  $value */
-        if($value instanceof Schema){
+        /** @var Schema|Field $value */
+        if ($value instanceof Schema) {
             return $value->getMutationType();
         }
 

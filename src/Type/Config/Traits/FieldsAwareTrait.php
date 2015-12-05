@@ -9,13 +9,31 @@
 namespace Youshido\GraphQL\Type\Config\Traits;
 
 
+use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
+/**
+ * Class FieldsAwareTrait
+ * @package Youshido\GraphQL\Type\Config\Traits
+ */
 trait FieldsAwareTrait
 {
     protected $fields = [];
+
+    public function buildFields()
+    {
+        $sourceFields = empty($this->data['fields']) ? [] : $this->data['fields'];
+        foreach ($sourceFields as $fieldName => $fieldInfo) {
+            if ($fieldInfo instanceof Field || $fieldInfo instanceof AbstractType) {
+                $this->fields[$fieldName] = $fieldInfo;
+                continue;
+            };
+
+            $this->addField($fieldName, $fieldInfo['type'], $fieldInfo);
+        }
+    }
 
     public function addField($name, $type, $config = [])
     {

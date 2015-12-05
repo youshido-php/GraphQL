@@ -17,6 +17,14 @@ trait ArgumentsAwareTrait
 {
     protected $arguments = [];
 
+    public function buildArguments()
+    {
+        $sourceArguments = empty($this->data['arguments']) ? [] : $this->data['arguments'];
+        foreach ($sourceArguments as $argumentName => $argumentInfo) {
+            $this->addArgument($argumentName, $argumentInfo['type'], $argumentInfo);
+        }
+    }
+
     public function addArgument($name, $type, $config = [])
     {
         if (!TypeMap::isInputType($type)) {

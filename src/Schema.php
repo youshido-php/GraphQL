@@ -57,6 +57,7 @@ class Schema
     public function getName()
     {
         $defaultName = 'RootSchema';
+
         return $this->config ? $this->config->get('name', $defaultName) : $defaultName;
     }
 

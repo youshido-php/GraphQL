@@ -27,7 +27,7 @@ class FieldListType extends AbstractListType
 
     public function resolve($value = null, $args = [])
     {
-        if($value instanceof AbstractScalarType){
+        if ($value instanceof AbstractScalarType) {
             return [];
         }
 

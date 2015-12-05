@@ -18,7 +18,7 @@ class ArgumentListType extends AbstractListType
     public function resolve($value = null, $args = [])
     {
         /** @var $value Field */
-        if ($value->getConfig()->getType() instanceof AbstractScalarType){
+        if ($value->getConfig()->getType() instanceof AbstractScalarType) {
             return [];
         }
 
