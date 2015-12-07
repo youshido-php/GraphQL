@@ -10,21 +10,20 @@ namespace Youshido\GraphQL\Validator\ResolveValidator;
 
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Request;
-use Youshido\GraphQL\Type\Object\ObjectType;
-use Youshido\GraphQL\Type\TypeInterface;
+use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerInterface;
 
 interface ResolveValidatorInterface extends ErrorContainerInterface
 {
 
     /**
-     * @param $queryType TypeInterface
+     * @param $field     Field
      * @param $query     Query
      * @param $request   Request
      *
      * @return bool
      */
-    public function validateArguments($queryType, $query, $request);
+    public function validateArguments($field, $query, $request);
 
     /**
      * @param $value

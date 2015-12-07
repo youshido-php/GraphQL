@@ -19,7 +19,7 @@ trait ArgumentsAwareTrait
 
     public function buildArguments()
     {
-        $sourceArguments = empty($this->data['arguments']) ? [] : $this->data['arguments'];
+        $sourceArguments = empty($this->data['args']) ? [] : $this->data['args'];
         foreach ($sourceArguments as $argumentName => $argumentInfo) {
             $this->addArgument($argumentName, $argumentInfo['type'], $argumentInfo);
         }

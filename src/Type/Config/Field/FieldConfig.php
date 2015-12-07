@@ -9,12 +9,18 @@
 namespace Youshido\GraphQL\Type\Config\Field;
 
 use Youshido\GraphQL\Type\Config\Config;
+use Youshido\GraphQL\Type\Config\Traits\ArgumentsAwareTrait;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 
 class FieldConfig extends Config
 {
+
+    use ArgumentsAwareTrait {
+        getArguments as traitGetArguments;
+        getArgument as traitGetArgument;
+    }
 
     public function getRules()
     {
@@ -28,6 +34,11 @@ class FieldConfig extends Config
             'isDeprecated'      => ['type' => TypeMap::TYPE_BOOLEAN],
             'deprecationReason' => ['type' => TypeMap::TYPE_STRING],
         ];
+    }
+
+    protected function build()
+    {
+        $this->buildArguments();
     }
 
     public function resolve($value = null, $args = [])
@@ -47,6 +58,19 @@ class FieldConfig extends Config
     public function getType()
     {
         return $this->data['type'];
+    }
+
+    public function getArgument($name)
+    {
+        return $this->traitGetArgument($name) ?: $this->getType()->getConfig()->getArgument($name);
+    }
+
+    /**
+     * @return \Youshido\GraphQL\Type\Field\InputField[]
+     */
+    public function getArguments()
+    {
+        return $this->traitGetArguments() ?: $this->getType()->getConfig()->getArguments();
     }
 
 }

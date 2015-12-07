@@ -44,11 +44,13 @@ class CharacterInterface extends AbstractInterfaceType
         $humans = StarWarsData::humans();
         $droids = StarWarsData::droids();
 
-        if (isset($humans[$object])) {
-            return $humans[$object];
+        $id = isset($object['id']) ? $object['id'] : $object;
+
+        if (isset($humans[$id])) {
+            return $humans[$id];
         }
-        if (isset($droids[$object])) {
-            return $droids[$object];
+        if (isset($droids[$id])) {
+            return $droids[$id];
         }
 
         return null;

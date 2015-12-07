@@ -19,8 +19,6 @@ use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Object\AbstractEnumType;
-use Youshido\GraphQL\Type\Object\AbstractInterfaceType;
-use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\InputObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
@@ -31,6 +29,8 @@ use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidatorInterface;
 
 class Processor
 {
+
+    const TYPE_NAME_QUERY = '__typename';
 
     /** @var  array */
     protected $data;
@@ -100,7 +100,7 @@ class Processor
         /** @var Field $field */
         $field = $objectType->getConfig()->getField($mutation->getName());
 
-        if (!$this->resolveValidator->validateArguments($field->getType(), $mutation, $this->request)) {
+        if (!$this->resolveValidator->validateArguments($field, $mutation, $this->request)) {
             return null;
         }
 
@@ -197,7 +197,7 @@ class Processor
                 }
             }
         } else {
-            if (!$this->resolveValidator->validateArguments($field->getType(), $query, $this->request)) {
+            if (!$this->resolveValidator->validateArguments($field, $query, $this->request)) {
                 return null;
             }
 
@@ -285,44 +285,30 @@ class Processor
      */
     protected function resolveValue($field, $contextValue, $query)
     {
-        if ($field->getConfig()->getType() instanceof AbstractInterfaceType) {
-            $a = 'asd';
+        $resolvedValue = $field->getConfig()->resolve($contextValue, $this->parseArgumentsValues($field, $query));
+
+        if($field->getType()->getKind() == TypeMap::KIND_INTERFACE){
+            $resolvedValue = $field->getType()->resolveType($resolvedValue);
         }
 
-        return $field->getConfig()->resolve($contextValue, $this->parseArgumentsValues($field->getConfig()->getType(), $query));
+        return $resolvedValue;
     }
 
     /**
-     * @param $type         TypeInterface|AbstractObjectType
-     * @param $contextValue mixed
-     * @param $query        Query
-     *
-     * @return mixed
-     */
-    protected function resolveValueByType($type, $contextValue, $query)
-    {
-        return $type->resolve($contextValue, $this->parseArgumentsValues($type, $query));
-    }
-
-    /**
-     * @param $queryType AbstractObjectType
+     * @param $field     Field
      * @param $query     Query
      *
      * @return array
      */
-    public function parseArgumentsValues($queryType, $query)
+    public function parseArgumentsValues($field, $query)
     {
         if ($query instanceof \Youshido\GraphQL\Parser\Ast\Field) {
             return [];
         }
 
         $args      = [];
-        $arguments = $queryType->getConfig()->getArguments();
-
         foreach ($query->getArguments() as $argument) {
-            $type = $arguments[$argument->getName()]->getConfig()->getType();
-
-            $args[$argument->getName()] = $type->parseValue($argument->getValue()->getValue());
+            $args[$argument->getName()] = $field->getConfig()->getArgument($argument->getName())->getType()->parseValue($argument->getValue()->getValue());
         }
 
         return $args;
@@ -353,6 +339,8 @@ class Processor
                 foreach ($fragment->getFields() as $fragmentField) {
                     $value = $this->collectValue($value, $this->executeQuery($fragmentField, $queryType, $resolvedValue));
                 }
+            } else if($field->getName() == self::TYPE_NAME_QUERY) {
+                $value = $this->collectValue($value, [$field->getAlias() ?: $field->getName() => $queryType->getName()]);
             } else {
                 $value = $this->collectValue($value, $this->executeQuery($field, $queryType, $resolvedValue));
             }

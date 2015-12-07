@@ -37,6 +37,23 @@ class StarWarsTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [
+                'query CheckTypeOfLuke {
+                  hero(episode: EMPIRE) {
+                    __typename,
+                    name
+                  }
+                }',
+                [
+                    'data' => [
+                        'hero' => [
+                            '__typename' => 'Character', //todo: here must be human, need to think how do that
+                            'name'       => 'Luke Skywalker'
+                        ],
+                    ]
+                ],
+                []
+            ],
+            [
                 'query {
                   hero {
                     name

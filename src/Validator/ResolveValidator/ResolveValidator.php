@@ -8,9 +8,9 @@
 namespace Youshido\GraphQL\Validator\ResolveValidator;
 
 
+use Youshido\GraphQL\Type\Field\InputField;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
-use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Parser\Value\Variable;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
@@ -23,33 +23,33 @@ class ResolveValidator implements ResolveValidatorInterface
     /**
      * @inheritdoc
      */
-    public function validateArguments($queryType, $query, $request)
+    public function validateArguments($field, $query, $request)
     {
-        $requiredArguments = array_filter($queryType->getConfig()->getArguments(), function (Field $argument) {
+        $requiredArguments = array_filter($field->getConfig()->getArguments(), function (InputField $argument) {
             return $argument->getConfig()->get('required');
         });
 
         foreach ($query->getArguments() as $argument) {
-            if (!array_key_exists($argument->getName(), $queryType->getConfig()->getArguments())) {
-                $this->addError(new ResolveException(sprintf('Unknown argument "%s" on field "%s".', $argument->getName(), $queryType->getName())));
+            if (!array_key_exists($argument->getName(), $field->getConfig()->getArguments())) {
+                $this->addError(new ResolveException(sprintf('Unknown argument "%s" on field "%s".', $argument->getName(), $field->getName())));
 
                 return false;
             }
 
             /** @var AbstractType $argumentType */
-            $argumentType = $queryType->getConfig()->getArgument($argument->getName())->getType();
+            $argumentType = $field->getConfig()->getArgument($argument->getName())->getType();
             if ($argument->getValue() instanceof Variable) {
                 if ($request->hasVariable($argument->getValue()->getName())) {
                     $argument->getValue()->setValue($request->getVariable($argument->getValue()->getName()));
                 } else {
-                    $this->addError(new ResolveException(sprintf('Variable "%s" not exist for query "%s"', $argument->getName(), $queryType->getName())));
+                    $this->addError(new ResolveException(sprintf('Variable "%s" not exist for query "%s"', $argument->getName(), $field->getName())));
 
                     return false;
                 }
             }
 
             if (!$argumentType->isValidValue($argumentType->parseValue($argument->getValue()->getValue()))) {
-                $this->addError(new ResolveException(sprintf('Not valid type for argument "%s" in query "%s"', $argument->getName(), $queryType->getName())));
+                $this->addError(new ResolveException(sprintf('Not valid type for argument "%s" in query "%s"', $argument->getName(), $field->getName())));
 
                 return false;
             }

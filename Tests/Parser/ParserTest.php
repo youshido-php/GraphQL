@@ -151,6 +151,39 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [
+                'query CheckTypeOfLuke {
+                  hero(episode: EMPIRE) {
+                    __typename,
+                    name
+                  }
+                }',
+                [
+                    'queries'   => [
+                        new Query('hero', null, [
+                            new Argument('episode', new Literal('EMPIRE'))
+                        ], [
+                            new Field('__typename'),
+                            new Field('name'),
+                        ])
+                    ],
+                    'mutations' => [],
+                    'fragments' => []
+                ]
+            ],
+            [
+                '{ test { __typename, id } }',
+                [
+                    'queries'   => [
+                        new Query('test', null, [], [
+                            new Field('__typename'),
+                            new Field('id'),
+                        ])
+                    ],
+                    'mutations' => [],
+                    'fragments' => []
+                ]
+            ],
+            [
                 '{}',
                 [
                     'queries'   => [],

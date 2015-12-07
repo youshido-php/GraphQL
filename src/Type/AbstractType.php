@@ -42,10 +42,6 @@ abstract class AbstractType implements TypeInterface
 
     public function parseValue($value)
     {
-        if (!$this->isValidValue($value)) {
-            return null;
-        }
-
         return $this->serialize($value);
     }
 

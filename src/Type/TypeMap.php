@@ -9,6 +9,7 @@
 namespace Youshido\GraphQL\Type;
 
 
+use Youshido\GraphQL\Type\Object\AbstractEnumType;
 use Youshido\GraphQL\Type\Object\AbstractInputObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
@@ -47,7 +48,7 @@ class TypeMap
     public static function isInputType($type)
     {
         if (is_object($type)) {
-            return ($type instanceof AbstractScalarType) || ($type instanceof AbstractInputObjectType);
+            return ($type instanceof AbstractScalarType) || ($type instanceof AbstractInputObjectType) || ($type instanceof AbstractEnumType);
         } else {
             return self::isScalarType($type);
         }
