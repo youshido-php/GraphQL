@@ -39,7 +39,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
                     [
                         'name'   => 'RootQuery',
                         'fields' => [
-                            'users' => new ListType(['item' => new UserType()])
+                            'users' => new ListType(new UserType())
                         ]
                     ])
             ]);
@@ -50,7 +50,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
     public function testClassUsage()
     {
         $schema = new TestSchema();
-        $schema->addQuery('users', new ListType(['item' => new UserType()]));
+        $schema->addQuery('users', new ListType(new UserType()));
         $this->assertEquals('TestSchema', $schema->getName());
 
         $fields = $schema->getQueryType()->getConfig()->getFields();

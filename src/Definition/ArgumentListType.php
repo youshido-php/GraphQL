@@ -14,7 +14,6 @@ use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 class ArgumentListType extends AbstractListType
 {
 
-
     public function resolve($value = null, $args = [])
     {
         /** @var $value Field */
@@ -23,14 +22,6 @@ class ArgumentListType extends AbstractListType
         }
 
         return $value->getConfig()->getType()->getConfig()->getArguments();
-    }
-
-    /**
-     * @return String type name
-     */
-    public function getName()
-    {
-        return '__ArgumentList';
     }
 
     public function getItem()

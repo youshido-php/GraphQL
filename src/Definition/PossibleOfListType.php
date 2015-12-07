@@ -11,11 +11,6 @@ namespace Youshido\GraphQL\Definition;
 class PossibleOfListType extends QueryListType
 {
 
-    public function getName()
-    {
-        return '__PossibleOfList';
-    }
-
     public function getItem()
     {
         return new PossibleOfType();

@@ -15,11 +15,6 @@ use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 class FieldListType extends AbstractListType
 {
 
-    public function getName()
-    {
-        return '__FieldList';
-    }
-
     public function getItem()
     {
         return new FieldType();

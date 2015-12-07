@@ -36,21 +36,8 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
 
     public function testListSchema()
     {
-        $listType = new ListType(
-            [
-                'name'    => 'users',
-                'item'    => new UserType(),
-                'args'    => [
-                    'count' => [
-                        'type' => TypeMap::TYPE_INT
-                    ]
-                ],
-                'resolve' => function () {
+        $listType = new ListType(new UserType());
 
-                }
-            ]);
-
-        $this->assertEquals("users", $listType->getName());
         $this->assertEquals(TypeMap::KIND_LIST, $listType->getKind());
     }
 

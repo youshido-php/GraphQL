@@ -13,11 +13,6 @@ use Youshido\GraphQL\Type\ListType\AbstractListType;
 class InputValueListType extends AbstractListType
 {
 
-    public function getName()
-    {
-        return '__InputValuesList';
-    }
-
     public function getItem()
     {
         return new InputValueType();

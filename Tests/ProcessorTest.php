@@ -63,6 +63,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->setSchema($schema);
 
         $processor->processQuery($query);
+        $a = $processor->getResponseData();
 
         $this->assertEquals($processor->getResponseData(), $response);
     }
@@ -108,14 +109,13 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                                 ['name' => 'String', 'fields' => []],
                                 ['name' => '__Schema', 'fields' => [['name' => 'queryType'], ['name' => 'mutationType'], ['name' => 'types']]],
                                 ['name' => '__Type', 'fields' => [['name' => 'name'], ['name' => 'kind'], ['name' => 'description'], ['name' => 'ofType'], ['name' => 'inputFields'], ['name' => 'enumValues'], ['name' => 'fields'], ['name' => 'interfaces'], ['name' => 'possibleTypes']]],
-                                ['name' => '__TypeList', 'fields' => [['name' => 'name'], ['name' => 'kind'], ['name' => 'description'], ['name' => 'ofType'], ['name' => 'inputFields'], ['name' => 'enumValues'], ['name' => 'fields'], ['name' => 'interfaces'], ['name' => 'possibleTypes']]],
-                                ['name' => '__InputValuesList', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'type'], ['name' => 'defaultValue']]],
-                                ['name' => '__EnumValueList', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'deprecationReason'], ['name' => 'isDeprecated']]],
+                                ['name' => '__InputValue', 'fields' => [['name' => 'name'],['name' => 'description'],['name' => 'type'],['name' => 'defaultValue'],]],
+                                ['name' => '__EnumValue', 'fields' => [['name' => 'name'],['name' => 'description'],['name' => 'deprecationReason'],['name' => 'isDeprecated'],]],
                                 ['name' => 'Boolean', 'fields' => []],
-                                ['name' => '__FieldList', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'isDeprecated'], ['name' => 'deprecationReason'], ['name' => 'type'], ['name' => 'args']]],
-                                ['name' => '__ArgumentList', 'fields' => [['name' => 'name'], ['name' => 'description']]],
-                                ['name' => '__InterfaceList', 'fields' => [['name' => 'name'], ['name' => 'kind'], ['name' => 'description'], ['name' => 'ofType'], ['name' => 'inputFields'], ['name' => 'enumValues'], ['name' => 'fields'], ['name' => 'interfaces'], ['name' => 'possibleTypes']]],
-                                ['name' => '__PossibleOfList', 'fields' => [['name' => 'name'], ['name' => 'kind'], ['name' => 'description'], ['name' => 'ofType'], ['name' => 'inputFields'], ['name' => 'enumValues'], ['name' => 'fields'], ['name' => 'interfaces'], ['name' => 'possibleTypes']]],
+                                ['name' => '__Field', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'isDeprecated'], ['name' => 'deprecationReason'], ['name' => 'type'], ['name' => 'args']]],
+                                ['name' => '__Argument', 'fields' => [['name' => 'name'], ['name' => 'description']]],
+                                ['name' => '__Interface', 'fields' => [['name' => 'name'], ['name' => 'kind'], ['name' => 'description'], ['name' => 'ofType'], ['name' => 'inputFields'], ['name' => 'enumValues'], ['name' => 'fields'], ['name' => 'interfaces'], ['name' => 'possibleTypes']]],
+                                ['name' => '__PossibleOf', 'fields' => [['name' => 'name'], ['name' => 'kind'], ['name' => 'description'], ['name' => 'ofType'], ['name' => 'inputFields'], ['name' => 'enumValues'], ['name' => 'fields'], ['name' => 'interfaces'], ['name' => 'possibleTypes']]],
                             ]
                         ]
                     ]

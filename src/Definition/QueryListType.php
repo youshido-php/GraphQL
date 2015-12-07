@@ -16,11 +16,6 @@ class QueryListType extends AbstractListType
 {
     use TypeCollectorTrait;
 
-    public function getName()
-    {
-        return '__TypeList';
-    }
-
     public function getItem()
     {
         return new QueryType();

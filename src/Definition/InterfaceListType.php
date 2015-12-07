@@ -11,11 +11,6 @@ namespace Youshido\GraphQL\Definition;
 class InterfaceListType extends QueryListType
 {
 
-    public function getName()
-    {
-        return '__InterfaceList';
-    }
-
     public function getItem()
     {
         return new InterfaceType();

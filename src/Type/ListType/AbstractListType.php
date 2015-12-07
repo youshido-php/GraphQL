@@ -16,17 +16,14 @@ use Youshido\GraphQL\Type\TypeMap;
 abstract class AbstractListType extends AbstractObjectType
 {
 
-    public function __construct($config = [])
+    public function __construct($item = null)
     {
-        if (empty($config) && (get_class($this) != 'Youshido\GraphQL\Type\Object\ListType')) {
-            $config['name'] = $this->getName();
-            $config['item'] = $this->getItem();
+        if (!$item) {
+            $item = $this->getItem();
         }
 
-        $this->config = new ListTypeConfig($config, $this);
+        $this->config = new ListTypeConfig(['item' => $item], $this);
     }
-
-    abstract public function getName();
 
     abstract public function getItem();
 
@@ -36,6 +33,15 @@ abstract class AbstractListType extends AbstractObjectType
     }
 
     protected function build(TypeConfigInterface $config)
+    {
+
+    }
+
+    /**
+     * todo: recent decision
+     * @return String type name
+     */
+    public function getName()
     {
 
     }
