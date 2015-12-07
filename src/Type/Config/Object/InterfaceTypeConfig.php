@@ -33,4 +33,15 @@ class InterfaceTypeConfig extends Config implements TypeConfigInterface
     {
         $this->buildFields();
     }
+
+    public function resolveType($object)
+    {
+        $callable = $this->get('resolveType');
+
+        if($callable && is_callable($callable)) {
+            return call_user_func_array($callable, [$object]);
+        }
+
+        return $this->contextObject->resolveType($object);
+    }
 }

@@ -28,7 +28,20 @@ class DroidType extends HumanType
     {
         parent::build($config);
 
+        $config->getField('friends')->set('resolve', function($droid){
+            return StarWarsData::getFriends($droid);
+        });
+
         $config
             ->addField('primaryFunction', TypeMap::TYPE_STRING);
     }
+
+    public function resolve($value = null, $args = [])
+    {
+        $droids = StarWarsData::droids();
+
+        return isset($droids[$args['id']]) ? $droids[$args['id']] : null;
+    }
+
+
 }

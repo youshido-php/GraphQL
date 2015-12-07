@@ -48,6 +48,11 @@ class ListTypeConfig extends ObjectTypeConfig
      */
     public function getItemConfig()
     {
-        return $this->get('item')->getConfig();
+        return $this->getItem()->getConfig();
+    }
+
+    public function getItem()
+    {
+        return $this->get('item');
     }
 }

@@ -18,9 +18,12 @@ use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Type\Field\Field;
+use Youshido\GraphQL\Type\Object\AbstractEnumType;
+use Youshido\GraphQL\Type\Object\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\InputObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
+use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
@@ -151,7 +154,48 @@ class Processor
         if (get_class($query) == 'Youshido\GraphQL\Parser\Ast\Field') {
             $alias            = $query->getName();
             $preResolvedValue = $this->getPreResolvedValue($contextValue, $query);
-            $value            = $field->getType()->serialize($preResolvedValue);
+
+            if ($field->getConfig()->getType()->getKind() == TypeMap::KIND_LIST) {
+                if(!is_array($preResolvedValue)){
+                    $value = null;
+                    $this->resolveValidator->addError(new ResolveException('Not valid resolve value for list type'));
+                }
+
+
+                $listValue = [];
+                foreach ($preResolvedValue as $resolvedValueItem) {
+                    /** @var TypeInterface $type */
+                    $type = $field->getType()->getConfig()->getItem();
+
+                    if ($type->getKind() == TypeMap::KIND_ENUM) {
+                        /** @var $type AbstractEnumType */
+                        if(!$type->isValidValue($resolvedValueItem)) {
+                            $this->resolveValidator->addError(new ResolveException('Not valid value for enum type'));
+
+                            $listValue = null;
+                            break;
+                        }
+
+                        $listValue[] = $type->resolve($resolvedValueItem);
+                    } else {
+                        /** @var AbstractScalarType $type */
+                        $listValue[] = $type->serialize($preResolvedValue);
+                    }
+                }
+
+                $value = $listValue;
+            } else {
+                if ($field->getType()->getKind() == TypeMap::KIND_ENUM) {
+                    if(!$field->getType()->isValidValue($preResolvedValue)) {
+                        $this->resolveValidator->addError(new ResolveException('Not valid value for enum type'));
+                        $value = null;
+                    } else {
+                        $value = $field->getType()->resolve($preResolvedValue);
+                    }
+                } else {
+                    $value = $field->getType()->serialize($preResolvedValue);
+                }
+            }
         } else {
             if (!$this->resolveValidator->validateArguments($field->getType(), $query, $this->request)) {
                 return null;
@@ -173,7 +217,14 @@ class Processor
                         $value[] = [];
                         $index   = count($value) - 1;
 
-                        $value[$index] = $this->processQueryFields($query, $field->getType(), $resolvedValueItem, $value[$index]);
+                        if($field->getConfig()->getType()->getConfig()->getItem()->getKind() == TypeMap::KIND_INTERFACE) {
+                            $resolvedValueItem = $field->getConfig()->getType()->getConfig()->getItemConfig()->resolveType($resolvedValueItem);
+                            $type = $field->getConfig()->getType()->getConfig()->getItem();
+                        } else {
+                            $type = $field->getType();
+                        }
+
+                        $value[$index] = $this->processQueryFields($query, $type, $resolvedValueItem, $value[$index]);
                     }
                 } else {
                     $value = $this->processQueryFields($query, $field->getType(), $resolvedValue, $value);
@@ -234,6 +285,10 @@ class Processor
      */
     protected function resolveValue($field, $contextValue, $query)
     {
+        if ($field->getConfig()->getType() instanceof AbstractInterfaceType) {
+            $a = 'asd';
+        }
+
         return $field->getConfig()->resolve($contextValue, $this->parseArgumentsValues($field->getConfig()->getType(), $query));
     }
 

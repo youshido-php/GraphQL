@@ -32,7 +32,7 @@ abstract class AbstractInterfaceType extends AbstractType
 
     abstract protected function build(InterfaceTypeConfig $config);
 
-    protected function resolveType($object)
+    public function resolveType($object)
     {
         return $object;
     }

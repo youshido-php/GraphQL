@@ -70,6 +70,11 @@ class Config
         return array_key_exists($key, $this->data) ? $this->data[$key] : $defaultValue;
     }
 
+    public function set($key, $value)
+    {
+        $this->data[$key] = $value;
+    }
+
     /**
      * @return boolean
      */
@@ -90,6 +95,7 @@ class Config
         if ($propertyName !== false) {
             return $this->get($propertyName);
         }
+
         throw new \Exception('Call to undefined method ' . $method);
     }
 

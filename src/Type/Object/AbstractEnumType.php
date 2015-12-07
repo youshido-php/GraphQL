@@ -44,12 +44,23 @@ abstract class AbstractEnumType extends AbstractType
      */
     public function isValidValue($value)
     {
-        return array_key_exists($value, $this->getValues());
+        return in_array($value, array_map(function ($item) { return $item['value']; }, $this->getConfig()->get('values')));
     }
 
     abstract public function getValues();
 
     public function checkBuild()
     {
+    }
+
+    public function resolve($value)
+    {
+        foreach($this->getConfig()->get('values') as $enumValue => $valueItem) {
+            if($value == $valueItem['value']){
+                return $enumValue;
+            }
+        }
+
+        return null;
     }
 }

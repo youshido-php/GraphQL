@@ -39,8 +39,8 @@ class ResolveValidator implements ResolveValidatorInterface
             /** @var AbstractType $argumentType */
             $argumentType = $queryType->getConfig()->getArgument($argument->getName())->getType();
             if ($argument->getValue() instanceof Variable) {
-                if ($request->hasVariable($argument->getName())) {
-                    $argument->getValue()->setValue($request->getVariable($argument->getName()));
+                if ($request->hasVariable($argument->getValue()->getName())) {
+                    $argument->getValue()->setValue($request->getVariable($argument->getValue()->getName()));
                 } else {
                     $this->addError(new ResolveException(sprintf('Variable "%s" not exist for query "%s"', $argument->getName(), $queryType->getName())));
 
@@ -75,6 +75,7 @@ class ResolveValidator implements ResolveValidatorInterface
     {
         switch ($kind) {
             case TypeMap::KIND_OBJECT:
+            case TypeMap::KIND_INTERFACE:
                 return is_object($value) || is_null($value) || is_array($value);
             case TypeMap::KIND_LIST:
                 return is_array($value);

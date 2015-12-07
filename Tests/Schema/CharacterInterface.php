@@ -21,7 +21,11 @@ class CharacterInterface extends AbstractInterfaceType
         $config
             ->addField('id', TypeMap::TYPE_ID, ['required' => true])
             ->addField('name', TypeMap::TYPE_STRING, ['required' => true])
-            ->addField('friends', new ListType(['item' => new CharacterInterface()]))
+            ->addField('friends', new ListType(['item' => new CharacterInterface()]), [
+                'resolve' => function($value){
+                    return $value['friends'];
+                }
+            ])
             ->addField('appearsIn', new ListType(['item' => new EpisodeEnum()]));
     }
 
@@ -34,4 +38,20 @@ class CharacterInterface extends AbstractInterfaceType
     {
         return 'Character';
     }
+
+    public function resolveType($object)
+    {
+        $humans = StarWarsData::humans();
+        $droids = StarWarsData::droids();
+
+        if (isset($humans[$object])) {
+            return $humans[$object];
+        }
+        if (isset($droids[$object])) {
+            return $droids[$object];
+        }
+
+        return null;
+    }
+
 }

@@ -18,7 +18,9 @@ class HumanType extends AbstractObjectType
 
     public function resolve($value = null, $args = [])
     {
+        $humans = StarWarsData::humans();
 
+        return isset($humans[$args['id']]) ? $humans[$args['id']] : null;
     }
 
     protected function build(TypeConfigInterface $config)
@@ -28,7 +30,11 @@ class HumanType extends AbstractObjectType
             ->addField('name', TypeMap::TYPE_STRING)
             ->addField('friends', new ListType([
                 'item' => new CharacterInterface()
-            ]))
+            ]), [
+                'resolve' => function ($droid) {
+                    return StarWarsData::getFriends($droid);
+                },
+            ])
             ->addField('appearsIn', new ListType([
                 'item' => new EpisodeEnum()
             ]))

@@ -8,6 +8,8 @@
 namespace Youshido\GraphQL\Type\Config;
 
 
+use Youshido\GraphQL\Type\Config\Field\FieldConfig;
+
 interface TypeConfigInterface
 {
 
@@ -35,6 +37,11 @@ interface TypeConfigInterface
      */
     public function addField($name, $type, $config = []);
 
+    /**
+     * @param $name
+     *
+     * @return FieldConfig
+     */
     public function getField($name);
 
     public function hasField($name);

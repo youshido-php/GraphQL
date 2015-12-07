@@ -18,23 +18,26 @@ class QueryType extends AbstractObjectType
     {
     }
 
-    protected function build(TypeConfigInterface $config)
-    {
-        $config
-            ->addField('hero', new CharacterInterface(), [
-                'args' => [
-                    'episode' => ['type' => new EpisodeEnum()]
-                ]
-            ])
-            ->addField('human', new HumanType())
-            ->addField('droid', new DroidType());
-    }
-
     /**
      * @return String type name
      */
     public function getName()
     {
         return 'Query';
+    }
+
+    protected function build(TypeConfigInterface $config)
+    {
+        $config
+            ->addField('hero', new CharacterInterface(), [
+                'args'    => [
+                    'episode' => ['type' => new EpisodeEnum()]
+                ],
+                'resolve' => function ($root, $args) {
+                    return StarWarsData::getHero(isset($args['episode']) ? $args['episode'] : null);
+                },
+            ])
+            ->addField('human', new HumanType())
+            ->addField('droid', new DroidType());
     }
 }
