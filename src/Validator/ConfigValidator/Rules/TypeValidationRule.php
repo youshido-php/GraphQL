@@ -15,8 +15,8 @@ use Youshido\GraphQL\Type\Config\Field\InputFieldConfig;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Field\InputField;
 use Youshido\GraphQL\Type\Object\AbstractInputObjectType;
+use Youshido\GraphQL\Type\Object\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
-use Youshido\GraphQL\Type\Object\InterfaceType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
@@ -41,7 +41,7 @@ class TypeValidationRule implements ValidationRuleInterface
                     return is_object($data);
 
                 case TypeMap::TYPE_OBJECT_TYPE:
-                    return $data instanceof AbstractObjectType || $data instanceof InterfaceType;
+                    return $data instanceof AbstractObjectType || $data instanceof AbstractInterfaceType;
 
                 case TypeMap::TYPE_OBJECT_INPUT_TYPE:
                     return $data instanceof AbstractInputObjectType;
@@ -54,6 +54,9 @@ class TypeValidationRule implements ValidationRuleInterface
 
                 case TypeMap::TYPE_ARRAY:
                     return is_array($data);
+
+                case TypeMap::TYPE_ARRAY_OF_VALUES:
+                    return $this->isArrayOfValues($data);
 
                 case TypeMap::TYPE_ARRAY_OF_FIELDS:
                     return $this->isArrayOfFields($data);
@@ -74,23 +77,25 @@ class TypeValidationRule implements ValidationRuleInterface
         }
     }
 
+    private function isArrayOfValues($data)
+    {
+        if (!is_array($data)) return false;
+
+        foreach ($data as $item) {
+            if (!array_key_exists('value', $item)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private function isArrayOfFields($data)
     {
         if (!is_array($data)) return false;
 
         foreach ($data as $name => $item) {
             if (!$this->isField($item, $name)) return false;
-        }
-
-        return true;
-    }
-
-    private function isArrayOfInputs($data)
-    {
-        if (!is_array($data)) return false;
-
-        foreach ($data as $name => $item) {
-            if (!$this->isInputField($item, $name)) return false;
         }
 
         return true;
@@ -114,6 +119,17 @@ class TypeValidationRule implements ValidationRuleInterface
         }
 
         return false;
+    }
+
+    private function isArrayOfInputs($data)
+    {
+        if (!is_array($data)) return false;
+
+        foreach ($data as $name => $item) {
+            if (!$this->isInputField($item, $name)) return false;
+        }
+
+        return true;
     }
 
     private function isInputField($data, $name = null)

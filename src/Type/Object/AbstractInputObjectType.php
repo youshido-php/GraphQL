@@ -32,6 +32,11 @@ abstract class AbstractInputObjectType extends AbstractObjectType
 
     abstract protected function getOutputType();
 
+    protected function build(TypeConfigInterface $config)
+    {
+
+    }
+
     public function isValidValue($value)
     {
         if (!is_array($value)) {
@@ -53,10 +58,6 @@ abstract class AbstractInputObjectType extends AbstractObjectType
         }
 
         return !(count($requiredFields) > 0);
-    }
-
-    protected function build(TypeConfigInterface $config)
-    {
     }
 
     public function getKind()

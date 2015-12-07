@@ -11,6 +11,7 @@ namespace Youshido\GraphQL\Type\Object;
 
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Config\Object\ObjectTypeConfig;
+use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 
@@ -32,6 +33,16 @@ abstract class AbstractObjectType extends AbstractType
 
 
     abstract public function resolve($value = null, $args = []);
+
+    abstract protected function build(TypeConfigInterface $config);
+
+    public function checkBuild()
+    {
+        if (!$this->isBuild) {
+            $this->isBuild = true;
+            $this->build($this->config);
+        }
+    }
 
     public function parseValue($value)
     {

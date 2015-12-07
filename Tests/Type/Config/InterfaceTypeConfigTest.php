@@ -6,11 +6,8 @@
 * created: 12/6/15 12:49 AM
 */
 
-namespace Youshido\Tests\Type;
+namespace Youshido\Tests\Type\Config;
 
-
-use Youshido\GraphQL\Type\ListType\ListType;
-use Youshido\GraphQL\Type\Object\InterfaceType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\Tests\Schema\CharacterInterface;
 

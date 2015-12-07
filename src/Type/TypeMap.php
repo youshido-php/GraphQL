@@ -37,6 +37,7 @@ class TypeMap
     const TYPE_ARRAY             = 'array';
     const TYPE_ARRAY_OF_FIELDS   = 'array_of_fields';
     const TYPE_ARRAY_OF_INPUTS   = 'array_of_inputs';
+    const TYPE_ARRAY_OF_VALUES   = 'array_of_values';
     const TYPE_ANY               = 'any';
     const TYPE_ANY_OBJECT        = 'any_object';
     const TYPE_ANY_INPUT         = 'any_input';

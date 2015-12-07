@@ -13,7 +13,7 @@ use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Config\Object\InterfaceTypeConfig;
 use Youshido\GraphQL\Type\TypeMap;
 
-class InterfaceType extends AbstractType
+abstract class AbstractInterfaceType extends AbstractType
 {
 
 
@@ -33,6 +33,16 @@ class InterfaceType extends AbstractType
     public function getPossibleTypes()
     {
 
+    }
+
+    abstract  protected function build(InterfaceTypeConfig $config);
+
+    public function checkBuild()
+    {
+        if (!$this->isBuild) {
+            $this->isBuild = true;
+            $this->build($this->config);
+        }
     }
 
     public function isPossibleType()
