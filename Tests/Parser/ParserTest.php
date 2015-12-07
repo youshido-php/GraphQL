@@ -159,6 +159,30 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 ]
             ],
             [
+                'query test {}',
+                [
+                    'queries'   => [],
+                    'mutations' => [],
+                    'fragments' => []
+                ]
+            ],
+            [
+                'query {}',
+                [
+                    'queries'   => [],
+                    'mutations' => [],
+                    'fragments' => []
+                ]
+            ],
+            [
+                'mutation setName { setUserName }',
+                [
+                    'queries'   => [],
+                    'mutations' => [new Mutation('setUserName')],
+                    'fragments' => []
+                ]
+            ],
+            [
                 '{ test { ...userDataFragment } } fragment userDataFragment on User { id, name, email }',
                 [
                     'queries'   => [

@@ -58,6 +58,7 @@ class Parser extends Tokenizer
 
         if ($this->peek()->getType() == $token) {
             $this->lex();
+            $this->eat(Token::TYPE_IDENTIFIER);
         }
 
         $this->lex();
