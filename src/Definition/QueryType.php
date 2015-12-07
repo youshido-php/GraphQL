@@ -11,6 +11,7 @@ use Youshido\GraphQL\Schema;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\TypeMap;
 
 class QueryType extends AbstractObjectType
 {
@@ -18,9 +19,9 @@ class QueryType extends AbstractObjectType
     protected function build(TypeConfigInterface $config)
     {
         $config
-            ->addField('name', 'string')
-            ->addField('kind', 'string')
-            ->addField('description', 'string')
+            ->addField('name', TypeMap::TYPE_STRING)
+            ->addField('kind', TypeMap::TYPE_STRING)
+            ->addField('description', TypeMap::TYPE_STRING)
             ->addField('ofType', new QueryListType(), [
                 'resolve' => function () {
                     return [];

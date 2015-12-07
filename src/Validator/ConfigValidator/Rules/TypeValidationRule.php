@@ -16,6 +16,7 @@ use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Field\InputField;
 use Youshido\GraphQL\Type\Object\AbstractInputObjectType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\Object\InterfaceType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
@@ -30,8 +31,7 @@ class TypeValidationRule implements ValidationRuleInterface
 
             return ($className == $ruleInfo);
         } elseif (is_string($ruleInfo)) {
-            /** @todo need to be completely rewritten */
-            $ruleInfo = strtolower($ruleInfo);
+            /** @todo need to be rewritten */
 
             switch ($ruleInfo) {
                 case TypeMap::TYPE_ANY:
@@ -41,7 +41,7 @@ class TypeValidationRule implements ValidationRuleInterface
                     return is_object($data);
 
                 case TypeMap::TYPE_OBJECT_TYPE:
-                    return $data instanceof AbstractObjectType;
+                    return $data instanceof AbstractObjectType || $data instanceof InterfaceType;
 
                 case TypeMap::TYPE_OBJECT_INPUT_TYPE:
                     return $data instanceof AbstractInputObjectType;

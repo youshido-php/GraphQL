@@ -10,6 +10,7 @@ namespace Youshido\GraphQL\Definition;
 use Youshido\GraphQL\Definition\Traits\TypeCollectorTrait;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Definition\Traits\SchemaContainableTrait;
+use Youshido\GraphQL\Type\TypeMap;
 
 class TypeDefinitionType extends QueryType
 {
@@ -41,6 +42,6 @@ class TypeDefinitionType extends QueryType
     {
         parent::build($config);
 
-        $config->addArgument('name', 'string', ['required' => true]);
+        $config->addArgument('name', TypeMap::TYPE_STRING, ['required' => true]);
     }
 }

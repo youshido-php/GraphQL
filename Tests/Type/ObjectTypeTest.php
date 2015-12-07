@@ -42,7 +42,7 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
                 'item'    => new UserType(),
                 'args'    => [
                     'count' => [
-                        'type' => 'int'
+                        'type' => TypeMap::TYPE_INT
                     ]
                 ],
                 'resolve' => function () {
@@ -60,7 +60,7 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
             [
                 'name'   => 'newUser',
                 'fields' => [
-                    'id' => ['type' => 'int']
+                    'id' => ['type' => TypeMap::TYPE_INT]
                 ]
             ]);
 

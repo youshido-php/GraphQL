@@ -10,6 +10,7 @@ namespace Youshido\GraphQL\Definition;
 
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\TypeMap;
 
 class ArgumentType extends AbstractObjectType
 {
@@ -17,8 +18,8 @@ class ArgumentType extends AbstractObjectType
     protected function build(TypeConfigInterface $config)
     {
         $config
-            ->addField('name', 'string')
-            ->addField('description', 'string');
+            ->addField('name', TypeMap::TYPE_STRING)
+            ->addField('description', TypeMap::TYPE_STRING);
     }
 
     public function resolve($value = null, $args = [])

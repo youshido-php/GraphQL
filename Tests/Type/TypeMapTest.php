@@ -35,6 +35,12 @@ class TypeMapTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testScalarsAsInput()
+    {
+        foreach ($this->getScalarTypes() as $type) {
+            $this->assertTrue(TypeMap::isInputType($type));
+        }
+    }
 
     private function getScalarTypes()
     {

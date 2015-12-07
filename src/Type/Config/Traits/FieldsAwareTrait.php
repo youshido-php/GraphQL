@@ -35,6 +35,20 @@ trait FieldsAwareTrait
         }
     }
 
+    /**
+     * @param array $fieldsArray
+     */
+    public function addFields($fieldsArray)
+    {
+        foreach($fieldsArray as $fieldName => $fieldConfig) {
+            if (is_object($fieldConfig)) {
+                $this->addField($fieldName, $fieldConfig);
+            } else {
+                $this->addField($fieldName, $fieldConfig['type'], $fieldConfig);
+            }
+        }
+    }
+
     public function addField($name, $type, $config = [])
     {
         if (is_string($type)) {

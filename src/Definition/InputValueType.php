@@ -10,6 +10,7 @@ namespace Youshido\GraphQL\Definition;
 
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\TypeMap;
 
 class InputValueType extends AbstractObjectType
 {
@@ -17,10 +18,10 @@ class InputValueType extends AbstractObjectType
     protected function build(TypeConfigInterface $config)
     {
         $config
-            ->addField('name', 'string')
-            ->addField('description', 'string')
+            ->addField('name', TypeMap::TYPE_STRING)
+            ->addField('description', TypeMap::TYPE_STRING)
             ->addField('type', new QueryType())
-            ->addField('defaultValue', 'string'); //todo: check here
+            ->addField('defaultValue', TypeMap::TYPE_STRING); //todo: check here
     }
 
     public function resolve($value = null, $args = [])

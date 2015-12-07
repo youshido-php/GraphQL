@@ -10,6 +10,7 @@ namespace Youshido\Tests\DataProvider;
 
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\TypeMap;
 
 class UserType extends AbstractObjectType
 {
@@ -17,11 +18,11 @@ class UserType extends AbstractObjectType
     public function build(TypeConfigInterface $config)
     {
         $config
-            ->addField('id', 'int')
-            ->addField('name', 'string');
+            ->addField('id', TypeMap::TYPE_INT)
+            ->addField('name', TypeMap::TYPE_STRING);
 
         $config
-            ->addArgument('id', 'int', [
+            ->addArgument('id', TypeMap::TYPE_INT, [
                 'required' => true
             ]);
     }

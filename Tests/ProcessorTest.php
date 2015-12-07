@@ -11,6 +11,7 @@ namespace Youshido\Tests;
 use Youshido\GraphQL\Schema;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Processor;
+use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
 use Youshido\Tests\DataProvider\UserType;
 
@@ -36,11 +37,11 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                 [
                     'name'    => 'latest',
                     'args'    => [
-                        'id' => ['type' => 'int']
+                        'id' => ['type' => TypeMap::TYPE_INT]
                     ],
                     'fields'  => [
-                        'id'   => ['type' => 'int'],
-                        'name' => ['type' => 'string']
+                        'id'   => ['type' => TypeMap::TYPE_INT],
+                        'name' => ['type' => TypeMap::TYPE_STRING]
                     ],
                     'resolve' => function () {
                         return [
@@ -203,8 +204,8 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                 [
                     'name'    => 'latest',
                     'fields'  => [
-                        'id'   => ['type' => 'int'],
-                        'name' => ['type' => 'string']
+                        'id'   => ['type' => TypeMap::TYPE_INT],
+                        'name' => ['type' => TypeMap::TYPE_STRING]
                     ],
                     'resolve' => function () {
                         return [
