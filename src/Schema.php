@@ -32,10 +32,10 @@ class Schema
 
         $this->config = new SchemaConfig($config, $this);
 
-        $this->build($this->getQueryType()->getConfig());
+        $this->build($this->config);
     }
 
-    public function build(TypeConfigInterface $config)
+    public function build(SchemaConfig $config)
     {
     }
 

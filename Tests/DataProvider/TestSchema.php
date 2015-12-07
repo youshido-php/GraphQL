@@ -9,16 +9,12 @@
 namespace Youshido\Tests\DataProvider;
 
 use Youshido\GraphQL\Schema;
+use Youshido\GraphQL\Type\Config\Schema\SchemaConfig;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\ListType\ListType;
 
 class TestSchema extends Schema
 {
-    public function build(TypeConfigInterface $config)
-    {
-        $config
-            ->addField('users', new ListType(['item' => new UserType()]));
-    }
 
     public function getName()
     {

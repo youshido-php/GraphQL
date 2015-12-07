@@ -29,8 +29,6 @@ class InterfaceTypeConfig extends Config implements TypeConfigInterface
         ];
     }
 
-
-
     protected function build()
     {
         $this->buildFields();

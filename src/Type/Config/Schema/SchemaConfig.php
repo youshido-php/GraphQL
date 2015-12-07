@@ -10,6 +10,7 @@ namespace Youshido\GraphQL\Type\Config\Schema;
 
 
 use Youshido\GraphQL\Type\Config\Config;
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\InputObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
@@ -35,11 +36,27 @@ class SchemaConfig extends Config
     }
 
     /**
+     * @param $query AbstractObjectType
+     */
+    public function setQuery($query)
+    {
+        $this->data['query'] = $query;
+    }
+
+    /**
      * @return InputObjectType
      */
     public function getMutation()
     {
         return $this->get('mutation');
+    }
+
+    /**
+     * @param $query AbstractObjectType
+     */
+    public function setMutation($query)
+    {
+        $this->data['mutation'] = $query;
     }
 
     public function getName()

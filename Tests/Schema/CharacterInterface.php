@@ -21,7 +21,8 @@ class CharacterInterface extends AbstractInterfaceType
         $config
             ->addField('id', TypeMap::TYPE_ID, ['required' => true])
             ->addField('name', TypeMap::TYPE_STRING, ['required' => true])
-            ->addField('friends', new ListType(['item' => new CharacterInterface()]));
+            ->addField('friends', new ListType(['item' => new CharacterInterface()]))
+            ->addField('appearsIn', new ListType(['item' => new EpisodeEnum()]));
     }
 
     public function getDescription()
@@ -33,5 +34,4 @@ class CharacterInterface extends AbstractInterfaceType
     {
         return 'Character';
     }
-
 }

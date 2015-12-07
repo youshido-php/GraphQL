@@ -50,6 +50,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
     public function testClassUsage()
     {
         $schema = new TestSchema();
+        $schema->addQuery('users', new ListType(['item' => new UserType()]));
         $this->assertEquals('TestSchema', $schema->getName());
 
         $fields = $schema->getQueryType()->getConfig()->getFields();

@@ -30,12 +30,12 @@ abstract class AbstractInterfaceType extends AbstractType
         $this->config = new InterfaceTypeConfig($config, $this);
     }
 
-    public function getPossibleTypes()
+    abstract protected function build(InterfaceTypeConfig $config);
+
+    protected function resolveType($object)
     {
-
+        return $object;
     }
-
-    abstract  protected function build(InterfaceTypeConfig $config);
 
     public function checkBuild()
     {
@@ -43,16 +43,6 @@ abstract class AbstractInterfaceType extends AbstractType
             $this->isBuild = true;
             $this->build($this->config);
         }
-    }
-
-    public function isPossibleType()
-    {
-
-    }
-
-    public function getObjectType()
-    {
-
     }
 
     public function getName()
