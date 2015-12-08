@@ -25,11 +25,11 @@ class TypeMap
     const KIND_INPUT_OBJECT = 'INPUT_OBJECT';
     const KIND_LIST         = 'LIST';
 
-    const TYPE_INT     = 'Int';
-    const TYPE_FLOAT   = 'Float';
-    const TYPE_STRING  = 'String';
-    const TYPE_BOOLEAN = 'Boolean';
-    const TYPE_ID      = 'Id';
+    const TYPE_INT     = 'int';
+    const TYPE_FLOAT   = 'float';
+    const TYPE_STRING  = 'string';
+    const TYPE_BOOLEAN = 'boolean';
+    const TYPE_ID      = 'id';
 
     const TYPE_FUNCTION          = 'function';
     const TYPE_OBJECT_TYPE       = 'object_type';

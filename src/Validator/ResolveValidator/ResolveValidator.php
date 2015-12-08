@@ -75,10 +75,11 @@ class ResolveValidator implements ResolveValidatorInterface
     {
         switch ($kind) {
             case TypeMap::KIND_OBJECT:
+            case TypeMap::KIND_INPUT_OBJECT:
             case TypeMap::KIND_INTERFACE:
                 return is_object($value) || is_null($value) || is_array($value);
             case TypeMap::KIND_LIST:
-                return is_array($value);
+                return is_array($value) || (is_object($value) && in_array('IteratorAggregate', class_implements($value)));
         }
 
         return false;

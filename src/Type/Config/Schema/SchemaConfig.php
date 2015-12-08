@@ -37,10 +37,14 @@ class SchemaConfig extends Config
 
     /**
      * @param $query AbstractObjectType
+     *
+     * @return SchemaConfig
      */
     public function setQuery($query)
     {
         $this->data['query'] = $query;
+
+        return $this;
     }
 
     /**
@@ -53,10 +57,14 @@ class SchemaConfig extends Config
 
     /**
      * @param $query AbstractObjectType
+     *
+     * @return SchemaConfig
      */
     public function setMutation($query)
     {
         $this->data['mutation'] = $query;
+
+        return $this;
     }
 
     public function getName()

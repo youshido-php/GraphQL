@@ -23,7 +23,7 @@ class InterfaceTypeConfigTest extends \PHPUnit_Framework_TestCase
         $fields = $characterInterface->getConfig()->getFields();
         $this->assertArrayHasKey('id', $fields);
 
-        $this->assertEquals(TypeMap::TYPE_ID, $fields['id']->getType()->getName());
+        $this->assertEquals(ucfirst(TypeMap::TYPE_ID), $fields['id']->getType()->getName());
         $this->assertEquals(TypeMap::KIND_SCALAR, $fields['id']->getType()->getKind());
     }
 

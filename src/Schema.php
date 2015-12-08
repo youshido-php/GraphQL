@@ -44,6 +44,11 @@ class Schema
         $this->getQueryType()->getConfig()->addField($name, $query, $config);
     }
 
+    public function addMutation($name, AbstractObjectType $query, $config = [])
+    {
+        $this->getMutationType()->getConfig()->addField($name, $query, $config);
+    }
+
     final public function getQueryType()
     {
         return $this->config->getQuery();
