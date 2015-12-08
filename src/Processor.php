@@ -147,8 +147,6 @@ class Processor
             return null;
         }
 
-        /** @todo need to check if the correct field class is used here */
-
         /** @var Field $field */
         $field = $currentLevelSchema->getConfig()->getField($query->getName());
         if (get_class($query) == 'Youshido\GraphQL\Parser\Ast\Field') {

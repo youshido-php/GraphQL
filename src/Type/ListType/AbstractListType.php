@@ -25,6 +25,9 @@ abstract class AbstractListType extends AbstractObjectType
         $this->config = new ListTypeConfig(['item' => $item], $this);
     }
 
+    /**
+     * @return AbstractObjectType
+     */
     abstract public function getItem();
 
     public function isValidValue($value)
@@ -38,12 +41,11 @@ abstract class AbstractListType extends AbstractObjectType
     }
 
     /**
-     * todo: recent decision
      * @return String type name
      */
     public function getName()
     {
-
+        return $this->getItem()->getName();
     }
 
     final public function getKind()
