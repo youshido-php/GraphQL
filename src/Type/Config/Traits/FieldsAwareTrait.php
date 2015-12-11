@@ -95,4 +95,11 @@ trait FieldsAwareTrait
     {
         return $this->fields;
     }
+
+    public function removeField($name)
+    {
+        if ($this->hasField($name)) {
+            unset($this->fields[$name]);
+        }
+    }
 }

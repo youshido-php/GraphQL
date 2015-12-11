@@ -24,6 +24,8 @@ interface TypeConfigInterface
 
     public function getArgument($name);
 
+    public function removeArgument($name);
+
     public function hasArgument($name);
 
     public function getArguments();
@@ -43,6 +45,8 @@ interface TypeConfigInterface
      * @return FieldConfig
      */
     public function getField($name);
+
+    public function removeField($name);
 
     public function hasField($name);
 

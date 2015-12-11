@@ -67,5 +67,11 @@ trait ArgumentsAwareTrait
         return $this->arguments;
     }
 
+    public function removeArgument($name)
+    {
+        if ($this->hasArgument($name)) {
+            unset($this->arguments[$name]);
+        }
+    }
 
 }
