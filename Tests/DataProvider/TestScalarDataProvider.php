@@ -93,4 +93,29 @@ class TestScalarDataProvider
         ];
     }
 
+    public static function getDatetimeTestData()
+    {
+        return [
+            [null, null, false],
+            [new \DateTime('now'), date('Y-m-d H:i:s'), true],
+        ];
+    }
+
+    public static function getDateTestData()
+    {
+        return [
+            [null, null, false],
+            [new \DateTime('now'), date('Y-m-d'), true],
+        ];
+    }
+
+
+    public static function getTimestampTestData()
+    {
+        return [
+//            [null, null, false],
+            [new \DateTime('now'), time(), true],
+        ];
+    }
+
 }

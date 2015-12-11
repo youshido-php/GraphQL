@@ -27,7 +27,16 @@ class TimestampType extends AbstractScalarType
 
     public function isValidValue($value)
     {
+        if (is_object($value)) {
+            return true;
+        }
+
         return is_int($value);
+    }
+
+    public function getDescription()
+    {
+        return 'A sequence of characters or encoded information identifying when a certain event occurred in seconds';
     }
 
 }

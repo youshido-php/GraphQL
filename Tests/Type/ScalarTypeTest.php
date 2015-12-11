@@ -21,14 +21,14 @@ class ScalarTypeTest extends \PHPUnit_Framework_TestCase
             $className = 'Youshido\GraphQL\Type\Scalar\\' . ucfirst($typeName) . 'Type';
             /** @var TypeInterface $object */
             $object = new $className();
-            $this->assertEquals(ucfirst($typeName), $object->getName());
+            $this->assertEquals(ucfirst($typeName) == 'Datetime' ? 'DateTime' : ucfirst($typeName), $object->getName());
         }
     }
 
     public function testScalarPrimitives()
     {
         foreach (TypeMap::getScalarTypes() as $typeName) {
-            $className = 'Youshido\GraphQL\Type\Scalar\\' . ucfirst($typeName) . 'Type';
+            $className = 'Youshido\GraphQL\Type\Scalar\\' . (ucfirst($typeName) == 'Datetime' ? 'DateTime' : ucfirst($typeName)) . 'Type';
             /** @var TypeInterface $object */
             $object         = new $className();
             $testDataMethod = 'get' . $typeName . 'TestData';

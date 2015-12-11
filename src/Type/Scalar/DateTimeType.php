@@ -27,9 +27,24 @@ class DateTimeType extends AbstractScalarType
 
     public function isValidValue($value)
     {
+        if (is_object($value)) {
+            return true;
+        }
+
         $d = \DateTime::createFromFormat('Y-m-d H:i:s', $value);
 
         return $d && $d->format('Y-m-d H:i:s') == $value;
     }
+
+    public function getDescription()
+    {
+        return 'Representation of date and time in "Y-m-d H:i:s" format';
+    }
+
+    public function getName()
+    {
+        return 'DateTime';
+    }
+
 
 }

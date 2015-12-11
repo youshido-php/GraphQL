@@ -31,7 +31,7 @@ class TypeMapTest extends \PHPUnit_Framework_TestCase
         foreach($this->getScalarTypes() as $type) {
             $object = TypeMap::getScalarTypeObject($type);
             $this->assertEquals($object->getKind(), TypeMap::KIND_SCALAR);
-            $this->assertEquals($object->getName(), ucfirst($type));
+            $this->assertEquals($object->getName(), ucfirst($type) == 'Datetime' ? 'DateTime' : ucfirst($type));
         }
     }
 
@@ -45,7 +45,14 @@ class TypeMapTest extends \PHPUnit_Framework_TestCase
     private function getScalarTypes()
     {
         return [
-            TypeMap::TYPE_INT, TypeMap::TYPE_FLOAT, TypeMap::TYPE_STRING, TypeMap::TYPE_BOOLEAN, TypeMap::TYPE_ID
+            TypeMap::TYPE_INT,
+            TypeMap::TYPE_FLOAT,
+            TypeMap::TYPE_STRING,
+            TypeMap::TYPE_BOOLEAN,
+            TypeMap::TYPE_ID,
+            TypeMap::TYPE_DATETIME,
+            TypeMap::TYPE_DATE,
+            TypeMap::TYPE_TIMESTAMP,
         ];
     }
 }
