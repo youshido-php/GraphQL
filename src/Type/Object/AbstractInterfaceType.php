@@ -16,7 +16,6 @@ use Youshido\GraphQL\Type\TypeMap;
 abstract class AbstractInterfaceType extends AbstractType
 {
 
-
     /**
      * ObjectType constructor.
      * @param $config
@@ -45,10 +44,7 @@ abstract class AbstractInterfaceType extends AbstractType
         }
     }
 
-    public function getName()
-    {
-        return $this->getConfig()->get('name', 'InterfaceType');
-    }
+    abstract public function getName();
 
     public function getKind()
     {
