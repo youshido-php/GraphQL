@@ -25,11 +25,14 @@ class TypeMap
     const KIND_INPUT_OBJECT = 'INPUT_OBJECT';
     const KIND_LIST         = 'LIST';
 
-    const TYPE_INT     = 'int';
-    const TYPE_FLOAT   = 'float';
-    const TYPE_STRING  = 'string';
-    const TYPE_BOOLEAN = 'boolean';
-    const TYPE_ID      = 'id';
+    const TYPE_INT       = 'int';
+    const TYPE_FLOAT     = 'float';
+    const TYPE_STRING    = 'string';
+    const TYPE_BOOLEAN   = 'boolean';
+    const TYPE_ID        = 'id';
+    const TYPE_DATETIME  = 'datetime';
+    const TYPE_DATE      = 'date';
+    const TYPE_TIMESTAMP = 'timestamp';
 
     const TYPE_FUNCTION          = 'function';
     const TYPE_OBJECT_TYPE       = 'object_type';
@@ -63,7 +66,10 @@ class TypeMap
     {
         if (self::isScalarType($type)) {
             if (empty(self::$scalarObjectsCache[$type])) {
-                $className                       = 'Youshido\GraphQL\Type\Scalar\\' . ucfirst($type) . 'Type';
+                $name = ucfirst($type);
+                $name = $name == 'Datetime' ? 'DateTime' : $name;
+
+                $className                       = 'Youshido\GraphQL\Type\Scalar\\' . $name . 'Type';
                 self::$scalarObjectsCache[$type] = new $className();
             }
 
@@ -84,7 +90,14 @@ class TypeMap
     public static function getScalarTypes()
     {
         return [
-            self::TYPE_INT, self::TYPE_FLOAT, self::TYPE_STRING, self::TYPE_BOOLEAN, self::TYPE_ID
+            self::TYPE_INT,
+            self::TYPE_FLOAT,
+            self::TYPE_STRING,
+            self::TYPE_BOOLEAN,
+            self::TYPE_ID,
+            self::TYPE_DATETIME,
+            self::TYPE_DATE,
+            self::TYPE_TIMESTAMP
         ];
     }
 

@@ -14,6 +14,10 @@ class IntType extends AbstractScalarType
 
     public function serialize($value)
     {
+        if ($value === null) {
+            return null;
+        }
+
         return (int)$value;
     }
 
