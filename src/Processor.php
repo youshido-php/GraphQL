@@ -215,7 +215,9 @@ class Processor
                         $value[] = [];
                         $index   = count($value) - 1;
 
-                        if($field->getConfig()->getType()->getConfig()->getItem()->getKind() == TypeMap::KIND_INTERFACE) {
+                        if($field->getConfig()->getType()->getConfig()->getItem()->getKind() == TypeMap::KIND_UNION) {
+                            $type = $field->getConfig()->getType()->getConfig()->getItemConfig()->resolveType($resolvedValueItem);
+                        } elseif($field->getConfig()->getType()->getConfig()->getItem()->getKind() == TypeMap::KIND_INTERFACE) {
                             $resolvedValueItem = $field->getConfig()->getType()->getConfig()->getItemConfig()->resolveType($resolvedValueItem);
                             $type = $field->getConfig()->getType()->getConfig()->getItem();
                         } else {
