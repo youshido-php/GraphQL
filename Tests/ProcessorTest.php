@@ -63,7 +63,6 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->setSchema($schema);
 
         $processor->processQuery($query);
-        $a = $processor->getResponseData();
 
         $this->assertEquals($processor->getResponseData(), $response);
     }
@@ -71,10 +70,6 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     public function predefinedSchemaProvider()
     {
         return [
-//            [
-//                '{ __type (name: "latest") { name, args { name, type { name } } } }',
-//                []
-//            ],
             [
                 '{ __type { name } }',
                 [
@@ -113,7 +108,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                                 ['name' => '__EnumValue', 'fields' => [['name' => 'name'],['name' => 'description'],['name' => 'deprecationReason'],['name' => 'isDeprecated'],]],
                                 ['name' => 'Boolean', 'fields' => []],
                                 ['name' => '__Field', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'isDeprecated'], ['name' => 'deprecationReason'], ['name' => 'type'], ['name' => 'args']]],
-                                ['name' => '__Argument', 'fields' => [['name' => 'name'], ['name' => 'description']]],
+                                ['name' => '__Argument', 'fields' => [['name' => 'name'], ['name' => 'type'], ['name' => 'description']]],
                                 ['name' => '__Interface', 'fields' => [['name' => 'name'], ['name' => 'kind'], ['name' => 'description'], ['name' => 'ofType'], ['name' => 'inputFields'], ['name' => 'enumValues'], ['name' => 'fields'], ['name' => 'interfaces'], ['name' => 'possibleTypes']]],
                                 ['name' => '__PossibleOf', 'fields' => [['name' => 'name'], ['name' => 'kind'], ['name' => 'description'], ['name' => 'ofType'], ['name' => 'inputFields'], ['name' => 'enumValues'], ['name' => 'fields'], ['name' => 'interfaces'], ['name' => 'possibleTypes']]],
                             ]
