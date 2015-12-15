@@ -19,6 +19,7 @@ class ArgumentType extends AbstractObjectType
     {
         $config
             ->addField('name', TypeMap::TYPE_STRING)
+            ->addField('type', new QueryType())
             ->addField('description', TypeMap::TYPE_STRING);
     }
 

@@ -19,6 +19,7 @@ use Youshido\GraphQL\Type\Object\AbstractInputObjectType;
 use Youshido\GraphQL\Type\Object\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\AbstractUnionType;
+use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
@@ -46,7 +47,8 @@ class TypeValidationRule implements ValidationRuleInterface
                     return $data instanceof AbstractObjectType
                     || $data instanceof AbstractInterfaceType
                     || $data instanceof AbstractUnionType
-                    || $data instanceof AbstractEnumType;
+                    || $data instanceof AbstractEnumType
+                    || $data instanceof AbstractScalarType;
 
                 case TypeMap::TYPE_OBJECT_INPUT_TYPE:
                     return $data instanceof AbstractInputObjectType;
