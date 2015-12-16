@@ -45,7 +45,7 @@ abstract class AbstractListType extends AbstractObjectType
      */
     public function getName()
     {
-        return $this->getItem()->getName();
+        return $this->getConfig()->get('item')->getName();
     }
 
     final public function getKind()

@@ -20,7 +20,8 @@ class ArgumentType extends AbstractObjectType
         $config
             ->addField('name', TypeMap::TYPE_STRING)
             ->addField('type', new QueryType())
-            ->addField('description', TypeMap::TYPE_STRING);
+            ->addField('description', TypeMap::TYPE_STRING)
+            ->addField('defaultValue', TypeMap::TYPE_STRING);
     }
 
     public function resolve($value = null, $args = [])
@@ -33,6 +34,6 @@ class ArgumentType extends AbstractObjectType
      */
     public function getName()
     {
-        return '__Argument';
+        return '__InputValue';
     }
 }

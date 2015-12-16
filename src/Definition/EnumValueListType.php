@@ -9,6 +9,7 @@ namespace Youshido\GraphQL\Definition;
 
 
 use Youshido\GraphQL\Type\ListType\AbstractListType;
+use Youshido\GraphQL\Type\TypeMap;
 
 class EnumValueListType extends AbstractListType
 {
@@ -20,6 +21,25 @@ class EnumValueListType extends AbstractListType
 
     public function resolve($value = null, $args = [])
     {
-        return [];
+        if ($value && $value->getKind() == TypeMap::KIND_ENUM) {
+            $data = [];
+            foreach ($value->getValues() as $value) {
+                if(!array_key_exists('description', $value)){
+                    $value['description'] = '';
+                }
+                if(!array_key_exists('isDeprecated', $value)){
+                    $value['isDeprecated'] = false;
+                }
+                if(!array_key_exists('deprecationReason', $value)){
+                    $value['deprecationReason'] = '';
+                }
+
+                $data[] = $value;
+            }
+
+            return $data;
+        }
+
+        return null;
     }
 }

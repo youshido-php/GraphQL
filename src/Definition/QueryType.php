@@ -10,6 +10,7 @@ namespace Youshido\GraphQL\Definition;
 use Youshido\GraphQL\Schema;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Field\Field;
+use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 
@@ -31,7 +32,15 @@ class QueryType extends AbstractObjectType
             ->addField('enumValues', new EnumValueListType())
             ->addField('fields', new FieldListType())
             ->addField('interfaces', new InterfaceListType())
-            ->addField('possibleTypes', new PossibleOfListType());
+            ->addField('possibleTypes', new ListType(new QueryType()), [
+                'resolve' => function($value, $args) {
+                    if ($value && in_array($value->getKind(), [TypeMap::KIND_INTERFACE, TypeMap::KIND_UNION])) {
+                        return $value->getTypes();
+                    }
+
+                    return null;
+                }
+            ]);
     }
 
     public function resolve($value = null, $args = [])

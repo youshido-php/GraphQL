@@ -21,4 +21,9 @@ class InputField extends Field
         $this->config = new InputFieldConfig($config);
     }
 
+    public function getDefaultValue()
+    {
+        return $this->config->getDefaultValue();
+    }
+
 }

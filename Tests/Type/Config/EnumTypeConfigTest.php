@@ -22,11 +22,6 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Episode', $type->getName());
         $this->assertEquals(TypeMap::KIND_ENUM, $type->getKind());
         $this->assertEmpty($type->getConfig()->getFields());
-
-        $values = $type->getValues();
-
-        $this->assertArrayHasKey('JEDI', $values);
-        $this->assertArrayHasKey('value', $values['JEDI']);
     }
 
     public function testConfig()

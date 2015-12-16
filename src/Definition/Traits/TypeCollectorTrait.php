@@ -22,8 +22,6 @@ trait TypeCollectorTrait
      */
     private function collectTypes($fields)
     {
-        //todo: refactor here and all logic with lists
-
         foreach ($fields as $field) {
             if ($field->getConfig()->getType()->getKind() == TypeMap::KIND_LIST) {
                 $name      = $field->getConfig()->getType()->getConfig()->getItem()->getName();

@@ -55,14 +55,18 @@ abstract class AbstractEnumType extends AbstractType
 
     public function serialize($value)
     {
-        return $this->getConfig()->get('values')[$value]['value'];
+        foreach ($this->getConfig()->get('values') as $valueItem) {
+            if ($value == $valueItem['name']) {
+                return $valueItem['value'];
+            }
+        }
     }
 
     public function resolve($value)
     {
-        foreach($this->getConfig()->get('values') as $enumValue => $valueItem) {
-            if($value == $valueItem['value']){
-                return $enumValue;
+        foreach ($this->getConfig()->get('values') as $valueItem) {
+            if ($value == $valueItem['value']) {
+                return $valueItem['name'];
             }
         }
 

@@ -15,11 +15,17 @@ use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 final class ListType extends AbstractListType
 {
 
-    use FinalTypesConfigTrait;
+    use FinalTypesConfigTrait {
+        getName as getConfigName;
+    }
 
     public function getItem()
     {
         throw new ConfigurationException('You must define type of List Item');
     }
 
+    public function getName()
+    {
+        return parent::getName();
+    }
 }

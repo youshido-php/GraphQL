@@ -16,16 +16,19 @@ class EpisodeEnum extends AbstractEnumType
     public function getValues()
     {
         return [
-            'NEWHOPE' => [
+            [
                 'value'       => 4,
+                'name'        => 'NEWHOPE',
                 'description' => 'Released in 1977.'
             ],
-            'EMPIRE'  => [
+            [
                 'value'       => 5,
+                'name'        => 'EMPIRE',
                 'description' => 'Released in 1980.'
             ],
-            'JEDI'    => [
+            [
                 'value'       => 6,
+                'name'        => 'JEDI',
                 'description' => 'Released in 1983.'
             ],
         ];
