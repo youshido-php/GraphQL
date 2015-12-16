@@ -69,7 +69,7 @@ class Parser extends Tokenizer
             if ($first) {
                 $first = false;
             } else {
-                $this->expect(Token::TYPE_COMMA);
+                $this->eatMulti([Token::TYPE_COMMA]);
             }
 
             if ($this->match(Token::TYPE_FRAGMENT_REFERENCE)) {
@@ -321,6 +321,15 @@ class Parser extends Tokenizer
     protected function eat($type)
     {
         if ($this->match($type)) {
+            return $this->lex();
+        }
+
+        return null;
+    }
+
+    protected function eatMulti($types)
+    {
+        if ($this->matchMulti($types)) {
             return $this->lex();
         }
 

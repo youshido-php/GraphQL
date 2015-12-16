@@ -37,6 +37,93 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->parse();
     }
 
+    public function testGoogleExtensionQuery()
+    {
+        $parser = new Parser();
+
+        $parser->setSource('
+            query IntrospectionQuery {
+                __schema {
+                    queryType { name }
+                    mutationType { name }
+                    types {
+                        ...FullType
+                    }
+                    directives {
+                        name
+                        description
+                        args {
+                            ...InputValue
+                        }
+                        onOperation
+                        onFragment
+                        onField
+                    }
+                }
+            }
+
+            fragment FullType on __Type {
+                kind
+                name
+                description
+                fields {
+                    name
+                    description
+                    args {
+                        ...InputValue
+                    }
+                    type {
+                        ...TypeRef
+                    }
+                    isDeprecated
+                    deprecationReason
+                }
+                inputFields {
+                    ...InputValue
+                }
+                interfaces {
+                    ...TypeRef
+                }
+                enumValues {
+                    name
+                    description
+                    isDeprecated
+                    deprecationReason
+                }
+                possibleTypes {
+                    ...TypeRef
+                }
+            }
+
+            fragment InputValue on __InputValue {
+                name
+                description
+                type { ...TypeRef }
+                defaultValue
+            }
+
+            fragment TypeRef on __Type {
+                kind
+                name
+                ofType {
+                    kind
+                    name
+                    ofType {
+                        kind
+                        name
+                        ofType {
+                            kind
+                            name
+                        }
+                    }
+                }
+            }
+        ');
+
+        $this->assertTrue(is_array($parser->parse()));
+    }
+
+
     public function wrongQueriesProvider()
     {
         return [
