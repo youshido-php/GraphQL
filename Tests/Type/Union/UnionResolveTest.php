@@ -28,8 +28,6 @@ class UnionResolveTest extends \PHPUnit_Framework_TestCase
 
         $processor->processQuery($query);
 
-        $a = $processor->getResponseData();
-
         $this->assertEquals($processor->getResponseData(), $response);
     }
 
@@ -38,14 +36,38 @@ class UnionResolveTest extends \PHPUnit_Framework_TestCase
         return [
             [
                 '{
+                    list : unionList {
+                        name,
+                        ... on FirstType {
+                            secondName
+                        }
+                    }
+                }',
+                [
+                    'data' => [
+                        'list' => [
+                            ['name' => 'object 1'],
+                            ['name' => 'object 2', 'secondName' => 'object second name 2'],
+                            ['name' => 'object 3'],
+                            ['name' => 'object 4', 'secondName' => 'object second name 4']
+                        ]
+                    ]
+                ]
+            ],
+            [
+                '{
                     oneUnion {
-                        name
+                        name,
+                        ... on FirstType {
+                            secondName
+                        }
                     }
                 }',
                 [
                     'data' => [
                         'oneUnion' => [
-                            'name' => 'object one'
+                            'name' => 'object one',
+                            'secondName' => 'second name'
                         ]
                     ]
                 ]
@@ -66,7 +88,21 @@ class UnionResolveTest extends \PHPUnit_Framework_TestCase
                         ]
                     ]
                 ]
-            ]
+            ],
+            [
+                '{
+                    oneUnion {
+                        name
+                    }
+                }',
+                [
+                    'data' => [
+                        'oneUnion' => [
+                            'name' => 'object one'
+                        ]
+                    ]
+                ]
+            ],
         ];
     }
 

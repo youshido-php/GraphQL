@@ -20,7 +20,8 @@ class UnionTestData
             ],
             [
                 'name'        => 'object 2',
-                'description' => 'object description 2'
+                'description' => 'object description 2',
+                'secondName'  => 'object second name 2'
             ],
             [
                 'name'        => 'object 3',
@@ -28,7 +29,8 @@ class UnionTestData
             ],
             [
                 'name'        => 'object 4',
-                'description' => 'object description 4'
+                'description' => 'object description 4',
+                'secondName'  => 'object second name 4'
             ],
         ];
     }
@@ -37,7 +39,8 @@ class UnionTestData
     {
         return [
             'name'        => 'object one',
-            'description' => 'object description one'
+            'description' => 'object description one',
+            'secondName'  => 'second name'
         ];
     }
 

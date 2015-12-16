@@ -20,7 +20,11 @@ class TestUnionType extends AbstractUnionType
 
     public function resolveType($object)
     {
-        return new FirstType();
+        if (isset($object['secondName'])) {
+            return new FirstType();
+        }
+
+        return new SecondType();
     }
 
     public function getTypes()

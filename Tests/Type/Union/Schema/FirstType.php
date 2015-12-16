@@ -14,17 +14,9 @@ use Youshido\GraphQL\Type\Object\AbstractObjectType;
 class FirstType extends AbstractObjectType
 {
 
-
     public function resolve($value = null, $args = [])
     {
 
-    }
-
-    protected function build(TypeConfigInterface $config)
-    {
-        $config
-            ->addField('name', 'string')
-            ->addField('description', 'string');
     }
 
     /**
@@ -33,5 +25,13 @@ class FirstType extends AbstractObjectType
     public function getName()
     {
         return 'FirstType';
+    }
+
+    protected function build(TypeConfigInterface $config)
+    {
+        $config
+            ->addField('name', 'string')
+            ->addField('description', 'string')
+            ->addField('secondName', 'string');
     }
 }

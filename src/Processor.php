@@ -16,6 +16,7 @@ use Youshido\GraphQL\Definition\TypeDefinitionType;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
+use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
 use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Object\AbstractEnumType;
@@ -336,7 +337,15 @@ class Processor
                 foreach ($fragment->getFields() as $fragmentField) {
                     $value = $this->collectValue($value, $this->executeQuery($fragmentField, $queryType, $resolvedValue));
                 }
-            } else if($field->getName() == self::TYPE_NAME_QUERY) {
+            } elseif ($field instanceof TypedFragmentReference) {
+                if ($field->getTypeName() !== $queryType->getName()) {
+                    continue;
+                }
+
+                foreach ($field->getFields() as $fragmentField) {
+                    $value = $this->collectValue($value, $this->executeQuery($fragmentField, $queryType, $resolvedValue));
+                }
+            } elseif ($field->getName() == self::TYPE_NAME_QUERY) {
                 $value = $this->collectValue($value, [$field->getAlias() ?: $field->getName() => $queryType->getName()]);
             } else {
                 $value = $this->collectValue($value, $this->executeQuery($field, $queryType, $resolvedValue));
