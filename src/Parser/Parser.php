@@ -8,6 +8,8 @@
 
 namespace Youshido\GraphQL\Parser;
 
+use Youshido\GraphQL\Parser\Ast\TypedFragment;
+use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
 use Youshido\GraphQL\Parser\Value\InputList;
 use Youshido\GraphQL\Parser\Ast\Argument;
 use Youshido\GraphQL\Parser\Ast\Field;
@@ -73,7 +75,11 @@ class Parser extends Tokenizer
             if ($this->match(Token::TYPE_FRAGMENT_REFERENCE)) {
                 $this->lex();
 
-                $fields[] = $this->parseFragmentReference();
+                if ($this->eat(Token::TYPE_ON)) {
+                    $fields[] = $this->parseBodyItem(Token::TYPE_TYPED_FRAGMENT, $highLevel);
+                } else {
+                    $fields[] = $this->parseFragmentReference();
+                }
             } else {
                 $fields[] = $this->parseBodyItem($token, $highLevel);
             }
@@ -147,6 +153,8 @@ class Parser extends Tokenizer
 
             if ($type == Token::TYPE_QUERY) {
                 return new Query($name, $alias, $arguments, $fields);
+            } elseif ($type == Token::TYPE_TYPED_FRAGMENT) {
+                return new TypedFragmentReference($name, $fields);
             } else {
                 return new Mutation($name, $alias, $arguments, $fields);
             }

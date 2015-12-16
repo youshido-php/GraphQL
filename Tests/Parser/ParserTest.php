@@ -12,6 +12,7 @@ use Youshido\GraphQL\Parser\Ast\Field;
 use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Mutation;
+use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
 use Youshido\GraphQL\Parser\Value\InputList;
 use Youshido\GraphQL\Parser\Value\InputObject;
 use Youshido\GraphQL\Parser\Value\Literal;
@@ -62,6 +63,37 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parsedStructure = $parser->parse();
 
         $this->assertEquals($parsedStructure, $structure);
+    }
+
+    public function testTypedFragment()
+    {
+        $parser = new Parser();
+        $parser->setSource('
+            {
+                test: test {
+                    name,
+                    ... on UnionType {
+                        unionName
+                    }
+                }
+            }
+        ');
+
+        $parsedStructure = $parser->parse();
+
+        $this->assertEquals($parsedStructure, [
+            'queries' => [
+                new Query('test', 'test', [],
+                    [
+                        new Field('name', null),
+                        new TypedFragmentReference('UnionType', [
+                            new Field('unionName')
+                        ])
+                    ])
+            ],
+            'mutations' => [],
+            'fragments' => []
+        ]);
     }
 
     public function mutationProvider()

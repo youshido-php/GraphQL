@@ -20,6 +20,7 @@ class Token
     const TYPE_MUTATION           = 'mutation';
     const TYPE_FRAGMENT           = 'fragment';
     const TYPE_FRAGMENT_REFERENCE = '...';
+    const TYPE_TYPED_FRAGMENT     = 'typed fragment';
 
     const TYPE_LT            = '<';
     const TYPE_GT            = '>';
