@@ -5,12 +5,12 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\Tests;
+namespace Youshido\Tests\StarWars;
 
 
 use Youshido\GraphQL\Processor;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
-use Youshido\Tests\Schema\Schema;
+use Youshido\Tests\StarWars\Schema\Schema;
 
 class StarWarsTest extends \PHPUnit_Framework_TestCase
 {
@@ -46,7 +46,7 @@ class StarWarsTest extends \PHPUnit_Framework_TestCase
                 [
                     'data' => [
                         'hero' => [
-                            '__typename' => 'Character', //todo: here must be human, need to think how do that
+                            '__typename' => 'Human',
                             'name'       => 'Luke Skywalker'
                         ],
                     ]

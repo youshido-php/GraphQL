@@ -143,7 +143,6 @@ class Processor
     protected function executeQuery($query, $currentLevelSchema, $contextValue = null)
     {
         if (!$this->checkFieldExist($currentLevelSchema, $query)) {
-
             return null;
         }
 
@@ -215,11 +214,8 @@ class Processor
                         $value[] = [];
                         $index   = count($value) - 1;
 
-                        if($field->getConfig()->getType()->getConfig()->getItem()->getKind() == TypeMap::KIND_UNION) {
+                        if(in_array($field->getConfig()->getType()->getConfig()->getItem()->getKind(), [TypeMap::KIND_UNION, TypeMap::KIND_INTERFACE]) ) {
                             $type = $field->getConfig()->getType()->getConfig()->getItemConfig()->resolveType($resolvedValueItem);
-                        } elseif($field->getConfig()->getType()->getConfig()->getItem()->getKind() == TypeMap::KIND_INTERFACE) {
-                            $resolvedValueItem = $field->getConfig()->getType()->getConfig()->getItemConfig()->resolveType($resolvedValueItem);
-                            $type = $field->getConfig()->getType()->getConfig()->getItem();
                         } else {
                             $type = $field->getType();
                         }
@@ -287,8 +283,9 @@ class Processor
     {
         $resolvedValue = $field->getConfig()->resolve($contextValue, $this->parseArgumentsValues($field, $query));
 
-        if($field->getType()->getKind() == TypeMap::KIND_INTERFACE){
-            $resolvedValue = $field->getType()->resolveType($resolvedValue);
+        if(in_array($field->getType()->getKind(), [TypeMap::KIND_UNION, TypeMap::KIND_INTERFACE])){
+            $resolvedType = $field->getType()->resolveType($resolvedValue);
+            $field->setType($resolvedType);
         }
 
         return $resolvedValue;

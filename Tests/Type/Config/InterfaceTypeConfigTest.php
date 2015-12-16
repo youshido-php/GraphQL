@@ -9,7 +9,7 @@
 namespace Youshido\Tests\Type\Config;
 
 use Youshido\GraphQL\Type\TypeMap;
-use Youshido\Tests\Schema\CharacterInterface;
+use Youshido\Tests\StarWars\Schema\CharacterInterface;
 
 class InterfaceTypeConfigTest extends \PHPUnit_Framework_TestCase
 {

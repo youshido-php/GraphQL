@@ -34,6 +34,12 @@ class Field
         return $this->config->getType();
     }
 
+    public function setType($type)
+    {
+        $this->config->set('type', $type);
+    }
+
+
     /**
      * @return FieldConfig
      */

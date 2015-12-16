@@ -5,7 +5,7 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\Tests\Schema;
+namespace Youshido\Tests\StarWars\Schema;
 
 
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;

@@ -10,7 +10,7 @@ namespace Youshido\Tests\Type\Config;
 
 use Youshido\GraphQL\Type\Object\EnumType;
 use Youshido\GraphQL\Type\TypeMap;
-use Youshido\Tests\Schema\EpisodeEnum;
+use Youshido\Tests\StarWars\Schema\EpisodeEnum;
 
 class EnumTypeTest extends \PHPUnit_Framework_TestCase
 {

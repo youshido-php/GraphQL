@@ -6,7 +6,7 @@
 * created: 12/6/15 11:15 PM
 */
 
-namespace Youshido\Tests\Schema;
+namespace Youshido\Tests\StarWars\Schema;
 
 
 use Youshido\GraphQL\Type\Config\Object\InterfaceTypeConfig;
@@ -47,10 +47,11 @@ class CharacterInterface extends AbstractInterfaceType
         $id = isset($object['id']) ? $object['id'] : $object;
 
         if (isset($humans[$id])) {
-            return $humans[$id];
+            return new HumanType();
         }
+
         if (isset($droids[$id])) {
-            return $droids[$id];
+            return new DroidType();
         }
 
         return null;
