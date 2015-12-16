@@ -18,6 +18,7 @@ class InterfaceListType extends QueryListType
 
     public function resolve($value = null, $args = [])
     {
+        //todo
         return [];
     }
 

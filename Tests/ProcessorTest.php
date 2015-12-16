@@ -151,6 +151,8 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $processor->processQuery($query);
 
+        $a = $processor->getResponseData();
+
         $this->assertEquals($processor->getResponseData(), $response);
     }
 
@@ -186,17 +188,19 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                     'data' => [
                         '__schema' => [
                             'types' => [
+                                ['name' => 'TestSchema', 'fields' => [['name' => 'latest']]],
                                 ['name' => 'latest', 'fields' => [['name' => 'id'], ['name' => 'name']]],
-                                ['name' => 'Int', 'fields' => []],
-                                ['name' => 'String', 'fields' => []],
+                                ['name' => 'Int', 'fields' => null],
+                                ['name' => 'String', 'fields' => null],
                                 ['name' => '__Schema', 'fields' => [['name' => 'queryType'], ['name' => 'mutationType'], ['name' => 'types'], ['name' => 'directives']]],
                                 ['name' => '__Type', 'fields' => [['name' => 'name'], ['name' => 'kind'], ['name' => 'description'], ['name' => 'ofType'], ['name' => 'inputFields'], ['name' => 'enumValues'], ['name' => 'fields'], ['name' => 'interfaces'], ['name' => 'possibleTypes']]],
                                 ['name' => '__InputValue', 'fields' => [['name' => 'name'],['name' => 'description'],['name' => 'type'],['name' => 'defaultValue'],]],
                                 ['name' => '__EnumValue', 'fields' => [['name' => 'name'],['name' => 'description'],['name' => 'deprecationReason'],['name' => 'isDeprecated'],]],
-                                ['name' => 'Boolean', 'fields' => []],
+                                ['name' => 'Boolean', 'fields' => null],
                                 ['name' => '__Field', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'isDeprecated'], ['name' => 'deprecationReason'], ['name' => 'type'], ['name' => 'args']]],
                                 ['name' => '__Interface', 'fields' => [['name' => 'name'], ['name' => 'kind'], ['name' => 'description'], ['name' => 'ofType'], ['name' => 'inputFields'], ['name' => 'enumValues'], ['name' => 'fields'], ['name' => 'interfaces'], ['name' => 'possibleTypes']]],
                                 ['name' => '__Directive', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'args'], ['name' => 'onOperation'], ['name' => 'onFragment'], ['name' => 'onField']]],
+                                ['name' => 'RootSchema', 'fields' => []],
                             ]
                         ]
                     ]
@@ -226,9 +230,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                             'name'   => 'TestSchema',
                             'kind'   => 'OBJECT',
                             'fields' => [
-                                ['name' => 'latest', 'isDeprecated' => true, 'deprecationReason' => 'for test', 'description' => 'for test', 'type' => ['name' => 'latest']],
-                                ['name' => '__schema', 'isDeprecated' => false, 'deprecationReason' => '', 'description' => '', 'type' => ['name' => '__Schema']],
-                                ['name' => '__type', 'isDeprecated' => false, 'deprecationReason' => '', 'description' => '', 'type' => ['name' => '__Type']]
+                                ['name' => 'latest', 'isDeprecated' => true, 'deprecationReason' => 'for test', 'description' => 'for test', 'type' => ['name' => 'latest']]
                             ]
                         ]
                     ]
@@ -264,8 +266,8 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                             'description'   => 'Root of TestSchema',
                             'interfaces'    => [],
                             'possibleTypes' => null,
-                            'inputFields'   => [],
-                            'ofType'        => []
+                            'inputFields'   => null,
+                            'ofType'        => null
                         ]
                     ]
                 ]]

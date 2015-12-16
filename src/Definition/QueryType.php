@@ -23,9 +23,13 @@ class QueryType extends AbstractObjectType
             ->addField('name', TypeMap::TYPE_STRING)
             ->addField('kind', TypeMap::TYPE_STRING)
             ->addField('description', TypeMap::TYPE_STRING)
-            ->addField('ofType', new QueryListType(), [
-                'resolve' => function () {
-                    return [];
+            ->addField('ofType', new QueryType(), [
+                'resolve' => function ($value) {
+                    if($value->getKind() == TypeMap::KIND_LIST){
+                        return $value->getConfig()->getItem();
+                    }
+
+                    return null;
                 }
             ])
             ->addField('inputFields', new InputValueListType())

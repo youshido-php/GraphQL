@@ -30,7 +30,7 @@ class InputObjectTypeConfig extends ObjectTypeConfig
      */
     public function getOutputType()
     {
-        return $this->data['output'];
+        return isset($this->data['output']) ? $this->data['output'] : null;
     }
 
 }

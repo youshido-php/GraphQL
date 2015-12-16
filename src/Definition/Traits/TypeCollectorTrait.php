@@ -8,8 +8,8 @@
 namespace Youshido\GraphQL\Definition\Traits;
 
 
-use Youshido\GraphQL\Type\Field\Field;
-use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
+use Youshido\GraphQL\Type\Config\Field\FieldConfig;
+use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 
 trait TypeCollectorTrait
@@ -18,35 +18,66 @@ trait TypeCollectorTrait
     private $types = [];
 
     /**
-     * @param $fields Field[]
+     * @param $type TypeInterface
      */
-    private function collectTypes($fields)
+    private function collectTypes($type)
     {
-        foreach ($fields as $field) {
-            if ($field->getConfig()->getType()->getKind() == TypeMap::KIND_LIST) {
-                $name      = $field->getConfig()->getType()->getConfig()->getItem()->getName();
-                $subFields = $field->getConfig()->getType()->getConfig()->getItem()->getConfig()->getFields();
-                $type      = $field->getConfig()->getType()->getConfig()->getItem();
-            } elseif ($field->getConfig()->getType() instanceof AbstractScalarType) {
-                $name      = $field->getConfig()->getType()->getName();
-                $type      = $field->getConfig()->getType();
-                $subFields = [];
-            } else {
-                $name      = $field->getConfig()->getType()->getConfig()->getName();
-                $subFields = $field->getConfig()->getType()->getConfig()->getFields();
-                $type      = $field->getConfig()->getType();
-            }
+        switch ($type->getKind()) {
+            case TypeMap::KIND_INTERFACE:
+            case TypeMap::KIND_UNION:
+            case TypeMap::KIND_ENUM:
+            case TypeMap::KIND_SCALAR:
+                $this->insertType($type->getName(), $type);
+                break;
 
-            if (!array_key_exists($name, $this->types)) {
-                if ($name) {
-                    $this->types[$name] = $type;
+            case TypeMap::KIND_INPUT_OBJECT:
+            case TypeMap::KIND_OBJECT:
+                if ($type->getKind() == TypeMap::KIND_INPUT_OBJECT) {
+                    $outputType = $type->getConfig()->getOutputType();
+
+                    if ($outputType) {
+                        $this->insertType($type->getConfig()->getOutputType()->getName(), $type->getConfig()->getOutputType());
+                    }
                 }
 
-                if ($subFields) {
-                    $this->collectTypes($subFields);
+                if ($this->insertType($type->getName(), $type)) {
+                    foreach ($type->getConfig()->getFields() as $field) {
+                        /** @var FieldConfig $field */
+                        $this->collectTypes($field->getType());
+                    }
+                    foreach ($type->getConfig()->getArguments() as $field) {
+                        /** @var FieldConfig $field */
+                        $this->collectTypes($field->getType());
+                    }
                 }
-            }
+                break;
+
+            case TypeMap::KIND_LIST:
+                $subItem = $type->getConfig()->getItem();
+                if ($this->insertType($subItem->getName(), $subItem)) {
+                    foreach ($subItem->getConfig()->getFields() as $field) {
+                        /** @var FieldConfig $field */
+                        $this->collectTypes($field->getType());
+                    }
+                    foreach ($subItem->getConfig()->getArguments() as $field) {
+                        /** @var FieldConfig $field */
+                        $this->collectTypes($field->getType());
+                    }
+                }
+
+                break;
         }
+    }
+
+    private function insertType($name, $type)
+    {
+        if (!array_key_exists($name, $this->types)) {
+            $this->types[$name] = $type;
+
+            return true;
+        }
+
+        return false;
     }
 
 }

@@ -19,7 +19,8 @@ class TypeDefinitionType extends QueryType
 
     public function resolve($value = null, $args = [])
     {
-        $this->collectTypes($this->getSchema()->getQueryType()->getConfig()->getFields());
+        $this->collectTypes($this->getSchema()->getQueryType());
+        $this->collectTypes($this->getSchema()->getMutationType());
 
         foreach ($this->types as $name => $type) {
             if ($name == $args['name']) {

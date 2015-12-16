@@ -26,7 +26,8 @@ class QueryListType extends AbstractListType
         $this->types = [];
 
         /** @var $value Schema $a */
-        $this->collectTypes($value->getQueryType()->getConfig()->getFields());
+        $this->collectTypes($value->getQueryType());
+        $this->collectTypes($value->getMutationType());
 
         return array_values($this->types);
     }

@@ -23,10 +23,18 @@ class FieldListType extends AbstractListType
     public function resolve($value = null, $args = [])
     {
         if ($value instanceof AbstractScalarType) {
-            return [];
+            return null;
         }
 
         /** @var ObjectType $value */
-        return $value->getConfig()->getFields();
+        $fields = $value->getConfig()->getFields();
+
+        foreach ($fields as $key => $field) {
+            if (in_array($field->getName(), ['__type', '__schema'])) {
+                unset($fields[$key]);
+            }
+        }
+
+        return $fields;
     }
 }

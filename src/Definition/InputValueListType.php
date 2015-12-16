@@ -22,19 +22,19 @@ class InputValueListType extends AbstractListType
 
     public function resolve($value = null, $args = [])
     {
-        if ($value instanceof AbstractScalarType) {
-            return [];
-        }
-
         if($value instanceof Field) {
             /** @var $value Field */
             if ($value->getConfig()->getType() instanceof AbstractScalarType) {
                 return [];
             }
 
-            return $value->getConfig()->getType()->getConfig()->getArguments();
+            return $value->getConfig()->getType()->getConfig()->getArguments() ?: [];
         } else {
-            return $value->getConfig()->getArguments();
+            if ($value instanceof AbstractScalarType) {
+                return null;
+            }
+
+            return $value->getConfig()->getArguments() ?: null;
         }
     }
 }
