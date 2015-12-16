@@ -24,7 +24,7 @@ class FieldType extends AbstractObjectType
             ->addField('isDeprecated', TypeMap::TYPE_BOOLEAN)
             ->addField('deprecationReason', TypeMap::TYPE_STRING)
             ->addField('type', new QueryType())
-            ->addField('args', new ArgumentListType());
+            ->addField('args', new InputValueListType());
     }
 
     public function resolve($value = null, $args = [])

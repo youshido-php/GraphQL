@@ -33,7 +33,7 @@ class DirectiveType extends AbstractObjectType
         $config
             ->addField('name', TypeMap::TYPE_STRING)
             ->addField('description', TypeMap::TYPE_STRING)
-            ->addField('args', new ArgumentListType())
+            ->addField('args', new InputValueListType())
             ->addField('onOperation', TypeMap::TYPE_BOOLEAN)
             ->addField('onFragment', TypeMap::TYPE_BOOLEAN)
             ->addField('onField', TypeMap::TYPE_BOOLEAN);

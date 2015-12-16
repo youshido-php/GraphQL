@@ -8,7 +8,9 @@
 namespace Youshido\GraphQL\Definition;
 
 
+use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\ListType\AbstractListType;
+use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 
 class InputValueListType extends AbstractListType
 {
@@ -20,6 +22,19 @@ class InputValueListType extends AbstractListType
 
     public function resolve($value = null, $args = [])
     {
-        return [];
+        if ($value instanceof AbstractScalarType) {
+            return [];
+        }
+
+        if($value instanceof Field) {
+            /** @var $value Field */
+            if ($value->getConfig()->getType() instanceof AbstractScalarType) {
+                return [];
+            }
+
+            return $value->getConfig()->getType()->getConfig()->getArguments();
+        } else {
+            return $value->getConfig()->getArguments();
+        }
     }
 }
