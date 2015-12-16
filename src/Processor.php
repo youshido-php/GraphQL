@@ -242,7 +242,13 @@ class Processor
     private function checkFieldExist($objectType, $query)
     {
         if (!$objectType->getConfig()->hasField($query->getName())) {
-            $this->resolveValidator->addError(new ResolveException(sprintf('Field "%s" not found in schema', $query->getName())));
+            if ($objectType->getKind() == TypeMap::KIND_LIST) {
+                $name = $objectType->getConfig()->getItem()->getName();
+            } else {
+                $name = $objectType->getName();
+            }
+
+            $this->resolveValidator->addError(new ResolveException(sprintf('Field "%s" not found in type "%s"', $query->getName(), $name)));
 
             return false;
         }

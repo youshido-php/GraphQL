@@ -18,6 +18,93 @@ use Youshido\Tests\DataProvider\UserType;
 class ProcessorTest extends \PHPUnit_Framework_TestCase
 {
 
+    public function testGoogleExtensionQuery()
+    {
+        $processor = new Processor(new ResolveValidator());
+        $processor->setSchema(new Schema());
+
+        $processor->processQuery('
+            query IntrospectionQuery {
+                __schema {
+                    queryType { name }
+                    mutationType { name }
+                    types {
+                        ...FullType
+                    }
+                    directives {
+                        name
+                        description
+                        args {
+                            ...InputValue
+                        }
+                        onOperation
+                        onFragment
+                        onField
+                    }
+                }
+            }
+
+            fragment FullType on __Type {
+                kind
+                name
+                description
+                fields {
+                    name
+                    description
+                    args {
+                        ...InputValue
+                    }
+                    type {
+                        ...TypeRef
+                    }
+                    isDeprecated
+                    deprecationReason
+                }
+                inputFields {
+                    ...InputValue
+                }
+                interfaces {
+                    ...TypeRef
+                }
+                enumValues {
+                    name
+                    description
+                    isDeprecated
+                    deprecationReason
+                }
+                possibleTypes {
+                    ...TypeRef
+                }
+            }
+
+            fragment InputValue on __InputValue {
+                name
+                description
+                type { ...TypeRef }
+                defaultValue
+            }
+
+            fragment TypeRef on __Type {
+                kind
+                name
+                ofType {
+                    kind
+                    name
+                    ofType {
+                        kind
+                        name
+                        ofType {
+                            kind
+                            name
+                        }
+                    }
+                }
+            }
+        ', []);
+
+        $this->assertTrue(is_array($processor->getResponseData()));
+    }
+
     /**
      * @param $query
      * @param $response
@@ -102,7 +189,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                                 ['name' => 'latest', 'fields' => [['name' => 'id'], ['name' => 'name']]],
                                 ['name' => 'Int', 'fields' => []],
                                 ['name' => 'String', 'fields' => []],
-                                ['name' => '__Schema', 'fields' => [['name' => 'queryType'], ['name' => 'mutationType'], ['name' => 'types']]],
+                                ['name' => '__Schema', 'fields' => [['name' => 'queryType'], ['name' => 'mutationType'], ['name' => 'types'], ['name' => 'directives']]],
                                 ['name' => '__Type', 'fields' => [['name' => 'name'], ['name' => 'kind'], ['name' => 'description'], ['name' => 'ofType'], ['name' => 'inputFields'], ['name' => 'enumValues'], ['name' => 'fields'], ['name' => 'interfaces'], ['name' => 'possibleTypes']]],
                                 ['name' => '__InputValue', 'fields' => [['name' => 'name'],['name' => 'description'],['name' => 'type'],['name' => 'defaultValue'],]],
                                 ['name' => '__EnumValue', 'fields' => [['name' => 'name'],['name' => 'description'],['name' => 'deprecationReason'],['name' => 'isDeprecated'],]],
@@ -111,6 +198,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                                 ['name' => '__Argument', 'fields' => [['name' => 'name'], ['name' => 'type'], ['name' => 'description']]],
                                 ['name' => '__Interface', 'fields' => [['name' => 'name'], ['name' => 'kind'], ['name' => 'description'], ['name' => 'ofType'], ['name' => 'inputFields'], ['name' => 'enumValues'], ['name' => 'fields'], ['name' => 'interfaces'], ['name' => 'possibleTypes']]],
                                 ['name' => '__PossibleOf', 'fields' => [['name' => 'name'], ['name' => 'kind'], ['name' => 'description'], ['name' => 'ofType'], ['name' => 'inputFields'], ['name' => 'enumValues'], ['name' => 'fields'], ['name' => 'interfaces'], ['name' => 'possibleTypes']]],
+                                ['name' => '__Directive', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'args'], ['name' => 'onOperation'], ['name' => 'onFragment'], ['name' => 'onField']]],
                             ]
                         ]
                     ]

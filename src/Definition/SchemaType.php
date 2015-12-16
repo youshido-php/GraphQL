@@ -10,6 +10,7 @@ namespace Youshido\GraphQL\Definition;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Definition\Traits\SchemaContainableTrait;
+use Youshido\GraphQL\Definition\DirectiveListType;
 
 class SchemaType extends AbstractObjectType
 {
@@ -34,6 +35,7 @@ class SchemaType extends AbstractObjectType
         $config
             ->addField('queryType', new QueryType())
             ->addField('mutationType', new MutationType())
-            ->addField('types', new QueryListType());
+            ->addField('types', new QueryListType())
+            ->addField('directives', new DirectiveListType());
     }
 }
