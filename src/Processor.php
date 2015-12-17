@@ -118,6 +118,10 @@ class Processor
         if ($mutation->hasFields()) {
             $outputType = $field->getType()->getConfig()->getOutputType();
 
+            if ($outputType && in_array($outputType->getKind(), [TypeMap::KIND_INTERFACE, TypeMap::KIND_UNION])) {
+                $outputType = $outputType->getConfig()->resolveType($resolvedValue);
+            }
+
             $value = $this->processQueryFields($mutation, $outputType, $resolvedValue, []);
         }
 
