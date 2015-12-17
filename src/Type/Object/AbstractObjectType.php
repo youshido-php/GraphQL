@@ -44,6 +44,7 @@ abstract class AbstractObjectType extends AbstractType
         }
     }
 
+
     public function parseValue($value)
     {
         return $value;

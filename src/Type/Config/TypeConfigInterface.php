@@ -10,25 +10,8 @@ namespace Youshido\GraphQL\Type\Config;
 
 use Youshido\GraphQL\Type\Config\Field\FieldConfig;
 
-interface TypeConfigInterface
+interface TypeConfigInterface extends InputTypeConfigInterface
 {
-
-    /**
-     * @param       $name
-     * @param       $type
-     * @param array $config
-     *
-     * @return TypeConfigInterface
-     */
-    public function addArgument($name, $type, $config = []);
-
-    public function getArgument($name);
-
-    public function removeArgument($name);
-
-    public function hasArgument($name);
-
-    public function getArguments();
 
     /**
      * @param       $name

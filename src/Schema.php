@@ -27,7 +27,7 @@ class Schema
         }
 
         if (!array_key_exists('mutation', $config)) {
-            $config['mutation'] = new InputObjectType(['name' => $this->getName()]);
+            $config['mutation'] = new ObjectType(['name' => $this->getName()]);
         }
 
         $this->config = new SchemaConfig($config, $this);
