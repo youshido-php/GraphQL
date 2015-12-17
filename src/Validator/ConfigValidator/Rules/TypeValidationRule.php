@@ -74,6 +74,9 @@ class TypeValidationRule implements ValidationRuleInterface
                 case TypeMap::TYPE_ANY_INPUT:
                     return TypeMap::isInputType($data);
 
+                case TypeMap::TYPE_ARRAY_OF_INTERFACES:
+                    return $this->isArrayOfInterfaces($data);
+
                 default:
                     if (TypeMap::isScalarType($ruleInfo)) {
                         return TypeMap::getScalarTypeObject($ruleInfo)->isValidValue($data);
@@ -90,6 +93,19 @@ class TypeValidationRule implements ValidationRuleInterface
 
         foreach ($data as $item) {
             if (!array_key_exists('value', $item)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static function isArrayOfInterfaces($data)
+    {
+        if (!is_array($data)) return false;
+
+        foreach ($data as $item) {
+            if (!TypeMap::isInterface($item)) {
                 return false;
             }
         }

@@ -15,12 +15,12 @@ use Youshido\GraphQL\Type\TypeMap;
 trait TypeCollectorTrait
 {
 
-    private $types = [];
+    protected $types = [];
 
     /**
      * @param $type TypeInterface
      */
-    private function collectTypes($type)
+    protected function collectTypes($type)
     {
         switch ($type->getKind()) {
             case TypeMap::KIND_INTERFACE:
@@ -38,34 +38,45 @@ trait TypeCollectorTrait
                     if ($outputType) {
                         $this->insertType($type->getConfig()->getOutputType()->getName(), $type->getConfig()->getOutputType());
                     }
+                } else {
+                    $interfaces = $type->getConfig()->getInterfaces();
+
+                    if(is_array($interfaces) && $interfaces) {
+                        foreach($interfaces as $interface){
+                            if($this->insertType($interface->getName(), $interface)){
+                                $this->collectFieldsArgsTypes($interface);
+                            }
+                        }
+                    }
                 }
 
                 if ($this->insertType($type->getName(), $type)) {
-                    foreach ($type->getConfig()->getFields() as $field) {
-                        /** @var FieldConfig $field */
-                        $this->collectTypes($field->getType());
-                    }
-                    foreach ($type->getConfig()->getArguments() as $field) {
-                        /** @var FieldConfig $field */
-                        $this->collectTypes($field->getType());
-                    }
+                    $this->collectFieldsArgsTypes($type);
                 }
                 break;
 
             case TypeMap::KIND_LIST:
                 $subItem = $type->getConfig()->getItem();
                 if ($this->insertType($subItem->getName(), $subItem)) {
-                    foreach ($subItem->getConfig()->getFields() as $field) {
-                        /** @var FieldConfig $field */
-                        $this->collectTypes($field->getType());
-                    }
-                    foreach ($subItem->getConfig()->getArguments() as $field) {
-                        /** @var FieldConfig $field */
-                        $this->collectTypes($field->getType());
-                    }
+                    $this->collectFieldsArgsTypes($subItem);
                 }
 
                 break;
+        }
+    }
+
+    /**
+     * @param $type TypeInterface
+     */
+    private function collectFieldsArgsTypes($type)
+    {
+        foreach ($type->getConfig()->getFields() as $field) {
+            /** @var FieldConfig $field */
+            $this->collectTypes($field->getType());
+        }
+        foreach ($type->getConfig()->getArguments() as $field) {
+            /** @var FieldConfig $field */
+            $this->collectTypes($field->getType());
         }
     }
 

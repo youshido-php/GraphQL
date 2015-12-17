@@ -8,6 +8,8 @@
 namespace Youshido\GraphQL\Validator\ResolveValidator;
 
 
+use Youshido\GraphQL\Parser\Ast\Argument;
+use Youshido\GraphQL\Parser\Value\Literal;
 use Youshido\GraphQL\Type\Field\InputField;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
@@ -27,6 +29,10 @@ class ResolveValidator implements ResolveValidatorInterface
     {
         $requiredArguments = array_filter($field->getConfig()->getArguments(), function (InputField $argument) {
             return $argument->getConfig()->get('required');
+        });
+
+        $withDefaultArguments = array_filter($field->getConfig()->getArguments(), function (InputField $argument) {
+            return $argument->getConfig()->get('default') !== null;
         });
 
         foreach ($query->getArguments() as $argument) {
@@ -57,12 +63,21 @@ class ResolveValidator implements ResolveValidatorInterface
             if (array_key_exists($argument->getName(), $requiredArguments)) {
                 unset($requiredArguments[$argument->getName()]);
             }
+            if (array_key_exists($argument->getName(), $withDefaultArguments)) {
+                unset($withDefaultArguments[$argument->getName()]);
+            }
         }
 
         if (count($requiredArguments)) {
             $this->addError(new ResolveException(sprintf('Require "%s" arguments to query "%s"', implode(', ', array_keys($requiredArguments)), $query->getName())));
 
             return false;
+        }
+
+        if (count($withDefaultArguments)) {
+            foreach ($withDefaultArguments as $name => $argument) {
+                $query->addArgument(new Argument($name, new Literal( $argument->getConfig()->get('default'))));
+            }
         }
 
         return true;

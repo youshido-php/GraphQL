@@ -10,7 +10,7 @@ namespace Youshido\GraphQL\Definition;
 
 use Youshido\GraphQL\Type\ListType\AbstractListType;
 use Youshido\GraphQL\Type\Object\ObjectType;
-use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
+use Youshido\GraphQL\Type\TypeMap;
 
 class FieldListType extends AbstractListType
 {
@@ -22,7 +22,7 @@ class FieldListType extends AbstractListType
 
     public function resolve($value = null, $args = [])
     {
-        if ($value instanceof AbstractScalarType) {
+        if(in_array($value->getKind(), [TypeMap::KIND_SCALAR, TypeMap::KIND_UNION])) {
             return null;
         }
 

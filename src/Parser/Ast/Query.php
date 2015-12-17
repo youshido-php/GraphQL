@@ -49,6 +49,11 @@ class Query
         return $this->arguments;
     }
 
+    public function addArgument(Argument $argument)
+    {
+        $this->arguments[$argument->getName()] = $argument;
+    }
+
     public function getKeyValueArguments()
     {
         $arguments = [];

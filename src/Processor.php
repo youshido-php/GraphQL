@@ -364,7 +364,7 @@ class Processor
     protected function collectValue($value, $queryValue)
     {
         if ($queryValue && is_array($queryValue)) {
-            $value = array_merge($value, $queryValue);
+            $value = array_merge(is_array($value) ? $value : [], $queryValue);
         } else {
             $value = $queryValue;
         }
@@ -385,7 +385,6 @@ class Processor
         $__schema->setSchema($schema);
 
         $__type = new TypeDefinitionType();
-        $__type->setSchema($schema);
 
         $this->schema->addQuery('__schema', $__schema);
         $this->schema->addQuery('__type', $__type);

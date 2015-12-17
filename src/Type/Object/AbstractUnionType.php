@@ -11,6 +11,7 @@ namespace Youshido\GraphQL\Type\Object;
 
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Config\Object\UnionTypeConfig;
+use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\TypeMap;
 
 abstract class AbstractUnionType extends AbstractType
@@ -45,8 +46,12 @@ abstract class AbstractUnionType extends AbstractType
         }
     }
 
-    protected function build(UnionTypeConfig $config)
+    protected function build(TypeConfigInterface $config)
     {
+
+    }
+
+    public function resolve($value = null, $args = []) {
 
     }
 

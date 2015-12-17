@@ -25,7 +25,8 @@ abstract class AbstractObjectType extends AbstractType
     public function __construct($config = [])
     {
         if (empty($config)) {
-            $config['name'] = $this->getName();
+            $config['name']       = $this->getName();
+            $config['interfaces'] = $this->getInterfaces();
         }
 
         $this->config = new ObjectTypeConfig($config, $this);
@@ -60,6 +61,10 @@ abstract class AbstractObjectType extends AbstractType
         return TypeMap::KIND_OBJECT;
     }
 
+    public function getInterfaces()
+    {
+        return [];
+    }
 
     public function isValidValue($value)
     {

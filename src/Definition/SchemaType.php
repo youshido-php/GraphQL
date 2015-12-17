@@ -7,15 +7,31 @@
 
 namespace Youshido\GraphQL\Definition;
 
+use Youshido\GraphQL\Schema;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
-use Youshido\GraphQL\Definition\Traits\SchemaContainableTrait;
-use Youshido\GraphQL\Definition\DirectiveListType;
 
 class SchemaType extends AbstractObjectType
 {
 
-    use SchemaContainableTrait;
+    /** @var  Schema */
+    public static $schema;
+
+    /**
+     * @param $schema Schema
+     */
+    public function setSchema($schema)
+    {
+        self::$schema = $schema;
+    }
+
+    /**
+     * @return Schema
+     */
+    public function getSchema()
+    {
+        return self::$schema;
+    }
 
     public function resolve($value = null, $args = [])
     {

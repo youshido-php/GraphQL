@@ -7,20 +7,16 @@
 
 namespace Youshido\GraphQL\Definition;
 
-use Youshido\GraphQL\Definition\Traits\TypeCollectorTrait;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
-use Youshido\GraphQL\Definition\Traits\SchemaContainableTrait;
 use Youshido\GraphQL\Type\TypeMap;
 
 class TypeDefinitionType extends QueryType
 {
 
-    use SchemaContainableTrait, TypeCollectorTrait;
-
     public function resolve($value = null, $args = [])
     {
-        $this->collectTypes($this->getSchema()->getQueryType());
-        $this->collectTypes($this->getSchema()->getMutationType());
+        $this->collectTypes(SchemaType::$schema->getQueryType());
+        $this->collectTypes(SchemaType::$schema->getMutationType());
 
         foreach ($this->types as $name => $type) {
             if ($name == $args['name']) {

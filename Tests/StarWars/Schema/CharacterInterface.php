@@ -8,15 +8,14 @@
 
 namespace Youshido\Tests\StarWars\Schema;
 
-
-use Youshido\GraphQL\Type\Config\Object\InterfaceTypeConfig;
+use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\AbstractInterfaceType;
 use Youshido\GraphQL\Type\TypeMap;
 
 class CharacterInterface extends AbstractInterfaceType
 {
-    protected function build(InterfaceTypeConfig $config)
+    protected function build(TypeConfigInterface $config)
     {
         $config
             ->addField('id', TypeMap::TYPE_ID, ['required' => true])

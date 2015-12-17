@@ -8,14 +8,10 @@
 
 namespace Youshido\GraphQL\Type\Config\Object;
 
-
-use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Config\Config;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
-use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Config\Traits\ArgumentsAwareTrait;
 use Youshido\GraphQL\Type\Config\Traits\FieldsAwareTrait;
-use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 
 class ObjectTypeConfig extends Config implements TypeConfigInterface
@@ -31,6 +27,7 @@ class ObjectTypeConfig extends Config implements TypeConfigInterface
             'fields'      => ['type' => TypeMap::TYPE_ARRAY_OF_FIELDS],
             'args'        => ['type' => TypeMap::TYPE_ARRAY_OF_INPUTS],
             'resolve'     => ['type' => TypeMap::TYPE_FUNCTION],
+            'interfaces'  => ['type' => TypeMap::TYPE_ARRAY_OF_INTERFACES]
         ];
     }
 
@@ -38,6 +35,11 @@ class ObjectTypeConfig extends Config implements TypeConfigInterface
     {
         $this->buildFields();
         $this->buildArguments();
+    }
+
+    public function getInterfaces()
+    {
+        return $this->get('interfaces', []);
     }
 
 }

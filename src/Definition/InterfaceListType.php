@@ -8,19 +8,24 @@
 namespace Youshido\GraphQL\Definition;
 
 
+use Youshido\GraphQL\Type\TypeMap;
+
 class InterfaceListType extends QueryListType
 {
 
     public function getItem()
     {
-        return new InterfaceType();
+        return new QueryType();
     }
 
     public function resolve($value = null, $args = [])
     {
-        //todo
+        if ($value->getKind() == TypeMap::KIND_OBJECT) {
+            return $value->getConfig()->getInterfaces() ?: [];
+        } elseif ($value->getKind() == TypeMap::KIND_UNION) {
+            return null;
+        }
+
         return [];
     }
-
-
 }

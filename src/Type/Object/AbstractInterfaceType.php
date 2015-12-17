@@ -11,6 +11,7 @@ namespace Youshido\GraphQL\Type\Object;
 
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Config\Object\InterfaceTypeConfig;
+use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\TypeMap;
 
 abstract class AbstractInterfaceType extends AbstractType
@@ -29,7 +30,7 @@ abstract class AbstractInterfaceType extends AbstractType
         $this->config = new InterfaceTypeConfig($config, $this);
     }
 
-    abstract protected function build(InterfaceTypeConfig $config);
+    abstract protected function build(TypeConfigInterface $config);
 
     public function resolveType($object)
     {

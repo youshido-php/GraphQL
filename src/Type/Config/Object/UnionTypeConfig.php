@@ -25,6 +25,7 @@ class UnionTypeConfig extends Config implements TypeConfigInterface
             'name'        => ['type' => TypeMap::TYPE_STRING, 'required' => true],
             'types'       => ['type' => TypeMap::TYPE_ARRAY_OF_FIELDS],
             'description' => ['type' => TypeMap::TYPE_STRING],
+            'resolve'     => ['type' => TypeMap::TYPE_FUNCTION],
             'resolveType' => ['type' => TypeMap::TYPE_FUNCTION]
         ];
     }
