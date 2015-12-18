@@ -28,6 +28,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     {
         $query = '
             # asdasd "asdasdasd"
+            # comment line 2
 
             query {
               authors (category: "#2") { #asda asd

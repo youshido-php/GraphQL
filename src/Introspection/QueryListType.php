@@ -5,10 +5,10 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphQL\Definition;
+namespace Youshido\GraphQL\Introspection;
 
 
-use Youshido\GraphQL\Definition\Traits\TypeCollectorTrait;
+use Youshido\GraphQL\Introspection\Traits\TypeCollectorTrait;
 use Youshido\GraphQL\Schema;
 use Youshido\GraphQL\Type\ListType\AbstractListType;
 

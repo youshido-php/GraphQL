@@ -5,7 +5,7 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphQL\Definition;
+namespace Youshido\GraphQL\Introspection;
 
 
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;

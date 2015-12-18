@@ -5,23 +5,27 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphQL\Definition;
+namespace Youshido\GraphQL\Introspection;
 
 
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 
-class InputValueType extends AbstractObjectType
+class EnumValueType extends AbstractObjectType
 {
 
     protected function build(TypeConfigInterface $config)
     {
         $config
-            ->addField('name', TypeMap::TYPE_STRING)
+            ->addField('name', TypeMap::TYPE_STRING, [
+                'resolve' => function ($value, $args) {
+                    $a = 'asd';
+                }
+            ])
             ->addField('description', TypeMap::TYPE_STRING)
-            ->addField('type', new QueryType())
-            ->addField('defaultValue', TypeMap::TYPE_STRING); //todo: check here
+            ->addField('deprecationReason', TypeMap::TYPE_STRING)
+            ->addField('isDeprecated', TypeMap::TYPE_BOOLEAN);
     }
 
     public function resolve($value = null, $args = [])
@@ -34,6 +38,6 @@ class InputValueType extends AbstractObjectType
      */
     public function getName()
     {
-        return '__InputValue';
+        return '__EnumValue';
     }
 }

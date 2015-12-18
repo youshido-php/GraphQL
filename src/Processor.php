@@ -11,8 +11,8 @@ namespace Youshido\GraphQL;
 
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
-use Youshido\GraphQL\Definition\SchemaType;
-use Youshido\GraphQL\Definition\TypeDefinitionType;
+use Youshido\GraphQL\Introspection\SchemaType;
+use Youshido\GraphQL\Introspection\TypeDefinitionType;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;

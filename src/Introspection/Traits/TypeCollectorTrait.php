@@ -5,7 +5,7 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphQL\Definition\Traits;
+namespace Youshido\GraphQL\Introspection\Traits;
 
 
 use Youshido\GraphQL\Type\Config\Field\FieldConfig;
