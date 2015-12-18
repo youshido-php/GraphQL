@@ -45,6 +45,15 @@ class Tokenizer
             $ch = $this->source[$this->pos];
             if ($ch === ' ' || $ch === "\t") {
                 $this->pos++;
+            } elseif($ch === '#') {
+                $this->pos++;
+                while (
+                    $this->pos < strlen($this->source) &&
+                    ($code = ord($this->source[$this->pos])) &&
+                    $code !== 10 && $code !== 13 && $code !== 0x2028 && $code !== 0x2029
+                ) {
+                    $this->pos++;
+                }
             } elseif ($ch === "\r") {
                 $this->pos++;
                 if ($this->source[$this->pos] === "\n") {

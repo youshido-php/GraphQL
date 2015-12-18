@@ -154,7 +154,7 @@ class Processor
         /** @var Field $field */
         $field = $currentLevelSchema->getConfig()->getField($query->getName());
         if (get_class($query) == 'Youshido\GraphQL\Parser\Ast\Field') {
-            $alias            = $query->getName();
+            $alias            = $query->getAlias() ?: $query->getName();
             $preResolvedValue = $this->getPreResolvedValue($contextValue, $query);
 
             if ($field->getConfig()->getType()->getKind() == TypeMap::KIND_LIST) {

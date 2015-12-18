@@ -23,6 +23,40 @@ use Youshido\GraphQL\Parser\Value\Variable;
 class ParserTest extends \PHPUnit_Framework_TestCase
 {
 
+
+    public function testComments()
+    {
+        $query = '
+            # asdasd "asdasdasd"
+
+            query {
+              authors (category: "#2") { #asda asd
+                _id
+              }
+            }
+        ';
+
+
+        $parser = new Parser();
+
+        $parser->setSource($query);
+
+        $this->assertEquals($parser->parse(), [
+            'queries' => [
+                new Query('authors', null,
+                    [
+                        new Argument('category', new Literal('#2'))
+                    ],
+                    [
+                        new Field('_id', null),
+                    ])
+            ],
+            'mutations' => [],
+            'fragments' => []
+        ]);
+    }
+
+
     /**
      * @param $query string
      *
