@@ -33,6 +33,11 @@ abstract class AbstractInputObjectType extends AbstractType
 
     abstract protected function getOutputType();
 
+    public function resolve($value = null, $args = [])
+    {
+
+    }
+
     protected function build(InputTypeConfigInterface $config)
     {
 
