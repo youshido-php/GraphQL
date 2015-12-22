@@ -122,7 +122,22 @@ class Processor
                 $outputType = $outputType->getConfig()->resolveType($resolvedValue);
             }
 
-            $value = $this->processQueryFields($mutation, $outputType, $resolvedValue, []);
+            if ($outputType->getKind() == TypeMap::KIND_LIST) {
+                foreach ($resolvedValue as $resolvedValueItem) {
+                    $value[] = [];
+                    $index   = count($value) - 1;
+
+                    if(in_array($outputType->getConfig()->getItem()->getKind(), [TypeMap::KIND_UNION, TypeMap::KIND_INTERFACE]) ) {
+                        $type = $outputType->getConfig()->getItemConfig()->resolveType($resolvedValueItem);
+                    } else {
+                        $type = $outputType;
+                    }
+
+                    $value[$index] = $this->processQueryFields($mutation, $type, $resolvedValueItem, $value[$index]);
+                }
+            } else {
+                $value = $this->processQueryFields($mutation, $outputType, $resolvedValue, []);
+            }
         }
 
         return [$alias => $value];
