@@ -8,6 +8,8 @@
 namespace Youshido\GraphQL\Validator\ErrorContainer;
 
 
+use Youshido\GraphQL\Validator\Exception\DatableResolveException;
+
 trait ErrorContainerTrait
 {
 
@@ -29,12 +31,32 @@ trait ErrorContainerTrait
         return $this->errors;
     }
 
-    public function getErrorsArray()
+    public function getErrorsArray($asObject = true)
     {
         $errors = [];
 
         foreach ($this->errors as $error) {
-            $errors[] = is_object($error) ? $error->getMessage() : $error;
+            if ($asObject) {
+                if (is_object($error)) {
+                    if ($error instanceof DatableResolveException) {
+                        $errors[] = array_merge(
+                            ['message' => $error->getMessage()],
+                            $error->getData() ?: [],
+                            $error->getCode() ? ['code' => $error->getCode()] : []
+                        );
+                    } else {
+                        $errors[] = ['message' => $error->getMessage()];
+                    }
+                } else {
+                    $errors[] = ['message' => $error];
+                }
+            } else {
+                if (is_object($error)) {
+                    $errors[] = $error->getMessage();
+                } else {
+                    $errors[] = $error;
+                }
+            }
         }
 
         return $errors;

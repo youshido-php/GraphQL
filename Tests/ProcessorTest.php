@@ -162,7 +162,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             [
                 '{ __type { name } }',
                 [
-                    'errors' => ['Require "name" arguments to query "__type"']
+                    'errors' => [['message' => 'Require "name" arguments to query "__type"']]
                 ]
             ],
             [
