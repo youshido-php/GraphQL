@@ -36,7 +36,9 @@ trait TypeCollectorTrait
                     $outputType = $type->getConfig()->getOutputType();
 
                     if ($outputType) {
-                        $this->insertType($type->getConfig()->getOutputType()->getName(), $type->getConfig()->getOutputType());
+                        if($this->insertType($outputType->getName(), $outputType)) {
+                            $this->collectFieldsArgsTypes($outputType);
+                        }
                     }
                 } else {
                     $interfaces = $type->getConfig()->getInterfaces();
