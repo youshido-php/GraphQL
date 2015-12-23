@@ -45,7 +45,10 @@ trait ErrorContainerTrait
                             $error->getCode() ? ['code' => $error->getCode()] : []
                         );
                     } else {
-                        $errors[] = ['message' => $error->getMessage()];
+                        $errors[] = array_merge(
+                            ['message' => $error->getMessage()],
+                            $error->getCode() ? ['code' => $error->getCode()] : []
+                        );
                     }
                 } else {
                     $errors[] = ['message' => $error];
