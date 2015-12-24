@@ -269,6 +269,9 @@ class Parser extends Tokenizer
 
             case Token::TYPE_NULL:
                 return $this->expect(Token::TYPE_NULL)->getData();
+
+            case Token::TYPE_IDENTIFIER:
+                return $this->expect(Token::TYPE_IDENTIFIER)->getData();
         }
 
         throw new SyntaxErrorException('Can\'t parse argument');
