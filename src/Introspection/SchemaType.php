@@ -10,6 +10,8 @@ namespace Youshido\GraphQL\Introspection;
 use Youshido\GraphQL\Schema;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\Object\ObjectType;
+use Youshido\GraphQL\Type\TypeMap;
 
 class SchemaType extends AbstractObjectType
 {
@@ -51,6 +53,11 @@ class SchemaType extends AbstractObjectType
         $config
             ->addField('queryType', new QueryType())
             ->addField('mutationType', new MutationType())
+            ->addField('subscriptionType', new ObjectType([
+                                                              'name'    => '__Subscription',
+                                                              'fields'  => ['name' => ['type' => TypeMap::TYPE_STRING]],
+                                                              'resolve' => function () { return []; }
+                                                          ]))
             ->addField('types', new QueryListType())
             ->addField('directives', new DirectiveListType());
     }
