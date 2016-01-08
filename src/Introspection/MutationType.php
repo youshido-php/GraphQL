@@ -11,6 +11,7 @@ use Youshido\GraphQL\Schema;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\Object\ObjectType;
 
 class MutationType extends QueryType
 {
@@ -19,8 +20,11 @@ class MutationType extends QueryType
     {
         /** @var Schema|Field $value */
         if ($value instanceof Schema) {
-            return $value->getMutationType();
+            $mutationType = $value->getMutationType();
+
+            return $mutationType instanceof ObjectType ? null : $mutationType;
         }
+
 
         return $value->getConfig()->getType();
     }
