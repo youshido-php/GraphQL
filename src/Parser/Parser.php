@@ -149,7 +149,7 @@ class Parser extends Tokenizer
         $arguments = $this->match(Token::TYPE_LPAREN) ? $this->parseArgumentList() : [];
 
         if ($this->match(Token::TYPE_LBRACE)) {
-            $fields = $this->parseBody($type, false);
+            $fields = $this->parseBody($type == Token::TYPE_TYPED_FRAGMENT ? Token::TYPE_QUERY : $type, false);
 
             if ($type == Token::TYPE_QUERY) {
                 return new Query($name, $alias, $arguments, $fields);
