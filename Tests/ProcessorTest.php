@@ -151,8 +151,6 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $processor->processQuery($query);
 
-        $a = $processor->getResponseData();
-
         $this->assertEquals($processor->getResponseData(), $response);
     }
 
@@ -192,12 +190,13 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                                 ['name' => 'latest', 'fields' => [['name' => 'id'], ['name' => 'name']]],
                                 ['name' => 'Int', 'fields' => null],
                                 ['name' => 'String', 'fields' => null],
-                                ['name' => '__Schema', 'fields' => [['name' => 'queryType'], ['name' => 'mutationType'], ['name' => 'types'], ['name' => 'directives']]],
+                                ['name' => '__Schema', 'fields' => [['name' => 'queryType'], ['name' => 'mutationType'], ['name' => 'subscriptionType'], ['name' => 'types'], ['name' => 'directives']]],
                                 ['name' => '__Type', 'fields' => [['name' => 'name'], ['name' => 'kind'], ['name' => 'description'], ['name' => 'ofType'], ['name' => 'inputFields'], ['name' => 'enumValues'], ['name' => 'fields'], ['name' => 'interfaces'], ['name' => 'possibleTypes']]],
                                 ['name' => '__InputValue', 'fields' => [['name' => 'name'],['name' => 'description'],['name' => 'type'],['name' => 'defaultValue'],]],
                                 ['name' => '__EnumValue', 'fields' => [['name' => 'name'],['name' => 'description'],['name' => 'deprecationReason'],['name' => 'isDeprecated'],]],
                                 ['name' => 'Boolean', 'fields' => null],
                                 ['name' => '__Field', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'isDeprecated'], ['name' => 'deprecationReason'], ['name' => 'type'], ['name' => 'args']]],
+                                ['name' => '__Subscription', 'fields' => [['name' => 'name']]],
                                 ['name' => '__Directive', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'args'], ['name' => 'onOperation'], ['name' => 'onFragment'], ['name' => 'onField']]],
                                 ['name' => 'RootSchema', 'fields' => []],
                             ]
