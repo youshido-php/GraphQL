@@ -23,7 +23,7 @@ class HumanType extends AbstractObjectType
         return isset($humans[$args['id']]) ? $humans[$args['id']] : null;
     }
 
-    protected function build(TypeConfigInterface $config)
+    public function build(TypeConfigInterface $config)
     {
         $config
             ->addField('id', TypeMap::TYPE_ID)

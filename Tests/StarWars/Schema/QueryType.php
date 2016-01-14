@@ -26,7 +26,7 @@ class QueryType extends AbstractObjectType
         return 'Query';
     }
 
-    protected function build(TypeConfigInterface $config)
+    public function build(TypeConfigInterface $config)
     {
         $config
             ->addField('hero', new CharacterInterface(), [

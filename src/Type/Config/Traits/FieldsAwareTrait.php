@@ -11,6 +11,7 @@ namespace Youshido\GraphQL\Type\Config\Traits;
 
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Field\Field;
+use Youshido\GraphQL\Type\Field\InputField;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
@@ -61,7 +62,16 @@ trait FieldsAwareTrait
 
         $config['name'] = $name;
         $config['type'] = $type;
-        $field          = new Field($config);
+
+        if(
+            isset($this->contextObject)
+            && method_exists($this->contextObject, 'getKind')
+            && $this->contextObject->getKind() == TypeMap::KIND_INPUT_OBJECT) {
+            $field = new InputField($config);
+        } else {
+            $field = new Field($config);
+        }
+
 
         $this->fields[$name] = $field;
 

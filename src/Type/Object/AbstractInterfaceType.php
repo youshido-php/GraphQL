@@ -30,7 +30,7 @@ abstract class AbstractInterfaceType extends AbstractType
         $this->config = new InterfaceTypeConfig($config, $this);
     }
 
-    abstract protected function build(TypeConfigInterface $config);
+    abstract public function build(TypeConfigInterface $config);
 
     public function resolveType($object)
     {

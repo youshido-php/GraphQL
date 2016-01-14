@@ -20,7 +20,7 @@ class QueryType extends AbstractObjectType
         // TODO: Implement resolve() method.
     }
 
-    protected function build(TypeConfigInterface $config)
+    public function build(TypeConfigInterface $config)
     {
         $config
             ->addField('unionList', new ListType(new TestUnionType()), [

@@ -283,7 +283,7 @@ class Parser extends Tokenizer
 
         $object = [];
         while (!$this->match(Token::TYPE_RBRACE) && !$this->end()) {
-            $key = $this->expect(Token::TYPE_STRING)->getData();
+            $key = $this->expectMulti([Token::TYPE_STRING, Token::TYPE_IDENTIFIER])->getData();
             $this->expect(Token::TYPE_COLON);
             $value = $this->parseListValue();
 

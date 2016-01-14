@@ -166,7 +166,6 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             ['{ test { id,, } }'],
             ['{ test (a: $a, b: <basd>) { id }'],
             ['{ test (asd: [..., asd]) { id } }'],
-            ['{ test (asd: { "a": 4, b: 5}) { id } }'],
             ['{ test (asd: { "a": 4, "m": null, "asd": false  "b": 5, "c" : { a }}) { id } }'],
             ['asdasd'],
             ['mutation { test(asd: ... ){ ...,asd, asd } }'],

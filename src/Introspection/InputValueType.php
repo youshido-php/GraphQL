@@ -15,13 +15,13 @@ use Youshido\GraphQL\Type\TypeMap;
 class InputValueType extends AbstractObjectType
 {
 
-    protected function build(TypeConfigInterface $config)
+    public function build(TypeConfigInterface $config)
     {
         $config
             ->addField('name', TypeMap::TYPE_STRING)
             ->addField('description', TypeMap::TYPE_STRING)
             ->addField('type', new QueryType())
-            ->addField('defaultValue', TypeMap::TYPE_STRING); //todo: check here
+            ->addField('defaultValue', TypeMap::TYPE_STRING);
     }
 
     public function resolve($value = null, $args = [])

@@ -48,7 +48,7 @@ class SchemaType extends AbstractObjectType
         return '__Schema';
     }
 
-    protected function build(TypeConfigInterface $config)
+    public function build(TypeConfigInterface $config)
     {
         $config
             ->addField('queryType', new QueryType())

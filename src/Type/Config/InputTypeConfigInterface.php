@@ -18,14 +18,14 @@ interface InputTypeConfigInterface
      *
      * @return InputTypeConfigInterface
      */
-    public function addArgument($name, $type, $config = []);
+    public function addField($name, $type, $config = []);
 
-    public function getArgument($name);
+    public function getField($name);
 
-    public function removeArgument($name);
+    public function removeField($name);
 
-    public function hasArgument($name);
+    public function hasField($name);
 
-    public function getArguments();
+    public function getFields();
 
 }

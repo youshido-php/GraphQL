@@ -27,6 +27,7 @@ class ObjectTypeConfig extends Config implements TypeConfigInterface
             'fields'      => ['type' => TypeMap::TYPE_ARRAY_OF_FIELDS],
             'args'        => ['type' => TypeMap::TYPE_ARRAY_OF_INPUTS],
             'resolve'     => ['type' => TypeMap::TYPE_FUNCTION],
+            'output'      => ['type' => TypeMap::TYPE_OBJECT_TYPE],
             'interfaces'  => ['type' => TypeMap::TYPE_ARRAY_OF_INTERFACES]
         ];
     }

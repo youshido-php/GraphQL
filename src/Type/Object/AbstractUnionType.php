@@ -46,7 +46,7 @@ abstract class AbstractUnionType extends AbstractType
         }
     }
 
-    protected function build(TypeConfigInterface $config)
+    public function build(TypeConfigInterface $config)
     {
 
     }

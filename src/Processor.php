@@ -116,7 +116,7 @@ class Processor
 
         $value = null;
         if ($mutation->hasFields()) {
-            $outputType = $field->getType()->getConfig()->getOutputType();
+            $outputType = $field->getType()->getOutputType();
 
             if ($outputType && in_array($outputType->getKind(), [TypeMap::KIND_INTERFACE, TypeMap::KIND_UNION])) {
                 $outputType = $outputType->getConfig()->resolveType($resolvedValue);
@@ -127,7 +127,7 @@ class Processor
                     $value[] = [];
                     $index   = count($value) - 1;
 
-                    if(in_array($outputType->getConfig()->getItem()->getKind(), [TypeMap::KIND_UNION, TypeMap::KIND_INTERFACE]) ) {
+                    if (in_array($outputType->getConfig()->getItem()->getKind(), [TypeMap::KIND_UNION, TypeMap::KIND_INTERFACE])) {
                         $type = $outputType->getConfig()->getItemConfig()->resolveType($resolvedValueItem);
                     } else {
                         $type = $outputType;
@@ -173,7 +173,7 @@ class Processor
             $preResolvedValue = $this->getPreResolvedValue($contextValue, $query);
 
             if ($field->getConfig()->getType()->getKind() == TypeMap::KIND_LIST) {
-                if(!is_array($preResolvedValue)){
+                if (!is_array($preResolvedValue)) {
                     $value = null;
                     $this->resolveValidator->addError(new ResolveException('Not valid resolve value for list type'));
                 }
@@ -186,7 +186,7 @@ class Processor
 
                     if ($type->getKind() == TypeMap::KIND_ENUM) {
                         /** @var $type AbstractEnumType */
-                        if(!$type->isValidValue($resolvedValueItem)) {
+                        if (!$type->isValidValue($resolvedValueItem)) {
                             $this->resolveValidator->addError(new ResolveException('Not valid value for enum type'));
 
                             $listValue = null;
@@ -203,7 +203,7 @@ class Processor
                 $value = $listValue;
             } else {
                 if ($field->getType()->getKind() == TypeMap::KIND_ENUM) {
-                    if(!$field->getType()->isValidValue($preResolvedValue)) {
+                    if (!$field->getType()->isValidValue($preResolvedValue)) {
                         $this->resolveValidator->addError(new ResolveException('Not valid value for enum type'));
                         $value = null;
                     } else {
@@ -234,7 +234,7 @@ class Processor
                         $value[] = [];
                         $index   = count($value) - 1;
 
-                        if(in_array($field->getConfig()->getType()->getConfig()->getItem()->getKind(), [TypeMap::KIND_UNION, TypeMap::KIND_INTERFACE]) ) {
+                        if (in_array($field->getConfig()->getType()->getConfig()->getItem()->getKind(), [TypeMap::KIND_UNION, TypeMap::KIND_INTERFACE])) {
                             $type = $field->getConfig()->getType()->getConfig()->getItemConfig()->resolveType($resolvedValueItem);
                         } else {
                             $type = $field->getType();
@@ -309,7 +309,7 @@ class Processor
     {
         $resolvedValue = $field->getConfig()->resolve($contextValue, $this->parseArgumentsValues($field, $query));
 
-        if(in_array($field->getType()->getKind(), [TypeMap::KIND_UNION, TypeMap::KIND_INTERFACE])){
+        if (in_array($field->getType()->getKind(), [TypeMap::KIND_UNION, TypeMap::KIND_INTERFACE])) {
             $resolvedType = $field->getType()->resolveType($resolvedValue);
             $field->setType($resolvedType);
         }
@@ -329,7 +329,7 @@ class Processor
             return [];
         }
 
-        $args      = [];
+        $args = [];
         foreach ($query->getArguments() as $argument) {
             $args[$argument->getName()] = $field->getConfig()->getArgument($argument->getName())->getType()->parseValue($argument->getValue()->getValue());
         }

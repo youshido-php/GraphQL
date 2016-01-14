@@ -7,8 +7,8 @@
 
 namespace Youshido\GraphQL\Introspection\Traits;
 
-
 use Youshido\GraphQL\Type\Config\Field\FieldConfig;
+use Youshido\GraphQL\Type\Object\AbstractMutationType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 
@@ -22,6 +22,10 @@ trait TypeCollectorTrait
      */
     protected function collectTypes($type)
     {
+        if(!$type) {
+            return;
+        }
+
         switch ($type->getKind()) {
             case TypeMap::KIND_INTERFACE:
             case TypeMap::KIND_UNION:
@@ -74,6 +78,10 @@ trait TypeCollectorTrait
     {
         foreach ($type->getConfig()->getFields() as $field) {
             /** @var FieldConfig $field */
+            if($field->getType() instanceof AbstractMutationType) {
+                $this->collectTypes($field->getType()->getOutputType());
+            }
+
             $this->collectTypes($field->getType());
         }
         foreach ($type->getConfig()->getArguments() as $field) {

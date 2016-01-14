@@ -35,7 +35,7 @@ abstract class AbstractListType extends AbstractObjectType
         return is_array($value);
     }
 
-    protected function build(TypeConfigInterface $config)
+    public function build(TypeConfigInterface $config)
     {
 
     }

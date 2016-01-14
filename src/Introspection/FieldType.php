@@ -7,16 +7,16 @@
 
 namespace Youshido\GraphQL\Introspection;
 
-
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Field\Field;
+use Youshido\GraphQL\Type\Object\AbstractMutationType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 
 class FieldType extends AbstractObjectType
 {
 
-    protected function build(TypeConfigInterface $config)
+    public function build(TypeConfigInterface $config)
     {
         $config
             ->addField('name', TypeMap::TYPE_STRING)
@@ -26,8 +26,8 @@ class FieldType extends AbstractObjectType
             ->addField('type', new QueryType(), [
                 'resolve' => function($value, $args) {
                     /** @var $value Field */
-                    if($value->getConfig()->getType()->getKind() == TypeMap::KIND_INPUT_OBJECT) {
-                        return $value->getConfig()->getType()->getConfig()->getOutputType();
+                    if($value->getType() instanceof AbstractMutationType) {
+                        return  $value->getType()->getOutputType();
                     }
 
                     return $value->getType();

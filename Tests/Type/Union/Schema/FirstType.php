@@ -27,7 +27,7 @@ class FirstType extends AbstractObjectType
         return 'FirstType';
     }
 
-    protected function build(TypeConfigInterface $config)
+    public function build(TypeConfigInterface $config)
     {
         $config
             ->addField('name', 'string')
