@@ -48,7 +48,8 @@ class TypeValidationRule implements ValidationRuleInterface
                     || $data instanceof AbstractInterfaceType
                     || $data instanceof AbstractUnionType
                     || $data instanceof AbstractEnumType
-                    || $data instanceof AbstractScalarType;
+                    || $data instanceof AbstractScalarType
+                    || $data instanceof AbstractInputObjectType;
 
                 case TypeMap::TYPE_OBJECT_INPUT_TYPE:
                     return $data instanceof AbstractInputObjectType;
