@@ -293,10 +293,6 @@ class Tokenizer
                 return new Token(Token::TYPE_STRING, $value);
             }
 
-            if ($ch === "\r" || $ch === "\n") {
-                break;
-            }
-
             $value .= $ch;
             $this->pos++;
         }
