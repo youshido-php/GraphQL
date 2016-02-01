@@ -67,6 +67,10 @@ trait TypeCollectorTrait
                     $this->collectFieldsArgsTypes($subItem);
                 }
 
+                foreach ($type->getConfig()->getArguments() as $argument) {
+                    $this->insertType($argument->getConfig()->getType()->getName(), $argument->getConfig()->getType());
+                }
+
                 break;
         }
     }

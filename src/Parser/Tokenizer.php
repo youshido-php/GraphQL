@@ -225,7 +225,9 @@ class Tokenizer
     protected function scanNumber()
     {
         $start = $this->pos;
-
+        if ($this->source[$this->pos] === '-') {
+            ++$this->pos;
+        }
 
         $this->skipInteger();
 
