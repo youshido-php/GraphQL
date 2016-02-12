@@ -62,6 +62,6 @@ class Field
 
     public function getDescription()
     {
-        return $this->getConfig()->get('deprecationReason', null);
+        return $this->getConfig()->get('description', null);
     }
 }

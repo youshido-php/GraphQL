@@ -228,7 +228,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                             'name'   => 'TestSchema',
                             'kind'   => 'OBJECT',
                             'fields' => [
-                                ['name' => 'latest', 'isDeprecated' => true, 'deprecationReason' => 'for test', 'description' => 'for test', 'type' => ['name' => 'latest']]
+                                ['name' => 'latest', 'isDeprecated' => true, 'deprecationReason' => 'for test', 'description' => 'latest description', 'type' => ['name' => 'latest']]
                             ]
                         ]
                     ]
