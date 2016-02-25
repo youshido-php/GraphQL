@@ -8,7 +8,6 @@
 
 namespace Youshido\GraphQL\Type\Scalar;
 
-
 class DateTimeTzType extends AbstractScalarType
 {
 
