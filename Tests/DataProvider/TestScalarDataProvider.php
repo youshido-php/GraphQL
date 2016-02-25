@@ -101,6 +101,13 @@ class TestScalarDataProvider
         ];
     }
 
+    public static function getDatetimetzTestData()
+    {
+        return [
+            [null, null, false],
+        ];
+    }
+
     public static function getDateTestData()
     {
         return [
