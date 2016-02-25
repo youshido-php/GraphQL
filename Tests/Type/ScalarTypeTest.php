@@ -15,16 +15,6 @@ use Youshido\Tests\DataProvider\TestScalarDataProvider;
 class ScalarTypeTest extends \PHPUnit_Framework_TestCase
 {
 
-    public function testTypeName()
-    {
-        foreach (TypeMap::getScalarTypes() as $typeName) {
-            $className = 'Youshido\GraphQL\Type\Scalar\\' . (ucfirst($typeName) == 'Datetime' ? 'DateTime' : ucfirst($typeName)) . 'Type';
-            /** @var TypeInterface $object */
-            $object = new $className();
-            $this->assertEquals(ucfirst($typeName) == 'Datetime' ? 'DateTime' : ucfirst($typeName), $object->getName());
-        }
-    }
-
     public function testScalarPrimitives()
     {
         foreach (TypeMap::getScalarTypes() as $typeName) {
