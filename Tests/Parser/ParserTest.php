@@ -26,7 +26,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException Youshido\GraphQL\Parser\Exception\VariableTypeNotDefined
      */
-    public function testTypeNotDefinedException($query)
+    public function testTypeNotDefinedException()
     {
         $parser = new Parser();
         $parser->setSource('query getZuckProfile($devicePicSize: Int, $second: Int) {
@@ -43,7 +43,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException Youshido\GraphQL\Parser\Exception\UnusedVariableException
      */
-    public function testTypeUnusedVariableException($query)
+    public function testTypeUnusedVariableException()
     {
         $parser = new Parser();
         $parser->setSource('query getZuckProfile($devicePicSize: Int, $second: Int) {
@@ -60,7 +60,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException Youshido\GraphQL\Parser\Exception\DuplicationVariableException
      */
-    public function testDuplicationVariableException($query)
+    public function testDuplicationVariableException()
     {
         $parser = new Parser();
         $parser->setSource('query getZuckProfile($devicePicSize: Int, $second: Int, $second: Int) {
