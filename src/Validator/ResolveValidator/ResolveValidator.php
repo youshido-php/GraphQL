@@ -45,8 +45,17 @@ class ResolveValidator implements ResolveValidatorInterface
             /** @var AbstractType $argumentType */
             $argumentType = $field->getConfig()->getArgument($argument->getName())->getType();
             if ($argument->getValue() instanceof Variable) {
-                if ($request->hasVariable($argument->getValue()->getName())) {
-                    $argument->getValue()->setValue($request->getVariable($argument->getValue()->getName()));
+                /** @var Variable $variable */
+                $variable = $argument->getValue();
+
+                if($variable->getType() !== $argumentType->getName()) {
+                    $this->addError(new ResolveException(sprintf('Invalid variable "%s" type, allowed type is "%s"', $variable->getName(), $argumentType->getName())));
+
+                    return false;
+                }
+
+                if ($request->hasVariable($variable->getName())) {
+                    $variable->setValue($request->getVariable($variable->getName()));
                 } else {
                     $this->addError(new ResolveException(sprintf('Variable "%s" not exist for query "%s"', $argument->getName(), $field->getName())));
 
@@ -76,7 +85,7 @@ class ResolveValidator implements ResolveValidatorInterface
 
         if (count($withDefaultArguments)) {
             foreach ($withDefaultArguments as $name => $argument) {
-                $query->addArgument(new Argument($name, new Literal( $argument->getConfig()->get('default'))));
+                $query->addArgument(new Argument($name, new Literal($argument->getConfig()->get('default'))));
             }
         }
 
@@ -94,7 +103,7 @@ class ResolveValidator implements ResolveValidatorInterface
             case TypeMap::KIND_INTERFACE:
                 return is_object($value) || is_null($value) || is_array($value);
             case TypeMap::KIND_LIST:
-                return is_null($value)|| is_array($value) || (is_object($value) && in_array('IteratorAggregate', class_implements($value)));
+                return is_null($value) || is_array($value) || (is_object($value) && in_array('IteratorAggregate', class_implements($value)));
         }
 
         return false;

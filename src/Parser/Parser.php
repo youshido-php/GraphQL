@@ -8,8 +8,9 @@
 
 namespace Youshido\GraphQL\Parser;
 
-use Youshido\GraphQL\Parser\Ast\TypedFragment;
+
 use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
+use Youshido\GraphQL\Parser\Exception\SyntaxErrorException;
 use Youshido\GraphQL\Parser\Value\InputList;
 use Youshido\GraphQL\Parser\Ast\Argument;
 use Youshido\GraphQL\Parser\Ast\Field;
@@ -20,9 +21,18 @@ use Youshido\GraphQL\Parser\Value\Literal;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Value\Variable;
+use Youshido\GraphQL\Parser\Exception\DuplicationVariableException;
+use Youshido\GraphQL\Parser\Exception\UnusedVariableException;
+use Youshido\GraphQL\Parser\Exception\VariableTypeNotDefined;
 
 class Parser extends Tokenizer
 {
+
+    /** @var array */
+    protected $variablesTypes = [];
+
+    /** @var array */
+    protected $variableTypeUsage = [];
 
     public function parse()
     {
@@ -50,6 +60,8 @@ class Parser extends Tokenizer
             }
         }
 
+        $this->checkVariableUsage();
+
         return $data;
     }
 
@@ -58,9 +70,13 @@ class Parser extends Tokenizer
         $fields = [];
         $first  = true;
 
-        if ($this->peek()->getType() == $token) {
+        if ($this->peek()->getType() == $token && $highLevel) {
             $this->lex();
             $this->eat(Token::TYPE_IDENTIFIER);
+
+            if ($this->match(Token::TYPE_LPAREN)) {
+                $this->variablesTypes = $this->parseVariableTypes();
+            }
         }
 
         $this->lex();
@@ -90,6 +106,44 @@ class Parser extends Tokenizer
         return $fields;
     }
 
+    protected function checkVariableUsage()
+    {
+        if ($this->variablesTypes && count($this->variablesTypes) != count($this->variableTypeUsage)) {
+            throw new UnusedVariableException(sprintf('Not all variables in query was used'));
+        }
+    }
+
+    protected function parseVariableTypes()
+    {
+        $types = [];
+        $first = true;
+
+        $this->eat(Token::TYPE_LPAREN);
+
+        while (!$this->match(Token::TYPE_RPAREN) && !$this->end()) {
+            if ($first) {
+                $first = false;
+            } else {
+                $this->expect(Token::TYPE_COMMA);
+            }
+
+            $this->eat(Token::TYPE_VARIABLE);
+            $name = $this->parseIdentifier();
+            $this->eat(Token::TYPE_COLON);
+            $type = $this->parseIdentifier();
+
+            if (array_key_exists($name, $types)) {
+                throw new DuplicationVariableException(sprintf('"%s" variable duplication', $name));
+            }
+
+            $types[$name] = $type;
+        }
+
+        $this->expect(Token::TYPE_RPAREN);
+
+        return $types;
+    }
+
     protected function expect($type)
     {
         if ($this->match($type)) {
@@ -113,7 +167,15 @@ class Parser extends Tokenizer
         $this->expectMulti([Token::TYPE_AMP, Token::TYPE_VARIABLE]);
 
         if ($this->match(Token::TYPE_NUMBER) || $this->match(Token::TYPE_IDENTIFIER)) {
-            return new Variable($this->lex()->getData());
+            $name = $this->lex()->getData();
+
+            if (!array_key_exists($name, $this->variablesTypes)) {
+                throw new VariableTypeNotDefined(sprintf('Type for variable "%s" not defined', $name));
+            }
+
+            $this->variableTypeUsage[$name] = true;
+
+            return new Variable($name, $this->variablesTypes[$name]);
         }
 
         throw $this->createUnexpected($this->peek());
@@ -211,9 +273,6 @@ class Parser extends Tokenizer
             case Token::TYPE_VARIABLE:
                 return $this->parseReference();
 
-            case Token::TYPE_LT:
-                return $this->parseVariable();
-
             case Token::TYPE_NUMBER:
             case Token::TYPE_STRING:
             case Token::TYPE_IDENTIFIER:
@@ -297,15 +356,6 @@ class Parser extends Tokenizer
         $this->eat(Token::TYPE_RBRACE);
 
         return $createType ? new InputObject($object) : $object;
-    }
-
-    protected function parseVariable()
-    {
-        $this->expect(Token::TYPE_LT);
-        $name = $this->expect(Token::TYPE_IDENTIFIER)->getData();
-        $this->expect(Token::TYPE_GT);
-
-        return new Variable($name);
     }
 
     protected function parseFragment()

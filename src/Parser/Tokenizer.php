@@ -7,6 +7,8 @@
 
 namespace Youshido\GraphQL\Parser;
 
+use Youshido\GraphQL\Parser\Exception\SyntaxErrorException;
+
 class Tokenizer
 {
     protected $source;

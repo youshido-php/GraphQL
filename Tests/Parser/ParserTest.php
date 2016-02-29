@@ -23,6 +23,56 @@ use Youshido\GraphQL\Parser\Value\Variable;
 class ParserTest extends \PHPUnit_Framework_TestCase
 {
 
+    /**
+     * @expectedException Youshido\GraphQL\Parser\Exception\VariableTypeNotDefined
+     */
+    public function testTypeNotDefinedException($query)
+    {
+        $parser = new Parser();
+        $parser->setSource('query getZuckProfile($devicePicSize: Int, $second: Int) {
+                  user(id: 4) {
+                    profilePic(size: $devicePicSize, test: $second, a: $c) {
+                        url
+                    }
+                  }
+                }');
+
+        $parser->parse();
+    }
+
+    /**
+     * @expectedException Youshido\GraphQL\Parser\Exception\UnusedVariableException
+     */
+    public function testTypeUnusedVariableException($query)
+    {
+        $parser = new Parser();
+        $parser->setSource('query getZuckProfile($devicePicSize: Int, $second: Int) {
+                  user(id: 4) {
+                    profilePic(size: $devicePicSize) {
+                        url
+                    }
+                  }
+                }');
+
+        $parser->parse();
+    }
+
+    /**
+     * @expectedException Youshido\GraphQL\Parser\Exception\DuplicationVariableException
+     */
+    public function testDuplicationVariableException($query)
+    {
+        $parser = new Parser();
+        $parser->setSource('query getZuckProfile($devicePicSize: Int, $second: Int, $second: Int) {
+                  user(id: 4) {
+                    profilePic(size: $devicePicSize, test: $second) {
+                        url
+                    }
+                  }
+                }');
+
+        $parser->parse();
+    }
 
     public function testComments()
     {
@@ -43,7 +93,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->setSource($query);
 
         $this->assertEquals($parser->parse(), [
-            'queries' => [
+            'queries'   => [
                 new Query('authors', null,
                     [
                         new Argument('category', new Literal('#2'))
@@ -62,7 +112,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
      * @param $query string
      *
      * @dataProvider wrongQueriesProvider
-     * @expectedException Youshido\GraphQL\Parser\SyntaxErrorException
+     * @expectedException Youshido\GraphQL\Parser\Exception\SyntaxErrorException
      */
     public function testWrongQueries($query)
     {
@@ -164,7 +214,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         return [
             ['{ test { id,, asd } }'],
             ['{ test { id,, } }'],
-            ['{ test (a: $a, b: <basd>) { id }'],
+            ['{ test (a: "asd", b: <basd>) { id }'],
             ['{ test (asd: [..., asd]) { id } }'],
             ['{ test (asd: { "a": 4, "m": null, "asd": false  "b": 5, "c" : { a }}) { id } }'],
             ['asdasd'],
@@ -203,7 +253,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parsedStructure = $parser->parse();
 
         $this->assertEquals($parsedStructure, [
-            'queries' => [
+            'queries'   => [
                 new Query('test', 'test', [],
                     [
                         new Field('name', null),
@@ -221,12 +271,12 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [
-                '{ query ( teas: $variable ) { alias: name } }',
+                'query ($variable: Int){ query ( teas: $variable ) { alias: name } }',
                 [
-                    'queries' => [
+                    'queries'   => [
                         new Query('query', null,
                             [
-                                new Argument('teas', new Variable('variable'))
+                                new Argument('teas', new Variable('variable', 'Int'))
                             ],
                             [
                                 new Field('name', 'alias')
@@ -239,7 +289,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             [
                 '{ query { alias: name } }',
                 [
-                    'queries' => [
+                    'queries'   => [
                         new Query('query', null, [], [new Field('name', 'alias')])
                     ],
                     'mutations' => [],

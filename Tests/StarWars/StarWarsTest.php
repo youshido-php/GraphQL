@@ -32,6 +32,29 @@ class StarWarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($processor->getResponseData(), $validResult);
     }
 
+    public function testInvalidVariableType()
+    {
+        $processor = new Processor(new ResolveValidator());
+        $processor->setSchema(new Schema());
+
+        $processor->processQuery(
+            'query($someId: Int){
+                human(id: $someId) {
+                    name
+                }
+            }'
+        );
+
+        $data = $processor->getResponseData();
+        $this->assertEquals($data, [
+            'errors' => [
+                [
+                    'message' => 'Invalid variable "someId" type, allowed type is "Id"'
+                ]
+            ]
+        ]);
+    }
+
 
     public function dataProvider()
     {
@@ -165,7 +188,7 @@ class StarWarsTest extends \PHPUnit_Framework_TestCase
                 []
             ],
             [
-                '{
+                'query($someId: Id){
                   human(id: $someId) {
                     name
                   }

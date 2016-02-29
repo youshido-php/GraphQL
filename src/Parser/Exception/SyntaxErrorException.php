@@ -5,7 +5,7 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphQL\Parser;
+namespace Youshido\GraphQL\Parser\Exception;
 
 
 class SyntaxErrorException extends \InvalidArgumentException
