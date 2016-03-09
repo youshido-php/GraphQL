@@ -22,7 +22,7 @@ trait TypeCollectorTrait
      */
     protected function collectTypes($type)
     {
-        if(!$type) {
+        if (!$type) {
             return;
         }
 
@@ -32,6 +32,17 @@ trait TypeCollectorTrait
             case TypeMap::KIND_ENUM:
             case TypeMap::KIND_SCALAR:
                 $this->insertType($type->getName(), $type);
+
+                if ($type->getKind() == TypeMap::KIND_UNION) {
+                    foreach ($type->getTypes() as $subType) {
+                        if ($this->insertType($subType->getName(), $subType)) {
+                            $this->collectFieldsArgsTypes($subType);
+
+                            $this->checkAndInsertInterfaces($subType);
+                        }
+                    }
+                }
+
                 break;
 
             case TypeMap::KIND_INPUT_OBJECT:
@@ -40,20 +51,12 @@ trait TypeCollectorTrait
                     $outputType = $type->getConfig()->getOutputType();
 
                     if ($outputType) {
-                        if($this->insertType($outputType->getName(), $outputType)) {
+                        if ($this->insertType($outputType->getName(), $outputType)) {
                             $this->collectFieldsArgsTypes($outputType);
                         }
                     }
                 } else {
-                    $interfaces = $type->getConfig()->getInterfaces();
-
-                    if(is_array($interfaces) && $interfaces) {
-                        foreach($interfaces as $interface){
-                            if($this->insertType($interface->getName(), $interface)){
-                                $this->collectFieldsArgsTypes($interface);
-                            }
-                        }
-                    }
+                    $this->checkAndInsertInterfaces($type);
                 }
 
                 if ($this->insertType($type->getName(), $type)) {
@@ -65,6 +68,7 @@ trait TypeCollectorTrait
                 $subItem = $type->getConfig()->getItem();
                 if ($this->insertType($subItem->getName(), $subItem)) {
                     $this->collectFieldsArgsTypes($subItem);
+                    $this->collectTypes($subItem);
                 }
 
                 foreach ($type->getConfig()->getArguments() as $argument) {
@@ -75,6 +79,19 @@ trait TypeCollectorTrait
         }
     }
 
+    private function checkAndInsertInterfaces($type)
+    {
+        $interfaces = $type->getConfig()->getInterfaces();
+
+        if (is_array($interfaces) && $interfaces) {
+            foreach ($interfaces as $interface) {
+                if ($this->insertType($interface->getName(), $interface)) {
+                    $this->collectFieldsArgsTypes($interface);
+                }
+            }
+        }
+    }
+
     /**
      * @param $type TypeInterface
      */
@@ -82,7 +99,7 @@ trait TypeCollectorTrait
     {
         foreach ($type->getConfig()->getFields() as $field) {
             /** @var FieldConfig $field */
-            if($field->getType() instanceof AbstractMutationType) {
+            if ($field->getType() instanceof AbstractMutationType) {
                 $this->collectTypes($field->getType()->getOutputType());
             }
 
