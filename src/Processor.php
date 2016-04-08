@@ -25,6 +25,7 @@ use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Parser\Ast\Field as QueryField;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidatorInterface;
 
@@ -168,16 +169,15 @@ class Processor
 
         /** @var Field $field */
         $field = $currentLevelSchema->getConfig()->getField($query->getName());
-        if (get_class($query) == 'Youshido\GraphQL\Parser\Ast\Field') {
+        if ($query instanceof QueryField) {
             $alias            = $query->getAlias() ?: $query->getName();
-            $preResolvedValue = $this->getPreResolvedValue($contextValue, $query);
+            $preResolvedValue = $this->getPreResolvedValue($contextValue, $query, $field);
 
             if ($field->getConfig()->getType()->getKind() == TypeMap::KIND_LIST) {
                 if (!is_array($preResolvedValue)) {
                     $value = null;
                     $this->resolveValidator->addError(new ResolveException('Not valid resolve value for list type'));
                 }
-
 
                 $listValue = [];
                 foreach ($preResolvedValue as $resolvedValueItem) {
@@ -277,25 +277,39 @@ class Processor
 
     /**
      * @param $value
-     * @param $query Field
+     * @param $query QueryField
+     * @param $field Field
      *
      * @throws \Exception
      *
      * @return mixed
      */
-    protected function getPreResolvedValue($value, $query)
+    protected function getPreResolvedValue($value, $query, $field)
     {
-        if (is_array($value)) {
-            if (array_key_exists($query->getName(), $value)) {
-                return $value[$query->getName()];
-            } else {
-                throw new \Exception('Not found in resolve result', $query->getName());
-            }
+        $resolved      = false;
+        $resolverValue = null;
+
+        if (is_array($value) && array_key_exists($query->getName(), $value)) {
+            $resolverValue = $value[$query->getName()];
+            $resolved      = true;
         } elseif (is_object($value)) {
-            return $this->propertyAccessor->getValue($value, $query->getName());
+            try {
+                $resolverValue = $this->propertyAccessor->getValue($value, $query->getName());
+                $resolved      = true;
+            } catch (\Exception $e) {
+            }
         }
 
-        return $value;
+        if ($resolved) {
+            if ($field->getConfig()->issetResolve()) {
+                $resolverFunc = $field->getConfig()->getResolveFunction();
+                $resolverValue = $resolverFunc($resolverValue, []);
+            }
+
+            return $resolverValue;
+        }
+
+        throw new \Exception(sprintf('Property "%s" not found in resolve result', $query->getName()));
     }
 
     /**

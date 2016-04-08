@@ -43,13 +43,28 @@ class FieldConfig extends Config
 
     public function resolve($value = null, $args = [])
     {
-        $resolveFunction = $this->get('resolve', null);
+        if ($this->issetResolve()) {
+            $resolveFunc = $this->getResolveFunction();
 
-        if ($resolveFunction && is_callable($resolveFunction)) {
-            return $resolveFunction($value, $args);
+            return $resolveFunc($value, $args);
         }
 
         return $this->getType()->resolve($value, $args);
+    }
+
+    /**
+     * @return null|callable
+     */
+    public function getResolveFunction()
+    {
+        return $this->get('resolve', null);
+    }
+
+    public function issetResolve()
+    {
+        $resolveFunction = $this->getResolveFunction();
+
+        return $resolveFunction && is_callable($resolveFunction);
     }
 
     /**
