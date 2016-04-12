@@ -18,11 +18,7 @@ class EnumValueType extends AbstractObjectType
     public function build(TypeConfigInterface $config)
     {
         $config
-            ->addField('name', TypeMap::TYPE_STRING, [
-                'resolve' => function ($value, $args) {
-                    $a = 'asd';
-                }
-            ])
+            ->addField('name', TypeMap::TYPE_STRING)
             ->addField('description', TypeMap::TYPE_STRING)
             ->addField('deprecationReason', TypeMap::TYPE_STRING)
             ->addField('isDeprecated', TypeMap::TYPE_BOOLEAN);
