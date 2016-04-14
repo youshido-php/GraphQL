@@ -291,7 +291,7 @@ class Tokenizer
         $value = '';
         while ($this->pos < strlen($this->source)) {
             $ch = $this->source[$this->pos];
-            if ($ch === '"') {
+            if ($ch === '"' && $this->source[$this->pos - 1] != '\\') {
                 $this->pos++;
 
                 return new Token(Token::TYPE_STRING, $value);
