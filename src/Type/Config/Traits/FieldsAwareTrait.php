@@ -27,12 +27,15 @@ trait FieldsAwareTrait
     {
         $sourceFields = empty($this->data['fields']) ? [] : $this->data['fields'];
         foreach ($sourceFields as $fieldName => $fieldInfo) {
-            if ($fieldInfo instanceof Field || $fieldInfo instanceof AbstractType) {
+            if ($fieldInfo instanceof Field) {
                 $this->fields[$fieldName] = $fieldInfo;
                 continue;
-            };
+            } elseif ($fieldInfo instanceof AbstractType) {
+                $this->addField($fieldName, $fieldInfo);
+            } else {
+                $this->addField($fieldName, $fieldInfo['type'], $fieldInfo);
+            }
 
-            $this->addField($fieldName, $fieldInfo['type'], $fieldInfo);
         }
     }
 

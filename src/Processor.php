@@ -84,6 +84,7 @@ class Processor
 
             $this->resolveValidator->addError($e);
         }
+        return $this;
     }
 
     /**
@@ -301,7 +302,7 @@ class Processor
         }
 
         if ($resolved) {
-            if ($field->getConfig()->issetResolve()) {
+            if ($field->getConfig() && ($field->getConfig()->issetResolve())) {
                 $resolverFunc = $field->getConfig()->getResolveFunction();
                 $resolverValue = $resolverFunc($resolverValue, []);
             }

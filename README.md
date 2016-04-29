@@ -40,7 +40,7 @@ We'll keep our Blog simple but it will surely have Users who write Posts and lea
 If you never seen a GraphQL queries before – it's a simple text query very much similar to the json/yaml format.
 Here's an example of the query that returns title and summary of the latest Post:
  ```
- Post(id: "3") {
+ latestPost {
      title,
      summary
  }
@@ -49,9 +49,11 @@ Here's an example of the query that returns title and summary of the latest Post
 Supposedly our server should return the following structure:
  ```
  {
-    post: {
-        title: "Title for id 3",
-        summary: "Summary for id 3"
+    data: {
+        latestPost: {
+            title: "Interesting approach",
+            summary: "This new GraphQL library for PHP works really well"
+        }
     }
  }
  ```
