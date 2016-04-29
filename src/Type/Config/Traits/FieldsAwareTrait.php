@@ -31,7 +31,11 @@ trait FieldsAwareTrait
                 $this->fields[$fieldName] = $fieldInfo;
                 continue;
             } elseif ($fieldInfo instanceof AbstractType) {
-                $this->addField($fieldName, $fieldInfo);
+                $config = [];
+                if ($fieldInfo->getConfig()) {
+                    if ($fieldInfo->getConfig()->get('resolve')) $config['resolve'] = $fieldInfo->getConfig()->get('resolve');
+                }
+                $this->addField($fieldName, $fieldInfo, $config);
             } else {
                 $this->addField($fieldName, $fieldInfo['type'], $fieldInfo);
             }
@@ -44,7 +48,7 @@ trait FieldsAwareTrait
      */
     public function addFields($fieldsArray)
     {
-        foreach($fieldsArray as $fieldName => $fieldConfig) {
+        foreach ($fieldsArray as $fieldName => $fieldConfig) {
             if (is_object($fieldConfig)) {
                 $this->addField($fieldName, $fieldConfig);
             } else {
@@ -66,10 +70,11 @@ trait FieldsAwareTrait
         $config['name'] = $name;
         $config['type'] = $type;
 
-        if(
+        if (
             isset($this->contextObject)
             && method_exists($this->contextObject, 'getKind')
-            && $this->contextObject->getKind() == TypeMap::KIND_INPUT_OBJECT) {
+            && $this->contextObject->getKind() == TypeMap::KIND_INPUT_OBJECT
+        ) {
             $field = new InputField($config);
         } else {
             $field = new Field($config);

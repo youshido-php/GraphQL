@@ -24,13 +24,13 @@ On the other hand we believe it's easier to start with something more common so 
 You should simply install this package using the composer. If you're not familiar with it you should check out the [manual](https://getcomposer.org/doc/00-intro.md).
 Add the following package to your `composer.json` and run `composer update`
 
-```
-{
-    "require": {
-        "youshido/graphql": "*"
-    }
-}
-```
+ ```
+ {
+     "require": {
+         "youshido/graphql": "*"
+     }
+ }
+ ```
 
 ## Usage
 

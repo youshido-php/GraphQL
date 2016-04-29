@@ -169,7 +169,7 @@ class TypeValidationRule implements ValidationRuleInterface
 
             return $config->isValid();
         } catch (ConfigurationException $e) {
-            /** just need to return false in this case */
+            /** just returning false in this case */
         }
 
         return false;
