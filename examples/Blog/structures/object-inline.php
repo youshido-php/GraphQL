@@ -19,7 +19,7 @@ $rootQueryType = new ObjectType([
 ]);
 $rootQueryType->getConfig()->addField('latestPost',
     new ObjectType([
-        'name'   => 'latestPost',
+        'name'   => 'Post',
         'fields' => [
             'title'   => new StringType(),
             'summary' => new StringType(),

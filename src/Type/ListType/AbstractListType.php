@@ -8,12 +8,13 @@
 namespace Youshido\GraphQL\Type\ListType;
 
 
+use Youshido\GraphQL\Type\CompositeTypeInterface;
 use Youshido\GraphQL\Type\Config\Object\ListTypeConfig;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 
-abstract class AbstractListType extends AbstractObjectType
+abstract class AbstractListType extends AbstractObjectType implements CompositeTypeInterface
 {
 
     public function __construct($item = null)
@@ -52,5 +53,11 @@ abstract class AbstractListType extends AbstractObjectType
     {
         return TypeMap::KIND_LIST;
     }
+
+    public function getTypeOf()
+    {
+        return $this->getConfig()->getItem();
+    }
+
 
 }

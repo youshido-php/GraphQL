@@ -32,7 +32,7 @@ class InputValueListType extends AbstractListType
             if ($value->getConfig()->getType()->getKind() == TypeMap::KIND_INPUT_OBJECT) {
                 return $value->getConfig()->getType()->getConfig()->getFields() ?: [];
             } else {
-                return $value->getConfig()->getType()->getConfig()->getArguments() ?: [];
+                return $value->getConfig()->getType()->getConfig() ? $value->getConfig()->getType()->getConfig()->getArguments() : [];
             }
         } else {
             if ($value instanceof AbstractScalarType) {

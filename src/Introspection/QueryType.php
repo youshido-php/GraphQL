@@ -9,6 +9,7 @@ namespace Youshido\GraphQL\Introspection;
 
 use Youshido\GraphQL\Introspection\Traits\TypeCollectorTrait;
 use Youshido\GraphQL\Schema;
+use Youshido\GraphQL\Type\CompositeTypeInterface;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\ListType\ListType;
@@ -46,8 +47,8 @@ class QueryType extends AbstractObjectType
             ->addField('description', TypeMap::TYPE_STRING)
             ->addField('ofType', new QueryType(), [
                 'resolve' => function ($value) {
-                    if ($value->getKind() == TypeMap::KIND_LIST) {
-                        return $value->getConfig()->getItem();
+                    if ($value instanceof CompositeTypeInterface) {
+                        return $value->getTypeOf();
                     }
 
                     return null;

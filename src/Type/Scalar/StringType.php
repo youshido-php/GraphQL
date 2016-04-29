@@ -21,9 +21,10 @@ class StringType extends AbstractScalarType
     {
         if ($value === true) {
             return 'true';
-        }
-        if ($value === false) {
+        } elseif ($value === false) {
             return 'false';
+        } elseif ($value === null) {
+            return null;
         }
 
         return (string)$value;

@@ -38,6 +38,11 @@ abstract class AbstractType implements TypeInterface
         return $this->config;
     }
 
+    public function isCompositeType()
+    {
+        return false;
+    }
+
     abstract public function checkBuild();
 
     public function parseValue($value)
