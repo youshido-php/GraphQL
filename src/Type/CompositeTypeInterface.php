@@ -9,5 +9,8 @@ namespace Youshido\GraphQL\Type;
  */
 Interface CompositeTypeInterface {
 
+    /**
+     * @return AbstractType
+     */
     public function getTypeOf();
 }

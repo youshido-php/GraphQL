@@ -1,6 +1,5 @@
 <?php
 namespace BlogTest;
-
 header('Access-Control-Allow-Credentials: false', true);
 header('Access-Control-Allow-Origin: *');
 if ($_SERVER['REQUEST_METHOD'] == "OPTIONS") {
@@ -34,14 +33,13 @@ function resolvePost()
     return [
         "title"   => "Interesting approach",
         "summary" => "This new GraphQL library for PHP works really well",
+        "status"  => null,
     ];
 }
 
 require_once __DIR__ . '/structures/object.php';
 //require_once __DIR__ . '/structures/object-inline.php';
 //require_once __DIR__ . '/structures/inline.php';
-
-
 
 
 $processor = new Processor(new ResolveValidator());
@@ -52,13 +50,13 @@ $processor->setSchema(new Schema([
 
 if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] === 'application/json') {
     $rawBody = file_get_contents('php://input');
-    $data = json_decode($rawBody ?: '', true);
+    $data    = json_decode($rawBody ?: '', true);
 } else {
     $data = $_POST;
 }
 
-$query         = isset($data['query']) ? $data['query'] : null;
-$variables     = isset($data['variables']) ? $data['variables'] : null;
+$query     = isset($data['query']) ? $data['query'] : null;
+$variables = isset($data['variables']) ? $data['variables'] : null;
 
 
 $res = $processor->processQuery($query, $variables)->getResponseData();

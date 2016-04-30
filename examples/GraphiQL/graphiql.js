@@ -1549,7 +1549,7 @@ var GraphiQL = (function (_React$Component) {
           _react2['default'].createElement(
             'div',
             { className: 'docExplorerHide', onClick: this._onToggleDocs },
-            '✕'
+            'X'
           )
         )
       )

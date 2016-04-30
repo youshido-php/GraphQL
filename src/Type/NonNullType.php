@@ -36,9 +36,14 @@ class NonNullType extends AbstractType implements CompositeTypeInterface
         return TypeMap::KIND_NON_NULL;
     }
 
+    public function resolve($value)
+    {
+        return $value;
+    }
+
     public function isValidValue($value)
     {
-        return true;
+        return $value !== null;
     }
 
     public function getTypeOf()

@@ -7,6 +7,7 @@
 
 namespace Youshido\GraphQL\Introspection\Traits;
 
+use Youshido\GraphQL\Type\CompositeTypeInterface;
 use Youshido\GraphQL\Type\Config\Field\FieldConfig;
 use Youshido\GraphQL\Type\Object\AbstractMutationType;
 use Youshido\GraphQL\Type\TypeInterface;
@@ -73,6 +74,14 @@ trait TypeCollectorTrait
 
                 foreach ($type->getConfig()->getArguments() as $argument) {
                     $this->insertType($argument->getConfig()->getType()->getName(), $argument->getConfig()->getType());
+                }
+
+                break;
+
+            case TypeMap::KIND_NON_NULL:
+                /** @var CompositeTypeInterface $type */
+                if ($this->insertType($type->getTypeOf()->getName(), $type->getTypeOf())) {
+                    $this->collectTypes($type->getTypeOf());
                 }
 
                 break;

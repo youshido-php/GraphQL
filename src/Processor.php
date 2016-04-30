@@ -203,9 +203,9 @@ class Processor
 
                 $value = $listValue;
             } else {
-                if ($field->getType()->getKind() == TypeMap::KIND_ENUM) {
+                if ($field->getType()->getKind() == TypeMap::KIND_ENUM || $field->getType()->getKind() == TypeMap::KIND_NON_NULL) {
                     if (!$field->getType()->isValidValue($preResolvedValue)) {
-                        $this->resolveValidator->addError(new ResolveException('Not valid value for enum type'));
+                        $this->resolveValidator->addError(new ResolveException(sprintf('Not valid value for %s type', ($field->getType()->getKind()))));
                         $value = null;
                     } else {
                         $value = $field->getType()->resolve($preResolvedValue);
