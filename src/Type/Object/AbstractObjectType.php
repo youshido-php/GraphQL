@@ -61,6 +61,9 @@ abstract class AbstractObjectType extends AbstractType
         return TypeMap::KIND_OBJECT;
     }
 
+    /**
+     * @return AbstractInterfaceType[]
+     */
     public function getInterfaces()
     {
         return [];

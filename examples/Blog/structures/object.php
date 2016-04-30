@@ -10,67 +10,19 @@ namespace BlogTest;
  */
 
 
-use Youshido\GraphQL\Type\Config\TypeConfigInterface;
-use Youshido\GraphQL\Type\NonNullType;
-use Youshido\GraphQL\Type\Object\AbstractEnumType;
-use Youshido\GraphQL\Type\Object\AbstractInterfaceType;
-use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Examples\Blog\Schema\PostType;
 use Youshido\GraphQL\Type\Object\ObjectType;
-use Youshido\GraphQL\Type\Scalar\BooleanType;
-use Youshido\GraphQL\Type\Scalar\IdType;
-use Youshido\GraphQL\Type\Scalar\StringType;
 
-class PostStatus extends AbstractEnumType
-{
-    public function getValues()
-    {
-        return [
-            [
-                'value' => '0',
-                'name'  => 'DRAFT',
-            ],
-            [
-                'value' => '1',
-                'name'  => 'PUBLISHED',
-            ]
-        ];
-    }
 
-    public function getName()
-    {
-        return "PostStatus";
-    }
+require_once __DIR__ . '/../Schema/PostType.php';
+require_once __DIR__ . '/../Schema/PostStatus.php';
+require_once __DIR__ . '/../Schema/SummaryInterface.php';
 
-}
-
-class PostType extends AbstractObjectType
-{
-
-    public function resolve($value = null, $args = [])
-    {
-        return resolvePost();
-    }
-
-    public function build(TypeConfigInterface $config)
-    {
-        $config->addField('title', new NonNullType(new StringType()))
-               ->addField('summary', new StringType())
-               ->addField('status', new NonNullType(new PostStatus()))
-//               ->addField('status', new PostStatus())
-        ;
-        $config->addArgument('id', new IdType());
-    }
-
-    public function getName()
-    {
-        return "Post";
-    }
-
-}
 
 $rootQueryType = new ObjectType([
     'name' => 'RootQueryType',
 ]);
 $rootQueryType->getConfig()
               ->addField('latestPost', new PostType())
-              ->addField('post', new PostType());
+//              ->addField('post', new PostType())
+;

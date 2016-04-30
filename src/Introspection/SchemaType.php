@@ -54,10 +54,10 @@ class SchemaType extends AbstractObjectType
             ->addField('queryType', new QueryType())
             ->addField('mutationType', new MutationType())
             ->addField('subscriptionType', new ObjectType([
-                                                              'name'    => '__Subscription',
-                                                              'fields'  => ['name' => ['type' => TypeMap::TYPE_STRING]],
-                                                              'resolve' => function () { return []; }
-                                                          ]))
+                'name'    => '__Subscription',
+                'fields'  => ['name' => ['type' => TypeMap::TYPE_STRING]],
+                'resolve' => function () { return []; }
+            ]))
             ->addField('types', new QueryListType())
             ->addField('directives', new DirectiveListType());
     }

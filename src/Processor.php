@@ -20,12 +20,14 @@ use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
 use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Object\AbstractEnumType;
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\InputObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Parser\Ast\Field as QueryField;
+use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidatorInterface;
 
@@ -58,7 +60,8 @@ class Processor
 
     public function processQuery($queryString, $variables = [])
     {
-        $this->resolveValidator->clearErrors();
+        if ($this->resolveValidator->hasErrors()) return $this;
+
         $this->data = [];
 
         try {
@@ -406,6 +409,41 @@ class Processor
         return $value;
     }
 
+    protected function validateSchema(Schema $schema)
+    {
+        foreach($schema->getQueryType()->getConfig()->getFields() as $field) {
+            if ($field->getType() instanceof AbstractObjectType) {
+                $this->assertObjectImplementsInterface($field->getType());
+            }
+        }
+    }
+
+    protected function assertObjectImplementsInterface(AbstractObjectType $type)
+    {
+        if (!$type->getInterfaces()) return true;
+
+        foreach($type->getInterfaces() as $interface) {
+            foreach($interface->getConfig()->getFields() as $intField) {
+                $this->assertFieldsIdentical($intField, $type->getConfig()->getField($intField->getName()));
+            }
+        }
+    }
+
+    /**
+     * @param Field $fieldInterface
+     * @param Field $fieldObject
+     * @return bool
+     * @throws ConfigurationException
+     */
+    protected function assertFieldsIdentical($fieldInterface, $fieldObject)
+    {
+        if ($fieldInterface->getConfig()->getType() == $fieldObject->getConfig()->getType()) {
+            return true;
+        }
+
+        throw new ConfigurationException('Implementation of interface is invalid for the field: ' . $fieldObject->getName());
+    }
+
     public function getSchema()
     {
         return $this->schema;
@@ -413,15 +451,25 @@ class Processor
 
     public function setSchema(Schema $schema)
     {
-        $this->schema = $schema;
+        try {
+            $this->validateSchema($schema);
 
-        $__schema = new SchemaType();
-        $__schema->setSchema($schema);
+            $this->schema = $schema;
 
-        $__type = new TypeDefinitionType();
+            $__schema = new SchemaType();
+            $__schema->setSchema($schema);
 
-        $this->schema->addQuery('__schema', $__schema);
-        $this->schema->addQuery('__type', $__type);
+            $__type = new TypeDefinitionType();
+
+            $this->schema->addQuery('__schema', $__schema);
+            $this->schema->addQuery('__type', $__type);
+
+        } catch (\Exception $e) {
+            $this->resolveValidator->clearErrors();
+
+            $this->resolveValidator->addError($e);
+        }
+
     }
 
     /**
