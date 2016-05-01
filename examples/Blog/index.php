@@ -10,13 +10,8 @@ namespace BlogTest;
 
 use Youshido\GraphQL\Processor;
 use Youshido\GraphQL\Schema;
-use Youshido\GraphQL\Type\Config\TypeConfigInterface;
-use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
-use Youshido\GraphQL\Type\Scalar\IdType;
-use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
-use Youshido\Tests\Type\Union\Schema\QueryType;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 $rootQueryType = new ObjectType([

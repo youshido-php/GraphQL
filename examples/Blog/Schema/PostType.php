@@ -12,8 +12,6 @@ namespace Examples\Blog\Schema;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
-use Youshido\GraphQL\Type\Scalar\IdType;
-use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
 class PostType extends AbstractObjectType

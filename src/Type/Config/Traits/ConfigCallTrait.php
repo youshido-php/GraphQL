@@ -26,13 +26,11 @@ use Youshido\GraphQL\Type\Field\Field;
  * @method bool hasField($field)
  * @method bool isDeprecated()
  * @method string getDeprecationReason()
+ * @property Config $config
  *
  */
 trait ConfigCallTrait
 {
-    /** @var Config $config */
-    protected $config;
-
     public function __call($method, $arguments)
     {
         $propertyName = false;
