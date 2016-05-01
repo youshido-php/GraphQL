@@ -16,6 +16,7 @@ use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
 use Youshido\GraphQL\Parser\Parser;
+use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Object\AbstractEnumType;
 use Youshido\GraphQL\Type\Object\InputObjectType;
@@ -23,7 +24,7 @@ use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
-use Youshido\GraphQL\Parser\Ast\Field as QueryField;
+use Youshido\GraphQL\Parser\Ast\Field as AstField;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
@@ -129,97 +130,18 @@ class Processor
         }
 
         /** @var Field $field */
-        $field = $currentLevelSchema->getConfig()->getField($query->getName());
-        $value = null;
+        $field = $currentLevelSchema->getField($query->getName());
+        $alias = $query->getAlias() ?: $query->getName();;
 
-        if ($query instanceof QueryField) {
-            $alias            = $query->getAlias() ?: $query->getName();
-            $preResolvedValue = $this->getPreResolvedValue($contextValue, $query, $field);
-
-            if ($field->getConfig()->getType()->getKind() == TypeMap::KIND_LIST) {
-                if (!is_array($preResolvedValue)) {
-                    $value = null;
-                    $this->resolveValidator->addError(new ResolveException('Not valid resolve value for list type'));
-                }
-
-                $listValue = [];
-                foreach ($preResolvedValue as $resolvedValueItem) {
-                    /** @var TypeInterface $type */
-                    $type = $field->getType()->getConfig()->getItem();
-
-                    if ($type->getKind() == TypeMap::KIND_ENUM) {
-                        /** @var $type AbstractEnumType */
-                        if (!$type->isValidValue($resolvedValueItem)) {
-                            $this->resolveValidator->addError(new ResolveException('Not valid value for enum type'));
-
-                            $listValue = null;
-                            break;
-                        }
-
-                        $listValue[] = $type->resolve($resolvedValueItem);
-                    } else {
-                        /** @var AbstractScalarType $type */
-                        $listValue[] = $type->serialize($preResolvedValue);
-                    }
-                }
-
-                $value = $listValue;
-            } else {
-                if ($field->getType()->getKind() == TypeMap::KIND_ENUM) {
-                    if (!$field->getType()->isValidValue($preResolvedValue)) {
-                        $this->resolveValidator->addError(new ResolveException(sprintf('Not valid value for %s type', ($field->getType()->getKind()))));
-                        $value = null;
-                    } else {
-                        $value = $field->getType()->resolve($preResolvedValue);
-                    }
-                } elseif ($field->getType()->getKind() == TypeMap::KIND_NON_NULL) {
-                    if (!$field->getType()->isValidValue($preResolvedValue)) {
-                        $this->resolveValidator->addError(new ResolveException(sprintf('Cannot return null for non-nullable field %s', $query->getName() . '.' . $field->getName())));
-                    } elseif (!$field->getType()->getNullableType()->isValidValue($preResolvedValue)) {
-                        $this->resolveValidator->addError(new ResolveException(sprintf('Not valid value for %s field %s', $field->getType()->getNullableType()->getKind(), $field->getName())));
-                        $value = null;
-                    } else {
-                        $value = $preResolvedValue;
-                    }
-                } else {
-                    $value = $field->getType()->serialize($preResolvedValue);
-                }
-            }
+        if ($query instanceof AstField) {
+            $value = $this->processAstFieldQuery($query, $contextValue, $field);
         } else {
             if (!$this->resolveValidator->validateArguments($field, $query, $this->request)) {
                 return null;
             }
 
-            $resolvedValue = $this->resolveValue($field, $contextValue, $query);
-            $alias         = $query->hasAlias() ? $query->getAlias() : $query->getName();
+            $value = $this->processFieldQuery($query, $contextValue, $field);
 
-            if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $field->getType()->getKind())) {
-                $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolved value for query "%s"', $field->getType()->getName())));
-
-                return [$alias => null];
-            }
-
-            $value = [];
-            if ($resolvedValue) {
-                if ($field->getType()->getKind() == TypeMap::KIND_LIST) {
-                    foreach ($resolvedValue as $resolvedValueItem) {
-                        $value[] = [];
-                        $index   = count($value) - 1;
-
-                        if (in_array($field->getConfig()->getType()->getConfig()->getItem()->getKind(), [TypeMap::KIND_UNION, TypeMap::KIND_INTERFACE])) {
-                            $type = $field->getConfig()->getType()->getConfig()->getItemConfig()->resolveType($resolvedValueItem);
-                        } else {
-                            $type = $field->getType();
-                        }
-
-                        $value[$index] = $this->processQueryFields($query, $type, $resolvedValueItem, $value[$index]);
-                    }
-                } else {
-                    $value = $this->processQueryFields($query, $field->getType(), $resolvedValue, $value);
-                }
-            } else {
-                $value = $resolvedValue;
-            }
         }
 
         return [$alias => $value];
@@ -234,18 +156,17 @@ class Processor
     protected function executeMutation($mutation, $objectType)
     {
         if (!$this->resolveValidator->checkFieldExist($objectType, $mutation)) {
-
             return null;
         }
 
         /** @var Field $field */
         $field = $objectType->getConfig()->getField($mutation->getName());
+        $alias = $mutation->getAlias() ?: $mutation->getName();
 
         if (!$this->resolveValidator->validateArguments($field, $mutation, $this->request)) {
             return null;
         }
 
-        $alias         = $mutation->hasAlias() ? $mutation->getAlias() : $mutation->getName();
         $resolvedValue = $this->resolveValue($field, null, $mutation);
 
         if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $field->getType()->getKind())) {
@@ -262,47 +183,148 @@ class Processor
                 $outputType = $outputType->getConfig()->resolveType($resolvedValue);
             }
 
-            if ($outputType->getKind() == TypeMap::KIND_LIST) {
-                foreach ($resolvedValue as $resolvedValueItem) {
-                    $value[] = [];
-                    $index   = count($value) - 1;
-
-                    if (in_array($outputType->getConfig()->getItem()->getKind(), [TypeMap::KIND_UNION, TypeMap::KIND_INTERFACE])) {
-                        $type = $outputType->getConfig()->getItemConfig()->resolveType($resolvedValueItem);
-                    } else {
-                        $type = $outputType;
-                    }
-
-                    $value[$index] = $this->processQueryFields($mutation, $type, $resolvedValueItem, $value[$index]);
-                }
-            } else {
-                $value = $this->processQueryFields($mutation, $outputType, $resolvedValue, []);
-            }
+            $value = $this->collectListOrSingleValue($outputType, $resolvedValue, $mutation);
         }
 
         return [$alias => $value];
     }
 
     /**
-     * @param $value
-     * @param $query QueryField
-     * @param $field Field
+     * @param AstField $astField
+     * @param mixed    $contextValue
+     * @param Field    $field
+     * @return array|mixed|null
+     * @throws \Exception
+     */
+    protected function processAstFieldQuery($astField, $contextValue, $field)
+    {
+        $value            = null;
+        $preResolvedValue = $this->getPreResolvedValue($contextValue, $astField, $field);
+
+        if ($field->getConfig()->getType()->getKind() == TypeMap::KIND_LIST) {
+            if (!is_array($preResolvedValue)) {
+                $value = null;
+                $this->resolveValidator->addError(new ResolveException('Not valid resolve value for list type'));
+            }
+
+            $listValue = [];
+            foreach ($preResolvedValue as $resolvedValueItem) {
+                /** @var TypeInterface $type */
+                $type = $field->getType()->getConfig()->getItem();
+
+                if ($type->getKind() == TypeMap::KIND_ENUM) {
+                    /** @var $type AbstractEnumType */
+                    if (!$type->isValidValue($resolvedValueItem)) {
+                        $this->resolveValidator->addError(new ResolveException('Not valid value for enum type'));
+
+                        $listValue = null;
+                        break;
+                    }
+
+                    $listValue[] = $type->resolve($resolvedValueItem);
+                } else {
+                    /** @var AbstractScalarType $type */
+                    $listValue[] = $type->serialize($preResolvedValue);
+                }
+            }
+
+            $value = $listValue;
+        } else {
+            if ($field->getType()->getKind() == TypeMap::KIND_ENUM) {
+                if (!$field->getType()->isValidValue($preResolvedValue)) {
+                    $this->resolveValidator->addError(new ResolveException(sprintf('Not valid value for %s type', ($field->getType()->getKind()))));
+                    $value = null;
+                } else {
+                    $value = $field->getType()->resolve($preResolvedValue);
+                }
+            } elseif ($field->getType()->getKind() == TypeMap::KIND_NON_NULL) {
+                if (!$field->getType()->isValidValue($preResolvedValue)) {
+                    $this->resolveValidator->addError(new ResolveException(sprintf('Cannot return null for non-nullable field %s', $astField->getName() . '.' . $field->getName())));
+                } elseif (!$field->getType()->getNullableType()->isValidValue($preResolvedValue)) {
+                    $this->resolveValidator->addError(new ResolveException(sprintf('Not valid value for %s field %s', $field->getType()->getNullableType()->getKind(), $field->getName())));
+                    $value = null;
+                } else {
+                    $value = $preResolvedValue;
+                }
+            } else {
+                $value = $field->getType()->serialize($preResolvedValue);
+            }
+        }
+
+        return $value;
+    }
+
+    /**
+     * @param       $query
+     * @param mixed $contextValue
+     * @param Field $field
+     * @return null
+     * @throws \Exception
+     */
+    protected function processFieldQuery($query, $contextValue, $field)
+    {
+        if (!($resolvedValue = $this->resolveValue($field, $contextValue, $query))) {
+            return $resolvedValue;
+        }
+
+        if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $field->getType()->getKind())) {
+            $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolved value for query "%s"', $field->getType()->getName())));
+
+            return null;
+        }
+
+        return $this->collectListOrSingleValue($field->getType(), $resolvedValue, $query);
+    }
+
+    /**
+     * @param AbstractType   $fieldType
+     * @param mixed          $resolvedValue
+     * @param Query|Mutation $query
+     * @return array|mixed
+     * @throws \Exception
+     */
+    protected function collectListOrSingleValue($fieldType, $resolvedValue, $query)
+    {
+        $value = [];
+        if ($fieldType->getKind() == TypeMap::KIND_LIST) {
+            foreach ($resolvedValue as $resolvedValueItem) {
+                $value[]   = [];
+                $index     = count($value) - 1;
+                $namedType = $fieldType->getNamedType();
+
+                if (in_array($namedType->getKind(), [TypeMap::KIND_UNION, TypeMap::KIND_INTERFACE])) {
+                    $namedType = $namedType->getConfig()->resolveType($resolvedValueItem);
+                }
+
+                $value[$index] = $this->processQueryFields($query, $namedType, $resolvedValueItem, $value[$index]);
+            }
+        } else {
+            $value = $this->processQueryFields($query, $fieldType, $resolvedValue, $value);
+        }
+
+        return $value;
+    }
+
+    /**
+     * @param          $value
+     * @param AstField $astField
+     * @param Field    $field
      *
      * @throws \Exception
      *
      * @return mixed
      */
-    protected function getPreResolvedValue($value, $query, $field)
+    protected function getPreResolvedValue($value, $astField, $field)
     {
         $resolved      = false;
         $resolverValue = null;
 
-        if (is_array($value) && array_key_exists($query->getName(), $value)) {
-            $resolverValue = $value[$query->getName()];
+        if (is_array($value) && array_key_exists($astField->getName(), $value)) {
+            $resolverValue = $value[$astField->getName()];
             $resolved      = true;
         } elseif (is_object($value)) {
             try {
-                $resolverValue = $this->getPropertyValue($value, $query->getName());
+                $resolverValue = $this->getPropertyValue($value, $astField->getName());
                 $resolved      = true;
             } catch (\Exception $e) {
             }
@@ -317,7 +339,7 @@ class Processor
             return $resolverValue;
         }
 
-        throw new \Exception(sprintf('Property "%s" not found in resolve result', $query->getName()));
+        throw new \Exception(sprintf('Property "%s" not found in resolve result', $astField->getName()));
     }
 
     protected function getPropertyValue($data, $path)

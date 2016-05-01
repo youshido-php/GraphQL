@@ -12,6 +12,5 @@ use Youshido\GraphQL\Type\Traits\FinalTypesConfigTrait;
 
 final class InputObjectType extends AbstractInputObjectType
 {
-
     use FinalTypesConfigTrait;
 }

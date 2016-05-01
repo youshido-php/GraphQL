@@ -86,14 +86,23 @@ class Config
     public function __call($method, $arguments)
     {
         $propertyName = false;
+        $setter = false;
 
         if (substr($method, 0, 3) == 'get') {
             $propertyName = lcfirst(substr($method, 3));
+        } elseif (substr($method, 0, 3) == 'set') {
+            $propertyName = lcfirst(substr($method, 3));
+            $setter = true;
         } elseif (substr($method, 0, 2) == 'is') {
             $propertyName = lcfirst(substr($method, 2));
         }
         if ($propertyName !== false) {
-            return $this->get($propertyName);
+            if ($setter) {
+                $this->set($propertyName, $arguments[0]);
+                return $this;
+            } else {
+                return $this->get($propertyName);
+            }
         }
 
         throw new \Exception('Call to undefined method ' . $method);

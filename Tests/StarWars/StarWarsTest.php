@@ -29,7 +29,8 @@ class StarWarsTest extends \PHPUnit_Framework_TestCase
 
         $processor->processRequest($query, $variables);
 
-        $this->assertEquals($processor->getResponseData(), $validResult);
+        $responseData = $processor->getResponseData();
+        $this->assertEquals($responseData, $validResult);
     }
 
     public function testInvalidVariableType()

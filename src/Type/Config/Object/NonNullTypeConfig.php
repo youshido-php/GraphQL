@@ -22,25 +22,6 @@ class NonNullTypeConfig extends ObjectTypeConfig
     }
 
     /**
-     * @param $name
-     * @return Field
-     */
-    public function getField($name)
-    {
-        return $this->getItemConfig()->getField($name);
-    }
-
-    public function hasField($name)
-    {
-        return $this->getItemConfig()->hasField($name);
-    }
-
-    public function getFields()
-    {
-        return $this->getItemConfig()->getFields();
-    }
-
-    /**
      * @return ObjectTypeConfig
      */
     public function getItemConfig()

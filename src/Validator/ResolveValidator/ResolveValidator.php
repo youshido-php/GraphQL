@@ -34,13 +34,7 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
      */
     public function checkFieldExist($objectType, $field)
     {
-        if (!$objectType->getConfig()->hasField($field->getName())) {
-//            if ($objectType->getKind() == TypeMap::KIND_LIST) {
-//                $name = $objectType->getConfig()->getItem()->getName();
-//            } else {
-//                $name = $objectType->getName();
-//            }
-
+        if (!$objectType->hasField($field->getName())) {
             $this->addError(new ResolveException(sprintf('Field "%s" not found in type "%s"', $field->getName(), $objectType->getNamedType()->getName())));
 
             return false;
@@ -54,6 +48,8 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
      */
     public function validateArguments($field, $query, $request)
     {
+        if (!count($field->getConfig()->getArguments())) return true;
+
         $requiredArguments = array_filter($field->getConfig()->getArguments(), function (InputField $argument) {
             return $argument->getConfig()->get('required');
         });

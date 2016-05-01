@@ -11,13 +11,22 @@ namespace Youshido\GraphQL\Type\Object;
 
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Config\Object\ObjectTypeConfig;
+use Youshido\GraphQL\Type\Config\Traits\ConfigCallTrait;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
+use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 
+/**
+ * Class AbstractObjectType
+ * @package Youshido\GraphQL\Type\Object
+ *
+ * @method bool hasField($field)
+ * @method Field getField($field)
+ */
 abstract class AbstractObjectType extends AbstractType
 {
-
+    use ConfigCallTrait;
     /**
      * ObjectType constructor.
      * @param $config
@@ -44,7 +53,6 @@ abstract class AbstractObjectType extends AbstractType
             $this->build($this->config);
         }
     }
-
 
     public function parseValue($value)
     {

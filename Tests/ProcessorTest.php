@@ -107,11 +107,11 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param $query
-     * @param $response
+     * @param $expectedResponse
      *
      * @dataProvider predefinedSchemaProvider
      */
-    public function testPredefinedQueries($query, $response)
+    public function testPredefinedQueries($query, $expectedResponse)
     {
         $schema = new Schema([
             'query' => new ObjectType([
@@ -149,8 +149,9 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->setSchema($schema);
 
         $processor->processRequest($query);
+        $responseData = $processor->getResponseData();
 
-        $this->assertEquals($processor->getResponseData(), $response);
+        $this->assertEquals($responseData, $expectedResponse);
     }
 
     public function predefinedSchemaProvider()
