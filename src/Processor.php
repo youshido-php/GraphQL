@@ -78,7 +78,7 @@ class Processor
         $this->schema->addQuery('__type', $__type);
     }
 
-    public function processRequest($payload, $variables = [])
+    public function     processRequest($payload, $variables = [])
     {
         if ($this->hasErrors()) return $this;
 
@@ -132,7 +132,7 @@ class Processor
 
         /** @var Field $field */
         $field = $currentLevelSchema->getField($query->getName());
-        $alias = $query->getAlias() ?: $query->getName();;
+        $alias = $query->getAlias() ?: $query->getName();
 
         if ($query instanceof AstField) {
             $value = $this->processAstFieldQuery($query, $contextValue, $field);
@@ -329,6 +329,9 @@ class Processor
                 $resolved      = true;
             } catch (\Exception $e) {
             }
+        } elseif ($field->getNamedType()->getKind() == TypeMap::KIND_SCALAR) {
+//            $resolverValue = $field->getConfig()->resolve();
+            $resolved      = true;
         }
 
         if ($resolved) {

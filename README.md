@@ -16,7 +16,7 @@ Current package is and will be trying to keep up with the latest revision of the
 ## Getting started
 
 You should be better off starting with some examples, and everybody's using Star Wars trilogy as a domain of knowledge in their examples.
-We have that too and if you looking for just that – go directly by this link – [Star Wars example](http://github.com/youshido/graphql/tests/starwars).
+We have that too and if you looking for just that – go directly by this link – [Star Wars example](https://github.com/Youshido/GraphQL/Tests/StarWars).
 On the other hand we believe it's easier to start with something more common so let's get started.
  
 ### Installation
@@ -31,6 +31,50 @@ Add the following package to your `composer.json` and run `composer update`
      }
  }
  ```
+ 
+Let's check if everything is good by setting up a simple schema that will return current time.
+You can find this example in the examples directory – [01_sandbox](https://github.com/Youshido/GraphQL/examples/01_sandbox).
+```php
+<?php
+namespace Sandbox;
+
+use Youshido\GraphQL\Processor;
+use Youshido\GraphQL\Schema;
+use Youshido\GraphQL\Type\Object\ObjectType;
+use Youshido\GraphQL\Type\Scalar\StringType;
+
+require_once 'vendor/autoload.php';
+
+$processor = new Processor();
+$processor->setSchema(new Schema([
+    'query' => new ObjectType([
+        'name' => 'RootQueryType',
+        'fields' => [
+            'currentTime' => [
+                'type' => new StringType(),
+                'resolve' => function() {
+                    return date('Y-m-d H:ia');
+                }
+            ]
+        ]
+    ])
+]));
+
+$res = $processor->processRequest('{ currentTime }')->getResponseData();
+print_r($res);
+ 
+```
+
+If everything was set up correctly – you should see response with your current time:
+ ```
+ { "data":
+    { 
+       "currentTime": "2016-05-01 19:27pm"
+    }
+ }
+ ```
+ 
+If not – check that you have the latest composer version and that you've created your test file in the same directory you have `vendor` folder in.
 
 ## Usage
 

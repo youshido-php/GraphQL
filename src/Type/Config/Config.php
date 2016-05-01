@@ -61,6 +61,16 @@ class Config
         return [];
     }
 
+    public function getType()
+    {
+        return $this->get('type');
+    }
+
+    public function getNamedType()
+    {
+        return $this->getType();
+    }
+
     protected function build()
     {
     }

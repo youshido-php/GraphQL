@@ -36,4 +36,9 @@ class Field
     {
         return $this->config;
     }
+
+    public function checkBuild()
+    {
+
+    }
 }
