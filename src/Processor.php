@@ -54,13 +54,14 @@ class Processor
     public function __construct()
     {
         $this->resolveValidator = new ResolveValidator();
-        $this->schemaValidator = new SchemaValidator();
+        $this->schemaValidator  = new SchemaValidator();
     }
 
     public function setSchema(Schema $schema)
     {
         if (!$this->schemaValidator->validate($schema)) {
             $this->mergeErrors($this->schemaValidator);
+
             return;
         }
 
@@ -84,26 +85,24 @@ class Processor
         try {
             $this->parseAndCreateRequest($payload, $variables);
 
-            if ($this->request->hasQueries()) {
-                foreach ($this->request->getQueries() as $query) {
-                    if ($queryResult = $this->executeQuery($query, $this->getSchema()->getQueryType())) {
-                        $this->data = array_merge($this->data, $queryResult);
-                    };
+            foreach ($this->request->getQueries() as $query) {
+                if ($queryResult = $this->executeQuery($query, $this->getSchema()->getQueryType())) {
+                    $this->data = array_merge($this->data, $queryResult);
+                };
+            }
+
+            foreach ($this->request->getMutations() as $mutation) {
+                if ($mutationResult = $this->executeMutation($mutation, $this->getSchema()->getMutationType())) {
+                    $this->data = array_merge($this->data, $mutationResult);
                 }
             }
 
-            if ($this->request->hasMutations()) {
-                foreach ($this->request->getMutations() as $mutation) {
-                    if ($mutationResult = $this->executeMutation($mutation, $this->getSchema()->getMutationType())) {
-                        $this->data = array_merge($this->data, $mutationResult);
-                    }
-                }
-            }
         } catch (\Exception $e) {
             $this->resolveValidator->clearErrors();
 
             $this->resolveValidator->addError($e);
         }
+
         return $this;
     }
 
@@ -131,6 +130,7 @@ class Processor
 
         /** @var Field $field */
         $field = $currentLevelSchema->getConfig()->getField($query->getName());
+        $value = null;
 
         if ($query instanceof QueryField) {
             $alias            = $query->getAlias() ?: $query->getName();
@@ -310,7 +310,7 @@ class Processor
 
         if ($resolved) {
             if ($field->getConfig() && ($field->getConfig()->issetResolve())) {
-                $resolverFunc = $field->getConfig()->getResolveFunction();
+                $resolverFunc  = $field->getConfig()->getResolveFunction();
                 $resolverValue = $resolverFunc($resolverValue, []);
             }
 
@@ -324,16 +324,18 @@ class Processor
     {
         if (is_object($data)) {
             $getter = 'get' . $this->classify($path);
+
             return is_callable([$data, $getter]) ? $data->$getter() : null;
-        } elseif(is_array($data)) {
+        } elseif (is_array($data)) {
             return array_key_exists($path, $data) ? $data[$path] : null;
         }
+
         return null;
     }
 
     protected function classify($text)
     {
-        $text = explode(' ', str_replace(array('_', '/', '-', '.'), ' ', $text));
+        $text = explode(' ', str_replace(['_', '/', '-', '.'], ' ', $text));
         for ($i = 0; $i < count($text); $i++) {
             $text[$i] = ucfirst($text[$i]);
         }
@@ -448,9 +450,13 @@ class Processor
             $result['data'] = $this->data;
         }
 
+        $this->mergeErrors($this->resolveValidator);
         if ($this->hasErrors()) {
             $result['errors'] = $this->getErrorsArray();
         }
+        $this->clearErrors();
+        $this->resolveValidator->clearErrors();
+        $this->schemaValidator->clearErrors();
 
         return $result;
     }

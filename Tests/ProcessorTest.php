@@ -144,8 +144,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             ]
         );
 
-        $validator = new ResolveValidator();
-        $processor = new Processor($validator);
+        $processor = new Processor();
 
         $processor->setSchema($schema);
 
