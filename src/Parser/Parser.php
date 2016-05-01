@@ -34,8 +34,11 @@ class Parser extends Tokenizer
     /** @var array */
     protected $variableTypeUsage = [];
 
-    public function parse()
+    public function parse($source = null)
     {
+        if ($source) {
+            $this->setSource($source);
+        }
         $data = ['queries' => [], 'mutations' => [], 'fragments' => []];
 
         while (!$this->end()) {

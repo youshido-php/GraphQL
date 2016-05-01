@@ -13,7 +13,7 @@ use Youshido\GraphQL\Request;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerInterface;
 
-interface ResolveValidatorInterface extends ErrorContainerInterface
+interface ResolveValidatorInterface
 {
 
     /**

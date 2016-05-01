@@ -26,7 +26,7 @@ class UnionResolveTest extends \PHPUnit_Framework_TestCase
         $processor = new Processor(new ResolveValidator());
         $processor->setSchema(new Schema());
 
-        $processor->processQuery($query);
+        $processor->processRequest($query);
 
         $this->assertEquals($processor->getResponseData(), $response);
     }

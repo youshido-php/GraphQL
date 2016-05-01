@@ -13,6 +13,8 @@ interface ErrorContainerInterface
 
     public function addError(\Exception $exception);
 
+    public function mergeErrors(ErrorContainerInterface $errorContainer);
+
     public function hasErrors();
 
     public function getErrors();

@@ -27,7 +27,7 @@ class StarWarsTest extends \PHPUnit_Framework_TestCase
         $processor = new Processor(new ResolveValidator());
         $processor->setSchema(new Schema());
 
-        $processor->processQuery($query, $variables);
+        $processor->processRequest($query, $variables);
 
         $this->assertEquals($processor->getResponseData(), $validResult);
     }
@@ -37,7 +37,7 @@ class StarWarsTest extends \PHPUnit_Framework_TestCase
         $processor = new Processor(new ResolveValidator());
         $processor->setSchema(new Schema());
 
-        $processor->processQuery(
+        $processor->processRequest(
             'query($someId: Int){
                 human(id: $someId) {
                     name

@@ -38,6 +38,6 @@ $processor->setSchema(new Schema([
     'query' => $rootQueryType
 ]));
 
-$res = $processor->processQuery('{ latestPost { title, summary } }')->getResponseData();
+$res = $processor->processRequest('{ latestPost { title, summary } }')->getResponseData();
 print_r($res);
 echo "\n\n";

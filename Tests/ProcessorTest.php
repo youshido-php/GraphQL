@@ -20,10 +20,10 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
     public function testGoogleExtensionQuery()
     {
-        $processor = new Processor(new ResolveValidator());
+        $processor = new Processor();
         $processor->setSchema(new Schema());
 
-        $processor->processQuery('
+        $processor->processRequest('
             query IntrospectionQuery {
                 __schema {
                     queryType { name }
@@ -149,7 +149,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $processor->setSchema($schema);
 
-        $processor->processQuery($query);
+        $processor->processRequest($query);
 
         $this->assertEquals($processor->getResponseData(), $response);
     }
@@ -302,7 +302,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor = new Processor($validator);
 
         $processor->setSchema($schema);
-        $processor->processQuery($query);
+        $processor->processRequest($query);
 
         $this->assertEquals(
             $processor->getResponseData(),

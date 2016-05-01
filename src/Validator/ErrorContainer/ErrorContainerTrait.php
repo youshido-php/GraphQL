@@ -19,6 +19,8 @@ trait ErrorContainerTrait
     public function addError(\Exception $exception)
     {
         $this->errors[] = $exception;
+
+        return $this;
     }
 
     public function hasErrors()
@@ -29,6 +31,17 @@ trait ErrorContainerTrait
     public function getErrors()
     {
         return $this->errors;
+    }
+
+    public function mergeErrors(ErrorContainerInterface $errorContainer)
+    {
+        if ($errorContainer->hasErrors()) {
+            foreach ($errorContainer->getErrors() as $error) {
+                $this->addError($error);
+            }
+        }
+
+        return $this;
     }
 
     public function getErrorsArray($asObject = true)

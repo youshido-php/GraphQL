@@ -9,8 +9,6 @@
 
 namespace Youshido\GraphQL;
 
-use Symfony\Component\PropertyAccess\PropertyAccess;
-use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Youshido\GraphQL\Introspection\SchemaType;
 use Youshido\GraphQL\Introspection\TypeDefinitionType;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
@@ -20,19 +18,21 @@ use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
 use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Object\AbstractEnumType;
-use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\InputObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Parser\Ast\Field as QueryField;
-use Youshido\GraphQL\Validator\Exception\ConfigurationException;
+use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
+use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidatorInterface;
+use Youshido\GraphQL\Validator\SchemaValidator\SchemaValidator;
 
 class Processor
 {
+    use ErrorContainerTrait;
 
     const TYPE_NAME_QUERY = '__typename';
 
@@ -42,30 +42,47 @@ class Processor
     /** @var ResolveValidatorInterface */
     protected $resolveValidator;
 
+    /** @var SchemaValidator */
+    protected $schemaValidator;
+
     /** @var Schema */
     protected $schema;
-
-    /** @var PropertyAccessor */
-    protected $propertyAccessor;
 
     /** @var Request */
     protected $request;
 
-    public function __construct(ResolveValidatorInterface $validator)
+    public function __construct()
     {
-        $this->resolveValidator = $validator;
-
-        $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
+        $this->resolveValidator = new ResolveValidator();
+        $this->schemaValidator = new SchemaValidator();
     }
 
-    public function processQuery($queryString, $variables = [])
+    public function setSchema(Schema $schema)
     {
-        if ($this->resolveValidator->hasErrors()) return $this;
+        if (!$this->schemaValidator->validate($schema)) {
+            $this->mergeErrors($this->schemaValidator);
+            return;
+        }
+
+        $this->schema = $schema;
+
+        $__schema = new SchemaType();
+        $__schema->setSchema($schema);
+
+        $__type = new TypeDefinitionType();
+
+        $this->schema->addQuery('__schema', $__schema);
+        $this->schema->addQuery('__type', $__type);
+    }
+
+    public function processRequest($payload, $variables = [])
+    {
+        if ($this->hasErrors()) return $this;
 
         $this->data = [];
 
         try {
-            $this->parseAndCreateRequest($queryString, $variables);
+            $this->parseAndCreateRequest($payload, $variables);
 
             if ($this->request->hasQueries()) {
                 foreach ($this->request->getQueries() as $query) {
@@ -90,70 +107,11 @@ class Processor
         return $this;
     }
 
-    /**
-     * @param Mutation        $mutation
-     * @param InputObjectType $objectType
-     *
-     * @return array|bool|mixed
-     */
-    protected function executeMutation($mutation, $objectType)
-    {
-        if (!$this->checkFieldExist($objectType, $mutation)) {
-
-            return null;
-        }
-
-        /** @var Field $field */
-        $field = $objectType->getConfig()->getField($mutation->getName());
-
-        if (!$this->resolveValidator->validateArguments($field, $mutation, $this->request)) {
-            return null;
-        }
-
-        $alias         = $mutation->hasAlias() ? $mutation->getAlias() : $mutation->getName();
-        $resolvedValue = $this->resolveValue($field, null, $mutation);
-
-        if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $field->getType()->getKind())) {
-            $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolved value for mutation "%s"', $field->getType()->getName())));
-
-            return [$alias => null];
-        }
-
-        $value = null;
-        if ($mutation->hasFields()) {
-            $outputType = $field->getType()->getOutputType();
-
-            if ($outputType && in_array($outputType->getKind(), [TypeMap::KIND_INTERFACE, TypeMap::KIND_UNION])) {
-                $outputType = $outputType->getConfig()->resolveType($resolvedValue);
-            }
-
-            if ($outputType->getKind() == TypeMap::KIND_LIST) {
-                foreach ($resolvedValue as $resolvedValueItem) {
-                    $value[] = [];
-                    $index   = count($value) - 1;
-
-                    if (in_array($outputType->getConfig()->getItem()->getKind(), [TypeMap::KIND_UNION, TypeMap::KIND_INTERFACE])) {
-                        $type = $outputType->getConfig()->getItemConfig()->resolveType($resolvedValueItem);
-                    } else {
-                        $type = $outputType;
-                    }
-
-                    $value[$index] = $this->processQueryFields($mutation, $type, $resolvedValueItem, $value[$index]);
-                }
-            } else {
-                $value = $this->processQueryFields($mutation, $outputType, $resolvedValue, []);
-            }
-        }
-
-        return [$alias => $value];
-    }
-
     protected function parseAndCreateRequest($query, $variables = [])
     {
         $parser = new Parser();
 
-        $parser->setSource($query);
-        $data = $parser->parse();
+        $data = $parser->parse($query);
 
         $this->request = new Request($data);
         $this->request->setVariables($variables);
@@ -167,12 +125,13 @@ class Processor
      */
     protected function executeQuery($query, $currentLevelSchema, $contextValue = null)
     {
-        if (!$this->checkFieldExist($currentLevelSchema, $query)) {
+        if (!$this->resolveValidator->checkFieldExist($currentLevelSchema, $query)) {
             return null;
         }
 
         /** @var Field $field */
         $field = $currentLevelSchema->getConfig()->getField($query->getName());
+
         if ($query instanceof QueryField) {
             $alias            = $query->getAlias() ?: $query->getName();
             $preResolvedValue = $this->getPreResolvedValue($contextValue, $query, $field);
@@ -215,7 +174,7 @@ class Processor
                     }
                 } elseif ($field->getType()->getKind() == TypeMap::KIND_NON_NULL) {
                     if (!$field->getType()->isValidValue($preResolvedValue)) {
-                        $this->resolveValidator->addError(new ResolveException(sprintf('Null value returned for a non nullable field %s', ($field->getName()))));
+                        $this->resolveValidator->addError(new ResolveException(sprintf('Cannot return null for non-nullable field %s', $query->getName() . '.' . $field->getName())));
                     } elseif (!$field->getType()->getNullableType()->isValidValue($preResolvedValue)) {
                         $this->resolveValidator->addError(new ResolveException(sprintf('Not valid value for %s field %s', $field->getType()->getNullableType()->getKind(), $field->getName())));
                         $value = null;
@@ -267,25 +226,61 @@ class Processor
     }
 
     /**
-     * @param $objectType InputObjectType|ObjectType
-     * @param $query      Mutation|Query
-     * @return null
+     * @param Mutation        $mutation
+     * @param InputObjectType $objectType
+     *
+     * @return array|bool|mixed
      */
-    private function checkFieldExist($objectType, $query)
+    protected function executeMutation($mutation, $objectType)
     {
-        if (!$objectType->getConfig()->hasField($query->getName())) {
-            if ($objectType->getKind() == TypeMap::KIND_LIST) {
-                $name = $objectType->getConfig()->getItem()->getName();
-            } else {
-                $name = $objectType->getName();
-            }
+        if (!$this->resolveValidator->checkFieldExist($objectType, $mutation)) {
 
-            $this->resolveValidator->addError(new ResolveException(sprintf('Field "%s" not found in type "%s"', $query->getName(), $name)));
-
-            return false;
+            return null;
         }
 
-        return true;
+        /** @var Field $field */
+        $field = $objectType->getConfig()->getField($mutation->getName());
+
+        if (!$this->resolveValidator->validateArguments($field, $mutation, $this->request)) {
+            return null;
+        }
+
+        $alias         = $mutation->hasAlias() ? $mutation->getAlias() : $mutation->getName();
+        $resolvedValue = $this->resolveValue($field, null, $mutation);
+
+        if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $field->getType()->getKind())) {
+            $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolved value for mutation "%s"', $field->getType()->getName())));
+
+            return [$alias => null];
+        }
+
+        $value = null;
+        if ($mutation->hasFields()) {
+            $outputType = $field->getType()->getOutputType();
+
+            if ($outputType && in_array($outputType->getKind(), [TypeMap::KIND_INTERFACE, TypeMap::KIND_UNION])) {
+                $outputType = $outputType->getConfig()->resolveType($resolvedValue);
+            }
+
+            if ($outputType->getKind() == TypeMap::KIND_LIST) {
+                foreach ($resolvedValue as $resolvedValueItem) {
+                    $value[] = [];
+                    $index   = count($value) - 1;
+
+                    if (in_array($outputType->getConfig()->getItem()->getKind(), [TypeMap::KIND_UNION, TypeMap::KIND_INTERFACE])) {
+                        $type = $outputType->getConfig()->getItemConfig()->resolveType($resolvedValueItem);
+                    } else {
+                        $type = $outputType;
+                    }
+
+                    $value[$index] = $this->processQueryFields($mutation, $type, $resolvedValueItem, $value[$index]);
+                }
+            } else {
+                $value = $this->processQueryFields($mutation, $outputType, $resolvedValue, []);
+            }
+        }
+
+        return [$alias => $value];
     }
 
     /**
@@ -307,7 +302,7 @@ class Processor
             $resolved      = true;
         } elseif (is_object($value)) {
             try {
-                $resolverValue = $this->propertyAccessor->getValue($value, $query->getName());
+                $resolverValue = $this->getPropertyValue($value, $query->getName());
                 $resolved      = true;
             } catch (\Exception $e) {
             }
@@ -323,6 +318,28 @@ class Processor
         }
 
         throw new \Exception(sprintf('Property "%s" not found in resolve result', $query->getName()));
+    }
+
+    protected function getPropertyValue($data, $path)
+    {
+        if (is_object($data)) {
+            $getter = 'get' . $this->classify($path);
+            return is_callable([$data, $getter]) ? $data->$getter() : null;
+        } elseif(is_array($data)) {
+            return array_key_exists($path, $data) ? $data[$path] : null;
+        }
+        return null;
+    }
+
+    protected function classify($text)
+    {
+        $text = explode(' ', str_replace(array('_', '/', '-', '.'), ' ', $text));
+        for ($i = 0; $i < count($text); $i++) {
+            $text[$i] = ucfirst($text[$i]);
+        }
+        $text = ucfirst(implode('', $text));
+
+        return $text;
     }
 
     /**
@@ -418,84 +435,9 @@ class Processor
         return $value;
     }
 
-    protected function validateSchema(Schema $schema)
-    {
-        foreach($schema->getQueryType()->getConfig()->getFields() as $field) {
-            if ($field->getType() instanceof AbstractObjectType) {
-                $this->assertObjectImplementsInterface($field->getType());
-            }
-        }
-    }
-
-    protected function assertObjectImplementsInterface(AbstractObjectType $type)
-    {
-        if (!$type->getInterfaces()) return true;
-
-        foreach($type->getInterfaces() as $interface) {
-            foreach($interface->getConfig()->getFields() as $intField) {
-                $this->assertFieldsIdentical($intField, $type->getConfig()->getField($intField->getName()), $interface);
-            }
-        }
-    }
-
-    /**
-     * @param Field $intField
-     * @param Field $objField
-     * @return bool
-     * @throws ConfigurationException
-     */
-    protected function assertFieldsIdentical($intField, $objField, $interface)
-    {
-        $intType = $intField->getConfig()->getType();
-        $objType = $objField->getConfig()->getType();
-
-        $isValid = true;
-        if ($intType->getName() != $objType->getName()) {
-            $isValid = false;
-        }
-        if ($intType->isCompositeType() && ($intType->getNamedType()->getName() != $objType->getNamedType()->getName())) {
-            $isValid = false;
-        }
-
-        if (!$isValid) {
-            throw new ConfigurationException(sprintf('Implementation of %s is invalid for the field %s', $interface->getName(), $objField->getName()));
-        }
-    }
-
     public function getSchema()
     {
         return $this->schema;
-    }
-
-    public function setSchema(Schema $schema)
-    {
-        try {
-            $this->validateSchema($schema);
-
-            $this->schema = $schema;
-
-            $__schema = new SchemaType();
-            $__schema->setSchema($schema);
-
-            $__type = new TypeDefinitionType();
-
-            $this->schema->addQuery('__schema', $__schema);
-            $this->schema->addQuery('__type', $__type);
-
-        } catch (\Exception $e) {
-            $this->resolveValidator->clearErrors();
-
-            $this->resolveValidator->addError($e);
-        }
-
-    }
-
-    /**
-     * @return ResolveValidatorInterface
-     */
-    public function getResolveValidator()
-    {
-        return $this->resolveValidator;
     }
 
     public function getResponseData()
@@ -506,8 +448,8 @@ class Processor
             $result['data'] = $this->data;
         }
 
-        if ($this->resolveValidator->hasErrors()) {
-            $result['errors'] = $this->resolveValidator->getErrorsArray();
+        if ($this->hasErrors()) {
+            $result['errors'] = $this->getErrorsArray();
         }
 
         return $result;

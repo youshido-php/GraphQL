@@ -9,18 +9,45 @@ namespace Youshido\GraphQL\Validator\ResolveValidator;
 
 
 use Youshido\GraphQL\Parser\Ast\Argument;
+use Youshido\GraphQL\Parser\Ast\Mutation;
+use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Value\Literal;
 use Youshido\GraphQL\Type\Field\InputField;
+use Youshido\GraphQL\Type\Object\InputObjectType;
+use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerInterface;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
 use Youshido\GraphQL\Parser\Value\Variable;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 
-class ResolveValidator implements ResolveValidatorInterface
+class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInterface
 {
 
     use ErrorContainerTrait;
+
+    /**
+     * @param $objectType InputObjectType|ObjectType
+     * @param $field      Mutation|Query
+     * @return null
+     */
+    public function checkFieldExist($objectType, $field)
+    {
+        if (!$objectType->getConfig()->hasField($field->getName())) {
+//            if ($objectType->getKind() == TypeMap::KIND_LIST) {
+//                $name = $objectType->getConfig()->getItem()->getName();
+//            } else {
+//                $name = $objectType->getName();
+//            }
+
+            $this->addError(new ResolveException(sprintf('Field "%s" not found in type "%s"', $field->getName(), $objectType->getNamedType()->getName())));
+
+            return false;
+        }
+
+        return true;
+    }
 
     /**
      * @inheritdoc

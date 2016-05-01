@@ -1,12 +1,6 @@
 <?php
 namespace BlogTest;
 
-/*
-* This file is a part of GraphQL project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 4/28/16 11:31 PM
-*/
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
@@ -23,7 +17,11 @@ $rootQueryType = new ObjectType([
                 'summary' => new StringType(),
             ],
             'resolve' => function () {
-                return resolvePost();
+                return [
+                    "title"   => "Interesting approach",
+                    "summary" => "This new GraphQL library for PHP works really well",
+                    "status"  => null,
+                ];
             }
         ])
     ]
