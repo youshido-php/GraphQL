@@ -16,6 +16,10 @@ use Youshido\GraphQL\Type\TypeMap;
 
 abstract class AbstractListType extends AbstractObjectType implements CompositeTypeInterface
 {
+    /**
+     * @var ListTypeConfig
+     */
+    protected $config;
 
     public function __construct($item = null)
     {
@@ -40,6 +44,17 @@ abstract class AbstractListType extends AbstractObjectType implements CompositeT
     {
 
     }
+
+    public function isCompositeType()
+    {
+        return true;
+    }
+
+    public function getNamedType()
+    {
+        return $this->getItem();
+    }
+
 
     /**
      * @return String type name

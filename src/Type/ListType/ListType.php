@@ -21,7 +21,7 @@ final class ListType extends AbstractListType
 
     public function getItem()
     {
-        throw new ConfigurationException('You must define type of List Item');
+        return $this->config->getItem();
     }
 
     public function getName()

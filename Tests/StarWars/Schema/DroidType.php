@@ -36,6 +36,11 @@ class DroidType extends HumanType
             ->addField('primaryFunction', TypeMap::TYPE_STRING);
     }
 
+    public function getInterfaces()
+    {
+        return [new CharacterInterface()];
+    }
+
     public function resolve($value = null, $args = [])
     {
         $droids = StarWarsData::droids();

@@ -43,6 +43,16 @@ abstract class AbstractType implements TypeInterface
         return false;
     }
 
+    public function getNamedType()
+    {
+        return $this;
+    }
+
+    public function getNullableType()
+    {
+        return $this;
+    }
+
     abstract public function checkBuild();
 
     public function parseValue($value)

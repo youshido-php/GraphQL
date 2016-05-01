@@ -40,6 +40,11 @@ class HumanType extends AbstractObjectType
             ->addArgument('id', TypeMap::TYPE_ID);
     }
 
+    public function getInterfaces()
+    {
+        return [new CharacterInterface()];
+    }
+
     /**
      * @return String type name
      */

@@ -46,6 +46,21 @@ class NonNullType extends AbstractType implements CompositeTypeInterface
         return $value !== null;
     }
 
+    public function isCompositeType()
+    {
+        return true;
+    }
+
+    public function getNamedType()
+    {
+        return $this->getTypeOf();
+    }
+
+    public function getNullableType()
+    {
+        return $this->getTypeOf();
+    }
+
     public function getTypeOf()
     {
         return $this->_typeOf;

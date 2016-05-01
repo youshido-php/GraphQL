@@ -206,12 +206,21 @@ class Processor
 
                 $value = $listValue;
             } else {
-                if ($field->getType()->getKind() == TypeMap::KIND_ENUM || $field->getType()->getKind() == TypeMap::KIND_NON_NULL) {
+                if ($field->getType()->getKind() == TypeMap::KIND_ENUM) {
                     if (!$field->getType()->isValidValue($preResolvedValue)) {
                         $this->resolveValidator->addError(new ResolveException(sprintf('Not valid value for %s type', ($field->getType()->getKind()))));
                         $value = null;
                     } else {
                         $value = $field->getType()->resolve($preResolvedValue);
+                    }
+                } elseif ($field->getType()->getKind() == TypeMap::KIND_NON_NULL) {
+                    if (!$field->getType()->isValidValue($preResolvedValue)) {
+                        $this->resolveValidator->addError(new ResolveException(sprintf('Null value returned for a non nullable field %s', ($field->getName()))));
+                    } elseif (!$field->getType()->getNullableType()->isValidValue($preResolvedValue)) {
+                        $this->resolveValidator->addError(new ResolveException(sprintf('Not valid value for %s field %s', $field->getType()->getNullableType()->getKind(), $field->getName())));
+                        $value = null;
+                    } else {
+                        $value = $preResolvedValue;
                     }
                 } else {
                     $value = $field->getType()->serialize($preResolvedValue);
@@ -424,24 +433,33 @@ class Processor
 
         foreach($type->getInterfaces() as $interface) {
             foreach($interface->getConfig()->getFields() as $intField) {
-                $this->assertFieldsIdentical($intField, $type->getConfig()->getField($intField->getName()));
+                $this->assertFieldsIdentical($intField, $type->getConfig()->getField($intField->getName()), $interface);
             }
         }
     }
 
     /**
-     * @param Field $fieldInterface
-     * @param Field $fieldObject
+     * @param Field $intField
+     * @param Field $objField
      * @return bool
      * @throws ConfigurationException
      */
-    protected function assertFieldsIdentical($fieldInterface, $fieldObject)
+    protected function assertFieldsIdentical($intField, $objField, $interface)
     {
-        if ($fieldInterface->getConfig()->getType() == $fieldObject->getConfig()->getType()) {
-            return true;
+        $intType = $intField->getConfig()->getType();
+        $objType = $objField->getConfig()->getType();
+
+        $isValid = true;
+        if ($intType->getName() != $objType->getName()) {
+            $isValid = false;
+        }
+        if ($intType->isCompositeType() && ($intType->getNamedType()->getName() != $objType->getNamedType()->getName())) {
+            $isValid = false;
         }
 
-        throw new ConfigurationException('Implementation of interface is invalid for the field: ' . $fieldObject->getName());
+        if (!$isValid) {
+            throw new ConfigurationException(sprintf('Implementation of %s is invalid for the field %s', $interface->getName(), $objField->getName()));
+        }
     }
 
     public function getSchema()
