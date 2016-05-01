@@ -66,11 +66,9 @@ print_r($res);
 ```
 
 If everything was set up correctly – you should see response with your current time:
- ```
- { "data":
-    { 
-       "currentTime": "2016-05-01 19:27pm"
-    }
+ ```js
+ { 
+    data: { currentTime: "2016-05-01 19:27pm" }
  }
  ```
  
