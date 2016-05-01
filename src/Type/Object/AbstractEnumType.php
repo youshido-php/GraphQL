@@ -22,7 +22,7 @@ abstract class AbstractEnumType extends AbstractType
     public function __construct($config = [])
     {
         if (empty($config)) {
-            $config['name'] = $this->getName();
+            $config['name']   = $this->getName();
             $config['values'] = $this->getValues();
         }
 

@@ -27,6 +27,7 @@ use Youshido\GraphQL\Validator\Exception\ResolveException;
 abstract class AbstractObjectType extends AbstractType
 {
     use ConfigCallTrait;
+
     /**
      * ObjectType constructor.
      * @param $config

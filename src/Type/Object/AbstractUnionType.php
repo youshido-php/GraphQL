@@ -51,7 +51,8 @@ abstract class AbstractUnionType extends AbstractType
 
     }
 
-    public function resolve($value = null, $args = []) {
+    public function resolve($value = null, $args = [])
+    {
 
     }
 

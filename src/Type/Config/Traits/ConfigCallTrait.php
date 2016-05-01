@@ -33,17 +33,19 @@ trait ConfigCallTrait
 {
     public function __call($method, $arguments)
     {
-        $propertyName = false;
+        $propertyName     = false;
         $passAlongMethods = ['hasField', 'addField', 'removeField', 'getFields', 'getField', 'getNamedType'];
 
         if (in_array($method, $passAlongMethods)) {
             $this->checkBuild();
+
             return call_user_func_array([$this->config, $method], $arguments);
         } elseif (substr($method, 0, 3) == 'get') {
             $propertyName = lcfirst(substr($method, 3));
         } elseif (substr($method, 0, 3) == 'set') {
             $propertyName = lcfirst(substr($method, 3));
             $this->config->set($propertyName, $arguments[0]);
+
             return $this;
         } elseif (substr($method, 0, 2) == 'is') {
             $propertyName = lcfirst(substr($method, 2));

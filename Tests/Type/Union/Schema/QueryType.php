@@ -24,7 +24,7 @@ class QueryType extends AbstractObjectType
     {
         $config
             ->addField('unionList', new ListType(new TestUnionType()), [
-                'resolve' => function() {
+                'resolve' => function () {
                     return UnionTestData::getList();
                 }
             ])

@@ -2,32 +2,32 @@ var urllib = require("url");
 
 module.exports.CookieJar = CookieJar;
 
-function CookieJar(options){
-    this.options = options || {};
-    this.options.sessionTimeout = this.options.sessionTimeout || 1800; // 30min
+function CookieJar(options) {
+    this.options                = options || {};
+    this.options.sessionTimeout = this.options.sessionTimeout || 1800; // 30min
 
     this.cookies = {};
 }
 
-CookieJar.prototype.addCookie = function(cookie){
+CookieJar.prototype.addCookie = function (cookie) {
 
-    if(!cookie || !cookie.name) return;
+    if (!cookie || !cookie.name) return;
 
     var lcookie;
 
-    if(!this.cookies[cookie.name]){
+    if (!this.cookies[cookie.name]) {
         this.cookies[cookie.name] = [];
     }
 
     // overwrite if has same params
-    for(var i=0, len=this.cookies[cookie.name].length; i<len; i++){
+    for (var i = 0, len = this.cookies[cookie.name].length; i < len; i++) {
         lcookie = this.cookies[cookie.name][i];
-        if(
+        if (
             lcookie.path == cookie.path &&
             lcookie.domain == cookie.domain &&
             lcookie.secure == cookie.secure &&
             lcookie.httponly == cookie.httponly
-        ){
+        ) {
             this.cookies[cookie.name][i] = cookie;
             return;
         }
@@ -36,16 +36,16 @@ CookieJar.prototype.addCookie = function(cookie){
     this.cookies[cookie.name].push(cookie);
 }
 
-CookieJar.prototype.getCookies = function(url){
-    var keys = Object.keys(this.cookies),
+CookieJar.prototype.getCookies = function (url) {
+    var keys            = Object.keys(this.cookies),
         cookie, cookies = [];
 
-    for(var i=0, len = keys.length; i<len; i++){
-        if(Array.isArray(this.cookies[keys[i]])){
-            for(var j=0, lenj = this.cookies[keys[i]].length; j<lenj; j++){
+    for (var i = 0, len = keys.length; i < len; i++) {
+        if (Array.isArray(this.cookies[keys[i]])) {
+            for (var j = 0, lenj = this.cookies[keys[i]].length; j < lenj; j++) {
                 cookie = this.cookies[keys[i]][j];
-                if(this.matchCookie(cookie, url)){
-                    cookies.push(cookie.name +"="+cookie.value);
+                if (this.matchCookie(cookie, url)) {
+                    cookies.push(cookie.name + "=" + cookie.value);
                 }
             }
         }
@@ -53,52 +53,52 @@ CookieJar.prototype.getCookies = function(url){
     return cookies.join("; ");
 }
 
-CookieJar.prototype.matchCookie = function(cookie, url){
+CookieJar.prototype.matchCookie = function (cookie, url) {
     var urlparts = urllib.parse(url || "", false, true),
         path;
 
     // check expire
-    if(cookie.expire){
-        if(cookie.expire.getTime() < Date.now()){
+    if (cookie.expire) {
+        if (cookie.expire.getTime() < Date.now()) {
             return;
         }
     }
 
     // check if hostname matches
-    if(urlparts.hostname && cookie._domain){
-        if(!(urlparts.hostname == cookie._domain || urlparts.hostname.substr(-(cookie._domain.length+1)) == "."+cookie._domain)){
+    if (urlparts.hostname && cookie._domain) {
+        if (!(urlparts.hostname == cookie._domain || urlparts.hostname.substr(-(cookie._domain.length + 1)) == "." + cookie._domain)) {
             return false;
         }
     }
 
     // check if path matches
-    if(cookie.path && urlparts.pathname){
+    if (cookie.path && urlparts.pathname) {
 
         path = (urlparts.pathname || "/").split("/");
         path.pop();
         path = path.join("/").trim();
-        if(path.substr(0,1)!="/"){
+        if (path.substr(0, 1) != "/") {
             path = "/" + path;
         }
-        if(path.substr(-1)!="/"){
+        if (path.substr(-1) != "/") {
             path += "/";
         }
 
-        if(path.substr(0, cookie.path.length) != cookie.path){
+        if (path.substr(0, cookie.path.length) != cookie.path) {
             return false;
         }
     }
 
     // check secure
-    if(cookie.secure && urlparts.protocol){
-        if(urlparts.protocol != "https:"){
+    if (cookie.secure && urlparts.protocol) {
+        if (urlparts.protocol != "https:") {
             return false;
         }
     }
 
     // check httponly
-    if(cookie.httponly && urlparts.protocol){
-        if(urlparts.protocol != "http:"){
+    if (cookie.httponly && urlparts.protocol) {
+        if (urlparts.protocol != "http:") {
             return false;
         }
     }
@@ -106,21 +106,21 @@ CookieJar.prototype.matchCookie = function(cookie, url){
     return true;
 }
 
-CookieJar.prototype.setCookie = function(cookie_str, url){
-    var parts = (cookie_str || "").split(";"),
-        cookie = {},
+CookieJar.prototype.setCookie = function (cookie_str, url) {
+    var parts    = (cookie_str || "").split(";"),
+        cookie   = {},
         urlparts = urllib.parse(url || "", false, true),
         path;
 
-    parts.forEach((function(part){
+    parts.forEach((function (part) {
         var key, val;
         part = part.split("=");
-        key = part.shift().trim();
-        val = part.join("=").trim();
+        key  = part.shift().trim();
+        val  = part.join("=").trim();
 
-        if(!key)return;
+        if (!key)return;
 
-        switch(key.toLowerCase()){
+        switch (key.toLowerCase()) {
 
             case "expires":
 
@@ -136,7 +136,7 @@ CookieJar.prototype.setCookie = function(cookie_str, url){
                 break;
 
             case "max-age":
-                cookie.expires = new Date(Date.now() + (Number(val) || 0)*1000);
+                cookie.expires = new Date(Date.now() + (Number(val) || 0) * 1000);
                 break;
 
             case "secure":
@@ -148,38 +148,38 @@ CookieJar.prototype.setCookie = function(cookie_str, url){
                 break;
 
             default:
-                if(!cookie.name){
-                    cookie.name = key;
+                if (!cookie.name) {
+                    cookie.name  = key;
                     cookie.value = val;
                 }
         }
     }).bind(this));
 
     // use current path when path is not specified
-    if(!cookie.path){
+    if (!cookie.path) {
         path = (urlparts.pathname || "/").split("/");
         path.pop();
         cookie.path = path.join("/").trim();
-        if(cookie.path.substr(0,1)!="/"){
+        if (cookie.path.substr(0, 1) != "/") {
             cookie.path = "/" + cookie.path;
         }
-        if(cookie.path.substr(-1)!="/"){
+        if (cookie.path.substr(-1) != "/") {
             cookie.path += "/";
         }
     }
 
     // if no expire date, then use sessionTimeout value
-    if(!cookie.expires){
-        cookie._expires = new Date(Date.now() + (Number(this.options.sessionTimeout) || 0)*1000);
-    }else{
+    if (!cookie.expires) {
+        cookie._expires = new Date(Date.now() + (Number(this.options.sessionTimeout) || 0) * 1000);
+    } else {
         cookie._expires = cookie.expires;
     }
 
-    if(!cookie.domain){
-        if(urlparts.hostname){
+    if (!cookie.domain) {
+        if (urlparts.hostname) {
             cookie._domain = urlparts.hostname;
         }
-    }else{
+    } else {
         cookie._domain = cookie.domain;
     }
 

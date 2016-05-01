@@ -27,7 +27,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
     public function testConfig()
     {
         $type = new EnumType([
-            'name' => 'Episode',
+            'name'   => 'Episode',
             'values' => [
                 'NEWHOPE' => [
                     'value'       => 4,

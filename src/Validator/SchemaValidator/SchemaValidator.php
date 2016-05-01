@@ -30,8 +30,10 @@ class SchemaValidator implements ErrorContainerInterface
             }
         } catch (\Exception $e) {
             $this->addError($e);
+
             return false;
         }
+
         return true;
     }
 

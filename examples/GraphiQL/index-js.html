@@ -22,7 +22,6 @@ Loading...
     var serverUri = 'http://localhost:8080/graphql';
 
 
-
     // Parse the search string to get url parameters.
     var search = window.location.search;
     var parameters = {};
@@ -68,9 +67,9 @@ Loading...
     // Defines a GraphQL fetcher using the fetch API.
     function graphQLFetcher(graphQLParams) {
         return fetch(serverUri, {
-            method     : 'post',
-            headers    : {'Content-Type': 'application/json'},
-            body       : JSON.stringify(graphQLParams),
+            method:      'post',
+            headers:     {'Content-Type': 'application/json'},
+            body:        JSON.stringify(graphQLParams),
             credentials: 'include'
         }).then(function (response) {
             return response.json()
@@ -80,10 +79,10 @@ Loading...
     // Render <GraphiQL /> into the body.
     ReactDOM.render(
             React.createElement(GraphiQL, {
-                fetcher        : graphQLFetcher,
-                query  : parameters.query,
-                variables: parameters.variables,
-                onEditQuery: onEditQuery,
+                fetcher:         graphQLFetcher,
+                query:           parameters.query,
+                variables:       parameters.variables,
+                onEditQuery:     onEditQuery,
                 onEditVariables: onEditVariables
             }),
             document.body

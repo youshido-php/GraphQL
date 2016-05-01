@@ -21,14 +21,14 @@ class TypeMapTest extends \PHPUnit_Framework_TestCase
 
     public function testScalarTypeCheck()
     {
-        foreach($this->getScalarTypes() as $type) {
+        foreach ($this->getScalarTypes() as $type) {
             $this->assertTrue(TypeMap::isInputType($type));
         }
     }
 
     public function testScalarTypeObjectCreation()
     {
-        foreach($this->getScalarTypes() as $type) {
+        foreach ($this->getScalarTypes() as $type) {
             $object = TypeMap::getScalarTypeObject($type);
             $this->assertEquals($object->getKind(), TypeMap::KIND_SCALAR);
         }

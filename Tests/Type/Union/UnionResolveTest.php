@@ -66,7 +66,7 @@ class UnionResolveTest extends \PHPUnit_Framework_TestCase
                 [
                     'data' => [
                         'oneUnion' => [
-                            'name' => 'object one',
+                            'name'       => 'object one',
                             'secondName' => 'second name'
                         ]
                     ]

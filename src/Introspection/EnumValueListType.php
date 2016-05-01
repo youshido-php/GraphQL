@@ -24,13 +24,13 @@ class EnumValueListType extends AbstractListType
         if ($value && $value->getKind() == TypeMap::KIND_ENUM) {
             $data = [];
             foreach ($value->getValues() as $value) {
-                if(!array_key_exists('description', $value)){
+                if (!array_key_exists('description', $value)) {
                     $value['description'] = '';
                 }
-                if(!array_key_exists('isDeprecated', $value)){
+                if (!array_key_exists('isDeprecated', $value)) {
                     $value['isDeprecated'] = false;
                 }
-                if(!array_key_exists('deprecationReason', $value)){
+                if (!array_key_exists('deprecationReason', $value)) {
                     $value['deprecationReason'] = '';
                 }
 

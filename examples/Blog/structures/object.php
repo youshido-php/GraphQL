@@ -23,6 +23,5 @@ $rootQueryType = new ObjectType([
     'name' => 'RootQueryType',
 ]);
 $rootQueryType->getConfig()
-              ->addField('latestPost', new PostType())
-//              ->addField('post', new PostType())
+              ->addField('latestPost', new PostType())//              ->addField('post', new PostType())
 ;

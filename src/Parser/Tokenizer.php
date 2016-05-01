@@ -29,10 +29,8 @@ class Tokenizer
     {
         $this->skipWhitespace();
 
-        $lineStart = $this->lineStart;
-
         /** @var Token $token */
-        $token     = $this->scan();
+        $token = $this->scan();
 
         return $token;
     }
@@ -43,7 +41,7 @@ class Tokenizer
             $ch = $this->source[$this->pos];
             if ($ch === ' ' || $ch === "\t") {
                 $this->pos++;
-            } elseif($ch === '#') {
+            } elseif ($ch === '#') {
                 $this->pos++;
                 while (
                     $this->pos < strlen($this->source) &&
@@ -236,10 +234,10 @@ class Tokenizer
 
         $value = substr($this->source, $start, $this->pos - $start);
 
-        if(strpos($value, '.') === false){
-            $value = (int) $value;
+        if (strpos($value, '.') === false) {
+            $value = (int)$value;
         } else {
-            $value = (float) $value;
+            $value = (float)$value;
         }
 
         return new Token(Token::TYPE_NUMBER, $value);

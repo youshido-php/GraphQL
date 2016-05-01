@@ -28,7 +28,7 @@ class DroidType extends HumanType
     {
         parent::build($config);
 
-        $config->getField('friends')->getConfig()->set('resolve', function($droid){
+        $config->getField('friends')->getConfig()->set('resolve', function ($droid) {
             return StarWarsData::getFriends($droid);
         });
 

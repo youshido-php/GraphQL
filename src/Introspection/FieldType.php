@@ -24,10 +24,10 @@ class FieldType extends AbstractObjectType
             ->addField('isDeprecated', TypeMap::TYPE_BOOLEAN)
             ->addField('deprecationReason', TypeMap::TYPE_STRING)
             ->addField('type', new QueryType(), [
-                'resolve' => function($value, $args) {
+                'resolve' => function ($value, $args) {
                     /** @var $value Field */
-                    if($value->getType() instanceof AbstractMutationType) {
-                        return  $value->getType()->getOutputType();
+                    if ($value->getType() instanceof AbstractMutationType) {
+                        return $value->getType()->getOutputType();
                     }
 
                     return $value->getType();

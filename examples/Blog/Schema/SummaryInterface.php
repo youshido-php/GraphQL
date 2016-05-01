@@ -14,7 +14,8 @@ use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
-class SummaryInterface extends AbstractInterfaceType {
+class SummaryInterface extends AbstractInterfaceType
+{
 
     public function build(TypeConfigInterface $config)
     {

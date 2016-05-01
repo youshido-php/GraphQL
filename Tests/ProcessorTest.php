@@ -138,9 +138,9 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                     }
                 ]),
             [
-                'description' => 'latest description',
+                'description'       => 'latest description',
                 'deprecationReason' => 'for test',
-                'isDeprecated' => true,
+                'isDeprecated'      => true,
             ]
         );
 
@@ -192,8 +192,8 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                                 ['name' => 'String', 'fields' => null],
                                 ['name' => '__Schema', 'fields' => [['name' => 'queryType'], ['name' => 'mutationType'], ['name' => 'subscriptionType'], ['name' => 'types'], ['name' => 'directives']]],
                                 ['name' => '__Type', 'fields' => [['name' => 'name'], ['name' => 'kind'], ['name' => 'description'], ['name' => 'ofType'], ['name' => 'inputFields'], ['name' => 'enumValues'], ['name' => 'fields'], ['name' => 'interfaces'], ['name' => 'possibleTypes']]],
-                                ['name' => '__InputValue', 'fields' => [['name' => 'name'],['name' => 'description'],['name' => 'type'],['name' => 'defaultValue'],]],
-                                ['name' => '__EnumValue', 'fields' => [['name' => 'name'],['name' => 'description'],['name' => 'deprecationReason'],['name' => 'isDeprecated'],]],
+                                ['name' => '__InputValue', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'type'], ['name' => 'defaultValue'],]],
+                                ['name' => '__EnumValue', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'deprecationReason'], ['name' => 'isDeprecated'],]],
                                 ['name' => 'Boolean', 'fields' => null],
                                 ['name' => '__Field', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'isDeprecated'], ['name' => 'deprecationReason'], ['name' => 'type'], ['name' => 'args']]],
                                 ['name' => '__Subscription', 'fields' => [['name' => 'name']]],

@@ -21,7 +21,7 @@ class CharacterInterface extends AbstractInterfaceType
             ->addField('id', TypeMap::TYPE_ID, ['required' => true])
             ->addField('name', TypeMap::TYPE_STRING, ['required' => true])
             ->addField('friends', new ListType(new CharacterInterface()), [
-                'resolve' => function($value) {
+                'resolve' => function ($value) {
                     return $value['friends'];
                 }
             ])

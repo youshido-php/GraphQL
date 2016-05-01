@@ -13,10 +13,10 @@ class StarWarsData
     private static function luke()
     {
         return [
-            'id' => '1000',
-            'name' => 'Luke Skywalker',
-            'friends' => ['1002', '1003', '2000', '2001'],
-            'appearsIn' => [4, 5, 6],
+            'id'         => '1000',
+            'name'       => 'Luke Skywalker',
+            'friends'    => ['1002', '1003', '2000', '2001'],
+            'appearsIn'  => [4, 5, 6],
             'homePlanet' => 'Tatooine',
         ];
     }
@@ -24,10 +24,10 @@ class StarWarsData
     private static function vader()
     {
         return [
-            'id' => '1001',
-            'name' => 'Darth Vader',
-            'friends' => ['1004'],
-            'appearsIn' => [4, 5, 6],
+            'id'         => '1001',
+            'name'       => 'Darth Vader',
+            'friends'    => ['1004'],
+            'appearsIn'  => [4, 5, 6],
             'homePlanet' => 'Tatooine',
         ];
     }
@@ -35,9 +35,9 @@ class StarWarsData
     private static function han()
     {
         return [
-            'id' => '1002',
-            'name' => 'Han Solo',
-            'friends' => ['1000', '1003', '2001'],
+            'id'        => '1002',
+            'name'      => 'Han Solo',
+            'friends'   => ['1000', '1003', '2001'],
             'appearsIn' => [4, 5, 6],
         ];
     }
@@ -45,10 +45,10 @@ class StarWarsData
     private static function leia()
     {
         return [
-            'id' => '1003',
-            'name' => 'Leia Organa',
-            'friends' => ['1000', '1002', '2000', '2001'],
-            'appearsIn' => [4, 5, 6],
+            'id'         => '1003',
+            'name'       => 'Leia Organa',
+            'friends'    => ['1000', '1002', '2000', '2001'],
+            'appearsIn'  => [4, 5, 6],
             'homePlanet' => 'Alderaan',
         ];
     }
@@ -56,9 +56,9 @@ class StarWarsData
     private static function tarkin()
     {
         return [
-            'id' => '1004',
-            'name' => 'Wilhuff Tarkin',
-            'friends' => ['1001'],
+            'id'        => '1004',
+            'name'      => 'Wilhuff Tarkin',
+            'friends'   => ['1001'],
             'appearsIn' => [4],
         ];
     }
@@ -77,10 +77,10 @@ class StarWarsData
     private static function threepio()
     {
         return [
-            'id' => '2000',
-            'name' => 'C-3PO',
-            'friends' => ['1000', '1002', '1003', '2001'],
-            'appearsIn' => [4, 5, 6],
+            'id'              => '2000',
+            'name'            => 'C-3PO',
+            'friends'         => ['1000', '1002', '1003', '2001'],
+            'appearsIn'       => [4, 5, 6],
             'primaryFunction' => 'Protocol',
         ];
     }
@@ -93,10 +93,10 @@ class StarWarsData
     {
         return [
 
-            'id' => '2001',
-            'name' => 'R2-D2',
-            'friends' => ['1000', '1002', '1003'],
-            'appearsIn' => [4, 5, 6],
+            'id'              => '2001',
+            'name'            => 'R2-D2',
+            'friends'         => ['1000', '1002', '1003'],
+            'appearsIn'       => [4, 5, 6],
             'primaryFunction' => 'Astromech',
         ];
     }
@@ -122,6 +122,7 @@ class StarWarsData
         if (isset($droids[$id])) {
             return $droids[$id];
         }
+
         return null;
     }
 
@@ -135,6 +136,7 @@ class StarWarsData
             // Luke is the hero of Episode V.
             return self::luke();
         }
+
         // Artoo is the hero otherwise.
         return self::artoo();
     }
