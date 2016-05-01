@@ -34,7 +34,6 @@ class TypeValidationRule implements ValidationRuleInterface
 
             return ($className == $ruleInfo);
         } elseif (is_string($ruleInfo)) {
-            /** @todo need to be rewritten */
 
             switch ($ruleInfo) {
                 case TypeMap::TYPE_ANY:
@@ -44,12 +43,7 @@ class TypeValidationRule implements ValidationRuleInterface
                     return is_object($data);
 
                 case TypeMap::TYPE_OBJECT_TYPE:
-                    return $data instanceof AbstractObjectType
-                    || $data instanceof AbstractInterfaceType
-                    || $data instanceof AbstractUnionType
-                    || $data instanceof AbstractEnumType
-                    || $data instanceof AbstractScalarType
-                    || $data instanceof AbstractInputObjectType;
+                    return $data instanceof AbstractObjectType;
 
                 case TypeMap::TYPE_OBJECT_INPUT_TYPE:
                     return $data instanceof AbstractInputObjectType;

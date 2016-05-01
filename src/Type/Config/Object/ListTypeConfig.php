@@ -17,7 +17,7 @@ class ListTypeConfig extends ObjectTypeConfig
     public function getRules()
     {
         return [
-            'item'    => ['type' => TypeMap::TYPE_OBJECT_TYPE, 'required' => true],
+            'item'    => ['type' => TypeMap::TYPE_ANY, 'required' => true],
             'resolve' => ['type' => TypeMap::TYPE_FUNCTION],
             'args'    => ['type' => TypeMap::TYPE_ARRAY_OF_INPUTS],
         ];
