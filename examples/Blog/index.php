@@ -34,5 +34,5 @@ $processor->setSchema(new Schema([
 ]));
 
 $res = $processor->processRequest('{ latestPost { title, summary } }')->getResponseData();
-print_r($res);
+echo json_encode($res);
 echo "\n\n";

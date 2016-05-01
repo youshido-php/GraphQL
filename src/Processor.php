@@ -9,6 +9,7 @@
 
 namespace Youshido\GraphQL;
 
+use Youshido\GraphQL\Introspection\QueryType;
 use Youshido\GraphQL\Introspection\SchemaType;
 use Youshido\GraphQL\Introspection\TypeDefinitionType;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
@@ -119,7 +120,7 @@ class Processor
 
     /**
      * @param Query|Field $query
-     * @param ObjectType  $currentLevelSchema
+     * @param ObjectType|QueryType  $currentLevelSchema
      * @param null        $contextValue
      * @return array|bool|mixed
      */
@@ -153,7 +154,7 @@ class Processor
      *
      * @return array|bool|mixed
      */
-    protected function executeMutation($mutation, $objectType)
+    protected function executeMutation(Mutation $mutation, InputObjectType $objectType)
     {
         if (!$this->resolveValidator->checkFieldExist($objectType, $mutation)) {
             return null;
@@ -196,7 +197,7 @@ class Processor
      * @return array|mixed|null
      * @throws \Exception
      */
-    protected function processAstFieldQuery($astField, $contextValue, $field)
+    protected function processAstFieldQuery(AstField $astField, $contextValue, Field $field)
     {
         $value            = null;
         $preResolvedValue = $this->getPreResolvedValue($contextValue, $astField, $field);
@@ -283,7 +284,7 @@ class Processor
      * @return array|mixed
      * @throws \Exception
      */
-    protected function collectListOrSingleValue($fieldType, $resolvedValue, $query)
+    protected function collectListOrSingleValue(AbstractType $fieldType, $resolvedValue, $query)
     {
         $value = [];
         if ($fieldType->getKind() == TypeMap::KIND_LIST) {
@@ -314,7 +315,7 @@ class Processor
      *
      * @return mixed
      */
-    protected function getPreResolvedValue($value, $astField, $field)
+    protected function getPreResolvedValue($value,AstField $astField, $field)
     {
         $resolved      = false;
         $resolverValue = null;
