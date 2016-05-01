@@ -119,9 +119,9 @@ class Processor
     }
 
     /**
-     * @param Query|Field $query
-     * @param ObjectType|QueryType  $currentLevelSchema
-     * @param null        $contextValue
+     * @param Query|Field          $query
+     * @param ObjectType|QueryType $currentLevelSchema
+     * @param null                 $contextValue
      * @return array|bool|mixed
      */
     protected function executeQuery($query, $currentLevelSchema, $contextValue = null)
@@ -315,7 +315,7 @@ class Processor
      *
      * @return mixed
      */
-    protected function getPreResolvedValue($value,AstField $astField, $field)
+    protected function getPreResolvedValue($value, AstField $astField, Field $field)
     {
         $resolved      = false;
         $resolverValue = null;
@@ -358,8 +358,9 @@ class Processor
 
     protected function classify($text)
     {
-        $text = explode(' ', str_replace(['_', '/', '-', '.'], ' ', $text));
-        for ($i = 0; $i < count($text); $i++) {
+        $text       = explode(' ', str_replace(['_', '/', '-', '.'], ' ', $text));
+        $textLength = count($text);
+        for ($i = 0; $i < $textLength; $i++) {
             $text[$i] = ucfirst($text[$i]);
         }
         $text = ucfirst(implode('', $text));

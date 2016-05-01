@@ -45,10 +45,6 @@ class Token
     private $data;
     /** @var  string */
     private $type;
-    /** @var int */
-    private $line;
-    /** @var int */
-    private $column;
 
     public function __construct($type, $data = null)
     {
@@ -83,22 +79,6 @@ class Token
     public function getType()
     {
         return $this->type;
-    }
-
-    /**
-     * @param int $line
-     */
-    public function setLine($line)
-    {
-        $this->line = $line;
-    }
-
-    /**
-     * @param int $column
-     */
-    public function setColumn($column)
-    {
-        $this->column = $column;
     }
 
 }

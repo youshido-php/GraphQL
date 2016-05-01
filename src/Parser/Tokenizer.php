@@ -29,14 +29,10 @@ class Tokenizer
     {
         $this->skipWhitespace();
 
-        $line      = $this->line;
         $lineStart = $this->lineStart;
 
         /** @var Token $token */
         $token     = $this->scan();
-
-        $token->setLine($line);
-        $token->setColumn($this->pos - $lineStart);
 
         return $token;
     }
