@@ -10,14 +10,6 @@ $rootQueryType = new ObjectType([
     'name' => 'RootQueryType',
 ]);
 
-function resolvePost()
-{
-    return [
-        "title"   => "Interesting approach",
-        "summary" => "This new GraphQL library for PHP works really well",
-    ];
-}
-
 require_once __DIR__ . '/structures/object-inline.php';
 
 $processor = new Processor();
