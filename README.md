@@ -106,8 +106,8 @@ Supposedly our server should reply with a response structured like following:
  {
     data: {
         latestPost: {
-            title: "Interesting approach",
-            summary: "This new GraphQL library for PHP works really well"
+            title: "This is a post title",
+            summary: "This is a post summary"
         }
     }
  }
@@ -128,20 +128,24 @@ Even though inline approach might seem to be easier and faster we strongly recom
 
 So we'll start by creating the Post type. For now we'll have only two fields – title and summary:
 
-*index.php*
+*inline-schema.php*
 ```php
-//...
-$rootQueryType = new ObjectType([               // all GraphQL types will be extended from the base types
-    'name'   => 'RootQueryType',                // this is the main query structure, name doesn't really matter but by a convention we name it RootQueryType
+<?php
+
+// bootstrap code here 
+
+// creating a root query structure
+$rootQueryType = new ObjectType([               
+    'name'   => 'RootQueryType', // name doesn't really matter, by a convention we name it RootQueryType
     'fields' => [
-        'latestPost' => new ObjectType([        // our Post type will be extended from the generic ObjectType 
-            'name'    => 'Post',                // name of our type
+        'latestPost' => new ObjectType([ // our Post type will be extended from the generic ObjectType 
+            'name'    => 'Post',         // name of our type
             'fields'  => [                  
-                'title'   => new StringType(),  // defining the "title" field, type - string
-                'summary' => new StringType(),  // defining the "summary" field, type is also string
+                'title'   => new StringType(),  // defining the "title" field, type - String
+                'summary' => new StringType(),  // defining the "summary" field, type is also String
             ],
-            'resolve' => function () {          // this is a resolve function, for now it will return a static array with data
-                return [
+            'resolve' => function () {          // this is a resolve function
+                return [                        // for now it will return a static array with data
                     "title"   => "New approach in API has been revealed",
                     "summary" => "This post will describe a new approach to create and maintain APIs",
                 ];
@@ -151,4 +155,47 @@ $rootQueryType = new ObjectType([               // all GraphQL types will be ext
 ]);
 //...
 ```
+
+Let's create an endpoint to work with our schema so we can actually test everything we do. it will eventually be able to handle real requests.
+*router.php*
+```php
+<?php
+
+namespace BlogTest;
+
+use Youshido\GraphQL\Processor;
+use Youshido\GraphQL\Schema;
+use Youshido\GraphQL\Type\Object\ObjectType;
+use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
+
+require_once __DIR__ . '/vendor/autoload.php';
+$rootQueryType = new ObjectType([
+    'name' => 'RootQueryType',
+]);
+
+require_once __DIR__ . '/inline-schema.php';       // including our schema
+
+$processor = new Processor();
+$processor->setSchema(new Schema([
+    'query' => $rootQueryType
+]));
+$payload = '{ latestPost { title, summary } }';
+$response = $processor->processRequest($payload, [])->getResponseData();
+
+print_r($response);
+```
+
+To check if everything is working well, simply execute it – `php router.php`
+You should see a result similar to the one described in the previous section: 
+ ```js
+ {
+    data: {
+        latestPost: {
+            title: "New approach in API has been revealed",
+            summary: "This post will describe a new approach to create and maintain APIs"
+        }
+    }
+ }
+ ```
+
 
