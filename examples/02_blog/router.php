@@ -18,11 +18,6 @@ $rootQueryType = new ObjectType([
 ]);
 
 require_once __DIR__ . '/structures/object.php';
-/**
- * Other implementations:
- * require_once __DIR__ . '/structures/object-inline.php';
- * require_once __DIR__ . '/structures/inline.php';
- */
 
 if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] === 'application/json') {
     $rawBody     = file_get_contents('php://input');

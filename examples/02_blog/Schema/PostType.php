@@ -31,14 +31,15 @@ class PostType extends AbstractObjectType
     {
         $config->addField('title', new NonNullType(new StringType()))
                ->addField('summary', new NonNullType(new StringType()))
-               ->addField('status', new NonNullType(new PostStatus()));
+//               ->addField('status', new NonNullType(new PostStatus()))
+        ;
         $config->addArgument('id', new IdType());
     }
 
-    public function getInterfaces()
-    {
-        return [new SummaryInterface()];
-    }
+//    public function getInterfaces()
+//    {
+//        return [new SummaryInterface()];
+//    }
 
 
     public function getName()
