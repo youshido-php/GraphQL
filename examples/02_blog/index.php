@@ -22,4 +22,4 @@ $processor->setSchema(new Schema([
 $payload = '{ latestPost { title, summary } }';
 $response = $processor->processRequest($payload, [])->getResponseData();
 
-print_r($response);
+echo json_encode($response);

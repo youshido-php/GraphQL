@@ -330,7 +330,6 @@ class Processor
             } catch (\Exception $e) {
             }
         } elseif ($field->getNamedType()->getKind() == TypeMap::KIND_SCALAR) {
-//            $resolverValue = $field->getConfig()->resolve();
             $resolved      = true;
         }
 
