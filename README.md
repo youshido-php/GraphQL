@@ -16,28 +16,30 @@ GraphQL is a modern replacement of the REST API approach. It advanced in many wa
 
 It could be hard to believe, but give it a try and you'll be rewarded with much better architecture and so much easier to support code.
 
-_Current package is and will be trying to be kept up with the latest revision of the GraphQL specification which is now of April 2016._
+*Current package is and will be trying to be kept up with the latest revision of the GraphQL specification which is now of April 2016.*
+
+
 
 ## Table of Contents
 
-1. [Getting Started](#getting-started)
-2. [Installation](#installation)
-3. [Example – Creating Blog Schema](#examples-blog-schema)
-  1. [Inline approach](#inline-approach)
-  2. [Object Oriented approach](#object-oriented)
-4. [Architecture your Schema](#architecture)
-5. [Type System](#type-system)
-  1. [Scalar Types](#scalar-types)
-  2. [Objects](#objects)
-  3. [Interfaces](#interfaces)
-  4. [Unions](#unions)
-  5. [Enums](#enums)
-  6. [Input Objects](#input-objects)
-  7. [Lists](#list)
-  8. [Non-Null](#non-null)
-6. [Query structure](#query-structure)
-7. [Mutation structure](#mutation-structure)
-8. [Schema validation](#schema-validation)
+* [Getting Started](#getting-started)
+* [Installation](#installation)
+* [Example – Creating Blog Schema](#example---creating-blog-schema)
+  * [Inline approach](#inline-approach)
+  * [Object Oriented approach](#object-oriented)
+* [Define your Schema](#define-your-schema)
+* [Query Documents](#query-documents)
+* [Type System](#type-system)
+  * [Scalar Types](#scalar-types)
+  * [Objects](#objects)
+  * [Interfaces](#interfaces)
+  * [Unions](#unions)
+  * [Enums](#enums)
+  * [Input Objects](#input-objects)
+  * [Lists](#list)
+  * [Non-Null](#non-null)
+* [Mutation structure](#mutation-structure)
+* [Schema validation](#schema-validation)
 
 ## Getting Started
 
@@ -66,7 +68,7 @@ composer require youshido/graphql
 ```
 
 After the successful message, Let's check if everything is good by setting up a simple schema that will return current time.
-_(you can find this example in the examples directory – [01_sandbox](https://github.com/Youshido/GraphQL/examples/01_sandbox))_
+*(you can find this example in the examples directory – [01_sandbox](https://github.com/Youshido/GraphQL/examples/01_sandbox))*
 
 ```php
 <?php
@@ -108,7 +110,7 @@ If everything was set up correctly – you should see response with your curren
 If not – check that you have the latest composer version and that you've created your test file in the same directory you have `vendor` folder in.
 You can always use a script from `examples` folder. Simply run `php vendor/youshido/GraphQL/examples/01_sandbox/index.php`.
 
-## Examples - Blog Schema
+## Example – Creating Blog Schema
 
 For our learning example we'll architect a GraphQL Schema for the Blog.
 
@@ -140,7 +142,7 @@ Let's go ahead and create a backend that can handle that.
 
 We believe you'll be using our package along with your favorite framework (we have a Symfony version [here](http://github.com/Youshido/GraphqlBundle)).
 But for the purpose of the current example we'll keep it as plain php code.
-_(you can check out the complete example by the following link https://github.com/Youshido/GraphQL/examples/02_Blog )_
+*(you can check out the complete example by the following link https://github.com/Youshido/GraphQL/examples/02_Blog )*
 
 We'll take a quick look on different approaches you can use to define your schema.
 Even though inline approach might seem to be easier and faster we strongly recommend to use an object based because it will give you more flexibility and freedom as your project grows.
@@ -149,7 +151,7 @@ Even though inline approach might seem to be easier and faster we strongly recom
 
 So we'll start by creating the Post type. For now we'll have only two fields – title and summary:
 
-*inline-schema.php*
+**inline-schema.php**
 ```php
 <?php
 use Youshido\GraphQL\Type\Object\ObjectType;
@@ -179,7 +181,7 @@ $rootQueryType = new ObjectType([
 
 Let's create an endpoint to work with our schema so we can actually test everything we do. it will eventually be able to handle requests from the client.
 
-*router.php*
+**router.php**
 ```php
 <?php
 
@@ -284,7 +286,8 @@ require_once __DIR__ . '/Schema/PostType.php';       // including PostType defin
 $rootQueryType = new ObjectType([
     'name' => 'RootQueryType',
 ]);
-$rootQueryType->getConfig()->addField('latestPost', new PostType());    // adding a field to our query schema
+// adding a field to our query schema
+$rootQueryType->getConfig()->addField('latestPost', new PostType());    
 
 $processor = new Processor();
 $processor->setSchema(new Schema([
@@ -297,3 +300,67 @@ print_r($response);
 ```
 
 Once again, let's make sure everything is working properly by running `php router.php`. You should see the same response you saw for the inline approach.
+
+## Define your GraphQL Schema
+
+We would recommend to stick to object oriented approach for the several reasons that matter the most for the GraphQL specifically (also valid as general statements):
+ - it makes your Types reusable
+ - abilities to refactor your schema using IDEs
+ - autocomplete to help you avoid typos
+ - much easier to navigate through your Schema
+
+> **User valid Names**
+> We highly recommend to get familiar with GraphQL [specification](https://facebook.github.io/graphql/#sec-Language.Query-Document), but important thing for now is
+> to remember that valid identifier in GraphQL should follow the pattern `/[_A-Za-z][_0-9A-Za-z]*/`.
+> That means any identifier can has only latin letter, underscore, or digit but can't start with digit.
+> *Names are case sensitive*
+
+We'll continue on our Blog Schema throughout our exploration of all the details of GraphQL.
+
+## Query Documents
+
+Query Document in terms of GraphQL describes a complete request received by GraphQL service.
+It contains list of *Operations* and *Fragments*. Both are fully supported by our PHP library.
+There are two types of *Operations* in GraphQL:
+- *Query* – a read only request that is not supposed to do any changes on the server
+- *Mutation* – a request that changes data on the server followed by a data fetch
+
+You've already seen `latestPost` and `currentTime` queries in our examples above, so let's define a simple Mutation to provide an API to like the Post.
+Before we jump into writing the code let's think about it.
+Any Operation, in our case a mutation, need to have a response type. Let's just see how a possible query from the client can look like:
+```
+{
+  likePost(id: 23) {
+    likeCount
+  }
+}
+```
+
+This mutation expects to receive a total amount of post's like as a result. Such a mutation can be describe in PHP:
+
+```php
+
+
+
+```
+
+## Types System
+
+*Type* is a atom of definition in GraphQL Schema. Every field, object, or argument has a type. That obviously means GraphQL is a strongly typed language.
+Types are defined specific for the application, in our case we'll have types like `Post`, `User`, `Comment` and so on.
+GraphQL has variety of build in types that are used to build your custom types.
+
+### Scalar Types
+
+List of currently supported types:
+- Int
+- Float
+- String
+- Boolean
+- Id (serialized as String per [spec](https://facebook.github.io/graphql/#sec-ID))
+
+We also implemented some extended types that we're considering to be scalar:
+- Timestamp
+- Date
+- DateTime
+- DateTimeTz

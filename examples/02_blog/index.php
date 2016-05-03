@@ -6,6 +6,7 @@ use Examples\Blog\Schema\PostType;
 use Youshido\GraphQL\Processor;
 use Youshido\GraphQL\Schema;
 use Youshido\GraphQL\Type\Object\ObjectType;
+use Youshido\GraphQL\Type\Scalar\IntType;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/Schema/PostType.php';       // including PostType definition
@@ -13,13 +14,36 @@ require_once __DIR__ . '/Schema/PostType.php';       // including PostType defin
 $rootQueryType = new ObjectType([
     'name' => 'RootQueryType',
 ]);
-$rootQueryType->getConfig()->addField('latestPost', new PostType());
+$rootQueryType->addField('latestPost', new PostType());
+
 
 $processor = new Processor();
 $processor->setSchema(new Schema([
-    'query' => $rootQueryType
+    'query'    => new ObjectType([
+        'name'   => 'RootQueryType',
+        'fields' => [
+            'latestPost' => new PostType()
+        ]
+    ]),
+    'mutation' => new ObjectType([
+        'name'   => 'RootMutationType',
+        'fields' => [
+            'likePost' => [
+                'type'    => new IntType(),
+                'resolve' => function () {
+                    die('resolve');
+                },
+                'args'    => [
+                    'id' => [
+                        'type' => new IntType()
+                    ]
+                ]
+            ]
+        ]
+    ])
 ]));
-$payload = '{ latestPost { title, summary } }';
+$payload  = '{ latestPost { title, summary } }';
+$payload  = 'mutation { likePost(id:5) { likeCount } }';
 $response = $processor->processRequest($payload, [])->getResponseData();
 
-echo json_encode($response);
+echo json_encode($response) . "\n\n";

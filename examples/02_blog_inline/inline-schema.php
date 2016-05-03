@@ -17,7 +17,6 @@ $rootQueryType = new ObjectType([
                 return [
                     "title"   => "Interesting approach",
                     "summary" => "This new GraphQL library for PHP works really well",
-                    "status"  => null,
                 ];
             }
         ])
