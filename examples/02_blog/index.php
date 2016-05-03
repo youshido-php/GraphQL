@@ -31,7 +31,7 @@ $processor->setSchema(new Schema([
             'likePost' => [
                 'type'    => new IntType(),
                 'resolve' => function () {
-                    die('resolve');
+                    return 2;
                 },
                 'args'    => [
                     'id' => [
@@ -43,7 +43,7 @@ $processor->setSchema(new Schema([
     ])
 ]));
 $payload  = '{ latestPost { title, summary } }';
-$payload  = 'mutation { likePost(id:5) { likeCount } }';
+$payload  = 'mutation { likePost(id:5) }';
 $response = $processor->processRequest($payload, [])->getResponseData();
 
 echo json_encode($response) . "\n\n";
