@@ -7,17 +7,15 @@ if ($_SERVER['REQUEST_METHOD'] == "OPTIONS") {
     return;
 }
 
+use Examples\Blog\Schema\PostType;
 use Youshido\GraphQL\Processor;
 use Youshido\GraphQL\Schema;
+use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\ObjectType;
-use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
+use Youshido\GraphQL\Type\Scalar\IntType;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
-$rootQueryType = new ObjectType([
-    'name' => 'RootQueryType',
-]);
-
-require_once __DIR__ . '/structures/object.php';
+require_once __DIR__ . '/Schema/PostType.php';
 
 if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] === 'application/json') {
     $rawBody     = file_get_contents('php://input');
@@ -29,11 +27,42 @@ if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] === 'application
 $payload   = isset($requestData['query']) ? $requestData['query'] : null;
 $variables = isset($requestData['variables']) ? $requestData['variables'] : null;
 
+$postType = new PostType();
+$rootQueryType = new ObjectType([
+    'name' => 'RootQueryType',
+    'fields' => [
+        'latestPost' => $postType
+    ]
+]);
+
+$rootMutationType =  new ObjectType([
+    'name'   => 'RootMutationType',
+    'fields' => [
+        'likePost' => [
+            'type'    => $postType,
+            'args'    => [
+                'id' => [
+                    'type' => new NonNullType(new IntType())
+                ]
+            ],
+            'resolve' => function ($value, $args, PostType $type) {
+                return $type->resolve($value, $args);
+//                return [
+//                    'title' => 'Title for the post #' . $args['id'],
+//                    'summary' => 'We can now get a richer response from the mutation',
+//                    'likeCount' => 3
+//                ];
+            },
+        ]
+    ]
+]);
 
 $processor = new Processor();
 $processor->setSchema(new Schema([
-    'query' => $rootQueryType
+    'query'    => $rootQueryType,
+    'mutation' => $rootMutationType,
 ]));
+
 $response = $processor->processRequest($payload, $variables)->getResponseData();
 
 header('Content-Type: application/json');

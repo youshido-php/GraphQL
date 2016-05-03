@@ -46,7 +46,7 @@ class FieldConfig extends Config
         if ($this->issetResolve()) {
             $resolveFunc = $this->getResolveFunction();
 
-            return $resolveFunc($value, $args);
+            return $resolveFunc($value, $args, $this->getType());
         }
 
         return $this->getType()->resolve($value, $args);

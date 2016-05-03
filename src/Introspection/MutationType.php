@@ -20,11 +20,8 @@ class MutationType extends QueryType
     {
         /** @var Schema|Field $value */
         if ($value instanceof Schema) {
-            $mutationType = $value->getMutationType();
-
-            return $mutationType instanceof ObjectType ? null : $mutationType;
+            return $value->getMutationType();
         }
-
 
         return $value->getConfig()->getType();
     }

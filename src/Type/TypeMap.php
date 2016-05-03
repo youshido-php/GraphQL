@@ -52,9 +52,14 @@ class TypeMap
 
     private static $scalarObjectsCache = [];
 
+    /**
+     * @param mixed|AbstractType $type
+     * @return bool
+     */
     public static function isInputType($type)
     {
         if (is_object($type)) {
+            $type = $type->getNullableType();
             return ($type instanceof AbstractScalarType)
                    || ($type instanceof AbstractInputObjectType)
                    || ($type instanceof AbstractEnumType)

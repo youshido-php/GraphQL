@@ -11,6 +11,7 @@ namespace Youshido\GraphQL\Type;
 
 use Youshido\GraphQL\Type\Config\Object\EnumTypeConfig;
 use Youshido\GraphQL\Type\Config\Object\InputObjectTypeConfig;
+use Youshido\GraphQL\Type\Config\Object\InterfaceTypeConfig;
 use Youshido\GraphQL\Type\Config\Object\ObjectTypeConfig;
 
 abstract class AbstractType implements TypeInterface
@@ -29,13 +30,18 @@ abstract class AbstractType implements TypeInterface
     }
 
     /**
-     * @return ObjectTypeConfig|InputObjectTypeConfig|EnumTypeConfig
+     * @return ObjectTypeConfig|InputObjectTypeConfig|EnumTypeConfig|InterfaceTypeConfig
      */
     public function getConfig()
     {
         $this->checkBuild();
 
         return $this->config;
+    }
+
+    public function isAbstractType()
+    {
+        return in_array($this->getKind(), [TypeMap::KIND_INTERFACE, TypeMap::KIND_UNION]);
     }
 
     public function isCompositeType()
@@ -63,6 +69,11 @@ abstract class AbstractType implements TypeInterface
     public function serialize($value)
     {
         return $value;
+    }
+
+    public function getType()
+    {
+        return $this->getConfig()->getType();
     }
 
     public function __toString()

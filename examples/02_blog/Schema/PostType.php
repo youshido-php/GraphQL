@@ -13,6 +13,7 @@ use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\IdType;
+use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
 class PostType extends AbstractObjectType
@@ -21,9 +22,9 @@ class PostType extends AbstractObjectType
     public function resolve($value = null, $args = [])
     {
         return [
-            "title"   => "Interesting approach",
-            "summary" => "This new GraphQL library for PHP works really well",
-            "status"  => 0
+            "title"     => "Interesting approach",
+            "summary"   => "This new GraphQL library for PHP works really well",
+            "likeCount" => 2
         ];
     }
 
@@ -31,7 +32,7 @@ class PostType extends AbstractObjectType
     {
         $config->addField('title', new NonNullType(new StringType()))
                ->addField('summary', new NonNullType(new StringType()))
-//               ->addField('status', new NonNullType(new PostStatus()))
+               ->addField('likeCount', new IntType())//               ->addField('status', new NonNullType(new PostStatus()))
         ;
         $config->addArgument('id', new IdType());
     }

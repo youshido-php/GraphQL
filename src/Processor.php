@@ -18,6 +18,7 @@ use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
 use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Type\AbstractType;
+use Youshido\GraphQL\Type\AbstractTypeInterface;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Object\AbstractEnumType;
 use Youshido\GraphQL\Type\Object\InputObjectType;
@@ -141,7 +142,7 @@ class Processor
                 return null;
             }
 
-            $value = $this->processFieldQuery($query, $contextValue, $field);
+            $value = $this->processFieldTypeQuery($query, $contextValue, $field);
 
         }
 
@@ -178,10 +179,11 @@ class Processor
 
         $value = $resolvedValue;
         if ($mutation->hasFields()) {
-            $outputType = $field->getType()->getOutputType();
-
-            if ($outputType && in_array($outputType->getKind(), [TypeMap::KIND_INTERFACE, TypeMap::KIND_UNION])) {
-                $outputType = $outputType->getConfig()->resolveType($resolvedValue);
+            if ($field->getType()->isAbstractType()) {
+                $outputType = $field->getType()->getConfig()->resolveType($resolvedValue);
+            } else {
+                /** @var AbstractType $outputType */
+                $outputType = $field->getType();
             }
 
             $value = $this->collectListOrSingleValue($outputType, $resolvedValue, $mutation);
@@ -262,7 +264,7 @@ class Processor
      * @return null
      * @throws \Exception
      */
-    protected function processFieldQuery($query, $contextValue, $field)
+    protected function processFieldTypeQuery($query, $contextValue, $field)
     {
         if (!($resolvedValue = $this->resolveValue($field, $contextValue, $query))) {
             return $resolvedValue;
@@ -379,7 +381,7 @@ class Processor
      */
     protected function resolveValue($field, $contextValue, $query)
     {
-        $resolvedValue = $field->getConfig()->resolve($contextValue, $this->parseArgumentsValues($field, $query));
+        $resolvedValue = $field->getConfig()->resolve($contextValue, $this->parseArgumentsValues($field, $query), $field->getType());
 
         if (in_array($field->getType()->getKind(), [TypeMap::KIND_UNION, TypeMap::KIND_INTERFACE])) {
             $resolvedType = $field->getType()->resolveType($resolvedValue);
