@@ -30,14 +30,14 @@ $processor->setSchema(new Schema([
         'fields' => [
             'likePost' => [
                 'type'    => new IntType(),
-                'resolve' => function () {
-                    return 2;
-                },
                 'args'    => [
                     'id' => [
                         'type' => new IntType()
                     ]
-                ]
+                ],
+                'resolve' => function () {
+                    return 2;
+                },
             ]
         ]
     ])

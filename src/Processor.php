@@ -149,12 +149,12 @@ class Processor
     }
 
     /**
-     * @param Mutation        $mutation
-     * @param InputObjectType $objectType
+     * @param Mutation   $mutation
+     * @param ObjectType $objectType
      *
      * @return array|bool|mixed
      */
-    protected function executeMutation(Mutation $mutation, InputObjectType $objectType)
+    protected function executeMutation(Mutation $mutation, ObjectType $objectType)
     {
         if (!$this->resolveValidator->checkFieldExist($objectType, $mutation)) {
             return null;
@@ -176,7 +176,7 @@ class Processor
             return [$alias => null];
         }
 
-        $value = null;
+        $value = $resolvedValue;
         if ($mutation->hasFields()) {
             $outputType = $field->getType()->getOutputType();
 
@@ -330,7 +330,7 @@ class Processor
             } catch (\Exception $e) {
             }
         } elseif ($field->getNamedType()->getKind() == TypeMap::KIND_SCALAR) {
-            $resolved      = true;
+            $resolved = true;
         }
 
         if ($resolved) {

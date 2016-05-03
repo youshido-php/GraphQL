@@ -127,6 +127,8 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
                 return is_object($value) || is_null($value) || is_array($value);
             case TypeMap::KIND_LIST:
                 return is_null($value) || is_array($value) || (is_object($value) && in_array('IteratorAggregate', class_implements($value)));
+            case TypeMap::KIND_SCALAR:
+                return is_scalar($value);
         }
 
         return false;
