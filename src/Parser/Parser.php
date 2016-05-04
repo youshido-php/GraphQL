@@ -228,7 +228,7 @@ class Parser extends Tokenizer
                 return new Mutation($name, $alias, $arguments);
             }
 
-            return new Field($name, $alias);
+            return new Field($name, $alias, $arguments);
         }
     }
 

@@ -47,11 +47,6 @@ $rootMutationType =  new ObjectType([
             ],
             'resolve' => function ($value, $args, PostType $type) {
                 return $type->resolve($value, $args);
-//                return [
-//                    'title' => 'Title for the post #' . $args['id'],
-//                    'summary' => 'We can now get a richer response from the mutation',
-//                    'likeCount' => 3
-//                ];
             },
         ]
     ]

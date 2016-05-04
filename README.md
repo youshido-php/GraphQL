@@ -480,8 +480,30 @@ We also implemented some extended types that we're considering to be scalar:
 - DateTime
 - DateTimeTz
 
-You can define a new Scalar type by extending the `AbstractScalarType` class although you'll end up working with more complex classes.
+You can define a new Scalar type by extending the `AbstractScalarType` class although you'll end up working with more complex types.
+> usage of scalar types you'll see in the combination with other types along the way
 
 ### Objects
 
 Every domain in your business logic will be either extended from the `AbstractObjectType` or created as an instance of `ObjectType` class. In our blog example we used `ObjectType` to create an inline `Post` type and in the object oriented example we extended the `AbstractObjectType` to create a `PostType` class.
+
+Let's take a deeper look on the structure of the object class:
+*inline object creation*
+```php
+
+$postType = new ObjectType([
+  'name'    => 'Post',
+  'fields'  => [
+      'title'   => new StringType(),
+      'summary' => new StringType(),
+  ],
+  'resolve' => function () {
+      return [
+          "title"   => "Interesting approach",
+          "summary" => "This new GraphQL library for PHP works really well",
+      ];
+  }
+])
+
+
+```

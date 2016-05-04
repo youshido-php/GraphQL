@@ -16,10 +16,14 @@ class Field
     /** @var null|string */
     private $alias = null;
 
-    public function __construct($name, $alias = null)
+    /** @var Argument[] */
+    protected $arguments;
+
+    public function __construct($name, $alias = null, $arguments = [])
     {
         $this->name  = $name;
         $this->alias = $alias;
+        $this->arguments = $arguments;
     }
 
     /**
@@ -52,5 +56,34 @@ class Field
     public function setAlias($alias)
     {
         $this->alias = $alias;
+    }
+
+    public function hasArguments()
+    {
+        return (bool)count($this->arguments);
+    }
+
+    /**
+     * @return Argument[]
+     */
+    public function getArguments()
+    {
+        return $this->arguments;
+    }
+
+    public function addArgument(Argument $argument)
+    {
+        $this->arguments[$argument->getName()] = $argument;
+    }
+
+    public function getKeyValueArguments()
+    {
+        $arguments = [];
+
+        foreach ($this->getArguments() as $argument) {
+            $arguments[$argument->getName()] = $argument->getValue()->getValue();
+        }
+
+        return $arguments;
     }
 }

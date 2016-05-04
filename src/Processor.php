@@ -338,7 +338,7 @@ class Processor
         if ($resolved) {
             if ($field->getConfig() && ($field->getConfig()->issetResolve())) {
                 $resolverFunc  = $field->getConfig()->getResolveFunction();
-                $resolverValue = $resolverFunc($resolverValue, []);
+                $resolverValue = $resolverFunc($resolverValue, $astField->getKeyValueArguments());
             }
 
             return $resolverValue;

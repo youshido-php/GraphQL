@@ -37,11 +37,6 @@ class PostType extends AbstractObjectType
         $config->addArgument('id', new IdType());
     }
 
-//    public function getInterfaces()
-//    {
-//        return [new SummaryInterface()];
-//    }
-
 
     public function getName()
     {
