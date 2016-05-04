@@ -41,4 +41,11 @@ class Field
     {
 
     }
+
+    public function resolve($value, $args, $type)
+    {
+        $resolveFn = $this->config->get('resolve', null);
+
+        return $resolveFn ? $resolveFn($value, $args, $type) : null;
+    }
 }

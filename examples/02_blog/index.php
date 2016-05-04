@@ -2,7 +2,7 @@
 
 namespace BlogTest;
 
-use Examples\Blog\Schema\LikePostMutationObject;
+use Examples\Blog\Schema\LikePost;
 use Examples\Blog\Schema\PostType;
 use Youshido\GraphQL\Processor;
 use Youshido\GraphQL\Schema;
@@ -12,13 +12,12 @@ use Youshido\GraphQL\Type\Scalar\IntType;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/Schema/PostType.php';
-require_once __DIR__ . '/Schema/LikePostMutation.php';
+require_once __DIR__ . '/Schema/LikePost.php';
 
-$postType      = new PostType();
 $rootQueryType = new ObjectType([
     'name'   => 'RootQueryType',
     'fields' => [
-        'latestPost' => $postType
+        'latestPost' => new PostType()
     ]
 ]);
 
@@ -31,11 +30,12 @@ $rootMutationType = new ObjectType([
 //                'id' => new NonNullType(new IntType())
 //            ],
 //            'resolve' => function ($value, $args, $type) {
-//                // increase like count
+//                /** increase like count + 1 */
+//
 //                return $type->resolve($value, $args);
 //            },
 //        ]
-        'likePost' => new LikePostMutationObject()
+        'likePost' => new LikePost()
     ]
 ]);
 
@@ -45,7 +45,7 @@ $processor->setSchema(new Schema([
     'query'    => $rootQueryType,
     'mutation' => $rootMutationType,
 ]));
-$payload  = 'mutation { likePost(id:5) { title(truncated: true), likeCount } }';
+$payload  = 'mutation { likePost(id:5) { title(truncated: false), likeCount } }';
 $response = $processor->processRequest($payload, [])->getResponseData();
 
 echo json_encode($response) . "\n\n";

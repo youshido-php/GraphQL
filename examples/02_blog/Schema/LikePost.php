@@ -15,18 +15,25 @@ use Youshido\GraphQL\Type\Object\AbstractMutationObjectType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 
-class LikePostMutationObject extends AbstractMutationObjectType
+class LikePost extends AbstractObjectType
 {
     public function resolve($value = null, $args = [], $type = null)
     {
+//        return $type->resolve($value, $args);
         return [
-            "title"     => "Interesting approach",
+            "title"     => "Post title from the LikePost Mutation class",
             "summary"   => "This new GraphQL library for PHP works really well",
-            "likeCount" => 2
+            "likeCount" => 3
         ];
+
     }
 
     public function getOutputType()
+    {
+        return new PostType();
+    }
+
+    public function getType()
     {
         return new PostType();
     }

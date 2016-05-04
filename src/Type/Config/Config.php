@@ -75,6 +75,11 @@ class Config
     {
     }
 
+    /**
+     * @param      $key
+     * @param null $defaultValue
+     * @return mixed|null|callable
+     */
     public function get($key, $defaultValue = null)
     {
         return array_key_exists($key, $this->data) ? $this->data[$key] : $defaultValue;

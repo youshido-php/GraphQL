@@ -31,14 +31,14 @@ trait FieldsAwareTrait
                 $this->fields[$fieldName] = $fieldInfo;
                 continue;
             } elseif ($fieldInfo instanceof AbstractType) {
-                $config = [];
-                // todo remove double config call
-                if ($fieldInfo->getConfig()) {
-                    if ($fieldInfo->getConfig()->get('resolve')) {
-                        $config['resolve'] = $fieldInfo->getConfig()->get('resolve');
-                    }
+                $config    = [];
+                $namedType = $fieldInfo->getNamedType();
+                if ($fieldInfo->getConfig() && $fieldInfo->getConfig()->get('resolve')) {
+                    $config['resolve'] = $fieldInfo->getConfig()->get('resolve');
+                } elseif (empty($config['resolve']) && (method_exists($fieldInfo, 'resolve'))) {
+                    $config['resolve'] = [$fieldInfo, 'resolve'];
                 }
-                $this->addField($fieldName, $fieldInfo->getNamedType(), $config);
+                $this->addField($fieldName, $namedType, $config);
             } else {
                 $this->addField($fieldName, $fieldInfo['type'], $fieldInfo);
             }
@@ -68,6 +68,10 @@ trait FieldsAwareTrait
             }
 
             $type = TypeMap::getScalarTypeObject($type);
+        } else {
+            if (empty($config['resolve']) && (method_exists($type, 'resolve'))) {
+                $config['resolve'] = [$type, 'resolve'];
+            }
         }
 
         $config['name'] = $name;

@@ -29,7 +29,7 @@ trait FinalTypesConfigTrait
     {
         $callable = $this->getConfig()->getResolveFunction();
 
-        return is_callable($callable) ? $callable($value, $args, $type) : null;
+        return is_callable($callable) ? $callable($value, $args, $type) : $value;
     }
 
 }

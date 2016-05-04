@@ -10,7 +10,6 @@ namespace Youshido\GraphQL\Type\ListType;
 
 
 use Youshido\GraphQL\Type\Traits\FinalTypesConfigTrait;
-use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 final class ListType extends AbstractListType
 {

@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] == "OPTIONS") {
     return;
 }
 
-use Examples\Blog\Schema\LikePostMutationObject;
+use Examples\Blog\Schema\LikePost;
 use Examples\Blog\Schema\PostType;
 use Youshido\GraphQL\Processor;
 use Youshido\GraphQL\Schema;
@@ -17,7 +17,7 @@ use Youshido\GraphQL\Type\Scalar\IntType;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/Schema/PostType.php';
-require_once __DIR__ . '/Schema/LikePostMutation.php';
+require_once __DIR__ . '/Schema/LikePost.php';
 
 if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] === 'application/json') {
     $rawBody     = file_get_contents('php://input');
@@ -50,7 +50,7 @@ $rootMutationType = new ObjectType([
 //                return $type->resolve($value, $args);
 //            },
 //        ]
-        'likePost' => new LikePostMutationObject()
+        'likePost' => new LikePost()
     ]
 ]);
 

@@ -204,8 +204,8 @@ class Processor
 
         if ($field->getConfig()->getType()->getKind() == TypeMap::KIND_LIST) {
             if (!is_array($preResolvedValue)) {
-                $value = null;
                 $this->resolveValidator->addError(new ResolveException('Not valid resolve value for list type'));
+                return null;
             }
 
             $listValue = [];
@@ -335,8 +335,7 @@ class Processor
 
         if ($resolved) {
             if ($field->getConfig() && ($field->getConfig()->issetResolve())) {
-                $resolverFunc  = $field->getConfig()->getResolveFunction();
-                $resolverValue = $resolverFunc($resolverValue, $astField->getKeyValueArguments());
+                $resolverValue = $field->resolve($resolverValue, $astField->getKeyValueArguments(), $field->getType());
             }
 
             return $resolverValue;
@@ -371,17 +370,18 @@ class Processor
     }
 
     /**
-     * @param $field        Field
-     * @param $contextValue mixed
-     * @param $query        Query
+     * @param Field $field
+     * @param mixed $contextValue
+     * @param Query $query
      *
      * @return mixed
      */
     protected function resolveValue($field, $contextValue, $query)
     {
-        $resolvedValue = $field->getConfig()->resolve($contextValue, $this->parseArgumentsValues($field, $query), $field->getType());
+        $resolvedValue = $field->resolve($contextValue, $this->parseArgumentsValues($field, $query), $field->getType());
 
-        if (in_array($field->getType()->getKind(), [TypeMap::KIND_UNION, TypeMap::KIND_INTERFACE])) {
+//        if (in_array($field->getType()->getKind(), [TypeMap::KIND_UNION, TypeMap::KIND_INTERFACE])) {
+        if ($field->getType()->isAbstractType()) {
             $resolvedType = $field->getType()->resolveType($resolvedValue);
             $field->setType($resolvedType);
         }

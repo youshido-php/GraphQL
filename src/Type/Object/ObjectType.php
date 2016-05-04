@@ -20,4 +20,9 @@ final class ObjectType extends AbstractObjectType
     public function build(TypeConfigInterface $config)
     {
     }
+
+    public function getNamedType()
+    {
+        return $this;
+    }
 }
