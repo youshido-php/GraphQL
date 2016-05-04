@@ -41,11 +41,12 @@ $rootMutationType = new ObjectType([
     'name'   => 'RootMutationType',
     'fields' => [
 //        'likePost' => [
-//            'type'    => $postType,
+//            'type'    => new PostType(),
 //            'args'    => [
 //                'id' => new NonNullType(new IntType())
 //            ],
-//            'resolve' => function ($value, $args, PostType $type) {
+//            'resolve' => function ($value, $args, $type) {
+//                // increase like count
 //                return $type->resolve($value, $args);
 //            },
 //        ]

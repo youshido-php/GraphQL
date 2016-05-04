@@ -17,9 +17,10 @@ use Youshido\GraphQL\Type\Field\Field;
  * Class ConfigCallTrait
  * @package Youshido\GraphQL\Type\Config\Traits
  *
- * @method string getName()
  * @method string getDescription()
  * @method AbstractType getType()
+ * @method string asdfasdf()
+ * @method string getKind()
  * @method AbstractType getNamedType()
  * @method $this setType($type)
  * @method Field getField($field)

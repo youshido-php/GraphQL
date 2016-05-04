@@ -11,11 +11,13 @@ namespace Youshido\GraphQL\Type\Object;
 
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Config\Object\InterfaceTypeConfig;
+use Youshido\GraphQL\Type\Config\Traits\ConfigCallTrait;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\TypeMap;
 
 abstract class AbstractInterfaceType extends AbstractType
 {
+    use ConfigCallTrait;
 
     /**
      * ObjectType constructor.
@@ -50,6 +52,11 @@ abstract class AbstractInterfaceType extends AbstractType
     public function getKind()
     {
         return TypeMap::KIND_INTERFACE;
+    }
+
+    public function getNamedType()
+    {
+        return $this;
     }
 
     public function isValidValue($value)

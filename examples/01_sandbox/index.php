@@ -24,5 +24,4 @@ $processor->setSchema(new Schema([
 ]));
 
 $res = $processor->processRequest('{ currentTime }')->getResponseData();
-echo json_encode($res);
-echo "\n\n";
+echo json_encode($res) . "\n\n";

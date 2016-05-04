@@ -49,9 +49,12 @@ abstract class AbstractType implements TypeInterface
         return false;
     }
 
+    /**
+     * @return AbstractType
+     */
     public function getNamedType()
     {
-        return $this;
+        return $this->getType();
     }
 
     public function getNullableType()

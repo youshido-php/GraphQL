@@ -18,10 +18,8 @@ use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
 use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Type\AbstractType;
-use Youshido\GraphQL\Type\AbstractTypeInterface;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Object\AbstractEnumType;
-use Youshido\GraphQL\Type\Object\InputObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 use Youshido\GraphQL\Type\TypeInterface;
@@ -79,7 +77,7 @@ class Processor
         $this->schema->addQuery('__type', $__type);
     }
 
-    public function     processRequest($payload, $variables = [])
+    public function processRequest($payload, $variables = [])
     {
         if ($this->hasErrors()) return $this;
 
@@ -151,18 +149,18 @@ class Processor
 
     /**
      * @param Mutation   $mutation
-     * @param ObjectType $objectType
+     * @param ObjectType $currentLevelSchema
      *
      * @return array|bool|mixed
      */
-    protected function executeMutation(Mutation $mutation, ObjectType $objectType)
+    protected function executeMutation(Mutation $mutation, ObjectType $currentLevelSchema)
     {
-        if (!$this->resolveValidator->checkFieldExist($objectType, $mutation)) {
+        if (!$this->resolveValidator->checkFieldExist($currentLevelSchema, $mutation)) {
             return null;
         }
 
         /** @var Field $field */
-        $field = $objectType->getConfig()->getField($mutation->getName());
+        $field = $currentLevelSchema->getConfig()->getField($mutation->getName());
         $alias = $mutation->getAlias() ?: $mutation->getName();
 
         if (!$this->resolveValidator->validateArguments($field, $mutation, $this->request)) {
@@ -295,7 +293,7 @@ class Processor
                 $index     = count($value) - 1;
                 $namedType = $fieldType->getNamedType();
 
-                if (in_array($namedType->getKind(), [TypeMap::KIND_UNION, TypeMap::KIND_INTERFACE])) {
+                if ($namedType->isAbstractType()) {
                     $namedType = $namedType->getConfig()->resolveType($resolvedValueItem);
                 }
 

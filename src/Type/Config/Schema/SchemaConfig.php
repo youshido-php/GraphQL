@@ -48,7 +48,7 @@ class SchemaConfig extends Config
     }
 
     /**
-     * @return InputObjectType
+     * @return ObjectType
      */
     public function getMutation()
     {

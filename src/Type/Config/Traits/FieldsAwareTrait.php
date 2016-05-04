@@ -32,10 +32,13 @@ trait FieldsAwareTrait
                 continue;
             } elseif ($fieldInfo instanceof AbstractType) {
                 $config = [];
+                // todo remove double config call
                 if ($fieldInfo->getConfig()) {
-                    if ($fieldInfo->getConfig()->get('resolve')) $config['resolve'] = $fieldInfo->getConfig()->get('resolve');
+                    if ($fieldInfo->getConfig()->get('resolve')) {
+                        $config['resolve'] = $fieldInfo->getConfig()->get('resolve');
+                    }
                 }
-                $this->addField($fieldName, $fieldInfo, $config);
+                $this->addField($fieldName, $fieldInfo->getNamedType(), $config);
             } else {
                 $this->addField($fieldName, $fieldInfo['type'], $fieldInfo);
             }

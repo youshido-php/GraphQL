@@ -45,7 +45,7 @@ class PostType extends AbstractObjectType
     public function resolve($value = null, $args = [], $type = null)
     {
         return [
-            "title"     => "Interesting approach",
+            "title"     => "Interesting approach ",
             "summary"   => "This new GraphQL library for PHP works really well",
             "likeCount" => 2
         ];

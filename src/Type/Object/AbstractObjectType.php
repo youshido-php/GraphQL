@@ -43,7 +43,6 @@ abstract class AbstractObjectType extends AbstractType
         $this->config = new ObjectTypeConfig($config, $this);
     }
 
-
     abstract public function resolve($value = null, $args = [], $type = null);
 
     abstract public function build(TypeConfigInterface $config);

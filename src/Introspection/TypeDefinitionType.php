@@ -8,6 +8,7 @@
 namespace Youshido\GraphQL\Introspection;
 
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
+use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\TypeMap;
 
 class TypeDefinitionType extends QueryType
@@ -39,6 +40,6 @@ class TypeDefinitionType extends QueryType
     {
         parent::build($config);
 
-        $config->addArgument('name', TypeMap::TYPE_STRING, ['required' => true]);
+        $config->addArgument('name', new NonNullType(TypeMap::TYPE_STRING));
     }
 }

@@ -15,10 +15,13 @@ class NonNullType extends AbstractType implements CompositeTypeInterface
 
     /**
      * NonNullType constructor.
-     * @param AbstractType $fieldType
+     * @param AbstractType|string $fieldType
      */
     public function __construct($fieldType)
     {
+        if (TypeMap::isScalarType($fieldType)) {
+            $fieldType = TypeMap::getScalarTypeObject($fieldType);
+        }
         $this->_typeOf = $fieldType;
     }
 

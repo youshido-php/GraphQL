@@ -51,7 +51,7 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
         if (!count($field->getConfig()->getArguments())) return true;
 
         $requiredArguments = array_filter($field->getConfig()->getArguments(), function (InputField $argument) {
-            return $argument->getConfig()->get('required');
+            return $argument->getConfig()->getType()->getKind() == TypeMap::KIND_NON_NULL;
         });
 
         $withDefaultArguments = array_filter($field->getConfig()->getArguments(), function (InputField $argument) {

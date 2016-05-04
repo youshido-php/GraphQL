@@ -11,12 +11,13 @@ namespace Youshido\GraphQL\Type\Object;
 
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Config\Object\UnionTypeConfig;
+use Youshido\GraphQL\Type\Config\Traits\ConfigCallTrait;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\TypeMap;
 
 abstract class AbstractUnionType extends AbstractType
 {
-
+    use ConfigCallTrait;
 
     /**
      * ObjectType constructor.
@@ -46,6 +47,8 @@ abstract class AbstractUnionType extends AbstractType
         }
     }
 
+
+
     public function build(TypeConfigInterface $config)
     {
 
@@ -59,6 +62,11 @@ abstract class AbstractUnionType extends AbstractType
     public function getKind()
     {
         return TypeMap::KIND_UNION;
+    }
+
+    public function getNamedType()
+    {
+        return $this;
     }
 
     public function isValidValue($value)
