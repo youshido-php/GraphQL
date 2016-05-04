@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] == "OPTIONS") {
     return;
 }
 
-use Examples\Blog\Schema\LikePostMutation;
+use Examples\Blog\Schema\LikePostMutationObject;
 use Examples\Blog\Schema\PostType;
 use Youshido\GraphQL\Processor;
 use Youshido\GraphQL\Schema;
@@ -50,7 +50,7 @@ $rootMutationType = new ObjectType([
 //                return $type->resolve($value, $args);
 //            },
 //        ]
-        'likePost' => new LikePostMutation()
+        'likePost' => new LikePostMutationObject()
     ]
 ]);
 
