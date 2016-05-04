@@ -29,11 +29,10 @@ if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] === 'application
 $payload   = isset($requestData['query']) ? $requestData['query'] : null;
 $variables = isset($requestData['variables']) ? $requestData['variables'] : null;
 
-$postType      = new PostType();
 $rootQueryType = new ObjectType([
     'name'   => 'RootQueryType',
     'fields' => [
-        'latestPost' => $postType
+        'latestPost' => new PostType()
     ]
 ]);
 
@@ -57,7 +56,7 @@ $rootMutationType = new ObjectType([
 $processor = new Processor();
 $processor->setSchema(new Schema([
     'query'    => $rootQueryType,
-    'mutation' => $rootMutationType,
+//    'mutation' => $rootMutationType,
 ]));
 
 $response = $processor->processRequest($payload, $variables)->getResponseData();

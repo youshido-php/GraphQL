@@ -26,20 +26,21 @@ class PostType extends AbstractObjectType
     public function build(TypeConfigInterface $config)
     {
         $config
-            ->addField('title', new NonNullType(new StringType()), [
-                'description'       => 'This field contains a post title',
-                'isDeprecated'      => true,
-                'deprecationReason' => 'field title is now deprecated',
-                'args'              => [
-                    'truncated' => new BooleanType()
-                ],
-                'resolve'           => function ($value, $args) {
-                    return (!empty($args['truncated'])) ? explode(' ', $value)[0] . '...' : $value;
-                }
-            ])
+//            ->addField('title', new NonNullType(new StringType()), [
+//                'description'       => 'This field contains a post title',
+//                'isDeprecated'      => true,
+//                'deprecationReason' => 'field title is now deprecated',
+//                'args'              => [
+//                    'truncated' => new BooleanType()
+//                ],
+//                'resolve'           => function ($value, $args) {
+//                    return (!empty($args['truncated'])) ? explode(' ', $value)[0] . '...' : $value;
+//                }
+//            ])
+            ->addField('title', new StringType())
             ->addField('summary', new StringType())
             ->addField('likeCount', new IntType());
-        $config->addArgument('id', new IntType());
+//        $config->addArgument('id', new IntType());
     }
 
     public function resolve($value = null, $args = [], $type = null)

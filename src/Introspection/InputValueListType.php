@@ -25,14 +25,15 @@ class InputValueListType extends AbstractListType
     {
         if ($value instanceof Field) {
             /** @var $value Field */
-            if ($value->getConfig()->getType() instanceof AbstractScalarType) {
+            $valueType = $value->getConfig()->getType();
+            if ($valueType instanceof AbstractScalarType) {
                 return [];
             }
 
-            if ($value->getConfig()->getType()->getKind() == TypeMap::KIND_INPUT_OBJECT) {
-                return $value->getConfig()->getType()->getConfig()->getFields() ?: [];
+            if ($valueType->getKind() == TypeMap::KIND_INPUT_OBJECT) {
+                return $valueType->getConfig()->getFields() ?: [];
             } else {
-                return $value->getConfig()->getType()->getConfig() ? $value->getConfig()->getType()->getConfig()->getArguments() : [];
+                return $valueType->getConfig() ? $valueType->getConfig()->getArguments() : [];
             }
         } else {
             if ($value instanceof AbstractScalarType) {

@@ -76,7 +76,8 @@ abstract class AbstractType implements TypeInterface
 
     public function getType()
     {
-        return $this->getConfig() ? $this->getConfig()->getType() : $this;
+        $config = $this->getConfig();
+        return $config && $config->getType() ? $config->getType() : $this;
     }
 
     public function __toString()
