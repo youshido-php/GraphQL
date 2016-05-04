@@ -153,17 +153,13 @@ class TypeValidationRule implements ValidationRuleInterface
     private function isInputField($data, $name = null)
     {
         if (is_object($data)) {
-            return ($data instanceof InputField) || ($data instanceof AbstractInputObjectType);
-        }
-        try {
-            /** @todo need to change it to optimize performance */
-            if (empty($data['name'])) $data['name'] = $name;
-
-            $config = new InputFieldConfig($data);
-
-            return $config->isValid();
-        } catch (ConfigurationException $e) {
-            /** just returning false in this case */
+            if ($data instanceof InputField) {
+                return true;
+            } elseif ($data instanceof AbstractType) {
+                return TypeMap::isInputType($data->getNullableType());
+            }
+        } else {
+            return TypeMap::isInputType($data['type']);
         }
 
         return false;

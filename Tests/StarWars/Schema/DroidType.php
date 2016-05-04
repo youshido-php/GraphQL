@@ -41,7 +41,7 @@ class DroidType extends HumanType
         return [new CharacterInterface()];
     }
 
-    public function resolve($value = null, $args = [])
+    public function resolve($value = null, $args = [], $type = null)
     {
         $droids = StarWarsData::droids();
 

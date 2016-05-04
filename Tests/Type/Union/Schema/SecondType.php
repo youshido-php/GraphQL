@@ -15,7 +15,7 @@ class SecondType extends AbstractObjectType
 {
 
 
-    public function resolve($value = null, $args = [])
+    public function resolve($value = null, $args = [], $type = null)
     {
 
     }

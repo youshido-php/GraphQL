@@ -19,7 +19,7 @@ class FieldListType extends AbstractListType
         return new FieldType();
     }
 
-    public function resolve($value = null, $args = [])
+    public function resolve($value = null, $args = [], $type = null)
     {
         if (!$value || in_array($value->getKind(), [
                 TypeMap::KIND_SCALAR,

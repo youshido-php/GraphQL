@@ -19,7 +19,7 @@ class EnumValueListType extends AbstractListType
         return new EnumValueType();
     }
 
-    public function resolve($value = null, $args = [])
+    public function resolve($value = null, $args = [], $type = null)
     {
         if ($value && $value->getKind() == TypeMap::KIND_ENUM) {
             $data = [];

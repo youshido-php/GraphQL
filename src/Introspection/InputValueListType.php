@@ -21,7 +21,7 @@ class InputValueListType extends AbstractListType
         return new InputValueType();
     }
 
-    public function resolve($value = null, $args = [])
+    public function resolve($value = null, $args = [], $type = null)
     {
         if ($value instanceof Field) {
             /** @var $value Field */

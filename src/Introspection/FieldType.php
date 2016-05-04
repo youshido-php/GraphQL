@@ -31,7 +31,7 @@ class FieldType extends AbstractObjectType
             ->addField('args', new InputValueListType());
     }
 
-    public function resolve($value = null, $args = [])
+    public function resolve($value = null, $args = [], $type = null)
     {
         /** @var $value Field */
         return $value->getType();

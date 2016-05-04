@@ -379,9 +379,7 @@ $rootMutationType =  new ObjectType([
             // we set the argument for our mutation, in our case it's an Int
             // with a composition of NonNull
             'args'    => [
-                'id' => [
-                    'type' => new NonNullType(new IntType())
-                ]
+                'id' => new NonNullType(new IntType())
             ],
             // simple resolve function that always returns 2
             'resolve' => function () {
@@ -406,6 +404,7 @@ echo json_encode($response) . "\n\n";
 
 Let's make it a little bit real. We'll add a "likeCount" field to our `PostType`:
 ```php
+<?php
 // add it after the last ->addField in your build function
   ->addField('likeCount', new IntType())
 //
@@ -413,15 +412,14 @@ Let's make it a little bit real. We'll add a "likeCount" field to our `PostType`
 
 And now let's change our mutation type from the `IntType` to the `PostType` and also change the `resolve` function to be complaint with the the new type we set:
 ```php
+<?php
 $rootMutationType =  new ObjectType([
     'name'   => 'RootMutationType',
     'fields' => [
         'likePost' => [                   
             'type'    => new PostType(),   
             'args'    => [
-                'id' => [
-                    'type' => new NonNullType(new IntType())
-                ]
+                'id' => new NonNullType(new IntType())
             ],
             'resolve' => function ($value, $args) {
                 // adding like count code goes here
@@ -444,9 +442,7 @@ $rootMutationType =  new ObjectType([
         'likePost' => [                   
             'type'    => new PostType(),   
             'args'    => [
-                'id' => [
-                    'type' => new NonNullType(new IntType())
-                ]
+                'id' => new NonNullType(new IntType())
             ],
             'resolve' => function ($value, $args, $type) {
                 // adding like count code goes here
@@ -487,23 +483,93 @@ You can define a new Scalar type by extending the `AbstractScalarType` class alt
 
 Every domain in your business logic will be either extended from the `AbstractObjectType` or created as an instance of `ObjectType` class. In our blog example we used `ObjectType` to create an inline `Post` type and in the object oriented example we extended the `AbstractObjectType` to create a `PostType` class.
 
-Let's take a deeper look on the structure of the object class:
+Let's take a deeper look on the structure of the object type, especially on their fields
 *inline object creation*
 ```php
+<?php
 
 $postType = new ObjectType([
+  // you have to specify a string name
   'name'    => 'Post',
+  // fields is an array of the array structure
   'fields'  => [
-      'title'   => new StringType(),
-      'summary' => new StringType(),
+      // here you have a complex field with a lot of options
+      'title'   => [
+          'type'              => new StringType(),                    // string type
+          'description'       => 'This field contains a post title',  // description
+          'isDeprecated'      => true,                                // marked as deprecated
+          'deprecationReason' => 'field title is now deprecated',     // explain the reason
+          'args'              => [
+              'truncated' => new BooleanType()                        // add an optional argument
+          ],
+          'resolve'           => function ($value, $args) {
+              // used argument to modify a field value
+              return (!empty($args['truncated'])) ? explode(' ', $value)[0] . '...' : $value;
+          }
+      ],
+      // if field just has a type, you can use a short declaration syntax like this
+      'summary' => new StringType(),  
+      'likeCount' => new IntType(),
   ],
-  'resolve' => function () {
+   // arguments for the whole query
+  'args'    => [
+      'id' => new IntType()
+  ],
+  // resolve function for the query
+  'resolve' => function ($value, $args, $type) {
       return [
-          "title"   => "Interesting approach",
-          "summary" => "This new GraphQL library for PHP works really well",
+          'title'   => 'Title for the latest Post',
+          'summary' => 'Post summary',
+          'likeCount' => 2,
       ];
-  }
+  },
 ])
+```
 
+And in comparison, take a look at the Object oriented version with all the same fields:
+```php
+<?php
+
+class PostType extends AbstractObjectType
+{
+
+    public function getName()
+    {
+        return "Post";
+    }
+
+    public function build(TypeConfigInterface $config)
+    {
+        $config
+            ->addField('title', new NonNullType(new StringType()), [
+                'description'       => 'This field contains a post title',
+                'isDeprecated'      => true,
+                'deprecationReason' => 'field title is now deprecated',
+                'args'              => [
+                    'truncated' => new BooleanType()
+                ],
+                'resolve'           => function ($value, $args) {
+                    return (!empty($args['truncated'])) ? explode(' ', $value)[0] . '...' : $value;
+                }
+            ])
+            ->addField('summary', new StringType())
+            ->addField('likeCount', new IntType());
+        $config->addArgument('id', new IntType());
+    }
+
+    public function resolve($value = null, $args = [])
+    {
+        return [
+            "title"     => "Title for the latest Post",
+            "summary"   => "Post summary",
+            "likeCount" => 2
+        ];
+    }
+
+}
 
 ```
+
+Once again, it's not that a big difference between them but having a separate class for the Type will give you a lot of freedom and flexibility in your project
+
+### Interfaces

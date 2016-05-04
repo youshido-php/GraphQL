@@ -22,7 +22,7 @@ class DirectiveListType extends AbstractListType
         return new DirectiveType();
     }
 
-    public function resolve($value = null, $args = [])
+    public function resolve($value = null, $args = [], $type = null)
     {
         return null;
     }

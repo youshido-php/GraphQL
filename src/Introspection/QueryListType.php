@@ -21,7 +21,7 @@ class QueryListType extends AbstractListType
         return new QueryType();
     }
 
-    public function resolve($value = null, $args = [])
+    public function resolve($value = null, $args = [], $type = null)
     {
         $this->types = [];
 

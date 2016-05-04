@@ -15,7 +15,7 @@ use Youshido\GraphQL\Type\TypeMap;
 class DirectiveType extends AbstractObjectType
 {
 
-    public function resolve($value = null, $args = [])
+    public function resolve($value = null, $args = [], $type = null)
     {
         return null; //todo: not supported yet
     }

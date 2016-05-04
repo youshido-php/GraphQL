@@ -49,7 +49,7 @@ class FieldConfig extends Config
             return $resolveFunc($value, $args, $this->getType());
         }
 
-        return $this->getType()->resolve($value, $args);
+        return $this->getType()->resolve($value, $args, $this->getType());
     }
 
     /**

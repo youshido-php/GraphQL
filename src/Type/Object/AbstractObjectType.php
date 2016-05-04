@@ -44,7 +44,7 @@ abstract class AbstractObjectType extends AbstractType
     }
 
 
-    abstract public function resolve($value = null, $args = []);
+    abstract public function resolve($value = null, $args = [], $type = null);
 
     abstract public function build(TypeConfigInterface $config);
 

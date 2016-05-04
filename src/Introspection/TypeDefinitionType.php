@@ -13,7 +13,7 @@ use Youshido\GraphQL\Type\TypeMap;
 class TypeDefinitionType extends QueryType
 {
 
-    public function resolve($value = null, $args = [])
+    public function resolve($value = null, $args = [], $type = null)
     {
         $this->collectTypes(SchemaType::$schema->getQueryType());
         $this->collectTypes(SchemaType::$schema->getMutationType());

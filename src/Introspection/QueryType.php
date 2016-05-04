@@ -21,7 +21,7 @@ class QueryType extends AbstractObjectType
 {
     use TypeCollectorTrait;
 
-    public function resolve($value = null, $args = [])
+    public function resolve($value = null, $args = [], $type = null)
     {
         /** @var Schema|Field $value */
         if ($value instanceof Schema) {

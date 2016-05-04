@@ -9,6 +9,7 @@
 namespace Youshido\GraphQL\Type\Config\Traits;
 
 
+use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Field\InputField;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
@@ -21,7 +22,15 @@ trait ArgumentsAwareTrait
     {
         $sourceArguments = empty($this->data['args']) ? [] : $this->data['args'];
         foreach ($sourceArguments as $argumentName => $argumentInfo) {
-            $this->addArgument($argumentName, $argumentInfo['type'], $argumentInfo);
+            if ($argumentInfo instanceof AbstractType) {
+                $config = [
+                    'type' => $argumentInfo
+                ];
+                $this->addArgument($argumentName, $argumentInfo, $config);
+            } else {
+                $this->addArgument($argumentName, $argumentInfo['type'], $argumentInfo);
+            }
+
         }
     }
 

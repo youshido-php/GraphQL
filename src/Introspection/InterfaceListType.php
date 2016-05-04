@@ -18,7 +18,7 @@ class InterfaceListType extends QueryListType
         return new QueryType();
     }
 
-    public function resolve($value = null, $args = [])
+    public function resolve($value = null, $args = [], $type = null)
     {
         if ($value->getKind() == TypeMap::KIND_OBJECT) {
             return $value->getConfig()->getInterfaces() ?: [];

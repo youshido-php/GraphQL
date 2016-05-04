@@ -24,7 +24,7 @@ class EnumValueType extends AbstractObjectType
             ->addField('isDeprecated', TypeMap::TYPE_BOOLEAN);
     }
 
-    public function resolve($value = null, $args = [])
+    public function resolve($value = null, $args = [], $type = null)
     {
         return null;
     }

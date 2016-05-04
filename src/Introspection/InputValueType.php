@@ -24,7 +24,7 @@ class InputValueType extends AbstractObjectType
             ->addField('defaultValue', TypeMap::TYPE_STRING);
     }
 
-    public function resolve($value = null, $args = [])
+    public function resolve($value = null, $args = [], $type = null)
     {
         return null;
     }

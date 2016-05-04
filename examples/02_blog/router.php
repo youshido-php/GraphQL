@@ -7,6 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] == "OPTIONS") {
     return;
 }
 
+use Examples\Blog\Schema\LikePostMutation;
 use Examples\Blog\Schema\PostType;
 use Youshido\GraphQL\Processor;
 use Youshido\GraphQL\Schema;
@@ -16,6 +17,7 @@ use Youshido\GraphQL\Type\Scalar\IntType;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/Schema/PostType.php';
+require_once __DIR__ . '/Schema/LikePostMutation.php';
 
 if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] === 'application/json') {
     $rawBody     = file_get_contents('php://input');
@@ -27,28 +29,27 @@ if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] === 'application
 $payload   = isset($requestData['query']) ? $requestData['query'] : null;
 $variables = isset($requestData['variables']) ? $requestData['variables'] : null;
 
-$postType = new PostType();
+$postType      = new PostType();
 $rootQueryType = new ObjectType([
-    'name' => 'RootQueryType',
+    'name'   => 'RootQueryType',
     'fields' => [
         'latestPost' => $postType
     ]
 ]);
 
-$rootMutationType =  new ObjectType([
+$rootMutationType = new ObjectType([
     'name'   => 'RootMutationType',
     'fields' => [
-        'likePost' => [
-            'type'    => $postType,
-            'args'    => [
-                'id' => [
-                    'type' => new NonNullType(new IntType())
-                ]
-            ],
-            'resolve' => function ($value, $args, PostType $type) {
-                return $type->resolve($value, $args);
-            },
-        ]
+//        'likePost' => [
+//            'type'    => $postType,
+//            'args'    => [
+//                'id' => new NonNullType(new IntType())
+//            ],
+//            'resolve' => function ($value, $args, PostType $type) {
+//                return $type->resolve($value, $args);
+//            },
+//        ]
+        'likePost' => new LikePostMutation()
     ]
 ]);
 

@@ -35,7 +35,7 @@ class SchemaType extends AbstractObjectType
         return self::$schema;
     }
 
-    public function resolve($value = null, $args = [])
+    public function resolve($value = null, $args = [], $type = null)
     {
         return $this->getSchema();
     }
