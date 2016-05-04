@@ -484,4 +484,4 @@ You can define a new Scalar type by extending the `AbstractScalarType` class alt
 
 ### Objects
 
-Every domain in your business logic will be either extended from the `AbstractObjectType` or created as an instance of `ObjectType` classes. In our blog example we used `ObjectType` to create an inline `Post` type and in the object oriented example we extended the `AbstractObjectType` to create a `PostType` class.
+Every domain in your business logic will be either extended from the `AbstractObjectType` or created as an instance of `ObjectType` class. In our blog example we used `ObjectType` to create an inline `Post` type and in the object oriented example we extended the `AbstractObjectType` to create a `PostType` class.
