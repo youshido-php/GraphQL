@@ -752,3 +752,6 @@ class BannerType extends AbstractObjectType
 
 }
 ```
+
+Imaging that you have a page and you need to get all the content blocks for this page.
+You know that content block could be either `Post` or `Banner`.  

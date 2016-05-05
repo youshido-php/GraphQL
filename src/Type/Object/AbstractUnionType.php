@@ -34,9 +34,9 @@ abstract class AbstractUnionType extends AbstractType
         $this->config = new UnionTypeConfig($config, $this);
     }
 
-    abstract public function resolveType($object);
-
     abstract public function getTypes();
+
+    abstract public function resolveType($object);
 
     public function checkBuild()
     {

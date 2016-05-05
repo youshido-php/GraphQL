@@ -14,6 +14,7 @@ use Youshido\GraphQL\Type\Object\AbstractEnumType;
 use Youshido\GraphQL\Type\Object\AbstractInputObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
+use Youshido\GraphQL\Type\Scalar\StringType;
 
 class TypeMap
 {
@@ -67,6 +68,20 @@ class TypeMap
         } else {
             return self::isScalarType($type);
         }
+    }
+
+    public static function getNamedType($object)
+    {
+        if (is_object($object)) {
+            if ($object instanceof AbstractType) {
+                return $object->getType();
+            }
+        } elseif (is_null($object)) {
+            return null;
+        } elseif (is_scalar($object)) {
+            return new StringType();
+        }
+        throw new \Exception('Invalid type');
     }
 
     /**
