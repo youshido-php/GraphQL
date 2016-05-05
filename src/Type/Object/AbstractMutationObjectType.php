@@ -7,16 +7,8 @@
 
 namespace Youshido\GraphQL\Type\Object;
 
-
-use Youshido\GraphQL\Type\Config\TypeConfigInterface;
-
 abstract class AbstractMutationObjectType extends AbstractObjectType
 {
-
-    public function build(TypeConfigInterface $config)
-    {
-
-    }
 
     public function getType()
     {

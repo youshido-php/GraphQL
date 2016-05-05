@@ -30,11 +30,6 @@ class LikePost extends AbstractObjectType
 
     }
 
-    public function getOutputType()
-    {
-        return new PostType();
-    }
-
     public function getType()
     {
         return new PostType();
@@ -43,11 +38,6 @@ class LikePost extends AbstractObjectType
     public function build(TypeConfigInterface $config)
     {
         $config->addArgument('id', new NonNullType(new IntType()));
-    }
-
-    public function getName()
-    {
-        return 'likePost';
     }
 
 }

@@ -18,7 +18,6 @@ use Youshido\GraphQL\Type\Field\Field;
  * @package Youshido\GraphQL\Type\Config\Traits
  *
  * @method string getDescription()
- * @method AbstractType getType()
  * @method string getKind()
  * @method AbstractType getNamedType()
  * @method $this setType($type)

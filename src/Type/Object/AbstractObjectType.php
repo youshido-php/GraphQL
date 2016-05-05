@@ -71,6 +71,28 @@ abstract class AbstractObjectType extends AbstractType
         return TypeMap::KIND_OBJECT;
     }
 
+    public function getType()
+    {
+        $config = $this->getConfig();
+        return $config && $config->getType() ? $config->getType() : $this;
+    }
+
+    public function getName()
+    {
+        if ($this->config) {
+            return $this->getConfig()->getName();
+        }
+
+        $className = get_called_class();
+        if (substr($className, -4) == 'Type') {
+            $className = substr($className, 0, -4);
+        }
+        if ($prevPos = strrpos($className, '\\')) {
+            $className = substr($className, $prevPos + 1);
+        }
+        return $className;
+    }
+
     /**
      * @return AbstractInterfaceType[]
      */

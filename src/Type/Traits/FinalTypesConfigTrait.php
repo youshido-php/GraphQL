@@ -25,6 +25,11 @@ trait FinalTypesConfigTrait
         return $this->getConfig()->getName();
     }
 
+    public function getType()
+    {
+        return $this;
+    }
+
     public function resolve($value = null, $args = [], $type = null)
     {
         $callable = $this->getConfig()->getResolveFunction();

@@ -18,11 +18,6 @@ use Youshido\GraphQL\Type\Scalar\StringType;
 class PostType extends AbstractObjectType
 {
 
-    public function getName()
-    {
-        return "Post";
-    }
-
     public function build(TypeConfigInterface $config)
     {
         $config

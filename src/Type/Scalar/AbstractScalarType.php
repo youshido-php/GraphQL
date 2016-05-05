@@ -27,6 +27,11 @@ abstract class AbstractScalarType extends AbstractType
         return TypeMap::KIND_SCALAR;
     }
 
+    public function getType()
+    {
+        return $this;
+    }
+
     public function checkBuild()
     {
     }

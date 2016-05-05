@@ -45,11 +45,4 @@ class HumanType extends AbstractObjectType
         return [new CharacterInterface()];
     }
 
-    /**
-     * @return String type name
-     */
-    public function getName()
-    {
-        return 'Human';
-    }
 }

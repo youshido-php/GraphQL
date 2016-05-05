@@ -74,10 +74,12 @@ abstract class AbstractType implements TypeInterface
         return $value;
     }
 
+    /**
+     * @return AbstractType
+     */
     public function getType()
     {
-        $config = $this->getConfig();
-        return $config && $config->getType() ? $config->getType() : $this;
+        return $this;
     }
 
     public function __toString()
