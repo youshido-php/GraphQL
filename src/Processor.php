@@ -239,7 +239,8 @@ class Processor
                     $this->resolveValidator->addError(new ResolveException(sprintf('Not valid value for %s type', ($field->getType()->getKind()))));
                     $value = null;
                 } else {
-                    $value = $field->getType()->resolve($preResolvedValue);
+                    $value = $preResolvedValue;
+                    /** $field->getType()->resolve($preResolvedValue); */
                 }
             } elseif ($field->getType()->getKind() == TypeMap::KIND_NON_NULL) {
                 if (!$field->getType()->isValidValue($preResolvedValue)) {
