@@ -33,8 +33,8 @@ It could be hard to believe, but give it a try and you'll be rewarded with much 
   * [Scalar Types](#scalar-types)
   * [Objects](#objects)
   * [Interfaces](#interfaces)
-  * [Unions](#unions)
   * [Enums](#enums)
+  * [Unions](#unions)
   * [Input Objects](#input-objects)
   * [Lists](#list)
   * [Non-Null](#non-null)
@@ -181,7 +181,7 @@ $rootQueryType = new ObjectType([
 
 Let's create an endpoint to work with our schema so we can actually test everything we do. it will eventually be able to handle requests from the client.
 
-**router.php**
+**index.php**
 ```php
 <?php
 
@@ -209,7 +209,7 @@ $response = $processor->processRequest($payload, [])->getResponseData();
 print_r($response);
 ```
 
-To check if everything is working well, simply execute it – `php router.php`
+To check if everything is working well, simply execute it – `php index.php`
 You should see a result similar to the one described in the previous section:
  ```js
  {
@@ -269,7 +269,7 @@ class PostType extends AbstractObjectType   // extending abstract Object type
 }
 ```
 
-In order to make it work we need to update our `router.php` as well:
+In order to make it work we need to update our `index.php` as well:
 ```php
 <?php
 
@@ -299,7 +299,7 @@ $response = $processor->processRequest($payload, [])->getResponseData();
 echo json_encode($response) . "\n\n"
 ```
 
-Once again, let's make sure everything is working properly by running `php router.php`. You should see the same response you saw for the inline approach.
+Once again, let's make sure everything is working properly by running `php index.php`. You should see the same response you saw for the inline approach.
 
 ### Choose the right approach
 
@@ -344,7 +344,7 @@ mutation {
 }
 ```
 
-In real life you'll more likely have a response of type `Post` for such mutation, but we're going to create a simple example above keep it inside the `router.php`:
+In real life you'll more likely have a response of type `Post` for such mutation, but we're going to create a simple example above keep it inside the `index.php`:
 
 ```php
 <?php
@@ -570,6 +570,152 @@ class PostType extends AbstractObjectType
 
 ```
 
-Once again, it's not that a big difference between them but having a separate class for the Type will give you a lot of freedom and flexibility in your project
+Once again, it's not that a big difference between two approaches but having a separate class for the Type will gives you a lot of freedom and adds some flexibility into the project.
 
 ### Interfaces
+
+GraphQL supports `Interfaces`. You can define Interface and use it as a list item or to make sure that specific objects conform to your interfaces.
+Let's create a `ContentBlockInterface` that will represent something that we can have a `title` and a `summary` from.
+```php
+<?php
+/**
+* ContentBlockInterface.php
+*/
+
+namespace Examples\Blog\Schema;
+
+
+use Youshido\GraphQL\Type\Config\TypeConfigInterface;
+use Youshido\GraphQL\Type\NonNullType;
+use Youshido\GraphQL\Type\Object\AbstractInterfaceType;
+use Youshido\GraphQL\Type\Scalar\StringType;
+
+class ContentBlockInterface extends AbstractInterfaceType
+{
+
+    public function build(TypeConfigInterface $config)
+    {
+        $config->addField('title', new NonNullType(new StringType()));
+        $config->addField('summary', new StringType());
+    }
+
+}
+```
+Most often you'll use only `build` function of the interface to define fields and/or arguments that need to be implemented.
+In order to add this Interface to the `PostType` we have to override the `getInterfaces` method:
+```php
+<?php
+/**
+* PostType.php
+*/
+
+namespace Examples\Blog\Schema;
+
+use Youshido\GraphQL\Type\Config\TypeConfigInterface;
+use Youshido\GraphQL\Type\NonNullType;
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\Scalar\BooleanType;
+use Youshido\GraphQL\Type\Scalar\IntType;
+use Youshido\GraphQL\Type\Scalar\StringType;
+
+class PostType extends AbstractObjectType
+{
+
+    public function build(TypeConfigInterface $config)
+    {
+        $config
+            ->addField('title', new StringType())
+            ->addField('summary', new StringType())
+            ->addField('likeCount', new IntType());
+        $config->addArgument('id', new IntType());
+    }
+
+    public function getInterfaces()
+    {
+        return [new ContentBlockInterface()];
+    }
+
+    public function resolve($value = null, $args = [], $type = null)
+    {
+        return [
+            "title"     => "Post title from the PostType class",
+            "summary"   => "This new GraphQL library for PHP works really well",
+            "likeCount" => 2
+        ];
+    }
+
+}
+
+```
+As you might have noticed there's no `getName` method for both Interface and Type classes – that's a simplified approach available when you want to have your name exactly the same as the class name.
+
+If you run the script as it is right now, you'll get an error:
+```js
+{"errors":[{"message":"Implementation of ContentBlockInterface is invalid for the field title"}]}
+```
+That's because the field definition inside the `PostType` is different from the one described in the `ContentBlockInterface`.
+To fix it we have to declare fields with the same names and same types. We already have `title` but it's a nullable field so we got to change it by adding a non-null wrapper – `new NonNullType(new StringType())`.
+You can check the result by executing our test script, you should got the usual response.
+
+### Enums
+
+GraphQL Enums are a variant on the Scalar type, which represents one of a predefined values.
+Enums serialize as a string: the name of the represented value but can be associated with a numeric(as example) value.
+
+To show you how Enum works we're going to create a new class - `PostStatus`:
+```php
+<?php
+/**
+ * PostStatus.php
+ */
+
+namespace Examples\Blog\Schema;
+
+use Youshido\GraphQL\Type\Object\AbstractEnumType;
+
+class PostStatus extends AbstractEnumType
+{
+    public function getValues()
+    {
+        return [
+            [
+                'value' => 0,
+                'name'  => 'DRAFT',
+            ],
+            [
+                'value' => 1,
+                'name'  => 'PUBLISHED',
+            ]
+        ];
+    }
+
+}
+```
+Now when you have this class created you can add a status field to our `PostType`:
+```php
+<?php
+// add field to the build function of the PostType class
+->addField('status', new PostStatus())
+
+// and resolve a value in resolve function
+return [
+    "title"     => "Post title from the PostType class",
+    "summary"   => "This new GraphQL library for PHP works really well",
+    "status"    => 1,
+    "likeCount" => 2
+];
+
+```
+
+Now you can call the `status` field in your request:
+```php
+$payload  = '{ latestPost { title, status, likeCount } }';
+```
+You should get a result similar to the following:
+```js
+{"data":{"latestPost":{"title":"Post title from the PostType class","status":"PUBLISHED","likeCount":2}}}
+```
+
+### Unions
+
+GraphQL Unions represent an object that could be one of a list of GraphQL Object types.

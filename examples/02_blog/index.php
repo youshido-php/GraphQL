@@ -12,6 +12,8 @@ use Youshido\GraphQL\Type\Scalar\IntType;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/Schema/PostType.php';
+require_once __DIR__ . '/Schema/PostStatus.php';
+require_once __DIR__ . '/Schema/ContentBlockInterface.php';
 require_once __DIR__ . '/Schema/LikePost.php';
 
 $rootQueryType = new ObjectType([
@@ -24,17 +26,6 @@ $rootQueryType = new ObjectType([
 $rootMutationType = new ObjectType([
     'name'   => 'RootMutationType',
     'fields' => [
-//        'likePost' => [
-//            'type'    => new PostType(),
-//            'args'    => [
-//                'id' => new NonNullType(new IntType())
-//            ],
-//            'resolve' => function ($value, $args, $type) {
-//                /** increase like count + 1 */
-//
-//                return $type->resolve($value, $args);
-//            },
-//        ]
         'likePost' => new LikePost()
     ]
 ]);
@@ -45,7 +36,8 @@ $processor->setSchema(new Schema([
     'query'    => $rootQueryType,
     'mutation' => $rootMutationType,
 ]));
-$payload  = 'mutation { likePost(id:5) { title(truncated: false), likeCount } }';
+$payload  = 'mutation { likePost(id:5) { title(truncated: false), status, likeCount } }';
+$payload  = '{ latestPost { title, status, likeCount } }';
 $response = $processor->processRequest($payload, [])->getResponseData();
 
 echo json_encode($response) . "\n\n";

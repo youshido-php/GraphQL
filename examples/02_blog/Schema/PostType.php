@@ -1,10 +1,7 @@
 <?php
-/*
-* This file is a part of GraphQL project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 4/30/16 1:32 PM
-*/
+/**
+ * PostType.php
+ */
 
 namespace Examples\Blog\Schema;
 
@@ -21,7 +18,7 @@ class PostType extends AbstractObjectType
     public function build(TypeConfigInterface $config)
     {
         $config
-            ->addField('title', new NonNullType(new StringType()), [
+            ->addField('oldTitle', new NonNullType(new StringType()), [
                 'description'       => 'This field contains a post title',
                 'isDeprecated'      => true,
                 'deprecationReason' => 'field title is now deprecated',
@@ -32,10 +29,16 @@ class PostType extends AbstractObjectType
                     return (!empty($args['truncated'])) ? explode(' ', $value)[0] . '...' : $value;
                 }
             ])
+            ->addField('title', new NonNullType(new StringType()))
             ->addField('status', new PostStatus())
             ->addField('summary', new StringType())
             ->addField('likeCount', new IntType());
         $config->addArgument('id', new IntType());
+    }
+
+    public function getInterfaces()
+    {
+        return [new ContentBlockInterface()];
     }
 
     public function resolve($value = null, $args = [], $type = null)

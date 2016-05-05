@@ -1,9 +1,6 @@
 <?php
-/*
- * This file is a part of GraphQL project.
- *
- * @author Alexandr Viniychuk <a@viniychuk.com>
- * created: 11:27 PM 5/3/16
+/**
+ * LikePost.php
  */
 
 namespace Examples\Blog\Schema;
@@ -22,6 +19,7 @@ class LikePost extends AbstractObjectType
         /**
          * You can do return $type->resolve($value, $args);
          */
+        return $type->resolve($value, $args);
         return [
             "title"     => "Post title from the LikePost Mutation class",
             "summary"   => "This new GraphQL library for PHP works really well",

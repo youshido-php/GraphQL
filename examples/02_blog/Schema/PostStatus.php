@@ -1,10 +1,7 @@
 <?php
-/*
-* This file is a part of GraphQL project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 4/30/16 1:31 PM
-*/
+/**
+ * PostStatus.php
+ */
 
 namespace Examples\Blog\Schema;
 
