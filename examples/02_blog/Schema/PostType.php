@@ -32,6 +32,7 @@ class PostType extends AbstractObjectType
                     return (!empty($args['truncated'])) ? explode(' ', $value)[0] . '...' : $value;
                 }
             ])
+            ->addField('status', new PostStatus())
             ->addField('summary', new StringType())
             ->addField('likeCount', new IntType());
         $config->addArgument('id', new IntType());
@@ -42,6 +43,7 @@ class PostType extends AbstractObjectType
         return [
             "title"     => "Post title from the PostType class",
             "summary"   => "This new GraphQL library for PHP works really well",
+            "status"    => 1,
             "likeCount" => 2
         ];
     }

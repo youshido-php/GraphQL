@@ -14,6 +14,7 @@ use Youshido\GraphQL\Type\Config\Object\ObjectTypeConfig;
 use Youshido\GraphQL\Type\Config\Traits\ConfigCallTrait;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Field\Field;
+use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 
@@ -28,7 +29,7 @@ use Youshido\GraphQL\Validator\Exception\ResolveException;
  */
 abstract class AbstractObjectType extends AbstractType
 {
-    use ConfigCallTrait;
+    use ConfigCallTrait, AutoNameTrait;
 
     /**
      * ObjectType constructor.
@@ -75,22 +76,6 @@ abstract class AbstractObjectType extends AbstractType
     {
         $config = $this->getConfig();
         return $config && $config->getType() ? $config->getType() : $this;
-    }
-
-    public function getName()
-    {
-        if ($this->config) {
-            return $this->getConfig()->getName();
-        }
-
-        $className = get_called_class();
-        if (substr($className, -4) == 'Type') {
-            $className = substr($className, 0, -4);
-        }
-        if ($prevPos = strrpos($className, '\\')) {
-            $className = substr($className, $prevPos + 1);
-        }
-        return $className;
     }
 
     /**

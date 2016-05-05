@@ -10,11 +10,12 @@ namespace Youshido\GraphQL\Type\Object;
 
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Config\Object\EnumTypeConfig;
+use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\TypeMap;
 
 abstract class AbstractEnumType extends AbstractType
 {
-
+    use AutoNameTrait;
     /**
      * ObjectType constructor.
      * @param $config

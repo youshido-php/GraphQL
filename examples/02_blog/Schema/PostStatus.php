@@ -17,19 +17,14 @@ class PostStatus extends AbstractEnumType
     {
         return [
             [
-                'value' => '0',
+                'value' => 0,
                 'name'  => 'DRAFT',
             ],
             [
-                'value' => '1',
+                'value' => 1,
                 'name'  => 'PUBLISHED',
             ]
         ];
-    }
-
-    public function getName()
-    {
-        return "PostStatus";
     }
 
 }

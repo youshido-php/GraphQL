@@ -13,11 +13,12 @@ use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Config\Object\UnionTypeConfig;
 use Youshido\GraphQL\Type\Config\Traits\ConfigCallTrait;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
+use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\TypeMap;
 
 abstract class AbstractUnionType extends AbstractType
 {
-    use ConfigCallTrait;
+    use ConfigCallTrait, AutoNameTrait;
 
     /**
      * ObjectType constructor.
@@ -32,8 +33,6 @@ abstract class AbstractUnionType extends AbstractType
 
         $this->config = new UnionTypeConfig($config, $this);
     }
-
-    abstract public function getName();
 
     abstract public function resolveType($object);
 

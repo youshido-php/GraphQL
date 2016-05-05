@@ -8,10 +8,11 @@
 namespace Youshido\GraphQL\Type\Object;
 
 use Youshido\GraphQL\Type\Config\Object\EnumTypeConfig;
+use Youshido\GraphQL\Type\Traits\FinalTypesConfigTrait;
 
 final class EnumType extends AbstractEnumType
 {
-
+    use FinalTypesConfigTrait;
     /**
      * ObjectType constructor.
      * @param $config
@@ -28,11 +29,6 @@ final class EnumType extends AbstractEnumType
     public function getValues()
     {
         return $this->getConfig()->getValues();
-    }
-
-    public function getName()
-    {
-        return $this->getConfig()->getName();
     }
 
 }
