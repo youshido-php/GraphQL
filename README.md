@@ -719,3 +719,4 @@ You should get a result similar to the following:
 ### Unions
 
 GraphQL Unions represent an object that could be one of a list of GraphQL Object types.
+To get you an idea of what this is let's create a new type - `BannerType`:

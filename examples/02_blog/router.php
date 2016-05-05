@@ -7,6 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] == "OPTIONS") {
     return;
 }
 
+use Examples\Blog\Schema\BannerType;
 use Examples\Blog\Schema\LikePost;
 use Examples\Blog\Schema\PostType;
 use Youshido\GraphQL\Processor;
@@ -20,6 +21,7 @@ require_once __DIR__ . '/Schema/PostType.php';
 require_once __DIR__ . '/Schema/PostStatus.php';
 require_once __DIR__ . '/Schema/ContentBlockInterface.php';
 require_once __DIR__ . '/Schema/LikePost.php';
+require_once __DIR__ . '/Schema/BannerType.php';
 
 if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] === 'application/json') {
     $rawBody     = file_get_contents('php://input');
@@ -34,7 +36,8 @@ $variables = isset($requestData['variables']) ? $requestData['variables'] : null
 $rootQueryType = new ObjectType([
     'name'   => 'RootQueryType',
     'fields' => [
-        'latestPost' => new PostType()
+        'latestPost' => new PostType(),
+        'randomBanner' => new BannerType(),
     ]
 ]);
 
