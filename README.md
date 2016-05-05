@@ -24,10 +24,10 @@ It could be hard to believe, but give it a try and you'll be rewarded with much 
 
 * [Getting Started](#getting-started)
 * [Installation](#installation)
-* [Example – Creating Blog Schema](#example---creating-blog-schema)
+* [Example – Creating Blog Schema](#example--creating-blog-schema)
   * [Inline approach](#inline-approach)
-  * [Object Oriented approach](#object-oriented)
-* [Start defining your Schema](#define-your-schema)
+  * [Object Oriented approach](#object-oriented-approach)
+  * [Choosing approach for your project](#choosing-approach-for-your-project)
 * [Query Documents](#query-documents)
 * [Type System](#type-system)
   * [Scalar Types](#scalar-types)
@@ -301,7 +301,7 @@ echo json_encode($response) . "\n\n"
 
 Once again, let's make sure everything is working properly by running `php index.php`. You should see the same response you saw for the inline approach.
 
-### Choose the right approach
+### Choosing approach for your project
 
 We would recommend to stick to object oriented approach for the several reasons that matter the most for the GraphQL specifically (also valid as general statements):
  - it makes your Types reusable
@@ -455,7 +455,7 @@ $rootMutationType =  new ObjectType([
 
 Now when you have a basic understanding of how queries and mutations are structured, let's move on to the details of the GraphQL type system and PHP-specific features of GraphQL service.
 
-## Types System
+## Type System
 
 *Type* is a atom of definition in GraphQL Schema. Every field, object, or argument has a type. That obviously means GraphQL is a strongly typed language.
 Types are defined specific for the application, in our case we'll have types like `Post`, `User`, `Comment` and so on.
@@ -720,3 +720,35 @@ You should get a result similar to the following:
 
 GraphQL Unions represent an object that could be one of a list of GraphQL Object types.
 To get you an idea of what this is let's create a new type - `BannerType`:
+```php
+<?php
+/**
+ * BannerType.php
+ */
+
+namespace Examples\Blog\Schema;
+
+use Youshido\GraphQL\Type\Config\TypeConfigInterface;
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\Scalar\StringType;
+
+class BannerType extends AbstractObjectType
+{
+    public function build(TypeConfigInterface $config)
+    {
+        $config
+            ->addField('title', new StringType())
+            ->addField('imageLink', new StringType());
+    }
+
+    public function resolve($value = null, $args = [], $type = null)
+    {
+        return [
+            'title' => 'Banner 1',
+            'imageLink' => 'banner1.jpg'
+        ];
+    }
+
+
+}
+```
