@@ -26,6 +26,7 @@ use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Parser\Ast\Field as AstField;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
+use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidatorInterface;
@@ -148,13 +149,15 @@ class Processor
     }
 
     /**
-     * @param Mutation   $mutation
+     * @param Mutation $mutation
      * @param ObjectType $currentLevelSchema
-     *
-     * @return array|bool|mixed
+     * @return array|null
+     * @throws ConfigurationException
      */
-    protected function executeMutation(Mutation $mutation, ObjectType $currentLevelSchema)
+    protected function executeMutation(Mutation $mutation, $currentLevelSchema)
     {
+        if (!$currentLevelSchema) throw new ConfigurationException('There is no mutation '. $mutation->getName());
+
         if (!$this->resolveValidator->checkFieldExist($currentLevelSchema, $mutation)) {
             return null;
         }

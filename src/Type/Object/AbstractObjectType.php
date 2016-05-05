@@ -21,6 +21,7 @@ use Youshido\GraphQL\Validator\Exception\ResolveException;
  * Class AbstractObjectType
  * @package Youshido\GraphQL\Type\Object
  *
+ * @method bool hasFields()
  * @method bool hasField($field)
  * @method Field getField($field)
  * @method $this addField($name, $type, $config = [])

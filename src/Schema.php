@@ -26,10 +26,6 @@ class Schema
             $config['query'] = new ObjectType(['name' => $this->getName()]);
         }
 
-        if (!array_key_exists('mutation', $config)) {
-            $config['mutation'] = new ObjectType(['name' => $this->getName()]);
-        }
-
         $this->config = new SchemaConfig($config, $this);
 
         $this->build($this->config);
@@ -46,6 +42,9 @@ class Schema
 
     public function addMutation($name, AbstractObjectType $query, $config = [])
     {
+        if (!$this->getMutationType()) {
+            $this->config->setMutation(new ObjectType(['name' => $this->getName()]));
+        }
         $this->getMutationType()->getConfig()->addField($name, $query, $config);
     }
 

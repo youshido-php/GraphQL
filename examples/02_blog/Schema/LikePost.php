@@ -19,7 +19,9 @@ class LikePost extends AbstractObjectType
 {
     public function resolve($value = null, $args = [], $type = null)
     {
-//        return $type->resolve($value, $args);
+        /**
+         * You can do return $type->resolve($value, $args);
+         */
         return [
             "title"     => "Post title from the LikePost Mutation class",
             "summary"   => "This new GraphQL library for PHP works really well",

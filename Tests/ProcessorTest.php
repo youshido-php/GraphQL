@@ -198,7 +198,6 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                                 ['name' => '__Field', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'isDeprecated'], ['name' => 'deprecationReason'], ['name' => 'type'], ['name' => 'args']]],
                                 ['name' => '__Subscription', 'fields' => [['name' => 'name']]],
                                 ['name' => '__Directive', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'args'], ['name' => 'onOperation'], ['name' => 'onFragment'], ['name' => 'onField']]],
-                                ['name' => 'RootSchema', 'fields' => []],
                             ]
                         ]
                     ]
@@ -304,8 +303,10 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->setSchema($schema);
         $processor->processRequest($query);
 
+        $responseData = $processor->getResponseData();
+
         $this->assertEquals(
-            $processor->getResponseData(),
+            $responseData,
             $response
         );
     }
@@ -316,7 +317,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             [
                 '{ latest { name } }',
                 [
-                    'data' => ['latest' => null]
+                    'data' => ['latest' => ['name' => 'Alex']]
                 ]
             ],
             [

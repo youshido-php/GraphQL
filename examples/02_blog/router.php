@@ -39,25 +39,26 @@ $rootQueryType = new ObjectType([
 $rootMutationType = new ObjectType([
     'name'   => 'RootMutationType',
     'fields' => [
-//        'likePost' => [
-//            'type'    => new PostType(),
-//            'args'    => [
-//                'id' => new NonNullType(new IntType())
-//            ],
-//            'resolve' => function ($value, $args, $type) {
-//                // increase like count
-//                return $type->resolve($value, $args);
-//            },
-//        ]
+        'likePostInline' => [
+            'type'    => new PostType(),
+            'args'    => [
+                'id' => new NonNullType(new IntType())
+            ],
+            'resolve' => function ($value, $args, $type) {
+                // increase like count
+                return $type->resolve($value, $args);
+            },
+        ],
         'likePost' => new LikePost()
     ]
 ]);
 
 $processor = new Processor();
-$processor->setSchema(new Schema([
-    'query'    => $rootQueryType,
-//    'mutation' => $rootMutationType,
-]));
+$schema    = new Schema([
+    'query' => $rootQueryType,
+    'mutation' => $rootMutationType,
+]);
+$processor->setSchema($schema);
 
 $response = $processor->processRequest($payload, $variables)->getResponseData();
 

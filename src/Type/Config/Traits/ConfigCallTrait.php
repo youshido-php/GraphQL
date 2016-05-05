@@ -24,6 +24,7 @@ use Youshido\GraphQL\Type\Field\Field;
  * @method $this setType($type)
  * @method Field getField($field)
  * @method bool hasField($field)
+ * @method bool hasFields()
  * @method bool isDeprecated()
  * @method string getDeprecationReason()
  * @property Config $config
@@ -34,7 +35,7 @@ trait ConfigCallTrait
     public function __call($method, $arguments)
     {
         $propertyName     = false;
-        $passAlongMethods = ['hasField', 'addField', 'removeField', 'getFields', 'getField', 'getNamedType'];
+        $passAlongMethods = ['hasField', 'addField', 'removeField', 'getFields', 'hasFields', 'getField', 'getNamedType'];
 
         if (in_array($method, $passAlongMethods)) {
             $this->checkBuild();

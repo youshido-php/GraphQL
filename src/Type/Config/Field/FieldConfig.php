@@ -52,13 +52,6 @@ class FieldConfig extends Config
         return $this->getType()->resolve($value, $args, $this->getType());
     }
 
-    /**
-     * @return null|callable
-     */
-    public function getResolveFunction()
-    {
-        return $this->get('resolve', null);
-    }
 
     public function issetResolve()
     {

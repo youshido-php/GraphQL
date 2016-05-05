@@ -38,6 +38,9 @@ trait FieldsAwareTrait
                 } elseif (empty($config['resolve']) && (method_exists($fieldInfo, 'resolve'))) {
                     $config['resolve'] = [$fieldInfo, 'resolve'];
                 }
+                if ($fieldInfo->getConfig() && $fieldInfo->getConfig()->hasArguments()) {
+                    $config['args'] = $fieldInfo->getConfig()->getArguments();
+                }
                 $this->addField($fieldName, $namedType, $config);
             } else {
                 $this->addField($fieldName, $fieldInfo['type'], $fieldInfo);
@@ -111,6 +114,11 @@ trait FieldsAwareTrait
     public function hasField($name)
     {
         return array_key_exists($name, $this->fields);
+    }
+
+    public function hasFields()
+    {
+        return !empty($this->fields);
     }
 
     /**

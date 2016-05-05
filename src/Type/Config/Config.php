@@ -71,6 +71,14 @@ class Config
         return $this->getType();
     }
 
+    /**
+     * @return null|callable
+     */
+    public function getResolveFunction()
+    {
+        return $this->get('resolve', null);
+    }
+
     protected function build()
     {
     }

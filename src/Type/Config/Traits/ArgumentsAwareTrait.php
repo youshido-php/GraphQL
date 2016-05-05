@@ -22,7 +22,10 @@ trait ArgumentsAwareTrait
     {
         $sourceArguments = empty($this->data['args']) ? [] : $this->data['args'];
         foreach ($sourceArguments as $argumentName => $argumentInfo) {
-            if ($argumentInfo instanceof AbstractType) {
+            if ($argumentInfo instanceof InputField) {
+                $this->arguments[$argumentName] = $argumentInfo;
+                continue;
+            } elseif ($argumentInfo instanceof AbstractType) {
                 $config = [
                     'type' => $argumentInfo
                 ];
@@ -66,6 +69,11 @@ trait ArgumentsAwareTrait
     public function hasArgument($name)
     {
         return array_key_exists($name, $this->arguments);
+    }
+
+    public function hasArguments()
+    {
+        return !empty($this->arguments);
     }
 
     /**
