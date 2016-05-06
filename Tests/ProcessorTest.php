@@ -187,8 +187,8 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                         '__schema' => [
                             'types' => [
                                 ['name' => 'TestSchema', 'fields' => [['name' => 'latest']]],
-                                ['name' => 'latest', 'fields' => [['name' => 'id'], ['name' => 'name']]],
                                 ['name' => 'Int', 'fields' => null],
+                                ['name' => 'latest', 'fields' => [['name' => 'id'], ['name' => 'name']]],
                                 ['name' => 'String', 'fields' => null],
                                 ['name' => '__Schema', 'fields' => [['name' => 'queryType'], ['name' => 'mutationType'], ['name' => 'subscriptionType'], ['name' => 'types'], ['name' => 'directives']]],
                                 ['name' => '__Type', 'fields' => [['name' => 'name'], ['name' => 'kind'], ['name' => 'description'], ['name' => 'ofType'], ['name' => 'inputFields'], ['name' => 'enumValues'], ['name' => 'fields'], ['name' => 'interfaces'], ['name' => 'possibleTypes']]],

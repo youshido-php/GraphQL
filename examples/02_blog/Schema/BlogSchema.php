@@ -14,19 +14,6 @@ class BlogSchema extends AbstractSchema
 {
     public function build(SchemaConfig $config)
     {
-        $config->getMutation()->addFields([
-            'likePost'   => new LikePost(),
-            'createPost' => [
-                'type'   => new PostType(),
-                'args' => [
-                    'post'   => new PostInputType(),
-                    'author' => new StringType()
-                ],
-                'resolve' => function($value, $args, $type) {
-                    return DataProvider::getPost(10);
-                }
-            ]
-        ]);
         $config->getQuery()->addFields([
             'latestPost'           => new PostType(),
             'randomBanner'         => [
@@ -48,7 +35,19 @@ class BlogSchema extends AbstractSchema
                 }
             ]
         ]);
-
+        $config->getMutation()->addFields([
+            'likePost'   => new LikePost(),
+            'createPost' => [
+                'type'   => new PostType(),
+                'args' => [
+                    'post'   => new PostInputType(),
+                    'author' => new StringType()
+                ],
+                'resolve' => function($value, $args, $type) {
+                    return DataProvider::getPost(10);
+                }
+            ]
+        ]);
     }
 
 }

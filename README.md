@@ -38,8 +38,8 @@ It could be hard to believe, but give it a try and you'll be rewarded with much 
   * [Lists](#lists)
   * [Input Objects](#input-objects)
   * [Non-Null](#non-null)
-* [Mutation structure](#mutation-structure)
-* [Schema validation](#schema-validation)
+* [Building your schema](#building-your-schema)
+  * [Mutation helper class](#mutation-helper-class)
 * [Useful information](#useful-information)
   * [GraphiQL tool](#graphiql-tool)
 
@@ -996,7 +996,91 @@ So far we've been working mostly on the request that does not require you to sen
 In order to properly handle and validate that data GraphQL type system provides you an `InputType`. By default all the `Scalar` types are input but if you want to have a single more complicated input type you need to extend an `InputObjectType`.
 
 Let's go ahead and create a `PostInputType` that could be used to create a new Post in our system.
+```php
+<?php
+/**
+ * PostInputType.php
+ */
 
+namespace Examples\Blog\Schema;
+
+
+use Youshido\GraphQL\Type\Config\InputTypeConfigInterface;
+use Youshido\GraphQL\Type\NonNullType;
+use Youshido\GraphQL\Type\Object\AbstractInputObjectType;
+use Youshido\GraphQL\Type\Scalar\StringType;
+
+class PostInputType extends AbstractInputObjectType
+{
+
+    public function build(InputTypeConfigInterface $config)
+    {
+        $config
+            ->addField('title', new NonNullType(new StringType()))
+            ->addField('summary', new StringType());
+    }
+
+
+}
+```
+
+This `InputType` could be used to create a new mutation (we can do it in the `BlogSchema::build` for testing):
+```php
+<?php
+$config->getMutation()->addFields([
+    'likePost'   => new LikePost(),
+    'createPost' => [
+        'type'   => new PostType(),
+        'args' => [
+            'post'   => new PostInputType(),
+            'author' => new StringType()
+        ],
+        'resolve' => function($value, $args, $type) {
+            return DataProvider::getPost(10);
+        }
+    ]
+]);
+```
+
+Try to execute the following mutation so you can see the result:
+```
+mutation {
+  createPost(author: "Alex", post: {title: "helpp", summary: "help2" }) {
+    title
+  }
+}
+```
+> The best way to see the result of your queries/mutations and to inspect the Schema is to use a [GraphiQL tool](#graphiql-tool)
+
+### Non Null
+
+`NonNullType` is really simple to use – consider it as a wrapper that can insure that your field / argument is required and being passed to the resolve function.
+We have used this type many times already so we'll just show you two methods that might be useful in your resolve functions:
+- `getNullableType()`
+- `getNamedType()`
+
+These two can return you a type that was wrapped up in the `NonNullType` so you can get it's fields, arguments or name.
+
+## Building your schema
+
+It's always a good idea to give your heads up about any possible errors as soon as possible, better on the development stage.
+For this purpose specifically we made a lot of Abstract classes that will force you to implement the right methods to reduce amount of errors or, if you're lucky enough – to have none of them.
+If you want to implement a new type consider extending the following classes:
+* AbstractType
+* AbstractScalarType
+* AbstractObjectType
+* AbstractMutationObjectType
+* AbstractInputObjectType
+* AbstractInterfaceType
+* AbstractEnumType
+* AbstractListType
+* AbstractUnionType
+* AbstractSchemaType
+
+### Mutation helper class
+Usually you can create a mutation buy extending `AbstractObjectType` or by creating a new field of `ObjectType` inside your `Schema::build` method.
+It is crucial for the class to have a `getType` method returning the actual OutputType of your mutation.
+There's a class called `AbstractMutationObjectType` that will help you to not forget about OutputType by forcing you to implement a method `getOutputType` that will eventually be used by internal `getType` method.
 
 ## Useful information
 

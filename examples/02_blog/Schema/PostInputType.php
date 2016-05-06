@@ -1,10 +1,7 @@
 <?php
-/*
-* This file is a part of GraphQL project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 5/5/16 11:39 PM
-*/
+/**
+ * PostInputType.php
+ */
 
 namespace Examples\Blog\Schema;
 
