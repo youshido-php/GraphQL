@@ -10,6 +10,7 @@ namespace Youshido\GraphQL\Introspection\Traits;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\CompositeTypeInterface;
 use Youshido\GraphQL\Type\Config\Field\FieldConfig;
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 
@@ -26,6 +27,7 @@ trait TypeCollectorTrait
         if (!$type) {
             return;
         }
+        if (is_object($type) && array_key_exists($type->getName(), $this->types)) return;
 
         switch ($type->getKind()) {
             case TypeMap::KIND_INTERFACE:
@@ -107,6 +109,11 @@ trait TypeCollectorTrait
     private function collectFieldsArgsTypes($type)
     {
         foreach ($type->getConfig()->getFields() as $field) {
+            if ($field->getConfig()->getType() instanceof AbstractObjectType) {
+                foreach($field->getConfig()->getArguments() as $argument) {
+                    $this->collectTypes($argument->getType());
+                }
+            }
             $this->collectTypes($field->getType());
         }
         foreach ($type->getConfig()->getArguments() as $field) {

@@ -25,6 +25,9 @@ class InputValueListType extends AbstractListType
     {
         if ($value instanceof Field) {
             /** @var $value Field */
+            if ($value->getConfig()->hasArguments()) {
+                return $value->getConfig()->getArguments();
+            }
             $valueType = $value->getConfig()->getType();
             if ($valueType instanceof AbstractScalarType) {
                 return [];

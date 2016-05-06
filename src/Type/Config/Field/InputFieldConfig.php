@@ -20,6 +20,7 @@ class InputFieldConfig extends Config
         return [
             'name'        => ['type' => TypeMap::TYPE_STRING, 'required' => true],
             'type'        => ['type' => TypeMap::TYPE_ANY_INPUT, 'required' => true],
+            'resolve'     => ['type' => TypeMap::TYPE_FUNCTION],
             'required'    => ['type' => TypeMap::TYPE_BOOLEAN],
             'default'     => ['type' => TypeMap::TYPE_ANY],
             'description' => ['type' => TypeMap::TYPE_STRING],
