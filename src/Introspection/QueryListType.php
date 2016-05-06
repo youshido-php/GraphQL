@@ -8,15 +8,15 @@
 namespace Youshido\GraphQL\Introspection;
 
 
+use Youshido\GraphQL\AbstractSchema;
 use Youshido\GraphQL\Introspection\Traits\TypeCollectorTrait;
-use Youshido\GraphQL\Schema;
 use Youshido\GraphQL\Type\ListType\AbstractListType;
 
 class QueryListType extends AbstractListType
 {
     use TypeCollectorTrait;
 
-    public function getItem()
+    public function getItemType()
     {
         return new QueryType();
     }
@@ -25,9 +25,11 @@ class QueryListType extends AbstractListType
     {
         $this->types = [];
 
-        /** @var $value Schema $a */
+        /** @var $value AbstractSchema $a */
         $this->collectTypes($value->getQueryType());
-        $this->collectTypes($value->getMutationType());
+        if ($value->getMutationType()->hasFields()) {
+            $this->collectTypes($value->getMutationType());
+        }
 
         return array_values($this->types);
     }

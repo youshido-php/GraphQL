@@ -7,7 +7,7 @@
 
 namespace Youshido\GraphQL\Introspection;
 
-use Youshido\GraphQL\Schema;
+use Youshido\GraphQL\AbstractSchema;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
@@ -16,11 +16,11 @@ use Youshido\GraphQL\Type\TypeMap;
 class SchemaType extends AbstractObjectType
 {
 
-    /** @var  Schema */
+    /** @var AbstractSchema */
     public static $schema;
 
     /**
-     * @param $schema Schema
+     * @param AbstractSchema $schema
      */
     public function setSchema($schema)
     {
@@ -28,7 +28,7 @@ class SchemaType extends AbstractObjectType
     }
 
     /**
-     * @return Schema
+     * @return AbstractSchema
      */
     public function getSchema()
     {

@@ -7,8 +7,8 @@
 
 namespace Youshido\GraphQL\Introspection;
 
+use Youshido\GraphQL\AbstractSchema;
 use Youshido\GraphQL\Introspection\Traits\TypeCollectorTrait;
-use Youshido\GraphQL\Schema;
 use Youshido\GraphQL\Type\CompositeTypeInterface;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Field\Field;
@@ -23,8 +23,8 @@ class QueryType extends AbstractObjectType
 
     public function resolve($value = null, $args = [], $type = null)
     {
-        /** @var Schema|Field $value */
-        if ($value instanceof Schema) {
+        /** @var AbstractSchema|Field $value */
+        if ($value instanceof AbstractSchema) {
             return $value->getQueryType();
         }
 

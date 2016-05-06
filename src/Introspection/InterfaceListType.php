@@ -13,7 +13,7 @@ use Youshido\GraphQL\Type\TypeMap;
 class InterfaceListType extends QueryListType
 {
 
-    public function getItem()
+    public function getItemType()
     {
         return new QueryType();
     }

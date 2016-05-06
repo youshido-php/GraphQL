@@ -7,20 +7,19 @@
 
 namespace Youshido\GraphQL\Introspection;
 
-use Youshido\GraphQL\Schema;
-use Youshido\GraphQL\Type\Config\TypeConfigInterface;
+use Youshido\GraphQL\AbstractSchema;
 use Youshido\GraphQL\Type\Field\Field;
-use Youshido\GraphQL\Type\Object\AbstractObjectType;
-use Youshido\GraphQL\Type\Object\ObjectType;
 
 class MutationType extends QueryType
 {
 
     public function resolve($value = null, $args = [], $type = null)
     {
-        /** @var Schema|Field $value */
-        if ($value instanceof Schema) {
-            return $value->getMutationType();
+        /** @var AbstractSchema|Field $value */
+        if ($value instanceof AbstractSchema) {
+            $res = $value->getMutationType()->hasFields() ? $value->getMutationType() : null;
+//            $res = $value->getMutationType();
+            return $res;
         }
 
         return $value->getConfig()->getType();

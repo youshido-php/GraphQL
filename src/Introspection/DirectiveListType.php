@@ -17,7 +17,7 @@ class DirectiveListType extends AbstractListType
     /**
      * @return AbstractObjectType
      */
-    public function getItem()
+    public function getItemType()
     {
         return new DirectiveType();
     }

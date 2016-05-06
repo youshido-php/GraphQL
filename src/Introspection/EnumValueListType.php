@@ -14,7 +14,7 @@ use Youshido\GraphQL\Type\TypeMap;
 class EnumValueListType extends AbstractListType
 {
 
-    public function getItem()
+    public function getItemType()
     {
         return new EnumValueType();
     }

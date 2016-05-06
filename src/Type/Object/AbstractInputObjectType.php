@@ -13,10 +13,14 @@ use Youshido\GraphQL\Type\Config\InputTypeConfigInterface;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Config\Object\InputObjectTypeConfig;
 use Youshido\GraphQL\Type\Field\Field;
+use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\TypeMap;
 
 abstract class AbstractInputObjectType extends AbstractType
 {
+
+    use AutoNameTrait;
+
     /**
      * ObjectType constructor.
      * @param $config
@@ -35,10 +39,7 @@ abstract class AbstractInputObjectType extends AbstractType
 
     }
 
-    public function build(InputTypeConfigInterface $config)
-    {
-
-    }
+    abstract public function build(InputTypeConfigInterface $config);
 
     public function isValidValue($value)
     {
@@ -47,7 +48,7 @@ abstract class AbstractInputObjectType extends AbstractType
         }
 
         $requiredFields = array_filter($this->getConfig()->getFields(), function (Field $field) {
-            return $field->getConfig()->get('required');
+            return $field->getConfig()->getType()->getKind() == TypeMap::KIND_NON_NULL;
         });
 
         foreach ($value as $valueKey => $valueItem) {

@@ -35,10 +35,7 @@ abstract class AbstractInterfaceType extends AbstractType
 
     abstract public function build(TypeConfigInterface $config);
 
-    public function resolveType($object)
-    {
-        return $object;
-    }
+    abstract public function resolveType($object);
 
     public function checkBuild()
     {
@@ -60,7 +57,12 @@ abstract class AbstractInterfaceType extends AbstractType
 
     public function isValidValue($value)
     {
-        return true;
+        if ($value instanceof AbstractObjectType) {
+            foreach($value->getInterfaces() as $interface) {
+                if ($interface instanceof $this) return true;
+            }
+        }
+        return false;
     }
 
 }

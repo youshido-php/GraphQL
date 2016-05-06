@@ -24,7 +24,7 @@ abstract class AbstractListType extends AbstractObjectType implements CompositeT
     public function __construct($item = null)
     {
         if (!$item) {
-            $item = $this->getItem();
+            $item = $this->getItemType();
         }
 
         $this->config = new ListTypeConfig(['item' => $item], $this);
@@ -33,7 +33,7 @@ abstract class AbstractListType extends AbstractObjectType implements CompositeT
     /**
      * @return AbstractObjectType
      */
-    abstract public function getItem();
+    abstract public function getItemType();
 
     public function isValidValue($value)
     {
@@ -52,7 +52,7 @@ abstract class AbstractListType extends AbstractObjectType implements CompositeT
 
     public function getNamedType()
     {
-        return $this->getItem();
+        return $this->getItemType();
     }
 
 

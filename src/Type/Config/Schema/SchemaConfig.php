@@ -52,6 +52,9 @@ class SchemaConfig extends Config
      */
     public function getMutation()
     {
+//        if (!$this->get('mutation')) {
+//            $this->set('mutation', new ObjectType(['name' => $this->getName()]));
+//        }
         return $this->get('mutation');
     }
 
@@ -69,7 +72,7 @@ class SchemaConfig extends Config
 
     public function getName()
     {
-        return $this->get('name', 'Schema');
+        return $this->get('name', 'RootSchema');
     }
 
 

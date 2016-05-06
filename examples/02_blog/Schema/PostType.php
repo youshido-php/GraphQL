@@ -11,10 +11,10 @@ use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\BooleanType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
+use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 
 class PostType extends AbstractObjectType
 {
-
     public function build(TypeConfigInterface $config)
     {
         $config
@@ -33,7 +33,6 @@ class PostType extends AbstractObjectType
             ->addField('status', new PostStatus())
             ->addField('summary', new StringType())
             ->addField('likeCount', new IntType());
-        $config->addArgument('id', new IntType());
     }
 
     public function getInterfaces()
@@ -43,12 +42,7 @@ class PostType extends AbstractObjectType
 
     public function resolve($value = null, $args = [], $type = null)
     {
-        return [
-            "title"     => "Post title from the PostType class",
-            "summary"   => "This new GraphQL library for PHP works really well",
-            "status"    => 1,
-            "likeCount" => 2
-        ];
+        return DataProvider::getPost(empty($args['id']) ? 1 : $args['id']);
     }
 
 }

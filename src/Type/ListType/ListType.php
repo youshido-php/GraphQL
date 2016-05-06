@@ -18,13 +18,13 @@ final class ListType extends AbstractListType
         getName as getConfigName;
     }
 
-    public function getItem()
+    public function getItemType()
     {
         return $this->config->getItem();
     }
 
     public function getName()
     {
-        return parent::getName();
+        return null;
     }
 }

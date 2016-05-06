@@ -13,6 +13,8 @@ use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Value\Literal;
 use Youshido\GraphQL\Type\Field\InputField;
+use Youshido\GraphQL\Type\Object\AbstractInterfaceType;
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\InputObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
@@ -115,12 +117,20 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
         return true;
     }
 
+    public function assertTypeImplementsInterface(AbstractObjectType $type, AbstractInterfaceType $interface)
+    {
+        if (!$interface->isValidValue($type)) {
+            throw new ResolveException('Type ' . $type->getName() . ' does not implement ' . $interface->getName());
+        };
+
+    }
+
     /**
      * @inheritdoc
      */
-    public function validateResolvedValue($value, $kind)
+    public function validateResolvedValue($value, $type)
     {
-        switch ($kind) {
+        switch ($type->getKind()) {
             case TypeMap::KIND_OBJECT:
             case TypeMap::KIND_INPUT_OBJECT:
             case TypeMap::KIND_INTERFACE:

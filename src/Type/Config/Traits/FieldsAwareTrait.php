@@ -26,7 +26,16 @@ trait FieldsAwareTrait
     public function buildFields()
     {
         $sourceFields = empty($this->data['fields']) ? [] : $this->data['fields'];
-        foreach ($sourceFields as $fieldName => $fieldInfo) {
+        $this->addFields($sourceFields);
+    }
+
+    /**
+     * @param array $fieldsArray
+     * @return $this
+     */
+    public function addFields($fieldsArray)
+    {
+        foreach ($fieldsArray as $fieldName => $fieldInfo) {
             if ($fieldInfo instanceof Field) {
                 $this->fields[$fieldName] = $fieldInfo;
                 continue;
@@ -45,22 +54,8 @@ trait FieldsAwareTrait
             } else {
                 $this->addField($fieldName, $fieldInfo['type'], $fieldInfo);
             }
-
         }
-    }
-
-    /**
-     * @param array $fieldsArray
-     */
-    public function addFields($fieldsArray)
-    {
-        foreach ($fieldsArray as $fieldName => $fieldConfig) {
-            if (is_object($fieldConfig)) {
-                $this->addField($fieldName, $fieldConfig);
-            } else {
-                $this->addField($fieldName, $fieldConfig['type'], $fieldConfig);
-            }
-        }
+        return $this;
     }
 
     public function addField($name, $type, $config = [])

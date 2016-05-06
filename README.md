@@ -35,11 +35,13 @@ It could be hard to believe, but give it a try and you'll be rewarded with much 
   * [Interfaces](#interfaces)
   * [Enums](#enums)
   * [Unions](#unions)
+  * [Lists](#lists)
   * [Input Objects](#input-objects)
-  * [Lists](#list)
   * [Non-Null](#non-null)
 * [Mutation structure](#mutation-structure)
 * [Schema validation](#schema-validation)
+* [Useful information](#useful-information)
+  * [GraphiQL tool](#graphiql-tool)
 
 ## Getting Started
 
@@ -599,6 +601,11 @@ class ContentBlockInterface extends AbstractInterfaceType
         $config->addField('summary', new StringType());
     }
 
+    public function resolveType($object) {
+        // since there's only one type implementing this interface we can return it's type
+        return new PostType();
+    }
+
 }
 ```
 Most often you'll use only `build` function of the interface to define fields and/or arguments that need to be implemented.
@@ -718,8 +725,11 @@ You should get a result similar to the following:
 
 ### Unions
 
-GraphQL Unions represent an object that could be one of a list of GraphQL Object types.
-To get you an idea of what this is let's create a new type - `BannerType`:
+GraphQL Unions represent an object type that could be resolved as one of a specified GraphQL Object types.
+To get you an idea of what this is we'll create a new query field that will return a list of unions.
+
+Imaging that you have a page and you need to get all content blocks for this page. Let content block be either `Post` or `Banner`.
+We'll need to create a `BannerType`:
 ```php
 <?php
 /**
@@ -748,10 +758,251 @@ class BannerType extends AbstractObjectType
             'imageLink' => 'banner1.jpg'
         ];
     }
+}
+```
+Now, we're going to create a `ContentBlockUnion` that will represent a `UnionType`:
+```php
+<?php
+/**
+ * ContentBlockUnion.php
+ */
 
+namespace Examples\Blog\Schema;
 
+use Youshido\GraphQL\Type\Object\AbstractUnionType;
+
+class ContentBlockUnion extends AbstractUnionType
+{
+    public function getTypes()
+    {
+        return [new PostType(), new BannerType()];
+    }
+
+    public function resolveType($object)
+    {
+        return empty($object['id']) ? null : (strpos($object['id'], 'post') !== false ? new PostType() : new BannerType());
+    }
 }
 ```
 
-Imaging that you have a page and you need to get all the content blocks for this page.
-You know that content block could be either `Post` or `Banner`.  
+We're also going to create a simple `DataProvider` that will give us test data for the demonstration:
+```php
+<?php
+/**
+ * DataProvider.php
+ */
+
+namespace Examples\Blog\Schema;
+
+class DataProvider
+{
+    public static function getPost($id)
+    {
+        return [
+            "id"        => "post-" . $id,
+            "title"     => "Post " . $id . " title",
+            "summary"   => "This new GraphQL library for PHP works really well",
+            "status"    => 1,
+            "likeCount" => 2
+        ];
+    }
+
+    public static function getBanner($id)
+    {
+        return [
+            'id'        => "banner-" . $id,
+            'title'     => "Banner " . $id,
+            'imageLink' => "banner" . $id . ".jpg"
+        ];
+    }
+}
+```
+
+Now, we're ready to update our Schema and include `ContentBlockUnion` into it.
+As we're getting our schema bigger we'd like to extract it to a separate file:
+```php
+<?php
+/**
+ * BlogSchema.php
+ */
+
+namespace Examples\Blog\Schema;
+
+
+use Youshido\GraphQL\AbstractSchema;
+use Youshido\GraphQL\Type\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Type\ListType\ListType;
+
+class BlogSchema extends AbstractSchema
+{
+    public function build(SchemaConfig $config)
+    {
+        $config->getQuery()->addFields([
+            'latestPost'           => new PostType(),
+            'randomBanner'         => [
+                'type'    => new BannerType(),
+                'resolve' => function () {
+                    return DataProvider::getBanner(rand(1, 10));
+                }
+            ],
+            'pageContentUnion'     => [
+                'type'    => new ListType(new ContentBlockUnion()),
+                'resolve' => function () {
+                    return [DataProvider::getPost(1), DataProvider::getBanner(1)];
+                }
+            ]
+        ]);
+        $config->getMutation()->addFields([
+            'likePost' => new LikePost()
+        ]);
+    }
+
+}
+```
+Having this separate schema file you should update your `index.php` to look like this:
+```php
+<?php
+
+namespace BlogTest;
+
+use Youshido\GraphQL\Processor;
+use Youshido\GraphQL\Schema;
+
+require_once __DIR__ . '/schema-bootstrap.php';
+/** @var Schema $schema */
+
+$processor = new Processor();
+
+$processor->setSchema($schema);
+$payload  = '{ pageContentUnion { ... on Post { title } ... on Banner { title, imageLink } } }';
+$response = $processor->processRequest($payload, [])->getResponseData();
+
+echo json_encode($response) . "\n\n";
+
+```
+Due to the GraphQL syntax you have to specify fields for each type of object you're getting in the union request.
+If everything was done right you should see the following response in the console:
+```js
+{"data":{"pageContentUnion":[
+    {"title":"Post 1 title","summary":"This new GraphQL library for PHP works really well"},
+    {"title":"Banner 1","imageLink":"banner1.jpg"}
+]}}
+```
+Also, you might want to check out how to use [GraphiQL tool](#graphiql-tool) to get a visual representation of what you're doing here.
+
+### Lists
+
+As you've seen in the previous example `Lists` are used to create a separate type – list of any items that have GraphQL type.
+List type can also be created using Interface which gives you a flexibility in defining your schema.
+Let's go ahead and add that type of field to out BlogSchema:
+```php
+<?php
+/**
+ * BlogSchema.php
+ */
+
+namespace Examples\Blog\Schema;
+
+use Youshido\GraphQL\AbstractSchema;
+use Youshido\GraphQL\Type\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Type\ListType\ListType;
+
+class BlogSchema extends AbstractSchema
+{
+    public function build(SchemaConfig $config)
+    {
+        $config->getQuery()->addFields([
+            'latestPost'           => new PostType(),
+            'randomBanner'         => [
+                'type'    => new BannerType(),
+                'resolve' => function () {
+                    return DataProvider::getBanner(rand(1, 10));
+                }
+            ],
+            'pageContentUnion'     => [
+                'type'    => new ListType(new ContentBlockUnion()),
+                'resolve' => function () {
+                    return [DataProvider::getPost(1), DataProvider::getBanner(1)];
+                }
+            ],
+            'pageContentInterfaced' => [
+                'type'    => new ListType(new ContentBlockInterface()),
+                'resolve' => function () {
+                    return [DataProvider::getPost(2), DataProvider::getBanner(3)];
+                }
+            ]
+        ]);
+        $config->getMutation()->addFields([
+            'likePost' => new LikePost()
+        ]);
+    }
+
+}
+```
+We added a list of `ContentBlockInterface` as a type of `pageContentInterfaced` field and returning a Post and a Banner in resolve function.
+Now, our payload will be very simple:
+```php
+<?php
+$payload  = '{ pageContentInterface { title} }';
+```
+Be aware, because our `BannerType` doesn't implement interface we would get an error:
+```js
+{ "errors": [ "message": "Type Banner does not implement ContentBlockInterface" } ]}
+```
+To fix this we just need to implement the interface by implementing `getInterfaces` method and adding the proper field definitions to our `BannerType`:
+
+Let's implement our `ContentBlockInterface` in the `BannerType`:
+```php
+<?php
+/**
+ * BannerType.php
+ */
+
+namespace Examples\Blog\Schema;
+
+use Youshido\GraphQL\Type\Config\TypeConfigInterface;
+use Youshido\GraphQL\Type\NonNullType;
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\Scalar\StringType;
+
+class BannerType extends AbstractObjectType
+{
+    public function build(TypeConfigInterface $config)
+    {
+        $config
+            ->addField('title', new NonNullType(new StringType()))
+            ->addField('summary', new StringType())
+            ->addField('imageLink', new StringType());
+    }
+
+    public function resolve($value = null, $args = [], $type = null)
+    {
+        return DataProvider::getBanner(1);
+    }
+
+    public function getInterfaces()
+    {
+        return [new ContentBlockInterface()];
+    }
+}
+```
+Send the request again and you'll get a nice response with titles of the both Post and Banner:
+```js
+{"data":{"pageContentInterface":[{"title":"Post 2 title"},{"title":"Banner 3"}]}}
+```
+
+### Input Objects
+So far we've been working mostly on the request that does not require you to send any kind of data, but in real life you'll have a lot of requests – mutations where you'll be sending different kind of form – login, registration, create post and other data to the server.
+In order to properly handle and validate that data GraphQL type system provides you an `InputType`. By default all the `Scalar` types are input but if you want to have a single more complicated input type you need to extend an `InputObjectType`.
+
+Let's go ahead and create a `PostInputType` that could be used to create a new Post in our system.
+
+
+## Useful information
+
+We tried to put together some of the useful links and references that might help you to quicker become a better GraphQL developer
+
+### GraphiQL Tool
+To improve our testing experience even more we suggest to start using GraphiQL client, that's included in our examples. It's a JavaScript GraphQL Schema Explorer.
+To use it – run the `server.sh` from the `examples/02_blog/` folder and open the `examples/GraphiQL/index.html` file in your browser.
+You'll see a nice looking editor that has an autocomplete function and contains all information about your current Schema on the right side in the Docs sidebar.

@@ -20,6 +20,7 @@ use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Object\AbstractEnumType;
+use Youshido\GraphQL\Type\Object\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 use Youshido\GraphQL\Type\TypeInterface;
@@ -47,7 +48,7 @@ class Processor
     /** @var SchemaValidator */
     protected $schemaValidator;
 
-    /** @var Schema */
+    /** @var AbstractSchema */
     protected $schema;
 
     /** @var Request */
@@ -59,7 +60,7 @@ class Processor
         $this->schemaValidator  = new SchemaValidator();
     }
 
-    public function setSchema(Schema $schema)
+    public function setSchema(AbstractSchema $schema)
     {
         if (!$this->schemaValidator->validate($schema)) {
             $this->mergeErrors($this->schemaValidator);
@@ -172,7 +173,7 @@ class Processor
 
         $resolvedValue = $this->resolveValue($field, null, $mutation);
 
-        if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $field->getType()->getKind())) {
+        if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $field->getType())) {
             $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolved value for mutation "%s"', $field->getType()->getName())));
 
             return [$alias => null];
@@ -272,7 +273,7 @@ class Processor
             return $resolvedValue;
         }
 
-        if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $field->getType()->getKind())) {
+        if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $field->getType())) {
             $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolved value for query "%s"', $field->getType()->getName())));
 
             return null;
@@ -298,7 +299,11 @@ class Processor
                 $namedType = $fieldType->getNamedType();
 
                 if ($namedType->isAbstractType()) {
-                    $namedType = $namedType->getConfig()->resolveType($resolvedValueItem);
+                    $resolvedType = $namedType->getConfig()->resolveType($resolvedValueItem);
+                    if ($namedType instanceof AbstractInterfaceType) {
+                        $this->resolveValidator->assertTypeImplementsInterface($resolvedType, $namedType);
+                    }
+                    $namedType = $resolvedType;
                 }
 
                 $value[$index] = $this->processQueryFields($query, $namedType, $resolvedValueItem, $value[$index]);
@@ -384,7 +389,6 @@ class Processor
     {
         $resolvedValue = $field->resolve($contextValue, $this->parseArgumentsValues($field, $query), $field->getType());
 
-//        if (in_array($field->getType()->getKind(), [TypeMap::KIND_UNION, TypeMap::KIND_INTERFACE])) {
         if ($field->getType()->isAbstractType()) {
             $resolvedType = $field->getType()->resolveType($resolvedValue);
             $field->setType($resolvedType);

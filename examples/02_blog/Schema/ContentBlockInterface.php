@@ -20,4 +20,8 @@ class ContentBlockInterface extends AbstractInterfaceType
         $config->addField('summary', new StringType());
     }
 
+    public function resolveType($object)
+    {
+        return empty($object['id']) ? null : (strpos($object['id'], 'post') !== false ? new PostType() : new BannerType());
+    }
 }

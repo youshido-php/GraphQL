@@ -14,55 +14,7 @@ use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\InputObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 
-class Schema
+final class Schema extends AbstractSchema
 {
-
-    /** @var SchemaConfig */
-    protected $config;
-
-    public function __construct($config = [])
-    {
-        if (!array_key_exists('query', $config)) {
-            $config['query'] = new ObjectType(['name' => $this->getName()]);
-        }
-
-        $this->config = new SchemaConfig($config, $this);
-
-        $this->build($this->config);
-    }
-
-    public function build(SchemaConfig $config)
-    {
-    }
-
-    public function addQuery($name, AbstractObjectType $query, $config = [])
-    {
-        $this->getQueryType()->getConfig()->addField($name, $query, $config);
-    }
-
-    public function addMutation($name, AbstractObjectType $query, $config = [])
-    {
-        if (!$this->getMutationType()) {
-            $this->config->setMutation(new ObjectType(['name' => $this->getName()]));
-        }
-        $this->getMutationType()->getConfig()->addField($name, $query, $config);
-    }
-
-    final public function getQueryType()
-    {
-        return $this->config->getQuery();
-    }
-
-    final public function getMutationType()
-    {
-        return $this->config->getMutation();
-    }
-
-    public function getName()
-    {
-        $defaultName = 'RootSchema';
-
-        return $this->config ? $this->config->get('name', $defaultName) : $defaultName;
-    }
-
+    public function build(SchemaConfig $config) {}
 }

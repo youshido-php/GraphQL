@@ -8,13 +8,16 @@
 
 namespace Youshido\Tests\DataProvider;
 
-use Youshido\GraphQL\Schema;
+use Youshido\GraphQL\AbstractSchema;
 use Youshido\GraphQL\Type\Config\Schema\SchemaConfig;
-use Youshido\GraphQL\Type\Config\TypeConfigInterface;
-use Youshido\GraphQL\Type\ListType\ListType;
 
-class TestSchema extends Schema
+
+class TestSchema extends AbstractSchema
 {
+    public function build(SchemaConfig $config)
+    {
+    }
+
 
     public function getName()
     {

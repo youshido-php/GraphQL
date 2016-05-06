@@ -9,7 +9,7 @@
 namespace Youshido\GraphQL\Validator\SchemaValidator;
 
 
-use Youshido\GraphQL\Schema;
+use Youshido\GraphQL\AbstractSchema;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerInterface;
@@ -20,12 +20,12 @@ class SchemaValidator implements ErrorContainerInterface
 {
     use ErrorContainerTrait;
 
-    public function validate(Schema $schema)
+    public function validate(AbstractSchema $schema)
     {
         try {
             foreach ($schema->getQueryType()->getConfig()->getFields() as $field) {
                 if ($field->getType() instanceof AbstractObjectType) {
-                    $this->assertObjectImplementsInterface($field->getType());
+                    $this->assertInterfaceImplementationCorrect($field->getType());
                 }
             }
         } catch (\Exception $e) {
@@ -37,7 +37,7 @@ class SchemaValidator implements ErrorContainerInterface
         return true;
     }
 
-    protected function assertObjectImplementsInterface(AbstractObjectType $type)
+    protected function assertInterfaceImplementationCorrect(AbstractObjectType $type)
     {
         if (!$type->getInterfaces()) return true;
 

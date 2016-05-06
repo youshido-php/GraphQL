@@ -8,9 +8,9 @@
 namespace Youshido\GraphQL\Type\Field;
 
 
-use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Config\Field\FieldConfig;
 use Youshido\GraphQL\Type\Config\Traits\ConfigCallTrait;
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
 
 /**
  * Class Field
@@ -37,10 +37,14 @@ class Field
         return $this->config;
     }
 
-    public function checkBuild()
+    /**
+     * @return AbstractObjectType
+     */
+    public function getType()
     {
-
+        return $this->config->get('type');
     }
+
 
     public function resolve($value, $args, $type)
     {

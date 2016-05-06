@@ -16,7 +16,7 @@ use Youshido\GraphQL\Type\TypeMap;
 class InputValueListType extends AbstractListType
 {
 
-    public function getItem()
+    public function getItemType()
     {
         return new InputValueType();
     }
