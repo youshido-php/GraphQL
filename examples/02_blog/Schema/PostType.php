@@ -5,13 +5,11 @@
 
 namespace Examples\Blog\Schema;
 
-use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\BooleanType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
-use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 
 class PostType extends AbstractObjectType
 {
