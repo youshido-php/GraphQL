@@ -48,7 +48,7 @@ $processor->setSchema(new Schema([
     'query'    => $rootQueryType,
     'mutation' => $rootMutationType,
 ]));
-$payload  = 'mutation { likePost(id:5) }';
 
+$payload  = 'mutation { likePost(id:5) }';
 $processor->processRequest($payload);
 echo json_encode($processor->getResponseData()) . "\n";
