@@ -28,7 +28,7 @@ class DirectiveType extends AbstractObjectType
         return '__Directive';
     }
 
-    public function build(TypeConfigInterface $config)
+    public function build($config)
     {
         $config
             ->addField('name', TypeMap::TYPE_STRING)

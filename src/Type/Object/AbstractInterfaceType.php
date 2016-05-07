@@ -33,17 +33,7 @@ abstract class AbstractInterfaceType extends AbstractType
         $this->config = new InterfaceTypeConfig($config, $this);
     }
 
-    abstract public function build(TypeConfigInterface $config);
-
     abstract public function resolveType($object);
-
-    public function checkBuild()
-    {
-        if (!$this->isBuild) {
-            $this->isBuild = true;
-            $this->build($this->config);
-        }
-    }
 
     public function getKind()
     {

@@ -15,7 +15,7 @@ use Youshido\GraphQL\Type\TypeMap;
 class InputValueType extends AbstractObjectType
 {
 
-    public function build(TypeConfigInterface $config)
+    public function build($config)
     {
         $config
             ->addField('name', TypeMap::TYPE_STRING)

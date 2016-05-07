@@ -4,21 +4,20 @@
 [![Code Coverage](https://scrutinizer-ci.com/g/Youshido/GraphQL/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Youshido/GraphQL/?branch=master)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/8b8ab2a2-32fb-4298-a986-b75ca523c7c9/mini.png)](https://insight.sensiolabs.com/projects/8b8ab2a2-32fb-4298-a986-b75ca523c7c9)
 
-This is a clean PHP realization of the GraphQL protocol based on the working draft of the specification located on https://github.com/facebook/graphql.
+This is a pure PHP realization of the GraphQL protocol based on the working draft of the official GraphQL Specification located on https://github.com/facebook/graphql.
 
-GraphQL is a modern replacement of the REST API approach. It advanced in many ways and has fundamental improvements over the old not-so-good REST:
+GraphQL is a modern replacement of the almost obsolete REST approach to present API. It's been almost 16 years since the REST idea was found in 2000 by Roy Fielding. With all credit to everything we accomplished using REST it's time to change for something better.
+GraphQL advanced in many ways and has fundamental improvements over the old good REST:
 
  - self-checks embedded on the ground level of your backend architecture
- - reusable API for different client versions and devices – no need in "/v1" and "/v2" anymore
- - a complete new level of distinguishing the backend and the frontend logic
- - easily generated documentation and incredibly easy way to explore API for other developers
- - once your architecture is complete – simple changes on the client does not require you to change API
+ - reusable API for different client versions and devices, i.e. no more need in maintaining "/v1" and "/v2"
+ - a complete new level of distinguishing of the backend and frontend logic
+ - easily generated documentation and incredibly intuitive way to explore created API
+ - once your architecture is complete – most client-based changes does not require backend modifications
 
-It could be hard to believe, but give it a try and you'll be rewarded with much better architecture and so much easier to support code.
+It could be hard to believe but give it a try and you'll be rewarded with much better architecture and so much easier to support code.
 
-*Current package is and will be trying to be kept up with the latest revision of the GraphQL specification which is now of April 2016.*
-
-
+> Current package is and will be trying to be kept up to date with the latest revision of the official GraphQL Specification which is now of April 2016.
 
 ## Table of Contents
 
@@ -45,14 +44,14 @@ It could be hard to believe, but give it a try and you'll be rewarded with much 
 
 ## Getting Started
 
-You should be better off starting with some examples, and "Star Wars" become a somewhat "Hello world" example for the GraphQL frameworks.
-We have that too and if you looking for just that – go directly by this link – [Star Wars example](https://github.com/Youshido/GraphQL/Tests/StarWars).
-On the other hand based on the feedback we prepared a step-by-step for those who want to get up to speed fast.
+You should be better off starting with some examples, and "Star Wars" become a somewhat "Hello world" example for the GraphQL implementations.
+We have that too and if you're looking for just that go directly by this link – [Star Wars example](https://github.com/Youshido/GraphQL/Tests/StarWars).
+On the other hand based on the feedback we prepared a step-by-step guide for those who wants to get up to speed bit by bit.
 
 ### Installation
 
-You should simply install this package using the composer. If you're not familiar with it you should check out the [manual](https://getcomposer.org/doc/00-intro.md).
-Add the following package to your `composer.json`:
+You should simply install this package using the composer. If you're not familiar with it you should check out their [manual](https://getcomposer.org/doc/00-intro.md).
+Add the following package to your `composer.json` (or simply create a new file with this content):
 
  ```
  {
@@ -61,7 +60,8 @@ Add the following package to your `composer.json`:
      }
  }
  ```
-After you have created the `composer.json` simply run `composer update`.
+Run `composer update`.
+
 Alternatively you can do the following sequence:
 ```sh
 mkdir graphql-test && cd graphql-test
@@ -69,9 +69,11 @@ composer init
 composer require youshido/graphql
 ```
 
-After the successful message, Let's check if everything is good by setting up a simple schema that will return current time.
-*(you can find this example in the examples directory – [01_sandbox](https://github.com/Youshido/GraphQL/examples/01_sandbox))*
+Having the previous step done you're ready to create your first GraphQL Schema and check if you've successful installation.
+Your simple schema will accept one request `currentTime` and response with a formatted time string.
+> you can find this example in the examples directory – [01_sandbox](https://github.com/Youshido/GraphQL/examples/01_sandbox).
 
+Create an `index.php` file with the following content:
 ```php
 <?php
 namespace Sandbox;
@@ -98,35 +100,39 @@ $processor->setSchema(new Schema([
     ])
 ]));
 
-$res = $processor->processRequest('{ currentTime }')->getResponseData();
-print_r($res);
+$processor->processRequest('{ currentTime }');
+echo json_encode($processor->getResponseData()) . "\n";
 ```
 
-If everything was set up correctly – you should see response with your current time:
+Now you can run `php index.php` and if everything was set up correctly you should see the response with your current time:
  ```js
  {
     data: { currentTime: "2016-05-01 19:27pm" }
  }
  ```
 
-If not – check that you have the latest composer version and that you've created your test file in the same directory you have `vendor` folder in.
-You can always use a script from `examples` folder. Simply run `php vendor/youshido/GraphQL/examples/01_sandbox/index.php`.
+If you're having any troubles here are steps to troubleshoot them:
+* check that you have the latest composer version (`composer self-update`)
+* your `index.php` file is created in the same directory you have `vendor` folder in (presumably in`graphql-test`)
+* last but not least, you have php-cli installed and running and it's version >= 5.3 (`php -v`)
+
+Also, you can always run a script from `examples` folder. Simply run `php vendor/youshido/GraphQL/examples/01_sandbox/index.php`.
 
 ## Example – Creating Blog Schema
 
 For our learning example we'll architect a GraphQL Schema for the Blog.
 
-We'll keep it simple so our Blog will have Users who write Posts and leave Comments.
-Here's an example of the query that returns title and summary of the latest Post:
+To keep it simple we'll just have Users who can write Posts and leave Comments.
+Take a look at the example query that returns title and summary of the latest Post:
  ```
  latestPost {
      title,
      summary
  }
  ```
-As you can see, GraphQL query is a simple text query structured very much similar to the json or yaml format.
+As you can see, GraphQL query is a simple text query structured very much similar to the json format.
 
-Supposedly our server should reply with a response structured like following:
+Supposedly our server should reply with a json response structured the following way:
  ```js
  {
     data: {
@@ -142,16 +148,17 @@ Let's go ahead and create a backend that can handle that.
 
 ### Creating Post schema
 
-We believe you'll be using our package along with your favorite framework (we have a Symfony version [here](http://github.com/Youshido/GraphqlBundle)).
-But for the purpose of the current example we'll keep it as plain php code.
-*(you can check out the complete example by the following link https://github.com/Youshido/GraphQL/examples/02_Blog )*
+You'll probably be using our package along with your favorite framework (we have a Symfony version [here](http://github.com/Youshido/GraphqlBundle)).
+But for the purpose of the current example we'll keep it all examples as plain php code.
+*(Complete example of the Blog schema available by the following link https://github.com/Youshido/GraphQL/examples/02_Blog)*
 
 We'll take a quick look on different approaches you can use to define your schema.
-Even though inline approach might seem to be easier and faster we strongly recommend to use an object based because it will give you more flexibility and freedom as your project grows.
+Each of them has it's own pros and cons, inline approach might seem to be easier and faster when object oriented gives you more flexibility and freedom as your project grows.
+We believe that you should architect your schema using the OOP approach and use inline for small implementations where it's appropriate.
 
 #### Inline approach
 
-So we'll start by creating the Post type. For now we'll have only two fields – title and summary:
+Let's start by creating the Post type. For now we'll have only two fields – a title and a summary:
 
 **inline-schema.php**
 ```php
@@ -168,12 +175,12 @@ $rootQueryType = new ObjectType([
             'name'    => 'Post', // name of our type – "Post"
             'fields'  => [
                 'title'   => new StringType(),  // defining the "title" field, type - String
-                'summary' => new StringType(),  // defining the "summary" field, type is also String
+                'summary' => new StringType(),  // defining the "summary" field, also a String type
             ],
             'resolve' => function () {          // this is a resolve function
                 return [                        // for now it will return a static array with data
                     "title"   => "New approach in API has been revealed",
-                    "summary" => "This post will describe a new approach to create and maintain APIs",
+                    "summary" => "This post describes a new approach to create and maintain APIs",
                 ];
             }
         ])
@@ -181,7 +188,8 @@ $rootQueryType = new ObjectType([
 ]);
 ```
 
-Let's create an endpoint to work with our schema so we can actually test everything we do. it will eventually be able to handle requests from the client.
+Let's create an endpoint to work with our schema so we can actually test what we do.
+*Later on we'll add an ability to handle requests from the client.*
 
 **index.php**
 ```php
@@ -195,20 +203,17 @@ use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
 
 require_once __DIR__ . '/vendor/autoload.php';
-$rootQueryType = new ObjectType([
-    'name' => 'RootQueryType',
-]);
-
 require_once __DIR__ . '/inline-schema.php';       // including our schema
+/** @var ObjectType $rootQueryType */
 
 $processor = new Processor();
 $processor->setSchema(new Schema([
     'query' => $rootQueryType
 ]));
 $payload = '{ latestPost { title, summary } }';
-$response = $processor->processRequest($payload, [])->getResponseData();
 
-print_r($response);
+$processor->processRequest($payload);
+echo json_encode($processor->getResponseData()) . "\n";
 ```
 
 To check if everything is working well, simply execute it – `php index.php`

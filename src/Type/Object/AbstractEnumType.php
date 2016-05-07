@@ -50,9 +50,7 @@ abstract class AbstractEnumType extends AbstractType
 
     abstract public function getValues();
 
-    public function checkBuild()
-    {
-    }
+    public function build($config) {}
 
     public function serialize($value)
     {

@@ -15,7 +15,7 @@ use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 
 class PostType extends AbstractObjectType
 {
-    public function build(TypeConfigInterface $config)
+    public function build($config)
     {
         $config
             ->addField('oldTitle', new NonNullType(new StringType()), [

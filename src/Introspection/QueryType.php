@@ -39,7 +39,7 @@ class QueryType extends AbstractObjectType
         return '__Type';
     }
 
-    public function build(TypeConfigInterface $config)
+    public function build($config)
     {
         $config
             ->addField('name', TypeMap::TYPE_STRING)

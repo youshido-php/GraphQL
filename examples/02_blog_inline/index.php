@@ -18,6 +18,6 @@ $processor->setSchema(new Schema([
     'query' => $rootQueryType
 ]));
 $payload  = '{ latestPost { title(truncated: true), summary } }';
-$response = $processor->processRequest($payload, [])->getResponseData();
 
-echo json_encode($response) . "\n\n";
+$processor->processRequest($payload);
+echo json_encode($processor->getResponseData()) . "\n";

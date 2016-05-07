@@ -38,20 +38,7 @@ abstract class AbstractUnionType extends AbstractType
 
     abstract public function resolveType($object);
 
-    public function checkBuild()
-    {
-        if (!$this->isBuild) {
-            $this->isBuild = true;
-            $this->build($this->config);
-        }
-    }
-
-
-
-    public function build(TypeConfigInterface $config)
-    {
-
-    }
+    public function build($config) {}
 
     public function resolve($value = null, $args = [])
     {

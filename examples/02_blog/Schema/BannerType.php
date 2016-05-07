@@ -12,7 +12,7 @@ use Youshido\GraphQL\Type\Scalar\StringType;
 
 class BannerType extends AbstractObjectType
 {
-    public function build(TypeConfigInterface $config)
+    public function build($config)
     {
         $config
             ->addField('title', new NonNullType(new StringType()))

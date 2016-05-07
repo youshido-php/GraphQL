@@ -20,7 +20,7 @@ class SecondType extends AbstractObjectType
 
     }
 
-    public function build(TypeConfigInterface $config)
+    public function build($config)
     {
         $config
             ->addField('name', 'string')

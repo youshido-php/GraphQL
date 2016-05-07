@@ -15,7 +15,7 @@ use Youshido\GraphQL\Type\TypeMap;
 
 class CharacterInterface extends AbstractInterfaceType
 {
-    public function build(TypeConfigInterface $config)
+    public function build($config)
     {
         $config
             ->addField('id', TypeMap::TYPE_ID, ['required' => true])

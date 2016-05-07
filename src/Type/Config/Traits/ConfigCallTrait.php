@@ -37,9 +37,8 @@ trait ConfigCallTrait
         $passAlongMethods = ['hasField', 'addField', 'addFields', 'removeField', 'getFields', 'hasFields', 'getField', 'getNamedType'];
 
         if (in_array($method, $passAlongMethods)) {
-            $this->checkBuild();
 
-            return call_user_func_array([$this->config, $method], $arguments);
+            return call_user_func_array([$this->getConfig(), $method], $arguments);
         } elseif (substr($method, 0, 3) == 'get') {
             $propertyName = lcfirst(substr($method, 3));
         } elseif (substr($method, 0, 3) == 'set') {

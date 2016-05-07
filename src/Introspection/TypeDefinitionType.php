@@ -36,7 +36,7 @@ class TypeDefinitionType extends QueryType
         return '__Type';
     }
 
-    public function build(TypeConfigInterface $config)
+    public function build($config)
     {
         parent::build($config);
 

@@ -13,6 +13,7 @@ use Youshido\GraphQL\Type\Config\Object\EnumTypeConfig;
 use Youshido\GraphQL\Type\Config\Object\InputObjectTypeConfig;
 use Youshido\GraphQL\Type\Config\Object\InterfaceTypeConfig;
 use Youshido\GraphQL\Type\Config\Object\ObjectTypeConfig;
+use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 
 abstract class AbstractType implements TypeInterface
 {
@@ -34,7 +35,10 @@ abstract class AbstractType implements TypeInterface
      */
     public function getConfig()
     {
-        $this->checkBuild();
+        if (!$this->isBuild) {
+            $this->isBuild = true;
+            $this->build($this->config);
+        }
 
         return $this->config;
     }
@@ -50,6 +54,12 @@ abstract class AbstractType implements TypeInterface
     }
 
     /**
+     * @param TypeConfigInterface $config
+     * @return mixed
+     */
+    abstract public function build($config);
+
+    /**
      * @return AbstractType
      */
     public function getNamedType()
@@ -61,8 +71,6 @@ abstract class AbstractType implements TypeInterface
     {
         return $this;
     }
-
-    abstract public function checkBuild();
 
     public function parseValue($value)
     {

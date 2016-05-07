@@ -40,10 +40,7 @@ abstract class AbstractListType extends AbstractObjectType implements CompositeT
         return is_array($value);
     }
 
-    public function build(TypeConfigInterface $config)
-    {
-
-    }
+    public function build($config) {}
 
     public function isCompositeType()
     {

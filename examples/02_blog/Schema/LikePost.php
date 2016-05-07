@@ -30,7 +30,7 @@ class LikePost extends AbstractObjectType
         return new PostType();
     }
 
-    public function build(TypeConfigInterface $config)
+    public function build($config)
     {
         $config->addArgument('id', new NonNullType(new IntType()));
     }

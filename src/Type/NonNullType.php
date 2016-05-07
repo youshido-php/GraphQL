@@ -9,6 +9,8 @@
 namespace Youshido\GraphQL\Type;
 
 
+use Youshido\GraphQL\Type\Config\TypeConfigInterface;
+
 class NonNullType extends AbstractType implements CompositeTypeInterface
 {
     private $_typeOf;
@@ -25,9 +27,8 @@ class NonNullType extends AbstractType implements CompositeTypeInterface
         $this->_typeOf = $fieldType;
     }
 
-    public function checkBuild()
-    {
-    }
+    public function build($config) {}
+
 
     public function getName()
     {

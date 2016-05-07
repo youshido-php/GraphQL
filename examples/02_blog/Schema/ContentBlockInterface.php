@@ -14,7 +14,7 @@ use Youshido\GraphQL\Type\Scalar\StringType;
 class ContentBlockInterface extends AbstractInterfaceType
 {
 
-    public function build(TypeConfigInterface $config)
+    public function build($config)
     {
         $config->addField('title', new NonNullType(new StringType()));
         $config->addField('summary', new StringType());

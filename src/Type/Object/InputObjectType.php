@@ -15,7 +15,7 @@ final class InputObjectType extends AbstractInputObjectType
 {
     use FinalTypesConfigTrait;
 
-    public function build(InputTypeConfigInterface $config)
+    public function build($config)
     {
 
     }

@@ -24,7 +24,7 @@ class DroidType extends HumanType
         return 'Droid';
     }
 
-    public function build(TypeConfigInterface $config)
+    public function build($config)
     {
         parent::build($config);
 

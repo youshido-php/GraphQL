@@ -46,17 +46,7 @@ abstract class AbstractObjectType extends AbstractType
         $this->config = new ObjectTypeConfig($config, $this);
     }
 
-    abstract public function build(TypeConfigInterface $config);
-
     abstract public function resolve($value = null, $args = [], $type = null);
-
-    public function checkBuild()
-    {
-        if (!$this->isBuild) {
-            $this->isBuild = true;
-            $this->build($this->config);
-        }
-    }
 
     public function parseValue($value)
     {

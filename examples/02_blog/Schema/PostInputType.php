@@ -14,7 +14,7 @@ use Youshido\GraphQL\Type\Scalar\StringType;
 class PostInputType extends AbstractInputObjectType
 {
 
-    public function build(InputTypeConfigInterface $config)
+    public function build($config)
     {
         $config
             ->addField('title', new NonNullType(new StringType()))

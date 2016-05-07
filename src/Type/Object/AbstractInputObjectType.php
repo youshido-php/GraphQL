@@ -39,8 +39,6 @@ abstract class AbstractInputObjectType extends AbstractType
 
     }
 
-    abstract public function build(InputTypeConfigInterface $config);
-
     public function isValidValue($value)
     {
         if (!is_array($value)) {
@@ -62,14 +60,6 @@ abstract class AbstractInputObjectType extends AbstractType
         }
 
         return !(count($requiredFields) > 0);
-    }
-
-    public function checkBuild()
-    {
-        if (!$this->isBuild) {
-            $this->isBuild = true;
-            $this->build($this->config);
-        }
     }
 
     public function getKind()
