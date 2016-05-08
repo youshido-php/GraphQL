@@ -19,6 +19,8 @@ It could be hard to believe but give it a try and you'll be rewarded with much b
 
 > Current package is and will be trying to be kept up to date with the latest revision of the official GraphQL Specification which is now of April 2016.
 
+> Symfony bundle is available by the link – [http://github.com/Youshido/GraphqlBundle](http://github.com/Youshido/GraphqlBundle)
+
 ## Table of Contents
 
 * [Getting Started](#getting-started)
@@ -46,7 +48,7 @@ It could be hard to believe but give it a try and you'll be rewarded with much b
 ## Getting Started
 
 You should be better off starting with some examples, and "Star Wars" become a somewhat "Hello world" example for the GraphQL implementations.
-We have that too and if you're looking for just that go directly by this link – [Star Wars example](https://github.com/Youshido/GraphQL/Tests/StarWars).
+We have that too and if you're looking for just that go directly by this link – [Star Wars example](https://github.com/Youshido/GraphQL/tree/master/Tests/StarWars).
 On the other hand based on the feedback we prepared a step-by-step guide for those who wants to get up to speed bit by bit.
 
 ### Installation
