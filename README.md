@@ -1158,4 +1158,4 @@ This section will be updating on a regular basis with the useful links and refer
 To improve our testing experience even more we suggest to start using GraphiQL client, that's included in our examples. It's a JavaScript GraphQL Schema Explorer.
 To use it – run the `server.sh` from the `examples/02_blog/` folder and open the `examples/GraphiQL/index.html` file in your browser.
 You'll see a nice looking editor that has an autocomplete function and contains all information about your current Schema on the right side in the Docs sidebar:
-![GraphiQL Interface](https://github.com/Youshido/GraphQL/examples/GrpaphiQL/screenshot.png)
+![GraphiQL Interface](https://raw.githubusercontent.com/Youshido/GraphQL/master/examples/GraphiQL/screenshot.png)
