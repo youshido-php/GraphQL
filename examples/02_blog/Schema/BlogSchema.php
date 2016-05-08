@@ -44,7 +44,11 @@ class BlogSchema extends AbstractSchema
                     'author' => new StringType()
                 ],
                 'resolve' => function($value, $args, $type) {
-                    return DataProvider::getPost(10);
+                    // code for creating a new post goes here
+                    // we simple use our DataProvider for now
+                    $post = DataProvider::getPost(10);
+                    if (!empty($args['post']['title'])) $post['title'] = $args['post']['title'];
+                    return $post;
                 }
             ]
         ]);

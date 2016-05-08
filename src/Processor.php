@@ -150,14 +150,14 @@ class Processor
     }
 
     /**
-     * @param Mutation $mutation
+     * @param Mutation   $mutation
      * @param ObjectType $currentLevelSchema
      * @return array|null
      * @throws ConfigurationException
      */
     protected function executeMutation(Mutation $mutation, $currentLevelSchema)
     {
-        if (!$currentLevelSchema) throw new ConfigurationException('There is no mutation '. $mutation->getName());
+        if (!$currentLevelSchema) throw new ConfigurationException('There is no mutation ' . $mutation->getName());
 
         if (!$this->resolveValidator->checkFieldExist($currentLevelSchema, $mutation)) {
             return null;
@@ -209,6 +209,7 @@ class Processor
         if ($field->getConfig()->getType()->getKind() == TypeMap::KIND_LIST) {
             if (!is_array($preResolvedValue)) {
                 $this->resolveValidator->addError(new ResolveException('Not valid resolve value for list type'));
+
                 return null;
             }
 
@@ -411,7 +412,9 @@ class Processor
 
         $args = [];
         foreach ($query->getArguments() as $argument) {
-            $args[$argument->getName()] = $field->getConfig()->getArgument($argument->getName())->getType()->parseValue($argument->getValue()->getValue());
+            if ($configArgument = $field->getConfig()->getArgument($argument->getName())) {
+                $args[$argument->getName()] = $configArgument->getType()->parseValue($argument->getValue()->getValue());
+            }
         }
 
         return $args;

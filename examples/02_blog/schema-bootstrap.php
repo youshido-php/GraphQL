@@ -2,16 +2,6 @@
 
 namespace BlogTest;
 
-use Examples\Blog\Schema\BannerType;
-use Examples\Blog\Schema\ContentBlockInterface;
-use Examples\Blog\Schema\ContentBlockUnion;
-use Examples\Blog\Schema\DataProvider;
-use Examples\Blog\Schema\LikePost;
-use Examples\Blog\Schema\PostType;
-use Youshido\GraphQL\Schema;
-use Youshido\GraphQL\Type\ListType\ListType;
-use Youshido\GraphQL\Type\Object\ObjectType;
-
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/Schema/DataProvider.php';
 require_once __DIR__ . '/Schema/PostType.php';

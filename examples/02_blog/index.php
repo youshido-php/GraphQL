@@ -13,11 +13,12 @@ $schema = new BlogSchema();
 $processor = new Processor();
 
 $processor->setSchema($schema);
-$payload  = 'mutation { likePost(id:5) { title(truncated: false), status, likeCount } }';
-$payload  = '{ latestPost { title, status, likeCount } }';
-$payload  = '{ pageContent { title } }';
-$payload  = '{ pageContentUnion { ... on Post { title, summary } ... on Banner { title, imageLink } } }';
-$payload  = '{ pageContentInterface { title} }';
-$response = $processor->processRequest($payload, [])->getResponseData();
+$payload = 'mutation { likePost(id:5) { title(truncated: false), status, likeCount } }';
+$payload = '{ latestPost { title, status, likeCount } }';
+$payload = '{ pageContent { title } }';
+$payload = '{ pageContentUnion { ... on Post { title, summary } ... on Banner { title, imageLink } } }';
+$payload = '{ pageContentInterface { title} }';
+$payload = 'mutation { createPost(author: "Alex", post: {title: "Hey, this is my new post", summary: "my post" }) { title } }';
 
-echo json_encode($response) . "\n\n";
+$processor->processRequest($payload);
+echo json_encode($processor->getResponseData()) . "\n";

@@ -17,9 +17,11 @@ use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 trait ArgumentsAwareTrait
 {
     protected $arguments = [];
+    protected $_isArgumentBuilt;
 
     public function buildArguments()
     {
+        if ($this->_isArgumentBuilt) return true;
         $sourceArguments = empty($this->data['args']) ? [] : $this->data['args'];
         foreach ($sourceArguments as $argumentName => $argumentInfo) {
             if ($argumentInfo instanceof InputField) {
@@ -33,8 +35,8 @@ trait ArgumentsAwareTrait
             } else {
                 $this->addArgument($argumentName, $argumentInfo['type'], $argumentInfo);
             }
-
         }
+        $this->_isArgumentBuilt = true;
     }
 
     public function addArgument($name, $type, $config = [])

@@ -38,6 +38,7 @@ It could be hard to believe but give it a try and you'll be rewarded with much b
   * [Input Objects](#input-objects)
   * [Non-Null](#non-null)
 * [Building your schema](#building-your-schema)
+  * [Abstract type classes](#abstract-type-classes)
   * [Mutation helper class](#mutation-helper-class)
 * [Useful information](#useful-information)
   * [GraphiQL tool](#graphiql-tool)
@@ -682,19 +683,20 @@ class PostType extends AbstractObjectType
 }
 
 ```
-As you might have noticed there's no `getName` method for both Interface and Type classes – that's a simplified approach available when you want to have your name exactly the same as the class name without the `Type` at the end.
+As you might have noticed there's no `getName` method in both Interface and Type classes – that's a simplified approach available when you want to have your name exactly the same as the class name without the `Type` at the end.
 
 If you run the script as it is right now – `php index.php`, you should get an error:
 ```js
 {"errors":[{"message":"Implementation of ContentBlockInterface is invalid for the field title"}]}
 ```
 You've got this error because the `title` field definition in the `PostType` is different from the one described in the `ContentBlockInterface`.
-To fix it we have to declare fields with the same names and same types. We already have `title` but it's a nullable field so we have to change it by adding a non-null wrapper – `new NonNullType(new StringType())`.
+To fix it we have to declare fields that exist in the `Interface` with the same names and same types in out `PostType`.
+We already have `title` but it's a nullable field so we have to change it by adding a non-null wrapper – `new NonNullType(new StringType())`.
 You can check the result by executing index.php script again, you should get the usual response.
 
 ### Enums
 
-GraphQL Enums are the variation on the Scalar type, which represents one of a predefined values.
+GraphQL Enums are the variation on the Scalar type, which represents one of the predefined values.
 Enums serialize as a string: the name of the represented value but can be associated with a numeric (as an example) value.
 
 To show you how Enums work we're going to create a new class - `PostStatus`:
@@ -754,10 +756,11 @@ You should get a result similar to the following:
 ### Unions
 
 GraphQL Unions represent an object type that could be resolved as one of a specified GraphQL Object types.
-To get you an idea of what this is we'll create a new query field that will return a list of unions.
+To get you an idea of what this is we'll create a new query field that will return a list of unions (and get to the `ListType` after it).
+> You can consider Union as a combined type that is needed mostly when you want to have a list of different objects
 
 Imaging that you have a page and you need to get all content blocks for this page. Let content block be either `Post` or `Banner`.
-We'll need to create a `BannerType`:
+Create a `BannerType`:
 ```php
 <?php
 /**
@@ -788,7 +791,8 @@ class BannerType extends AbstractObjectType
     }
 }
 ```
-Now, we're going to create a `ContentBlockUnion` that will represent a `UnionType`:
+Now let's combine the `Banner` type and the `Post` type to create a `ContentBlockUnion` that will extend an `AbstractUnionType`.
+Each `UnionType` needs to define a list of types it unites by implementing the `getTypes` method and the `resolveType` method to resolve object that will be returned for each instance of the `Union`.
 ```php
 <?php
 /**
@@ -808,12 +812,13 @@ class ContentBlockUnion extends AbstractUnionType
 
     public function resolveType($object)
     {
+        // we simple look if there's a "post" inside the object id that it's a PostType otherwise it's a BannerType
         return empty($object['id']) ? null : (strpos($object['id'], 'post') !== false ? new PostType() : new BannerType());
     }
 }
 ```
 
-We're also going to create a simple `DataProvider` that will give us test data for the demonstration:
+We're also going to create a simple `DataProvider` that will give us test data to operate with:
 ```php
 <?php
 /**
@@ -856,7 +861,6 @@ As we're getting our schema bigger we'd like to extract it to a separate file:
 
 namespace Examples\Blog\Schema;
 
-
 use Youshido\GraphQL\AbstractSchema;
 use Youshido\GraphQL\Type\Config\Schema\SchemaConfig;
 use Youshido\GraphQL\Type\ListType\ListType;
@@ -897,32 +901,53 @@ use Youshido\GraphQL\Processor;
 use Youshido\GraphQL\Schema;
 
 require_once __DIR__ . '/schema-bootstrap.php';
-/** @var Schema $schema */
+$schema = new BlogSchema();
 
 $processor = new Processor();
 
 $processor->setSchema($schema);
 $payload  = '{ pageContentUnion { ... on Post { title } ... on Banner { title, imageLink } } }';
-$response = $processor->processRequest($payload, [])->getResponseData();
 
-echo json_encode($response) . "\n\n";
-
+$processor->processRequest($payload);
+echo json_encode($processor->getResponseData()) . "\n";
 ```
-Due to the GraphQL syntax you have to specify fields for each type of object you're getting in the union request.
-If everything was done right you should see the following response in the console:
+
+For the convenience of use we've created the `schema-bootstrap.php`:
+```php
+<?php
+
+namespace BlogTest;
+
+require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/Schema/DataProvider.php';
+require_once __DIR__ . '/Schema/PostType.php';
+require_once __DIR__ . '/Schema/PostStatus.php';
+require_once __DIR__ . '/Schema/ContentBlockInterface.php';
+require_once __DIR__ . '/Schema/LikePost.php';
+require_once __DIR__ . '/Schema/BannerType.php';
+require_once __DIR__ . '/Schema/ContentBlockUnion.php';
+require_once __DIR__ . '/Schema/BlogSchema.php';
+```
+
+Due to the GraphQL syntax you have to specify fields for each type of object you're getting in the union request, if you're not familiar with it read more at [official documentation(https://facebook.github.io/graphql/#sec-Unions)]
+If everything was done right you should see the following response:
 ```js
-{"data":{"pageContentUnion":[
-    {"title":"Post 1 title","summary":"This new GraphQL library for PHP works really well"},
-    {"title":"Banner 1","imageLink":"banner1.jpg"}
-]}}
+{
+  "data": {
+    "pageContentUnion":[
+      {"title":"Post 1 title","summary":"This new GraphQL library for PHP works really well"},
+      {"title":"Banner 1","imageLink":"banner1.jpg"}
+    ]
+  }
+}
 ```
-Also, you might want to check out how to use [GraphiQL tool](#graphiql-tool) to get a visual representation of what you're doing here.
+Also, you might want to check out how to use [GraphiQL tool](#graphiql-tool) to get a better visualization of what you're doing here.
 
 ### Lists
 
-As you've seen in the previous example `Lists` are used to create a separate type – list of any items that have GraphQL type.
-List type can also be created using Interface which gives you a flexibility in defining your schema.
-Let's go ahead and add that type of field to out BlogSchema:
+As you've seen in the previous example `ListType` is used to create a list of any items that are or extend GraphQL type.
+List type can be also created by using `InterfaceType` as an item which gives you flexibility in defining your schema.
+Let's go ahead and add `ListType` field to our BlogSchema.
 ```php
 <?php
 /**
@@ -967,19 +992,17 @@ class BlogSchema extends AbstractSchema
 
 }
 ```
-We added a list of `ContentBlockInterface` as a type of `pageContentInterfaced` field and returning a Post and a Banner in resolve function.
-Now, our payload will be very simple:
+We've added a `pageContentInterfaced` field that have a `ListType` with items of `ContentBlockInterface` type. Resolve function returns list of one `Post` and one `Banner` objects.
+To test it we'll modify our payload to the following one:
 ```php
 <?php
 $payload  = '{ pageContentInterface { title} }';
 ```
-Be aware, because our `BannerType` doesn't implement interface we would get an error:
+Be aware, because `BannerType` doesn't implement `ContentBlockInterface` you would get an error:
 ```js
 { "errors": [ "message": "Type Banner does not implement ContentBlockInterface" } ]}
 ```
-To fix this we just need to implement the interface by implementing `getInterfaces` method and adding the proper field definitions to our `BannerType`:
-
-Let's implement our `ContentBlockInterface` in the `BannerType`:
+To fix this we just need to add `ContentBlockInterface` by implementing `getInterfaces` method and adding the proper field definitions to our `BannerType`:
 ```php
 <?php
 /**
@@ -1016,14 +1039,22 @@ class BannerType extends AbstractObjectType
 ```
 Send the request again and you'll get a nice response with titles of the both Post and Banner:
 ```js
-{"data":{"pageContentInterface":[{"title":"Post 2 title"},{"title":"Banner 3"}]}}
+{
+  "data": {
+    "pageContentInterface":[
+      {"title":"Post 2 title"},
+      {"title":"Banner 3"}
+    ]
+  }
+}
 ```
 
 ### Input Objects
-So far we've been working mostly on the request that does not require you to send any kind of data, but in real life you'll have a lot of requests – mutations where you'll be sending different kind of form – login, registration, create post and other data to the server.
-In order to properly handle and validate that data GraphQL type system provides you an `InputType`. By default all the `Scalar` types are input but if you want to have a single more complicated input type you need to extend an `InputObjectType`.
+So far we've been working mostly on the requests that does not require you to send any kind of data other than a simple `Int`, but in real life you'll have a lot of requests (mutations) where you'll be sending to server all kind of forms – login, registration, create post and so on.
+In order to properly handle and validate that data GraphQL type system provides an `InputObjectType` class.
+> By default all the `Scalar` types are inputs but if you want to have a single more complicated input type you need to extend an `InputObjectType`.
 
-Let's go ahead and create a `PostInputType` that could be used to create a new Post in our system.
+Let's develop a `PostInputType` that could be used to create a new Post in our system.
 ```php
 <?php
 /**
@@ -1031,7 +1062,6 @@ Let's go ahead and create a `PostInputType` that could be used to create a new P
  */
 
 namespace Examples\Blog\Schema;
-
 
 use Youshido\GraphQL\Type\Config\InputTypeConfigInterface;
 use Youshido\GraphQL\Type\NonNullType;
@@ -1048,13 +1078,13 @@ class PostInputType extends AbstractInputObjectType
             ->addField('summary', new StringType());
     }
 
-
 }
 ```
 
 This `InputType` could be used to create a new mutation (we can do it in the `BlogSchema::build` for testing):
 ```php
 <?php
+// BlogSchema->build() method
 $config->getMutation()->addFields([
     'likePost'   => new LikePost(),
     'createPost' => [
@@ -1064,7 +1094,11 @@ $config->getMutation()->addFields([
             'author' => new StringType()
         ],
         'resolve' => function($value, $args, $type) {
-            return DataProvider::getPost(10);
+            // code for creating a new post goes here
+            // we simple use our DataProvider for now
+            $post = DataProvider::getPost(10);
+            if (!empty($args['post']['title'])) $post['title'] = $args['post']['title'];
+            return $post;
         }
     ]
 ]);
@@ -1073,17 +1107,21 @@ $config->getMutation()->addFields([
 Try to execute the following mutation so you can see the result:
 ```
 mutation {
-  createPost(author: "Alex", post: {title: "helpp", summary: "help2" }) {
+  createPost(author: "Alex", post: {title: "Hey, this is my new post", summary: "my post" }) {
     title
   }
 }
+```
+result:
+```js
+{"data":{"createPost":{"title":"Hey, this is my new post"}}}
 ```
 > The best way to see the result of your queries/mutations and to inspect the Schema is to use a [GraphiQL tool](#graphiql-tool)
 
 ### Non Null
 
 `NonNullType` is really simple to use – consider it as a wrapper that can insure that your field / argument is required and being passed to the resolve function.
-We have used this type many times already so we'll just show you two methods that might be useful in your resolve functions:
+We have used `NonNullType` couple of times already so we'll just show you useful methods that that could be called on `NonNullType` objects:
 - `getNullableType()`
 - `getNamedType()`
 
@@ -1092,7 +1130,9 @@ These two can return you a type that was wrapped up in the `NonNullType` so you 
 ## Building your schema
 
 It's always a good idea to give your heads up about any possible errors as soon as possible, better on the development stage.
-For this purpose specifically we made a lot of Abstract classes that will force you to implement the right methods to reduce amount of errors or, if you're lucky enough – to have none of them.
+For this purpose specifically we made a lot of Abstract classes that will force you to implement the right methods to reduce amount of errors or if you're lucky enough – to have no errors at all.
+
+### Abstract type classes
 If you want to implement a new type consider extending the following classes:
 * AbstractType
 * AbstractScalarType
@@ -1106,15 +1146,16 @@ If you want to implement a new type consider extending the following classes:
 * AbstractSchemaType
 
 ### Mutation helper class
-Usually you can create a mutation buy extending `AbstractObjectType` or by creating a new field of `ObjectType` inside your `Schema::build` method.
-It is crucial for the class to have a `getType` method returning the actual OutputType of your mutation.
-There's a class called `AbstractMutationObjectType` that will help you to not forget about OutputType by forcing you to implement a method `getOutputType` that will eventually be used by internal `getType` method.
+You can create a mutation by extending `AbstractObjectType` or by creating a new field of `ObjectType` inside your `Schema::build` method.
+It is crucial for the class to have a `getType` method returning the actual OutputType of your mutation but it couldn't be implemented as abstract method, so we created a wrapper class called `AbstractMutationObjectType`.
+This abstract class can help you to not forget about `OutputType` by forcing you to implement a method `getOutputType` that will eventually be used by internal `getType` method.
 
 ## Useful information
 
-We tried to put together some of the useful links and references that might help you to quicker become a better GraphQL developer
+This section will be updating on a regular basis with the useful links and references that might help you to quicker become a better GraphQL developer.
 
 ### GraphiQL Tool
 To improve our testing experience even more we suggest to start using GraphiQL client, that's included in our examples. It's a JavaScript GraphQL Schema Explorer.
 To use it – run the `server.sh` from the `examples/02_blog/` folder and open the `examples/GraphiQL/index.html` file in your browser.
-You'll see a nice looking editor that has an autocomplete function and contains all information about your current Schema on the right side in the Docs sidebar.
+You'll see a nice looking editor that has an autocomplete function and contains all information about your current Schema on the right side in the Docs sidebar:
+![GraphiQL Interface](https://github.com/Youshido/GraphQL/examples/GrpaphiQL/screenshot.png)
