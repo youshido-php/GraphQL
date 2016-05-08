@@ -16,7 +16,7 @@ interface InputTypeConfigInterface
      * @param       $type
      * @param array $config
      *
-     * @return InputTypeConfigInterface
+     * @return TypeConfigInterface
      */
     public function addField($name, $type, $config = []);
 

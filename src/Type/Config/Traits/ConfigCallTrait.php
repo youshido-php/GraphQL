@@ -34,7 +34,8 @@ trait ConfigCallTrait
     public function __call($method, $arguments)
     {
         $propertyName     = false;
-        $passAlongMethods = ['hasField', 'addField', 'addFields', 'removeField', 'getFields', 'hasFields', 'getField', 'getNamedType'];
+        $passAlongMethods = ['hasField', 'addField', 'addFields', 'removeField', 'getFields', 'hasFields', 'getField',
+            'addArgument', 'addArguments', 'getNamedType'];
 
         if (in_array($method, $passAlongMethods)) {
 

@@ -168,17 +168,17 @@ use Youshido\GraphQL\Type\Scalar\StringType;
 
 // creating a root query structure
 $rootQueryType = new ObjectType([
-    // name for the root query type doesn't matter, by a convention it's RootQueryType
+    // name for the root query type doesn't matter, by the convention it's RootQueryType
     'name'   => 'RootQueryType',
     'fields' => [
-        'latestPost' => new ObjectType([ // our Post type will be extended from the generic ObjectType
+        'latestPost' => new ObjectType([ // the Post type will be extended from the generic ObjectType
             'name'    => 'Post', // name of our type – "Post"
             'fields'  => [
                 'title'   => new StringType(),  // defining the "title" field, type - String
                 'summary' => new StringType(),  // defining the "summary" field, also a String type
             ],
             'resolve' => function () {          // this is a resolve function
-                return [                        // for now it will return a static array with data
+                return [                        // for now it returns a static array with data
                     "title"   => "New approach in API has been revealed",
                     "summary" => "This post describes a new approach to create and maintain APIs",
                 ];
@@ -410,16 +410,18 @@ If you run `php index.php` you should see a valid response:
 {"data":{"likePost":2}}
 ```
 
-Now, let's make our GraphQL Schema a little more complex by adding a "likeCount" field to the `PostType`:
+Now, let's make our GraphQL Schema a little more complex by adding a `likeCount` field and an `id` argument to the `PostType`:
 ```php
 <?php
 // add it after the last ->addField in your build function
   ->addField('likeCount', new IntType())
+  ->addArgument('id', new IntType())
 // update the resolve function:
 public function resolve($value = null, $args = [], $type = null)
 {
+  $id = !empty($args['id']) ? $args['id'] : null;
   return [
-      "title"     => "Post " . $args['id'] . " title",
+      "title"     => "Post " . $id . " title",
       "summary"   => "This new GraphQL library for PHP works really well",
       "likeCount" => 2
   ];
@@ -513,17 +515,17 @@ If you will ever need to define a new Scalar type, you can do that by extending 
 Every entity in your business logic will probably have a class that represents it's type. That class must be either extended from the `AbstractObjectType` or created as an instance of `ObjectType`.
 In our blog example we used `ObjectType` to create an inline `Post` type and in the object oriented example we extended the `AbstractObjectType` to create a `PostType` class.
 
-Let's take a deeper look on the structure of the object type and pay attention to the fields configuration.
+Let's look closer on the structure of the `ObjectType` and pay attention to it's fields configuration.
 We'll start with the inline approach:
 ```php
 <?php
 
 $postType = new ObjectType([
-  // you have to specify a string name
+  // you have to specify a valid name
   'name'    => 'Post',
-  // fields is an array of the array structure
+  // fields are represented as an array
   'fields'  => [
-      // here you have a complex field with a lot of options
+      // here you have a complex field with a lot of parameters defined
       'title'   => [
           'type'              => new StringType(),                    // string type
           'description'       => 'This field contains a post title',  // description
@@ -533,7 +535,7 @@ $postType = new ObjectType([
               'truncated' => new BooleanType()                        // add an optional argument
           ],
           'resolve'           => function ($value, $args) {
-              // used argument to modify a field value
+              // using argument defined above to modify a field value
               return (!empty($args['truncated'])) ? explode(' ', $value)[0] . '...' : $value;
           }
       ],
@@ -541,7 +543,7 @@ $postType = new ObjectType([
       'summary' => new StringType(),  
       'likeCount' => new IntType(),
   ],
-   // arguments for the whole query
+   // arguments for the query
   'args'    => [
       'id' => new IntType()
   ],
@@ -556,7 +558,7 @@ $postType = new ObjectType([
 ])
 ```
 
-And in comparison, take a look at the Object oriented version with all the same fields:
+And in comparison take a look at the Object oriented version with all the same fields:
 ```php
 <?php
 
@@ -600,12 +602,13 @@ class PostType extends AbstractObjectType
 
 ```
 
-Once again, it's not that a big difference between two approaches but having a separate class for the Type will gives you a lot of freedom and adds some flexibility into the project.
+Once again, it's not that a difference between two approaches but having a separate class for the Type will give you some freedom and flexibility along the way.
 
 ### Interfaces
 
-GraphQL supports `Interfaces`. You can define Interface and use it as a list item or to make sure that specific objects conform to your interfaces.
-Let's create a `ContentBlockInterface` that will represent something that we can have a `title` and a `summary` from.
+GraphQL supports `Interfaces`. You can define Interface and use it as a `Type` of an item in the `List`, or use Interface to make sure that specific objects certainly have fields you need.
+Each `InterfaceType` needs to have at least one defined field and `resolveType` function. That function will be used to determine what exact `Type` of the object GraphQL resolver is currently working on.
+Let's create a `ContentBlockInterface` that can represent a piece of content for the web page that have a `title` and a `summary`.
 ```php
 <?php
 /**
@@ -614,7 +617,6 @@ Let's create a `ContentBlockInterface` that will represent something that we can
 
 namespace Examples\Blog\Schema;
 
-
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractInterfaceType;
@@ -622,7 +624,6 @@ use Youshido\GraphQL\Type\Scalar\StringType;
 
 class ContentBlockInterface extends AbstractInterfaceType
 {
-
     public function build(TypeConfigInterface $config)
     {
         $config->addField('title', new NonNullType(new StringType()));
@@ -630,14 +631,14 @@ class ContentBlockInterface extends AbstractInterfaceType
     }
 
     public function resolveType($object) {
-        // since there's only one type implementing this interface we can return it's type
+        // since there's only one type right now this interface will always resolve PostType
         return new PostType();
     }
 
 }
 ```
-Most often you'll use only `build` function of the interface to define fields and/or arguments that need to be implemented.
-In order to add this Interface to the `PostType` we have to override the `getInterfaces` method:
+Most often you'll be using only the `build` function to define fields and/or arguments that need to be implemented.
+In order to add this Interface to the `PostType` we have to override it's `getInterfaces` method:
 ```php
 <?php
 /**
@@ -662,7 +663,6 @@ class PostType extends AbstractObjectType
             ->addField('title', new StringType())
             ->addField('summary', new StringType())
             ->addField('likeCount', new IntType());
-        $config->addArgument('id', new IntType());
     }
 
     public function getInterfaces()
@@ -682,22 +682,22 @@ class PostType extends AbstractObjectType
 }
 
 ```
-As you might have noticed there's no `getName` method for both Interface and Type classes – that's a simplified approach available when you want to have your name exactly the same as the class name.
+As you might have noticed there's no `getName` method for both Interface and Type classes – that's a simplified approach available when you want to have your name exactly the same as the class name without the `Type` at the end.
 
-If you run the script as it is right now, you'll get an error:
+If you run the script as it is right now – `php index.php`, you should get an error:
 ```js
 {"errors":[{"message":"Implementation of ContentBlockInterface is invalid for the field title"}]}
 ```
-That's because the field definition inside the `PostType` is different from the one described in the `ContentBlockInterface`.
-To fix it we have to declare fields with the same names and same types. We already have `title` but it's a nullable field so we got to change it by adding a non-null wrapper – `new NonNullType(new StringType())`.
-You can check the result by executing our test script, you should got the usual response.
+You've got this error because the `title` field definition in the `PostType` is different from the one described in the `ContentBlockInterface`.
+To fix it we have to declare fields with the same names and same types. We already have `title` but it's a nullable field so we have to change it by adding a non-null wrapper – `new NonNullType(new StringType())`.
+You can check the result by executing index.php script again, you should get the usual response.
 
 ### Enums
 
-GraphQL Enums are a variant on the Scalar type, which represents one of a predefined values.
-Enums serialize as a string: the name of the represented value but can be associated with a numeric(as example) value.
+GraphQL Enums are the variation on the Scalar type, which represents one of a predefined values.
+Enums serialize as a string: the name of the represented value but can be associated with a numeric (as an example) value.
 
-To show you how Enum works we're going to create a new class - `PostStatus`:
+To show you how Enums work we're going to create a new class - `PostStatus`:
 ```php
 <?php
 /**
@@ -732,7 +732,7 @@ Now when you have this class created you can add a status field to our `PostType
 // add field to the build function of the PostType class
 ->addField('status', new PostStatus())
 
-// and resolve a value in resolve function
+// and update the resolve function
 return [
     "title"     => "Post title from the PostType class",
     "summary"   => "This new GraphQL library for PHP works really well",
@@ -742,7 +742,7 @@ return [
 
 ```
 
-Now you can call the `status` field in your request:
+Call the `status` field in your request:
 ```php
 $payload  = '{ latestPost { title, status, likeCount } }';
 ```

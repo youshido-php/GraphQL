@@ -30,7 +30,8 @@ class PostType extends AbstractObjectType
             ->addField('title', new NonNullType(new StringType()))
             ->addField('status', new PostStatus())
             ->addField('summary', new StringType())
-            ->addField('likeCount', new IntType());
+            ->addField('likeCount', new IntType())
+            ->addArgument('id', new IntType());
     }
 
     public function getInterfaces()
