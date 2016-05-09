@@ -81,7 +81,10 @@ class Processor
 
     public function processRequest($payload, $variables = [])
     {
-        if ($this->hasErrors()) return $this;
+        if (!$this->getSchema()) {
+            $this->addError(new ConfigurationException('You have to set GraphQL Schema to process'));
+        }
+        if (empty($payload) || $this->hasErrors()) return $this;
 
         $this->data = [];
 
