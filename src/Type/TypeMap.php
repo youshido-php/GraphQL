@@ -115,6 +115,10 @@ class TypeMap
 
     public static function isScalarType($typeName)
     {
+        if(is_object($typeName)) {
+            return false;
+        }
+
         return in_array($typeName, self::getScalarTypes());
     }
 

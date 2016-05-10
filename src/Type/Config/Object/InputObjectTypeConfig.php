@@ -9,12 +9,10 @@
 namespace Youshido\GraphQL\Type\Config\Object;
 
 
-use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 
 class InputObjectTypeConfig extends ObjectTypeConfig
 {
-
     public function getRules()
     {
         return [
@@ -23,13 +21,4 @@ class InputObjectTypeConfig extends ObjectTypeConfig
             'fields'      => ['type' => TypeMap::TYPE_ARRAY_OF_INPUTS],
         ];
     }
-
-    /**
-     * @return TypeInterface
-     */
-    public function getOutputType()
-    {
-        return isset($this->data['output']) ? $this->data['output'] : null;
-    }
-
 }

@@ -7,7 +7,7 @@ namespace Youshido\GraphQL\Type;
  * @author Alexandr Viniychuk <a@viniychuk.com>
  * created: 3:48 PM 4/29/16
  */
-Interface CompositeTypeInterface
+interface CompositeTypeInterface
 {
 
     /**

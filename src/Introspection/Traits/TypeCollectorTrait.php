@@ -8,7 +8,6 @@
 namespace Youshido\GraphQL\Introspection\Traits;
 
 use Youshido\GraphQL\Type\AbstractType;
-use Youshido\GraphQL\Type\CompositeTypeInterface;
 use Youshido\GraphQL\Type\Config\Field\FieldConfig;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeInterface;
@@ -50,41 +49,32 @@ trait TypeCollectorTrait
 
             case TypeMap::KIND_INPUT_OBJECT:
             case TypeMap::KIND_OBJECT:
-                if ($type->getKind() == TypeMap::KIND_INPUT_OBJECT) {
-                    $outputType = $type->getConfig()->getOutputType();
+                $namedType = $type->getNamedType();
 
-                    if ($outputType) {
-                        if ($this->insertType($outputType->getName(), $outputType)) {
-                            $this->collectFieldsArgsTypes($outputType);
-                        }
-                    }
-                } else {
-                    $this->checkAndInsertInterfaces($type);
+                if ($namedType->getKind() == TypeMap::KIND_LIST) {
+                    $namedType = $namedType->getNamedType();
                 }
 
-                if ($this->insertType($type->getName(), $type)) {
-                    $this->collectFieldsArgsTypes($type);
+                $this->checkAndInsertInterfaces($namedType);
+
+                if ($this->insertType($namedType->getName(), $namedType)) {
+                    $this->collectFieldsArgsTypes($namedType);
                 }
+
                 break;
 
             case TypeMap::KIND_LIST:
                 $subItem = $type->getConfig()->getItem();
-                if ($this->insertType($subItem->getName(), $subItem)) {
-                    $this->collectFieldsArgsTypes($subItem);
-                    $this->collectTypes($subItem);
-                }
+                $this->collectTypes($subItem);
 
                 foreach ($type->getConfig()->getArguments() as $argument) {
-                    $this->insertType($argument->getConfig()->getType()->getName(), $argument->getConfig()->getType());
+                    $this->collectTypes($argument->getConfig()->getType());
                 }
 
                 break;
 
             case TypeMap::KIND_NON_NULL:
-                /** @var CompositeTypeInterface $type */
-                if ($this->insertType($type->getTypeOf()->getName(), $type->getTypeOf())) {
-                    $this->collectTypes($type->getTypeOf());
-                }
+                $this->collectTypes($type->getNamedType());
 
                 break;
         }
@@ -108,14 +98,24 @@ trait TypeCollectorTrait
      */
     private function collectFieldsArgsTypes($type)
     {
+        if (!$type->getConfig()) {
+            return;
+        }
+
         foreach ($type->getConfig()->getFields() as $field) {
             if ($field->getConfig()->getType() instanceof AbstractObjectType) {
-                foreach($field->getConfig()->getArguments() as $argument) {
-                    $this->collectTypes($argument->getType());
+                $arguments = $field->getConfig()->getArguments();
+
+                if (is_array($arguments)) {
+                    foreach ($arguments as $argument) {
+                        $this->collectTypes($argument->getType());
+                    }
                 }
             }
+
             $this->collectTypes($field->getType());
         }
+
         foreach ($type->getConfig()->getArguments() as $field) {
             /** @var FieldConfig $field */
             $this->collectTypes($field->getType());

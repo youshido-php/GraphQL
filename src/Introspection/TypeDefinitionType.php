@@ -7,7 +7,6 @@
 
 namespace Youshido\GraphQL\Introspection;
 
-use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\TypeMap;
 

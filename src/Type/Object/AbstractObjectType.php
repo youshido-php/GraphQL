@@ -12,7 +12,6 @@ namespace Youshido\GraphQL\Type\Object;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Config\Object\ObjectTypeConfig;
 use Youshido\GraphQL\Type\Config\Traits\ConfigCallTrait;
-use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\TypeMap;
@@ -66,6 +65,7 @@ abstract class AbstractObjectType extends AbstractType
     public function getType()
     {
         $config = $this->getConfig();
+
         return $config && $config->getType() ? $config->getType() : $this;
     }
 
