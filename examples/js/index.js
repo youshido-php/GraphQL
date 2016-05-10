@@ -10,6 +10,31 @@ import {
     GraphQLList,
     GraphQLNonNull
 } from 'graphql';
+
+import {
+    connectionArgs,
+    backwardConnectionArgs,
+    forwardConnectionArgs,
+
+    connectionDefinitions,
+    connectionFromArray,
+    connectionFromArraySlice,
+    connectionFromPromisedArray,
+    connectionFromPromisedArraySlice,
+
+    cursorForObjectInConnection,
+    cursorToOffset,
+    getOffsetWithDefault,
+    offsetToCursor,
+    mutationWithClientMutationId,
+    nodeDefinitions,
+    pluralIdentifyingRootField,
+
+    fromGlobalId,
+    globalIdField,
+    toGlobalId
+} from 'graphql-relay'
+
 var graphqlHTTP = require('express-graphql');
 var express     = require('express');
 
@@ -78,10 +103,53 @@ const contentBlockUnion = new GraphQLUnionType({
     }
 });
 
+var { connectionType: StringConnection } = connectionDefinitions({ nodeType: contentBlockUnion });
+
+var { nodeInterface, nodeField } = nodeDefinitions(
+    (globalId) => {
+        var {type, id} = fromGlobalId(globalId);
+        return {
+            type: type,
+            id: id
+        };
+    },
+    (obj) => {
+        return factionType;
+    }
+);
+
+var factionType = new GraphQLObjectType({
+    name: 'Faction',
+    fields: () => ({
+        id: globalIdField()
+    }),
+    interfaces: [nodeInterface]
+});
+
 const blogSchema = new GraphQLSchema({
     query:    new GraphQLObjectType({
         name:   'RootQueryType',
         fields: {
+            node: nodeField,
+            faction: {
+                type: factionType
+            },
+            connectionArgs: {
+                args: connectionArgs,
+                type: GraphQLString
+            },
+            forwardConnectionArgs: {
+                args: forwardConnectionArgs,
+                type: GraphQLString
+            },
+            backwardConnectionArgs: {
+                args: backwardConnectionArgs,
+                type: GraphQLString
+            },
+            connectionDefinitionTest: {
+                args: connectionArgs,
+                type: StringConnection
+            },
             latestPost:           {
                 type:    postType,
                 resolve: () => {
