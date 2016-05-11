@@ -50,9 +50,11 @@ class Config
         $this->contextObject = $contextObject;
         $this->data          = $configData;
         $this->validator     = new ConfigValidator($contextObject);
+
         if (!$this->validator->validate($this->data, $this->getRules())) {
             throw new ConfigurationException('Config is not valid for ' . get_class($contextObject) . "\n" . implode("\n", $this->validator->getErrorsArray(false)));
         }
+
         $this->build();
     }
 

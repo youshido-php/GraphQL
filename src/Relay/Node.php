@@ -10,6 +10,7 @@ namespace Youshido\GraphQL\Relay;
 
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\NonNullType;
+use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 
 class Node
@@ -38,14 +39,43 @@ class Node
 
     /**
      * @param $config TypeConfigInterface
+     * @param $name   string
      */
-    public static function addGlobalId($config)
+    public static function addGlobalId($config, $name = '')
     {
         $config->addField('id', new NonNullType(TypeMap::TYPE_ID), [
             'description' => 'The ID of an object',
-            'resolve'     => function ($value = null, $args = [], $type = null) {
-                return self::toGlobalId($type->getName() ?: get_class($type), $value);
+            'resolve'     => function ($value = null, $args = [], $type = null) use ($name) {
+                $name = $name ?: $type->getName();
+
+                return self::toGlobalId($name ?: get_class($type), $value);
             }
+        ]);
+    }
+
+    /**
+     * @return array
+     */
+    public static function getGlobalId()
+    {
+        return [
+            'type'        => new NonNullType(TypeMap::TYPE_ID),
+            'description' => 'The ID of an object'
+        ];
+    }
+
+    /**
+     * @param $config TypeConfigInterface
+     */
+    public static function addNodeField($config) //todo: here must be fetcher like argument
+    {
+        $config->addField('node', new NodeInterface(), [
+            'args' => [
+                'id' => [
+                    'type'        => new NonNullType(TypeMap::TYPE_INT),
+                    'description' => 'The ID of an object'
+                ],
+            ]
         ]);
     }
 

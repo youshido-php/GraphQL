@@ -45,8 +45,10 @@ class ConfigValidator implements ConfigValidatorInterface
             /** Custom validation of 'required' property */
             if (array_key_exists('required', $fieldRules)) {
                 unset($fieldRules['required']);
+
                 if (!array_key_exists($fieldName, $data)) {
                     $this->addError(new ValidationException('Field \'' . $fieldName . '\' of ' . $this->getContextName() . ' is required'));
+
                     continue;
                 }
             } elseif (!array_key_exists($fieldName, $data)) {
@@ -57,6 +59,7 @@ class ConfigValidator implements ConfigValidatorInterface
             foreach ($fieldRules as $ruleName => $ruleInfo) {
                 if (!array_key_exists($ruleName, $this->validationRules)) {
                     $this->addError(new ValidationException('Field \'' . $fieldName . '\' has invalid rule \'' . $ruleInfo . '\''));
+
                     continue;
                 }
 

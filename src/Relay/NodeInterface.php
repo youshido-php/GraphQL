@@ -17,12 +17,13 @@ class NodeInterface extends AbstractInterfaceType
 
     public function getName()
     {
-        return 'Node';
+        return 'NodeInterface';
     }
 
     public function build($config)
     {
-        $config->addField('id', new GlobalIdField());
+        Node::addGlobalId($config);
+        //$config->addField('id', new GlobalIdField());
     }
 
 

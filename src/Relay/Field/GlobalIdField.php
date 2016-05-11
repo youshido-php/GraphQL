@@ -15,6 +15,12 @@ use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Scalar\IdType;
 
+/**
+ * todo: I think its not good to create Field instance and replace it with type.
+ * todo: I think there must be only one interface: addFields($name, $type (not field))
+ * todo: and using field like a type not work at this moment
+ */
+
 class GlobalIdField extends Field
 {
     private $typeName = null;
@@ -42,8 +48,6 @@ class GlobalIdField extends Field
      */
     public function resolve($value, $args, $type)
     {
-        if (empty($args)) $args = [];
-        $args['typeName'] = $this->typeName;
         return Node::toGlobalId($type->getName() ?: get_class($type), $value);
     }
 

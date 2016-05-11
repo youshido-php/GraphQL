@@ -26,6 +26,8 @@ class ShipType extends AbstractObjectType
     {
         // maybe we need to think of making a non-abstract resolve method on type
         // and adding Field / resolve default executing type resolve... need to be discussed
+
+        //yes, i thought it too, and method build() is not necessary too.
     }
 
     public function getDescription()

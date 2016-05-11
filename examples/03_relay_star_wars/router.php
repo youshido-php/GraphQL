@@ -14,7 +14,8 @@ require_once __DIR__ . '/schema-bootstrap.php';
 /** @var Schema $schema */
 $schema = new StarWarsRelaySchema();
 
-if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] === 'application/json') {
+if ((isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] === 'application/json')
+|| isset($_SERVER['HTTP_CONTENT_TYPE']) && $_SERVER['HTTP_CONTENT_TYPE'] === 'application/json') {
     $rawBody     = file_get_contents('php://input');
     $requestData = json_decode($rawBody ?: '', true);
 } else {

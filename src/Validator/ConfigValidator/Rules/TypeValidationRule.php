@@ -154,6 +154,10 @@ class TypeValidationRule implements ValidationRuleInterface
                 return TypeMap::isInputType($data->getNullableType());
             }
         } else {
+            if(!isset($data['type'])) {
+                return false;
+            }
+
             return TypeMap::isInputType($data['type']);
         }
 

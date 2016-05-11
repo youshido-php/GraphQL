@@ -24,10 +24,10 @@ class ObjectTypeConfig extends Config implements TypeConfigInterface
         return [
             'name'        => ['type' => TypeMap::TYPE_STRING, 'required' => true],
             'description' => ['type' => TypeMap::TYPE_STRING],
-            'fields'      => ['type' => TypeMap::TYPE_ARRAY_OF_FIELDS],
+            'fields'      => ['type' => TypeMap::TYPE_ARRAY_OF_FIELDS], //todo: fields are required, and we can make required because type is validating when created (for example: in root query we first create, then add fields)
             'args'        => ['type' => TypeMap::TYPE_ARRAY_OF_INPUTS],
             'resolve'     => ['type' => TypeMap::TYPE_FUNCTION],
-            'output'      => ['type' => TypeMap::TYPE_OBJECT_TYPE],
+            'output'      => ['type' => TypeMap::TYPE_OBJECT_TYPE], //todo: what is output?
             'interfaces'  => ['type' => TypeMap::TYPE_ARRAY_OF_INTERFACES]
         ];
     }
