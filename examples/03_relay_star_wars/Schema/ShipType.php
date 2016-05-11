@@ -9,7 +9,8 @@
 namespace Examples\StarWars;
 
 
-use Youshido\GraphQL\Relay\GlobalIdField;
+use Youshido\GraphQL\Relay\Field\GlobalIdField;
+use Youshido\GraphQL\Relay\NodeInterface;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 
@@ -23,7 +24,8 @@ class ShipType extends AbstractObjectType
 
     public function resolve($value = null, $args = [], $type = null)
     {
-        // TODO: Implement resolve() method.
+        // maybe we need to think of making a non-abstract resolve method on type
+        // and adding Field / resolve default executing type resolve... need to be discussed
     }
 
     public function getDescription()
@@ -33,7 +35,7 @@ class ShipType extends AbstractObjectType
 
     public function getInterfaces()
     {
+        return [new NodeInterface()];
     }
-
 
 }

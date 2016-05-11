@@ -9,6 +9,7 @@
 namespace Youshido\GraphQL\Relay;
 
 
+use Youshido\GraphQL\Relay\Field\GlobalIdField;
 use Youshido\GraphQL\Type\Object\AbstractInterfaceType;
 
 class NodeInterface extends AbstractInterfaceType
@@ -28,6 +29,7 @@ class NodeInterface extends AbstractInterfaceType
     public function resolveType($object)
     {
         /** Need to find the best way to pass "TypeResolver" here */
+        return null;
     }
 
 }

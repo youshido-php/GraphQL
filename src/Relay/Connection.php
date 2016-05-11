@@ -94,7 +94,7 @@ class Connection
 
     public static function getPageInfoType()
     {
-        //todo: maybe use object singleton
+        //todo: maybe use object singleton - Maybe it's time to use Factory anyway ? :)
 
         return new ObjectType([
             'name'        => 'PageInfo',

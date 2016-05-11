@@ -6,9 +6,11 @@
 * created: 5/10/16 11:23 PM
 */
 
-namespace Youshido\GraphQL\Relay;
+namespace Youshido\GraphQL\Relay\Field;
 
 
+use Youshido\GraphQL\Relay\Node;
+use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Scalar\IdType;
@@ -32,12 +34,17 @@ class GlobalIdField extends Field
         parent::__construct($config);
     }
 
+    /**
+     * @param $value
+     * @param $args
+     * @param AbstractType $type
+     * @return string
+     */
     public function resolve($value, $args, $type)
     {
         if (empty($args)) $args = [];
         $args['typeName'] = $this->typeName;
-        //       return toGlobalId(typeName || info.parentType.name, idFetcher ? idFetcher(obj, context, info) : obj.id);
-        return parent::resolve($value, $args, $type);
+        return Node::toGlobalId($type->getName() ?: get_class($type), $value);
     }
 
 
