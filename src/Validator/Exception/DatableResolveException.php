@@ -7,9 +7,6 @@
 
 namespace Youshido\GraphQL\Validator\Exception;
 
-
-use Exception;
-
 class DatableResolveException extends \Exception
 {
 

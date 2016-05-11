@@ -9,7 +9,6 @@
 namespace Youshido\GraphQL\Type\Object;
 
 
-use Youshido\GraphQL\Type\Config\InputTypeConfigInterface;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Config\Object\InputObjectTypeConfig;
 use Youshido\GraphQL\Type\Field\Field;

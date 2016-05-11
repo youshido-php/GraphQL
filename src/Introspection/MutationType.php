@@ -17,9 +17,7 @@ class MutationType extends QueryType
     {
         /** @var AbstractSchema|Field $value */
         if ($value instanceof AbstractSchema) {
-            $res = $value->getMutationType()->hasFields() ? $value->getMutationType() : null;
-//            $res = $value->getMutationType();
-            return $res;
+            return $value->getMutationType()->hasFields() ? $value->getMutationType() : null;
         }
 
         return $value->getConfig()->getType();

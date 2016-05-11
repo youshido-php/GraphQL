@@ -7,7 +7,6 @@
 
 namespace Youshido\GraphQL\Introspection;
 
-use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
@@ -24,7 +23,7 @@ class FieldType extends AbstractObjectType
             ->addField('deprecationReason', TypeMap::TYPE_STRING)
             ->addField('type', new QueryType(), [
                 'resolve' => function (Field $value) {
-                    return $value->getType();
+                    return $value->getType()->getNamedType();
                 }
             ])
             ->addField('args', new InputValueListType());

@@ -12,7 +12,6 @@ namespace Youshido\GraphQL\Type\Object;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Config\Object\InterfaceTypeConfig;
 use Youshido\GraphQL\Type\Config\Traits\ConfigCallTrait;
-use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\TypeMap;
 

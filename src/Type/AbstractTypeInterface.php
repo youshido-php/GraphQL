@@ -9,7 +9,7 @@
 namespace Youshido\GraphQL\Type;
 
 
-Interface AbstractTypeInterface
+interface AbstractTypeInterface
 {
     /**
      * @param $object

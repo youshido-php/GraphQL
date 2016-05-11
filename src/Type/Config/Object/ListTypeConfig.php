@@ -39,7 +39,11 @@ class ListTypeConfig extends ObjectTypeConfig
 
     public function getFields()
     {
-        return $this->getItemConfig()->getFields();
+        if ($itemConfig = $this->getItemConfig()) {
+            return $itemConfig->getFields();
+        } else {
+            return [];
+        }
     }
 
     /**

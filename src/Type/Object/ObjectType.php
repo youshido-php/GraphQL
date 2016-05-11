@@ -8,9 +8,7 @@
 
 namespace Youshido\GraphQL\Type\Object;
 
-use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Traits\FinalTypesConfigTrait;
-use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 final class ObjectType extends AbstractObjectType
 {

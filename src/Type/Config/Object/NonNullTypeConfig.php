@@ -9,7 +9,6 @@
 namespace Youshido\GraphQL\Type\Config\Object;
 
 
-use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\TypeMap;
 
 class NonNullTypeConfig extends ObjectTypeConfig

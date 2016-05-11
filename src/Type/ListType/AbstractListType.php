@@ -10,7 +10,6 @@ namespace Youshido\GraphQL\Type\ListType;
 
 use Youshido\GraphQL\Type\CompositeTypeInterface;
 use Youshido\GraphQL\Type\Config\Object\ListTypeConfig;
-use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 
@@ -40,6 +39,9 @@ abstract class AbstractListType extends AbstractObjectType implements CompositeT
         return is_array($value);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function build($config) {}
 
     public function isCompositeType()

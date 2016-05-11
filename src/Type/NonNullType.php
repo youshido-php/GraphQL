@@ -9,9 +9,7 @@
 namespace Youshido\GraphQL\Type;
 
 
-use Youshido\GraphQL\Type\Config\TypeConfigInterface;
-
-class NonNullType extends AbstractType implements CompositeTypeInterface
+final class NonNullType extends AbstractType implements CompositeTypeInterface
 {
     private $_typeOf;
 
@@ -24,6 +22,7 @@ class NonNullType extends AbstractType implements CompositeTypeInterface
         if (TypeMap::isScalarType($fieldType)) {
             $fieldType = TypeMap::getScalarTypeObject($fieldType);
         }
+
         $this->_typeOf = $fieldType;
     }
 
