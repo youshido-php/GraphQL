@@ -50,9 +50,17 @@ abstract class AbstractEnumType extends AbstractType
      */
     public function isValidValue($value)
     {
-        return in_array($value, array_map(function ($item) {
+        $values = array_map(function ($item) {
             return $item['value'];
-        }, $this->getConfig()->get('values')));
+        }, $this->getConfig()->get('values'));
+
+        foreach ($values as $enumValue) {
+            if ($enumValue === $value) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     abstract public function getValues();
@@ -68,9 +76,11 @@ abstract class AbstractEnumType extends AbstractType
                 return $valueItem['value'];
             }
         }
+
+        return null;
     }
 
-    public function resolve($value)
+    public function resolve($value) //todo: this method be here, or maybe another must be in enum type?
     {
         foreach ($this->getConfig()->get('values') as $valueItem) {
             if ($value == $valueItem['value']) {
