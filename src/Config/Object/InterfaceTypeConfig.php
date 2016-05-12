@@ -15,6 +15,7 @@ use Youshido\GraphQL\Config\Traits\FieldsAwareTrait;
 use Youshido\GraphQL\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
+use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 class InterfaceTypeConfig extends AbstractConfig implements TypeConfigInterface
 {
@@ -23,10 +24,10 @@ class InterfaceTypeConfig extends AbstractConfig implements TypeConfigInterface
     public function getRules()
     {
         return [
-            'name'        => ['type' => TypeMap::TYPE_STRING, 'required' => true],
-            'fields'      => ['type' => TypeService::TYPE_ARRAY_OF_FIELDS], //todo: must be required
+            'name'        => ['type' => TypeMap::TYPE_STRING, 'final' => true],
+            'fields'      => ['type' => TypeService::TYPE_ARRAY_OF_FIELDS, 'final' => true],
             'description' => ['type' => TypeMap::TYPE_STRING],
-            'resolveType' => ['type' => TypeService::TYPE_FUNCTION] //todo: must be required
+            'resolveType' => ['type' => TypeService::TYPE_FUNCTION, 'final' => true],
         ];
     }
 
@@ -41,8 +42,10 @@ class InterfaceTypeConfig extends AbstractConfig implements TypeConfigInterface
 
         if ($callable && is_callable($callable)) {
             return call_user_func_array($callable, [$object]);
+        } elseif (is_callable([$this->contextObject, 'resolveType'])) {
+            return $this->contextObject->resolveType($object);
         }
 
-        return $this->contextObject->resolveType($object);
+        throw new ConfigurationException('There is no valid resolveType for ' . $this->getName());
     }
 }

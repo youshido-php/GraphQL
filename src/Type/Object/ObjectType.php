@@ -23,12 +23,13 @@ final class ObjectType extends AbstractObjectType
         $this->config = new ObjectTypeConfig($config, $this, true);
     }
 
-    public function build($config)
-    {
-    }
+    /**
+     * @codeCoverageIgnore
+     */
+    public function build($config) { }
 
     public function getName()
     {
-        return $this->config->get('name');
+        return $this->getConfigValue('name');
     }
 }

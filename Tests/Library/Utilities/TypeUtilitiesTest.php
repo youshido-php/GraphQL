@@ -8,11 +8,11 @@
 
 namespace Youshido\Library;
 
-
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
+use Youshido\Tests\DataProvider\TestInterfaceType;
 
 class TypeUtilitiesTest extends \PHPUnit_Framework_TestCase
 {
@@ -45,5 +45,12 @@ class TypeUtilitiesTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(TypeService::isInputType(TypeMap::TYPE_STRING));
         $this->assertFalse(TypeService::isInputType('invalid type'));
         $this->assertFalse(TypeService::isInputType($testType));
+    }
+
+    public function testIsAbstractType()
+    {
+        $this->assertTrue(TypeService::isAbstractType(new TestInterfaceType()));
+        $this->assertFalse(TypeService::isAbstractType(new StringType()));
+        $this->assertFalse(TypeService::isAbstractType('invalid type'));
     }
 }

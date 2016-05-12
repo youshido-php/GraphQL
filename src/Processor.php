@@ -26,6 +26,7 @@ use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeService;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
@@ -184,7 +185,7 @@ class Processor
 
         $value = $resolvedValue;
         if ($mutation->hasFields()) {
-            if ($field->getType()->isAbstractType()) {
+            if (TypeService::isAbstractType($field->getType())) {
                 $outputType = $field->getType()->getConfig()->resolveType($resolvedValue);
             } else {
                 /** @var AbstractType $outputType */
@@ -302,7 +303,7 @@ class Processor
                 $index     = count($value) - 1;
                 $namedType = $fieldType->getNamedType();
 
-                if ($namedType->isAbstractType()) {
+                if (TypeService::isAbstractType($namedType)) {
                     $resolvedType = $namedType->getConfig()->resolveType($resolvedValueItem);
                     if ($namedType instanceof AbstractInterfaceType) {
                         $this->resolveValidator->assertTypeImplementsInterface($resolvedType, $namedType);
@@ -393,7 +394,7 @@ class Processor
     {
         $resolvedValue = $field->resolve($contextValue, $this->parseArgumentsValues($field, $query), $field->getType());
 
-        if ($field->getType()->isAbstractType()) {
+        if (TypeService::isAbstractType($field->getType())) {
             $resolvedType = $field->getType()->resolveType($resolvedValue);
             $field->setType($resolvedType);
         }

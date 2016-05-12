@@ -26,8 +26,6 @@ use Youshido\GraphQL\Type\AbstractType;
  * @method bool hasFields()
  * @method bool isDeprecated()
  * @method string getDeprecationReason()
- * @property AbstractConfig $config
- *
  */
 trait ConfigCallTrait
 {

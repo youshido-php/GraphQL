@@ -12,7 +12,7 @@ use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\InputObject\InputObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
-use Youshido\Tests\DataProvider\UserType;
+use Youshido\Tests\DataProvider\TestObjectType;
 
 
 class ObjectTypeTest extends \PHPUnit_Framework_TestCase
@@ -36,7 +36,7 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
 
     public function testListSchema()
     {
-        $listType = new ListType(new UserType());
+        $listType = new ListType(new TestObjectType());
 
         $this->assertEquals(TypeMap::KIND_LIST, $listType->getKind());
     }

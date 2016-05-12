@@ -45,9 +45,28 @@ class TypeService
         throw new \Exception('Invalid type');
     }
 
-    public static function isInterface(TypeInterface $type)
+    /**
+     * @param AbstractType|mixed $type
+     * @return bool
+     */
+    public static function isInterface($type)
     {
+        if (!is_object($type)) {
+            return false;
+        }
         return $type->getKind() == TypeMap::KIND_INTERFACE;
+    }
+
+    /**
+     * @param AbstractType|mixed $type
+     * @return bool
+     */
+    public static function isAbstractType($type)
+    {
+        if (!is_object($type)) {
+            return false;
+        }
+        return in_array($type->getKind(), [TypeMap::KIND_INTERFACE, TypeMap::KIND_UNION]);
     }
 
     public static function isScalarType($typeName)

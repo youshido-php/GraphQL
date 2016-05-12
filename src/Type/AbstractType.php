@@ -27,7 +27,7 @@ abstract class AbstractType implements TypeInterface
 
     public function getDescription()
     {
-        return $this->getConfig()->get('description', null);
+        return $this->getConfigValue('description', null);
     }
 
     /**
@@ -43,9 +43,9 @@ abstract class AbstractType implements TypeInterface
         return $this->config;
     }
 
-    public function isAbstractType()
+    protected function getConfigValue($key, $defaultValue = null)
     {
-        return in_array($this->getKind(), [TypeMap::KIND_INTERFACE, TypeMap::KIND_UNION]);
+        return !empty($this->config) ? $this->config->get($key, $defaultValue) : $defaultValue;
     }
 
     public function isCompositeType()
@@ -82,7 +82,7 @@ abstract class AbstractType implements TypeInterface
 
     public function parseValue($value)
     {
-        return $this->serialize($value);
+        return $value;
     }
 
     public function serialize($value)

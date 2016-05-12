@@ -12,6 +12,7 @@ namespace Youshido\Library;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeService;
 
 class NonNullTypeTest extends \PHPUnit_Framework_TestCase
 {
@@ -31,7 +32,7 @@ class NonNullTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($nonNullType->getNamedType(), $stringType);
         $this->assertEquals($nonNullType->getTypeOf(), $stringType);
         $this->assertEquals($nonNullType->isCompositeType(), true);
-        $this->assertEquals($nonNullType->isAbstractType(), false);
+        $this->assertEquals(TypeService::isAbstractType($nonNullType), false);
         $this->assertFalse($nonNullType->isValidValue(null));
         $this->assertTrue($nonNullType->isValidValue($stringType));
         $this->assertEquals($nonNullType->parseValue($testArray), $testArray);

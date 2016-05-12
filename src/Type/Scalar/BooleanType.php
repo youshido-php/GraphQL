@@ -12,11 +12,6 @@ namespace Youshido\GraphQL\Type\Scalar;
 class BooleanType extends AbstractScalarType
 {
 
-    public function parseValue($value)
-    {
-        return $this->serialize($value);
-    }
-
     public function serialize($value)
     {
         if ($value === 'true') {

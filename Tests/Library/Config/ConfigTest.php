@@ -60,15 +60,15 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($config->isName(), 'StrangeName');
         $this->assertEquals($config->setName('StrangeName 2'), $config);
 
+        $config->set('var', 'value');
+        $this->assertEquals($config->getVar(), 'value');
+
         $this->assertEquals($config->getRules(), $rules);
         $this->assertEquals($config->getContextRules(), $rules);
         $this->assertTrue($config->isValid());
         $this->assertNull($config->getResolveFunction());
 
         $object = new ObjectType(['name' => 'TestObject', 'fields' => ['id' => new IntType()]]);
-
-        $this->setExpectedException('Youshido\GraphQL\Validator\Exception\ConfigurationException');
-        new TestConfig(['name' => $name . 'final'], $object, true);
 
         $finalConfig = new TestConfig(['name' => $name . 'final', 'resolve' => function() { return []; }], $object, true);
         $this->assertEquals($finalConfig->getType(), null);
@@ -77,7 +77,14 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($finalConfig->getContextRules(), $rules);
 
         $this->assertNotNull($finalConfig->getResolveFunction());
+    }
 
+    /**
+     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     */
+    public function testFinalRule()
+    {
+        new TestConfig(['name' => 'Test' . 'final'], null, true);
     }
 
 }

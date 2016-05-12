@@ -17,11 +17,6 @@ class StringType extends AbstractScalarType
         return 'String';
     }
 
-    public function parseValue($value)
-    {
-        return $this->serialize($value);
-    }
-
     public function serialize($value)
     {
         if ($value === true) {

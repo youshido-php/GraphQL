@@ -9,8 +9,10 @@
 namespace Youshido\Library;
 
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
+use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\TypeFactory;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeService;
 use Youshido\Tests\DataProvider\TestScalarDataProvider;
 
 class ScalarTypeTest extends \PHPUnit_Framework_TestCase
@@ -25,7 +27,7 @@ class ScalarTypeTest extends \PHPUnit_Framework_TestCase
             $this->assertNotEmpty($scalarType->getDescription());
             $this->assertEquals($scalarType->getKind(), TypeMap::KIND_SCALAR);
             $this->assertEquals($scalarType->isCompositeType(), false);
-            $this->assertEquals($scalarType->isAbstractType(), false);
+            $this->assertEquals(TypeService::isAbstractType($scalarType), false);
             $this->assertEquals($scalarType->getType(), $scalarType);
             $this->assertEquals($scalarType->getType(), $scalarType->getNamedType());
             $this->assertNull($scalarType->getConfig());
@@ -43,6 +45,8 @@ class ScalarTypeTest extends \PHPUnit_Framework_TestCase
             }
         }
         $this->assertNull(TypeFactory::getScalarType('invalid type'), 'Invalid type returns null');
+        $this->assertEquals('String', (string)new StringType());
+
     }
 
 

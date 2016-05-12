@@ -11,7 +11,9 @@ namespace Youshido\Library;
 
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
+use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\Tests\DataProvider\TestObjectType;
 
 class ObjectTypeTest extends \PHPUnit_Framework_TestCase
 {
@@ -45,6 +47,21 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
         ]);
     }
 
+    /**
+     * @expectedException Youshido\GraphQL\Validator\Exception\ResolveException
+     */
+    public function testSerialize()
+    {
+        $object = new ObjectType([
+            'name' => 'SomeName',
+            'fields' => [
+                'name' => new StringType()
+            ]
+        ]);
+        $object->serialize([]);
+    }
+
+
     public function testNormalCreatingParam()
     {
         $objectType = new ObjectType([
@@ -56,11 +73,21 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($objectType->getKind(), TypeMap::KIND_OBJECT);
         $this->assertEquals($objectType->getName(), 'Post');
         $this->assertEquals($objectType->getType(), $objectType);
+        $this->assertEquals($objectType->getType()->getName(), 'Post');
         $this->assertEquals($objectType->getNamedType(), $objectType);
 
         $this->assertEmpty($objectType->getInterfaces());
         $this->assertTrue($objectType->isValidValue($objectType));
         $this->assertFalse($objectType->isValidValue(null));
+
+        $this->assertNull($objectType->getDescription());
+    }
+
+    public function testExtendedClass()
+    {
+        $objectType = new TestObjectType();
+        $this->assertEquals($objectType->getName(), 'TestObject');
+        $this->assertEquals($objectType->getType(), $objectType, 'test type of extended object');
     }
 
 }

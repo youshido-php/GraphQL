@@ -12,7 +12,7 @@ use Youshido\GraphQL\Schema;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\Tests\DataProvider\TestSchema;
-use Youshido\Tests\DataProvider\UserType;
+use Youshido\Tests\DataProvider\TestObjectType;
 
 class SchemaTest extends \PHPUnit_Framework_TestCase
 {
@@ -39,7 +39,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
                     [
                         'name'   => 'RootQuery',
                         'fields' => [
-                            'users' => new ListType(new UserType())
+                            'users' => new ListType(new TestObjectType())
                         ]
                     ])
             ]);
@@ -50,7 +50,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
     public function testClassUsage()
     {
         $schema = new TestSchema();
-        $schema->addQuery('users', new ListType(new UserType()));
+        $schema->addQuery('users', new ListType(new TestObjectType()));
         $this->assertEquals('TestSchema', $schema->getName());
 
         $fields = $schema->getQueryType()->getConfig()->getFields();

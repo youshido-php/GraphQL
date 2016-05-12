@@ -13,7 +13,7 @@ use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Processor;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
-use Youshido\Tests\DataProvider\UserType;
+use Youshido\Tests\DataProvider\TestObjectType;
 
 class ProcessorTest extends \PHPUnit_Framework_TestCase
 {
@@ -295,7 +295,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                     }
                 ]));
 
-        $schema->addQuery('user', new UserType());
+        $schema->addQuery('user', new TestObjectType());
 
         $validator = new ResolveValidator();
         $processor = new Processor($validator);

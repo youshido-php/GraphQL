@@ -46,11 +46,6 @@ abstract class AbstractObjectType extends AbstractType
         $this->config = new ObjectTypeConfig($config, $this);
     }
 
-    public function parseValue($value)
-    {
-        return $value;
-    }
-
     final public function serialize($value)
     {
         throw new ResolveException('You can not serialize object value directly');
@@ -63,9 +58,7 @@ abstract class AbstractObjectType extends AbstractType
 
     public function getType()
     {
-        $config = $this->getConfig();
-
-        return $config && $config->getType() ? $config->getType() : $this;
+        return $this->getConfigValue('type', $this);
     }
 
     public function getNamedType()
@@ -78,7 +71,7 @@ abstract class AbstractObjectType extends AbstractType
      */
     public function getInterfaces()
     {
-        return [];
+        return $this->getConfigValue('interfaces', []);
     }
 
     public function isValidValue($value)
