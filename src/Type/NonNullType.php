@@ -26,11 +26,6 @@ final class NonNullType extends AbstractType implements CompositeTypeInterface
         $this->_typeOf = $fieldType;
     }
 
-    public function build($config)
-    {
-    }
-
-
     public function getName()
     {
         return null;

@@ -8,21 +8,19 @@
 namespace Youshido\GraphQL\Type\InterfaceType;
 
 
-use Youshido\GraphQL\Config\TypeConfigInterface;
+use Youshido\GraphQL\Config\Object\InterfaceTypeConfig;
 
 final class InterfaceType extends AbstractInterfaceType
 {
+
+    public function __construct($config = [])
+    {
+        $this->config = new InterfaceTypeConfig($config, $this, true);
+    }
 
     public function resolveType($object)
     {
         return $this->getConfig()->resolveType($object);
     }
 
-    /**
-     * @param TypeConfigInterface $config
-     * @return mixed
-     */
-    public function build($config)
-    {
-    }
 }

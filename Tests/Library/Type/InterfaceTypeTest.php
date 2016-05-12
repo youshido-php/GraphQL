@@ -9,6 +9,7 @@
 namespace Youshido\Tests\Library\Type;
 
 
+use Youshido\GraphQL\Type\InterfaceType\InterfaceType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\Tests\DataProvider\TestInterfaceType;
@@ -34,6 +35,22 @@ class InterfaceTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($interface->isValidValue('invalid object'));
 
         $this->assertEquals($interface->serialize($object), $object);
+
+        $interfaceType = new InterfaceType([
+            'name' => 'UserInterface',
+            'fields' => [
+                'name' => new StringType()
+            ],
+            'resolveType' => function($object) {
+                return $object;
+            }
+        ]);
+        $this->assertEquals('UserInterface', $interfaceType->getName());
+
+        $this->assertEquals($object, $interfaceType->resolveType($object));
+
+        $this->assertFalse($interfaceType->isValidValue($object));
+        $this->assertFalse($interfaceType->isValidValue('invalid object'));
     }
 
 }

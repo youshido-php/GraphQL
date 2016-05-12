@@ -42,7 +42,12 @@ class Field
      */
     public function getType()
     {
-        return $this->config->get('type');
+        return $this->getConfig()->get('type');
+    }
+
+    public function getName()
+    {
+        return $this->getConfig()->get('name');
     }
 
     public function getKind()
@@ -50,10 +55,10 @@ class Field
         return $this->getType()->getKind();
     }
 
-    public function resolve($value, $args, $type)
+    public function resolve($value, $args = [], $type = null)
     {
         $resolveFn = $this->config->get('resolve', null);
 
-        return $resolveFn ? $resolveFn($value, $args, $type) : null;
+        return $resolveFn ? $resolveFn($value, $args, $type ?: $this->getType()) : null;
     }
 }

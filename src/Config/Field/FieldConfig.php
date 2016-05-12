@@ -29,7 +29,6 @@ class FieldConfig extends AbstractConfig
             'name'              => ['type' => TypeMap::TYPE_STRING, 'required' => true],
             'type'              => ['type' => TypeService::TYPE_ANY, 'required' => true],
             'args'              => ['type' => TypeService::TYPE_ARRAY],
-            'required'          => ['type' => TypeMap::TYPE_BOOLEAN],
             'description'       => ['type' => TypeMap::TYPE_STRING],
             'resolve'           => ['type' => TypeService::TYPE_FUNCTION],
             'isDeprecated'      => ['type' => TypeMap::TYPE_BOOLEAN],

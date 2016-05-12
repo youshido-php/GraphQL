@@ -27,8 +27,9 @@ trait FieldsAwareTrait
 
     public function buildFields()
     {
-        $sourceFields = empty($this->data['fields']) ? [] : $this->data['fields'];
-        $this->addFields($sourceFields);
+        if (!empty($this->data['fields'])) {
+            $this->addFields($this->data['fields']);
+        }
     }
 
     /**
