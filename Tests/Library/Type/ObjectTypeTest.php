@@ -11,6 +11,7 @@ namespace Youshido\Library;
 
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
+use Youshido\GraphQL\Type\TypeMap;
 
 class ObjectTypeTest extends \PHPUnit_Framework_TestCase
 {
@@ -52,7 +53,14 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
                 'id' => new IntType()
             ]
         ]);
+        $this->assertEquals($objectType->getKind(), TypeMap::KIND_OBJECT);
         $this->assertEquals($objectType->getName(), 'Post');
+        $this->assertEquals($objectType->getType(), $objectType);
+        $this->assertEquals($objectType->getNamedType(), $objectType);
+
+        $this->assertEmpty($objectType->getInterfaces());
+        $this->assertTrue($objectType->isValidValue($objectType));
+        $this->assertFalse($objectType->isValidValue(null));
     }
 
 }

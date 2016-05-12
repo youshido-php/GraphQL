@@ -30,11 +30,11 @@ trait FinalTypesConfigTrait
 //        return $this;
 //    }
 
-    public function resolve($value = null, $args = [], $type = null)
-    {
-        $callable = $this->getConfig()->getResolveFunction();
-
-        return is_callable($callable) ? $callable($value, $args, $type) : $value;
-    }
+//    public function resolve($value = null, $args = [], $type = null)
+//    {
+//        $callable = $this->getConfig()->getResolveFunction();
+//
+//        return is_callable($callable) ? $callable($value, $args, $type) : $value;
+//    }
 
 }
