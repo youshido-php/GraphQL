@@ -13,6 +13,7 @@ use Youshido\GraphQL\Type\Config\Config;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeService;
 
 class SchemaConfig extends Config
 {
@@ -20,8 +21,8 @@ class SchemaConfig extends Config
     public function getRules()
     {
         return [
-            'query'    => ['type' => TypeMap::TYPE_OBJECT_TYPE, 'required' => true],
-            'mutation' => ['type' => TypeMap::TYPE_OBJECT_TYPE],
+            'query'    => ['type' => TypeService::TYPE_OBJECT_TYPE, 'required' => true],
+            'mutation' => ['type' => TypeService::TYPE_OBJECT_TYPE],
             'name'     => ['type' => TypeMap::TYPE_STRING],
         ];
     }

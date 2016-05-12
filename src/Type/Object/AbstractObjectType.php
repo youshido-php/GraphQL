@@ -69,6 +69,10 @@ abstract class AbstractObjectType extends AbstractType
         return $config && $config->getType() ? $config->getType() : $this;
     }
 
+    public function getNamedType()
+    {
+        return $this;
+    }
     /**
      * @return AbstractInterfaceType[]
      */

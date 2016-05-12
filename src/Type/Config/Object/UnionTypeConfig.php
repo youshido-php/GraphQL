@@ -14,6 +14,7 @@ use Youshido\GraphQL\Type\Config\Traits\ArgumentsAwareTrait;
 use Youshido\GraphQL\Type\Config\Traits\FieldsAwareTrait;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeService;
 
 class UnionTypeConfig extends Config implements TypeConfigInterface
 {
@@ -23,10 +24,10 @@ class UnionTypeConfig extends Config implements TypeConfigInterface
     {
         return [
             'name'        => ['type' => TypeMap::TYPE_STRING, 'required' => true],
-            'types'       => ['type' => TypeMap::TYPE_ARRAY_OF_FIELDS],
+            'types'       => ['type' => TypeService::TYPE_ARRAY_OF_FIELDS],
             'description' => ['type' => TypeMap::TYPE_STRING],
-            'resolve'     => ['type' => TypeMap::TYPE_FUNCTION],
-            'resolveType' => ['type' => TypeMap::TYPE_FUNCTION]
+            'resolve'     => ['type' => TypeService::TYPE_FUNCTION],
+            'resolveType' => ['type' => TypeService::TYPE_FUNCTION]
         ];
     }
 

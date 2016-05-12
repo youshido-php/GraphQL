@@ -17,6 +17,7 @@ use Youshido\GraphQL\Type\Object\AbstractInputObjectType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeFactory;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeService;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 class TypeValidationRule implements ValidationRuleInterface
@@ -32,44 +33,44 @@ class TypeValidationRule implements ValidationRuleInterface
         } elseif (is_string($ruleInfo)) {
 
             switch ($ruleInfo) {
-                case TypeMap::TYPE_ANY:
+                case TypeService::TYPE_ANY:
                     return true;
 
-                case TypeMap::TYPE_ANY_OBJECT:
+                case TypeService::TYPE_ANY_OBJECT:
                     return is_object($data);
 
-                case TypeMap::TYPE_OBJECT_TYPE:
+                case TypeService::TYPE_OBJECT_TYPE:
                     return $data instanceof AbstractObjectType;
 
-                case TypeMap::TYPE_OBJECT_INPUT_TYPE:
+                case TypeService::TYPE_OBJECT_INPUT_TYPE:
                     return $data instanceof AbstractInputObjectType;
 
-                case TypeMap::TYPE_FUNCTION:
+                case TypeService::TYPE_FUNCTION:
                     return is_callable($data);
 
                 case TypeMap::TYPE_BOOLEAN:
                     return is_bool($data);
 
-                case TypeMap::TYPE_ARRAY:
+                case TypeService::TYPE_ARRAY:
                     return is_array($data);
 
-                case TypeMap::TYPE_ARRAY_OF_VALUES:
+                case TypeService::TYPE_ARRAY_OF_VALUES:
                     return $this->isArrayOfValues($data);
 
-                case TypeMap::TYPE_ARRAY_OF_FIELDS:
+                case TypeService::TYPE_ARRAY_OF_FIELDS:
                     return $this->isArrayOfFields($data);
 
-                case TypeMap::TYPE_ARRAY_OF_INPUTS:
+                case TypeService::TYPE_ARRAY_OF_INPUTS:
                     return $this->isArrayOfInputs($data);
 
-                case TypeMap::TYPE_ANY_INPUT:
-                    return TypeMap::isInputType($data);
+                case TypeService::TYPE_ANY_INPUT:
+                    return TypeService::isInputType($data);
 
-                case TypeMap::TYPE_ARRAY_OF_INTERFACES:
+                case TypeService::TYPE_ARRAY_OF_INTERFACES:
                     return $this->isArrayOfInterfaces($data);
 
                 default:
-                    if (TypeMap::isScalarType($ruleInfo)) {
+                    if (TypeService::isScalarType($ruleInfo)) {
                         return TypeFactory::getScalarType($ruleInfo)->isValidValue($data);
                     }
             }
@@ -96,7 +97,7 @@ class TypeValidationRule implements ValidationRuleInterface
         if (!is_array($data)) return false;
 
         foreach ($data as $item) {
-            if (!TypeMap::isInterface($item)) {
+            if (!TypeService::isInterface($item)) {
                 return false;
             }
         }
@@ -152,14 +153,14 @@ class TypeValidationRule implements ValidationRuleInterface
             if ($data instanceof InputField) {
                 return true;
             } elseif ($data instanceof AbstractType) {
-                return TypeMap::isInputType($data->getNullableType());
+                return TypeService::isInputType($data->getNullableType());
             }
         } else {
             if(!isset($data['type'])) {
                 return false;
             }
 
-            return TypeMap::isInputType($data['type']);
+            return TypeService::isInputType($data['type']);
         }
 
         return false;

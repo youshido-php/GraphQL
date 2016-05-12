@@ -13,6 +13,7 @@ use Youshido\GraphQL\Type\Config\Traits\ArgumentsAwareTrait;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeService;
 
 class FieldConfig extends Config
 {
@@ -26,11 +27,11 @@ class FieldConfig extends Config
     {
         return [
             'name'              => ['type' => TypeMap::TYPE_STRING, 'required' => true],
-            'type'              => ['type' => TypeMap::TYPE_ANY, 'required' => true],
-            'args'              => ['type' => TypeMap::TYPE_ARRAY],
+            'type'              => ['type' => TypeService::TYPE_ANY, 'required' => true],
+            'args'              => ['type' => TypeService::TYPE_ARRAY],
             'required'          => ['type' => TypeMap::TYPE_BOOLEAN],
             'description'       => ['type' => TypeMap::TYPE_STRING],
-            'resolve'           => ['type' => TypeMap::TYPE_FUNCTION],
+            'resolve'           => ['type' => TypeService::TYPE_FUNCTION],
             'isDeprecated'      => ['type' => TypeMap::TYPE_BOOLEAN],
             'deprecationReason' => ['type' => TypeMap::TYPE_STRING],
         ];

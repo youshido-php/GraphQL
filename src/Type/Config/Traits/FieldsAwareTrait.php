@@ -14,6 +14,7 @@ use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Field\InputField;
 use Youshido\GraphQL\Type\TypeFactory;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeService;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 /**
@@ -62,7 +63,7 @@ trait FieldsAwareTrait
     public function addField($name, $type, $config = [])
     {
         if (is_string($type)) {
-            if (!TypeMap::isScalarType($type)) {
+            if (!TypeService::isScalarType($type)) {
                 throw new ConfigurationException('You can\'t pass ' . $type . ' as a string type.');
             }
 

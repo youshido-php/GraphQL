@@ -14,9 +14,7 @@ use Youshido\GraphQL\Type\Traits\FinalTypesConfigTrait;
 final class ListType extends AbstractListType
 {
 
-    use FinalTypesConfigTrait {
-        getName as getConfigName;
-    }
+    use FinalTypesConfigTrait;
 
     public function getItemType()
     {

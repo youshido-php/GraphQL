@@ -11,6 +11,7 @@ namespace Youshido\GraphQL\Type\Object;
 
 use Youshido\GraphQL\Type\Traits\FinalTypesConfigTrait;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeService;
 
 final class UnionType extends AbstractUnionType
 {
@@ -18,7 +19,7 @@ final class UnionType extends AbstractUnionType
 
     public function resolveType($object)
     {
-        return TypeMap::getNamedType($object);
+        return TypeService::resolveNamedType($object);
     }
 
     public function getTypes()

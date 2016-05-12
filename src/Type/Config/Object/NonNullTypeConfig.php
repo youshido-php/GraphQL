@@ -10,13 +10,14 @@ namespace Youshido\GraphQL\Type\Config\Object;
 
 
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeService;
 
 class NonNullTypeConfig extends ObjectTypeConfig
 {
     public function getRules()
     {
         return [
-            'item' => ['type' => TypeMap::TYPE_OBJECT_TYPE, 'required' => true],
+            'item' => ['type' => TypeService::TYPE_OBJECT_TYPE, 'required' => true],
         ];
     }
 

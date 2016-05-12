@@ -13,6 +13,7 @@ use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Config\Traits\ArgumentsAwareTrait;
 use Youshido\GraphQL\Type\Config\Traits\FieldsAwareTrait;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeService;
 
 class ObjectTypeConfig extends Config implements TypeConfigInterface
 {
@@ -24,10 +25,10 @@ class ObjectTypeConfig extends Config implements TypeConfigInterface
         return [
             'name'        => ['type' => TypeMap::TYPE_STRING, 'required' => true],
             'description' => ['type' => TypeMap::TYPE_STRING],
-            'fields'      => ['type' => TypeMap::TYPE_ARRAY_OF_FIELDS, 'final' => true],
-            'args'        => ['type' => TypeMap::TYPE_ARRAY_OF_INPUTS],
-            'resolve'     => ['type' => TypeMap::TYPE_FUNCTION],
-            'interfaces'  => ['type' => TypeMap::TYPE_ARRAY_OF_INTERFACES]
+            'fields'      => ['type' => TypeService::TYPE_ARRAY_OF_FIELDS, 'final' => true],
+            'args'        => ['type' => TypeService::TYPE_ARRAY_OF_INPUTS],
+            'resolve'     => ['type' => TypeService::TYPE_FUNCTION],
+            'interfaces'  => ['type' => TypeService::TYPE_ARRAY_OF_INTERFACES]
         ];
     }
 

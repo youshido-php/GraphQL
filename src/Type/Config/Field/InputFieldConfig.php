@@ -11,6 +11,7 @@ namespace Youshido\GraphQL\Type\Config\Field;
 
 use Youshido\GraphQL\Type\Config\Config;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeService;
 
 class InputFieldConfig extends Config
 {
@@ -19,10 +20,10 @@ class InputFieldConfig extends Config
     {
         return [
             'name'        => ['type' => TypeMap::TYPE_STRING, 'required' => true],
-            'type'        => ['type' => TypeMap::TYPE_ANY_INPUT, 'required' => true],
-            'resolve'     => ['type' => TypeMap::TYPE_FUNCTION],
+            'type'        => ['type' => TypeService::TYPE_ANY_INPUT, 'required' => true],
+            'resolve'     => ['type' => TypeService::TYPE_FUNCTION],
             'required'    => ['type' => TypeMap::TYPE_BOOLEAN],
-            'default'     => ['type' => TypeMap::TYPE_ANY],
+            'default'     => ['type' => TypeService::TYPE_ANY],
             'description' => ['type' => TypeMap::TYPE_STRING],
         ];
     }

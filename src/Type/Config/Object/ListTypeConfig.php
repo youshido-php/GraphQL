@@ -11,15 +11,16 @@ namespace Youshido\GraphQL\Type\Config\Object;
 
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeService;
 
 class ListTypeConfig extends ObjectTypeConfig
 {
     public function getRules()
     {
         return [
-            'item'    => ['type' => TypeMap::TYPE_ANY, 'required' => true],
-            'resolve' => ['type' => TypeMap::TYPE_FUNCTION],
-            'args'    => ['type' => TypeMap::TYPE_ARRAY_OF_INPUTS],
+            'item'    => ['type' => TypeService::TYPE_ANY, 'required' => true],
+            'resolve' => ['type' => TypeService::TYPE_FUNCTION],
+            'args'    => ['type' => TypeService::TYPE_ARRAY_OF_INPUTS],
         ];
     }
 

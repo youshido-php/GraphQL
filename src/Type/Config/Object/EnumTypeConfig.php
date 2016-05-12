@@ -14,6 +14,7 @@ use Youshido\GraphQL\Type\Config\Traits\ArgumentsAwareTrait;
 use Youshido\GraphQL\Type\Config\Traits\FieldsAwareTrait;
 use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeService;
 
 class EnumTypeConfig extends Config implements TypeConfigInterface
 {
@@ -24,7 +25,7 @@ class EnumTypeConfig extends Config implements TypeConfigInterface
         return [
             'name'        => ['type' => TypeMap::TYPE_STRING, 'required' => true],
             'description' => ['type' => TypeMap::TYPE_STRING],
-            'values'      => ['type' => TypeMap::TYPE_ARRAY_OF_VALUES, 'required' => true],
+            'values'      => ['type' => TypeService::TYPE_ARRAY_OF_VALUES, 'required' => true],
         ];
     }
 

@@ -8,7 +8,6 @@
 
 namespace Youshido\Tests\DataProvider;
 
-use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 
@@ -34,11 +33,6 @@ class UserType extends AbstractObjectType
             'id'   => 1,
             'name' => 'John'
         ];
-    }
-
-    public function getName()
-    {
-        return "user";
     }
 
 }

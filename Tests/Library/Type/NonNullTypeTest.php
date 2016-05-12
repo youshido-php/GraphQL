@@ -6,7 +6,7 @@
 * created: 5/11/16 9:31 PM
 */
 
-namespace Youshido\Tests\Basic;
+namespace Youshido\Library;
 
 
 use Youshido\GraphQL\Type\NonNullType;

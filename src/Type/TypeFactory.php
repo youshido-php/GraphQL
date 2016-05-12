@@ -22,7 +22,7 @@ class TypeFactory
      */
     public static function getScalarType($typeName)
     {
-        if (TypeMap::isScalarType($typeName)) {
+        if (TypeService::isScalarType($typeName)) {
             if (empty(self::$objectsHash[$typeName])) {
                 $name = ucfirst($typeName);
                 $name = $name == 'Datetime' ? 'DateTime' : $name;

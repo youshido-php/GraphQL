@@ -13,6 +13,7 @@ use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Field\InputField;
 use Youshido\GraphQL\Type\TypeFactory;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeService;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 trait ArgumentsAwareTrait
@@ -42,7 +43,7 @@ trait ArgumentsAwareTrait
 
     public function addArgument($name, $type, $config = [])
     {
-        if (!TypeMap::isInputType($type)) {
+        if (!TypeService::isInputType($type)) {
             throw new ConfigurationException('Argument input type ' . $type . ' is not supported');
         }
 

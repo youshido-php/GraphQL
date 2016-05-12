@@ -10,6 +10,7 @@ namespace Youshido\GraphQL\Type\Config\Object;
 
 
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeService;
 
 class InputObjectTypeConfig extends ObjectTypeConfig
 {
@@ -18,7 +19,7 @@ class InputObjectTypeConfig extends ObjectTypeConfig
         return [
             'name'        => ['type' => TypeMap::TYPE_STRING, 'required' => true],
             'description' => ['type' => TypeMap::TYPE_STRING],
-            'fields'      => ['type' => TypeMap::TYPE_ARRAY_OF_INPUTS],
+            'fields'      => ['type' => TypeService::TYPE_ARRAY_OF_INPUTS],
         ];
     }
 }
