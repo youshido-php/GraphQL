@@ -55,7 +55,9 @@ class SchemaType extends AbstractObjectType
             ->addField('subscriptionType', new ObjectType([
                 'name'    => '__Subscription',
                 'fields'  => ['name' => ['type' => TypeMap::TYPE_STRING]],
-                'resolve' => function () { return null; }
+                'resolve' => function () {
+                    return null;
+                }
             ]))
             ->addField('types', new QueryListType())
             ->addField('directives', new DirectiveListType());

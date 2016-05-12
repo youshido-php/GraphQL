@@ -8,7 +8,6 @@
 
 namespace Youshido\GraphQL\Type\Union;
 
-use Youshido\GraphQL\Type\Union\AbstractUnionType;
 use Youshido\GraphQL\Type\TypeService;
 
 final class UnionType extends AbstractUnionType

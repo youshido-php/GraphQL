@@ -9,9 +9,9 @@
 namespace Youshido\GraphQL\Config\Object;
 
 use Youshido\GraphQL\Config\AbstractConfig;
-use Youshido\GraphQL\Config\TypeConfigInterface;
 use Youshido\GraphQL\Config\Traits\ArgumentsAwareTrait;
 use Youshido\GraphQL\Config\Traits\FieldsAwareTrait;
+use Youshido\GraphQL\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
 

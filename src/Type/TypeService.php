@@ -9,9 +9,9 @@
 namespace Youshido\GraphQL\Type;
 
 
-use Youshido\GraphQL\Type\ListType\AbstractListType;
 use Youshido\GraphQL\Type\Enum\AbstractEnumType;
 use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
+use Youshido\GraphQL\Type\ListType\AbstractListType;
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
@@ -69,9 +69,9 @@ class TypeService
             $type = $type->getNullableType();
 
             return ($type instanceof AbstractScalarType)
-                   || ($type instanceof AbstractInputObjectType)
-                   || ($type instanceof AbstractEnumType)
-                   || ($type instanceof AbstractListType);
+            || ($type instanceof AbstractInputObjectType)
+            || ($type instanceof AbstractEnumType)
+            || ($type instanceof AbstractListType);
         } else {
             return TypeService::isScalarType($type);
         }

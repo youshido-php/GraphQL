@@ -11,7 +11,7 @@ namespace Youshido\GraphQL\Type\Scalar;
 
 class DateTimeType extends AbstractScalarType
 {
-    
+
     public function getName()
     {
         return 'DateTime';

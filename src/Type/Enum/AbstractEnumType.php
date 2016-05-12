@@ -8,8 +8,8 @@
 namespace Youshido\GraphQL\Type\Enum;
 
 
-use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Config\Object\EnumTypeConfig;
+use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\TypeMap;
 

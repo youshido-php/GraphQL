@@ -111,6 +111,7 @@ abstract class AbstractConfig
     public function set($key, $value)
     {
         $this->data[$key] = $value;
+
         return $this;
     }
 

@@ -9,23 +9,23 @@
 
 namespace Youshido\GraphQL;
 
+use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Introspection\QueryType;
 use Youshido\GraphQL\Introspection\SchemaType;
 use Youshido\GraphQL\Introspection\TypeDefinitionType;
+use Youshido\GraphQL\Parser\Ast\Field as AstField;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
 use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Type\AbstractType;
-use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Type\Enum\AbstractEnumType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
-use Youshido\GraphQL\Parser\Ast\Field as AstField;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 use Youshido\GraphQL\Validator\Exception\ResolveException;

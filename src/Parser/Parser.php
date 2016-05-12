@@ -9,21 +9,21 @@
 namespace Youshido\GraphQL\Parser;
 
 
-use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
-use Youshido\GraphQL\Parser\Exception\SyntaxErrorException;
-use Youshido\GraphQL\Parser\Value\InputList;
 use Youshido\GraphQL\Parser\Ast\Argument;
 use Youshido\GraphQL\Parser\Ast\Field;
 use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
-use Youshido\GraphQL\Parser\Value\InputObject;
-use Youshido\GraphQL\Parser\Value\Literal;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
-use Youshido\GraphQL\Parser\Value\Variable;
+use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
 use Youshido\GraphQL\Parser\Exception\DuplicationVariableException;
+use Youshido\GraphQL\Parser\Exception\SyntaxErrorException;
 use Youshido\GraphQL\Parser\Exception\UnusedVariableException;
 use Youshido\GraphQL\Parser\Exception\VariableTypeNotDefined;
+use Youshido\GraphQL\Parser\Value\InputList;
+use Youshido\GraphQL\Parser\Value\InputObject;
+use Youshido\GraphQL\Parser\Value\Literal;
+use Youshido\GraphQL\Parser\Value\Variable;
 
 class Parser extends Tokenizer
 {

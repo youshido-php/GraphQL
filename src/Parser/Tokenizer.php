@@ -12,8 +12,8 @@ use Youshido\GraphQL\Parser\Exception\SyntaxErrorException;
 class Tokenizer
 {
     protected $source;
-    protected $pos       = 0;
-    protected $line      = 1;
+    protected $pos = 0;
+    protected $line = 1;
     protected $lineStart = 0;
 
     /** @var  Token */

@@ -9,9 +9,9 @@
 namespace Youshido\GraphQL\Type\Union;
 
 
-use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Config\Object\UnionTypeConfig;
 use Youshido\GraphQL\Config\Traits\ConfigCallTrait;
+use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\TypeMap;
 
@@ -38,7 +38,9 @@ abstract class AbstractUnionType extends AbstractType
 
     abstract public function resolveType($object);
 
-    public function build($config) {}
+    public function build($config)
+    {
+    }
 
     public function resolve($value = null, $args = [])
     {

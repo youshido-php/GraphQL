@@ -21,8 +21,8 @@ class Field
 
     public function __construct($name, $alias = null, $arguments = [])
     {
-        $this->name  = $name;
-        $this->alias = $alias;
+        $this->name      = $name;
+        $this->alias     = $alias;
         $this->arguments = $arguments;
     }
 

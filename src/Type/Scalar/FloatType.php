@@ -29,8 +29,8 @@ class FloatType extends AbstractScalarType
     public function getDescription()
     {
         return 'The `Float` scalar type represents signed double-precision fractional ' .
-               'values as specified by ' .
-               '[IEEE 754](http://en.wikipedia.org/wiki/IEEE_floating_point).';
+        'values as specified by ' .
+        '[IEEE 754](http://en.wikipedia.org/wiki/IEEE_floating_point).';
     }
 
 }

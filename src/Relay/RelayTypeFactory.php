@@ -63,7 +63,7 @@ class RelayTypeFactory
          * var resolveCursor = config.resolveCursor;
          */
 
-        $connectionType             = new ObjectType([
+        $connectionType = new ObjectType([
             'name'        => $name . 'Connection',
             'description' => 'A connection to a list of items.',
             'fields'      => [

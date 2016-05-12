@@ -9,8 +9,8 @@
 namespace Youshido\GraphQL\Relay\Field;
 
 
-use Youshido\GraphQL\Relay\NodeInterface;
 use Youshido\GraphQL\Field\Field;
+use Youshido\GraphQL\Relay\NodeInterface;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Scalar\IdType;
 

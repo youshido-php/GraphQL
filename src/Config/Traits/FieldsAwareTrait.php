@@ -9,9 +9,9 @@
 namespace Youshido\GraphQL\Config\Traits;
 
 
-use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\InputField;
+use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\TypeFactory;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
@@ -57,6 +57,7 @@ trait FieldsAwareTrait
                 $this->addField($fieldName, $fieldInfo['type'], $fieldInfo);
             }
         }
+
         return $this;
     }
 

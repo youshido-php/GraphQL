@@ -9,9 +9,9 @@
 namespace Youshido\GraphQL\Validator\ConfigValidator;
 
 
-use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
 use Youshido\GraphQL\Validator\ConfigValidator\Rules\TypeValidationRule;
 use Youshido\GraphQL\Validator\ConfigValidator\Rules\ValidationRuleInterface;
+use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
 use Youshido\GraphQL\Validator\Exception\ValidationException;
 
 class ConfigValidator implements ConfigValidatorInterface
@@ -67,7 +67,7 @@ class ConfigValidator implements ConfigValidatorInterface
                 if (!$this->validationRules[$ruleName]->validate($data[$fieldName], $ruleInfo)) {
                     $this->addError(
                         new ValidationException('Field \'' . $fieldName . '\' of ' . $this->getContextName()
-                                                . ' expected to be ' . $ruleName . ': \'' . (string)$ruleInfo . '\', but got: ' . gettype($data[$fieldName])));
+                            . ' expected to be ' . $ruleName . ': \'' . (string)$ruleInfo . '\', but got: ' . gettype($data[$fieldName])));
                 }
             }
         }

@@ -9,8 +9,8 @@
 namespace Youshido\GraphQL\Config\Traits;
 
 
-use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Field\InputField;
+use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\TypeFactory;
 use Youshido\GraphQL\Type\TypeService;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;

@@ -8,10 +8,10 @@
 namespace Youshido\GraphQL\Validator\ResolveValidator;
 
 
+use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Request;
 use Youshido\GraphQL\Type\AbstractType;
-use Youshido\GraphQL\Field\Field;
 
 interface ResolveValidatorInterface
 {
@@ -26,7 +26,7 @@ interface ResolveValidatorInterface
     public function validateArguments($field, $query, $request);
 
     /**
-     * @param mixed $value
+     * @param mixed        $value
      * @param AbstractType $type
      *
      * @return bool

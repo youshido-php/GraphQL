@@ -9,10 +9,10 @@
 namespace Youshido\GraphQL\Validator\ConfigValidator\Rules;
 
 
-use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Config\Field\FieldConfig;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\InputField;
+use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeFactory;
@@ -156,7 +156,7 @@ class TypeValidationRule implements ValidationRuleInterface
                 return TypeService::isInputType($data->getNullableType());
             }
         } else {
-            if(!isset($data['type'])) {
+            if (!isset($data['type'])) {
                 return false;
             }
 

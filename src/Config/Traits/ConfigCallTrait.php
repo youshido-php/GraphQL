@@ -9,9 +9,9 @@
 namespace Youshido\GraphQL\Config\Traits;
 
 
-use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Config\AbstractConfig;
 use Youshido\GraphQL\Field\Field;
+use Youshido\GraphQL\Type\AbstractType;
 
 /**
  * Class ConfigCallTrait
