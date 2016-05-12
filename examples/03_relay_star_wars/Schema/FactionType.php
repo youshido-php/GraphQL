@@ -26,6 +26,10 @@ class FactionType extends AbstractObjectType
 
        // $config->addField('id', new GlobalIdField('Faction'));
 
+        // $config->addField(new Field())
+        // $config->addField('name', ['type' ])
+        // $config->addField('name', [])
+
         $config->addField('factionId', TypeMap::TYPE_STRING, [
                    'description' => 'id of faction id db',
                    'resolve'     => function ($value = null, $args = [], $type = null) {
@@ -35,7 +39,7 @@ class FactionType extends AbstractObjectType
                ->addField('name', TypeMap::TYPE_STRING, [
                    'description' => 'The name of the faction.'
                ])
-               ->addField('ships', RelayTypeFactory::getConnectionType($this), [
+               ->addField('ships', RelayTypeFactory::getConnectionType(new ShipType()), [
                    'description' => 'The ships used by the faction',
                    'resolve' => function($value = null, $args = [], $type = null) {
                        /**
