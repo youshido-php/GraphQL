@@ -14,11 +14,7 @@ final class EnumType extends AbstractEnumType
 
     public function __construct(array $config)
     {
-        if (empty($config['name'])) {
-            $config['name'] = $this->getName();
-        }
-
-        $this->config = new EnumTypeConfig($config, $this);
+        $this->config = new EnumTypeConfig($config, $this, true);
     }
 
     public function getValues()

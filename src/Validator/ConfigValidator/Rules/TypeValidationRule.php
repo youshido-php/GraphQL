@@ -84,7 +84,7 @@ class TypeValidationRule implements ValidationRuleInterface
         if (!is_array($data) || empty($data)) return false;
 
         foreach ($data as $item) {
-            if (!array_key_exists('name', $item) || !is_string($item['name']) || !preg_match('/^[_a-zA-Z][_a-zA-Z0-9]*$/', $item['name'])) {
+            if (!is_array($item) || !array_key_exists('name', $item) || !is_string($item['name']) || !preg_match('/^[_a-zA-Z][_a-zA-Z0-9]*$/', $item['name'])) {
                 return false;
             }
 

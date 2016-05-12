@@ -23,7 +23,7 @@ class EnumTypeConfig extends AbstractConfig implements TypeConfigInterface
     public function getRules()
     {
         return [
-            'name'        => ['type' => TypeMap::TYPE_STRING, 'required' => true],
+            'name'        => ['type' => TypeMap::TYPE_STRING, 'final' => true],
             'description' => ['type' => TypeMap::TYPE_STRING],
             'values'      => ['type' => TypeService::TYPE_ARRAY_OF_VALUES, 'required' => true],
         ];
