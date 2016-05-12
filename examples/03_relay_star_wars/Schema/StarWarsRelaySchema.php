@@ -15,6 +15,27 @@ class StarWarsRelaySchema extends AbstractSchema
         Node::addNodeField($queryTypeConfig);
 
         $queryTypeConfig->addField('faction', new FactionType());
+//        $queryTypeConfig->addField('latestShip', new LatestShipField());
+//
+//        $queryTypeConfig->addField('myShips', new ListType(new ShipType()));
+//        $queryTypeConfig->addField('availableShipsToBuy', new ListType(new ShipType()));
+//
+//        $queryTypeConfig->addField(new MyShipsField());
+        // getType()
+        // getArguments()
+
+
+//        $queryTypeConfig->addField('latestShip', new ShipType(), ['resolve' => '@helper.ship']);
+//        $queryTypeConfig->addField('ship', new ShipType());
+//
+//        $queryTypeConfig->addField(new AvailableShipsToBuyField());
+//
+//
+//
+//        $queryTypeConfig->addField('ship', new ShipType(), [
+//            'args' => [],
+//            'resolve' => function() {}
+//        ]);
     }
 
 }
