@@ -8,7 +8,7 @@
 namespace Youshido\Tests\Type\Union\Schema;
 
 
-use Youshido\GraphQL\Type\Object\AbstractUnionType;
+use Youshido\GraphQL\Type\Union\AbstractUnionType;
 
 class TestUnionType extends AbstractUnionType
 {

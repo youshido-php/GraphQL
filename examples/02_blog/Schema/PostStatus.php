@@ -6,7 +6,7 @@
 namespace Examples\Blog\Schema;
 
 
-use Youshido\GraphQL\Type\Object\AbstractEnumType;
+use Youshido\GraphQL\Type\Enum\AbstractEnumType;
 
 class PostStatus extends AbstractEnumType
 {

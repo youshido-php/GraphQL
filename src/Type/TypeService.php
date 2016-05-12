@@ -10,8 +10,8 @@ namespace Youshido\GraphQL\Type;
 
 
 use Youshido\GraphQL\Type\ListType\AbstractListType;
-use Youshido\GraphQL\Type\Object\AbstractEnumType;
-use Youshido\GraphQL\Type\Object\AbstractInputObjectType;
+use Youshido\GraphQL\Type\Enum\AbstractEnumType;
+use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 

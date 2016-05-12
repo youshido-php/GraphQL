@@ -6,7 +6,7 @@
 namespace Examples\Blog\Schema;
 
 
-use Youshido\GraphQL\Type\Object\AbstractUnionType;
+use Youshido\GraphQL\Type\Union\AbstractUnionType;
 
 class ContentBlockUnion extends AbstractUnionType
 {

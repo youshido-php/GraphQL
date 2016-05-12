@@ -9,7 +9,7 @@
 namespace Youshido\GraphQL;
 
 
-use Youshido\GraphQL\Type\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Config\Schema\SchemaConfig;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 

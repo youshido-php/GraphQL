@@ -9,7 +9,7 @@
 namespace Youshido\Tests\DataProvider;
 
 use Youshido\GraphQL\AbstractSchema;
-use Youshido\GraphQL\Type\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Config\Schema\SchemaConfig;
 
 
 class TestSchema extends AbstractSchema

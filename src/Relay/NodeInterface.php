@@ -10,7 +10,7 @@ namespace Youshido\GraphQL\Relay;
 
 
 use Youshido\GraphQL\Relay\Field\GlobalIdField;
-use Youshido\GraphQL\Type\Object\AbstractInterfaceType;
+use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 
 class NodeInterface extends AbstractInterfaceType
 {

@@ -9,7 +9,7 @@ namespace Youshido\GraphQL\Type\ListType;
 
 
 use Youshido\GraphQL\Type\CompositeTypeInterface;
-use Youshido\GraphQL\Type\Config\Object\ListTypeConfig;
+use Youshido\GraphQL\Config\Object\ListTypeConfig;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 

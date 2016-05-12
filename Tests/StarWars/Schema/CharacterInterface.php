@@ -8,9 +8,9 @@
 
 namespace Youshido\Tests\StarWars\Schema;
 
-use Youshido\GraphQL\Type\Config\TypeConfigInterface;
+use Youshido\GraphQL\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\ListType\ListType;
-use Youshido\GraphQL\Type\Object\AbstractInterfaceType;
+use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\TypeMap;
 
 class CharacterInterface extends AbstractInterfaceType

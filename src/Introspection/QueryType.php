@@ -10,7 +10,7 @@ namespace Youshido\GraphQL\Introspection;
 use Youshido\GraphQL\AbstractSchema;
 use Youshido\GraphQL\Introspection\Traits\TypeCollectorTrait;
 use Youshido\GraphQL\Type\CompositeTypeInterface;
-use Youshido\GraphQL\Type\Field\Field;
+use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeInterface;

@@ -9,7 +9,7 @@
 namespace Youshido\Tests\DataProvider;
 
 
-use Youshido\GraphQL\Type\Config\AbstractConfig;
+use Youshido\GraphQL\Config\AbstractConfig;
 use Youshido\GraphQL\Type\TypeService;
 
 class TestConfig extends AbstractConfig

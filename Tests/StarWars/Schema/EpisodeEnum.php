@@ -8,7 +8,7 @@
 namespace Youshido\Tests\StarWars\Schema;
 
 
-use Youshido\GraphQL\Type\Object\AbstractEnumType;
+use Youshido\GraphQL\Type\Enum\AbstractEnumType;
 
 class EpisodeEnum extends AbstractEnumType
 {

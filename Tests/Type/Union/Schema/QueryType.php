@@ -8,7 +8,7 @@
 namespace Youshido\Tests\Type\Union\Schema;
 
 
-use Youshido\GraphQL\Type\Config\TypeConfigInterface;
+use Youshido\GraphQL\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 

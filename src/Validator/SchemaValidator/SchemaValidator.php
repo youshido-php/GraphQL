@@ -10,7 +10,7 @@ namespace Youshido\GraphQL\Validator\SchemaValidator;
 
 
 use Youshido\GraphQL\AbstractSchema;
-use Youshido\GraphQL\Type\Field\Field;
+use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerInterface;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;

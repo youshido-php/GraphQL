@@ -8,7 +8,7 @@
 namespace Youshido\Tests\Type\Config;
 
 
-use Youshido\GraphQL\Type\Object\EnumType;
+use Youshido\GraphQL\Type\Enum\EnumType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\Tests\StarWars\Schema\EpisodeEnum;
 

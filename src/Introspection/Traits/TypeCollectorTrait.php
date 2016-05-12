@@ -8,7 +8,7 @@
 namespace Youshido\GraphQL\Introspection\Traits;
 
 use Youshido\GraphQL\Type\AbstractType;
-use Youshido\GraphQL\Type\Config\Field\FieldConfig;
+use Youshido\GraphQL\Config\Field\FieldConfig;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;

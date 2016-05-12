@@ -4,7 +4,7 @@ namespace Examples\StarWars;
 
 use Youshido\GraphQL\AbstractSchema;
 use Youshido\GraphQL\Relay\Node;
-use Youshido\GraphQL\Type\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Config\Schema\SchemaConfig;
 
 class StarWarsRelaySchema extends AbstractSchema
 {

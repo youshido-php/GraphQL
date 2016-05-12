@@ -6,7 +6,7 @@
 namespace Examples\Blog\Schema;
 
 use Youshido\GraphQL\AbstractSchema;
-use Youshido\GraphQL\Type\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Config\Schema\SchemaConfig;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 

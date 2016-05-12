@@ -9,7 +9,7 @@ namespace Youshido\Tests\Type\Union\Schema;
 
 
 use Youshido\GraphQL\AbstractSchema;
-use Youshido\GraphQL\Type\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Config\Schema\SchemaConfig;
 
 class Schema extends AbstractSchema
 {

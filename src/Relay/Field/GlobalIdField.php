@@ -11,7 +11,7 @@ namespace Youshido\GraphQL\Relay\Field;
 
 use Youshido\GraphQL\Relay\Node;
 use Youshido\GraphQL\Type\AbstractType;
-use Youshido\GraphQL\Type\Field\Field;
+use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Scalar\IdType;
 

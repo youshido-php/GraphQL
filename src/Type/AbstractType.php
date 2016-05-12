@@ -9,11 +9,11 @@
 namespace Youshido\GraphQL\Type;
 
 
-use Youshido\GraphQL\Type\Config\Object\EnumTypeConfig;
-use Youshido\GraphQL\Type\Config\Object\InputObjectTypeConfig;
-use Youshido\GraphQL\Type\Config\Object\InterfaceTypeConfig;
-use Youshido\GraphQL\Type\Config\Object\ObjectTypeConfig;
-use Youshido\GraphQL\Type\Config\TypeConfigInterface;
+use Youshido\GraphQL\Config\Object\EnumTypeConfig;
+use Youshido\GraphQL\Config\Object\InputObjectTypeConfig;
+use Youshido\GraphQL\Config\Object\InterfaceTypeConfig;
+use Youshido\GraphQL\Config\Object\ObjectTypeConfig;
+use Youshido\GraphQL\Config\TypeConfigInterface;
 
 abstract class AbstractType implements TypeInterface
 {

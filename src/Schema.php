@@ -8,7 +8,7 @@
 
 namespace Youshido\GraphQL;
 
-use Youshido\GraphQL\Type\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Config\Schema\SchemaConfig;
 
 final class Schema extends AbstractSchema
 {

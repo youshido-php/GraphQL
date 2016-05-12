@@ -9,7 +9,7 @@
 namespace Youshido\Tests\Type;
 
 use Youshido\GraphQL\Type\ListType\ListType;
-use Youshido\GraphQL\Type\Object\InputObjectType;
+use Youshido\GraphQL\Type\InputObject\InputObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\Tests\DataProvider\UserType;

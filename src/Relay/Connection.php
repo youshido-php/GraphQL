@@ -8,7 +8,7 @@
 namespace Youshido\GraphQL\Relay;
 
 
-use Youshido\GraphQL\Type\Config\TypeConfigInterface;
+use Youshido\GraphQL\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;

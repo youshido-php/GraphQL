@@ -9,12 +9,8 @@
 namespace Youshido\GraphQL\Type\ListType;
 
 
-use Youshido\GraphQL\Type\Traits\FinalTypesConfigTrait;
-
 final class ListType extends AbstractListType
 {
-
-    use FinalTypesConfigTrait;
 
     public function getItemType()
     {
