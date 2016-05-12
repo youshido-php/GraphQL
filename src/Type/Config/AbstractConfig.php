@@ -17,10 +17,8 @@ use Youshido\GraphQL\Validator\Exception\ValidationException;
 /**
  * Class Config
  * @package Youshido\GraphQL\Type\Config
- *
- * @method string getName()
  */
-class Config
+abstract class AbstractConfig
 {
 
     /**
@@ -46,7 +44,7 @@ class Config
      */
     public function __construct($configData, $contextObject = null, $finalClass = false)
     {
-        if (!is_array($configData)) {
+        if (!is_array($configData) || empty($configData)) {
             throw new ConfigurationException('Config for Type should be an array');
         }
 
@@ -76,19 +74,16 @@ class Config
         return $rules;
     }
 
-    public function getRules()
+    abstract public function getRules();
+
+    public function getName()
     {
-        return [];
+        return $this->get('name');
     }
 
     public function getType()
     {
         return $this->get('type');
-    }
-
-    public function getNamedType()
-    {
-        return $this->getType();
     }
 
     /**
@@ -116,6 +111,7 @@ class Config
     public function set($key, $value)
     {
         $this->data[$key] = $value;
+        return $this;
     }
 
     /**
@@ -128,28 +124,20 @@ class Config
 
     public function __call($method, $arguments)
     {
-        $propertyName = false;
-        $setter       = false;
-
         if (substr($method, 0, 3) == 'get') {
             $propertyName = lcfirst(substr($method, 3));
         } elseif (substr($method, 0, 3) == 'set') {
             $propertyName = lcfirst(substr($method, 3));
-            $setter       = true;
+            $this->set($propertyName, $arguments[0]);
+
+            return $this;
         } elseif (substr($method, 0, 2) == 'is') {
             $propertyName = lcfirst(substr($method, 2));
-        }
-        if ($propertyName !== false) {
-            if ($setter) {
-                $this->set($propertyName, $arguments[0]);
-
-                return $this;
-            } else {
-                return $this->get($propertyName);
-            }
+        } else {
+            throw new \Exception('Call to undefined method ' . $method);
         }
 
-        throw new \Exception('Call to undefined method ' . $method);
+        return $this->get($propertyName);
     }
 
 

@@ -10,7 +10,7 @@ namespace Youshido\GraphQL\Type\Config\Traits;
 
 
 use Youshido\GraphQL\Type\AbstractType;
-use Youshido\GraphQL\Type\Config\Config;
+use Youshido\GraphQL\Type\Config\AbstractConfig;
 use Youshido\GraphQL\Type\Field\Field;
 
 /**
@@ -26,7 +26,7 @@ use Youshido\GraphQL\Type\Field\Field;
  * @method bool hasFields()
  * @method bool isDeprecated()
  * @method string getDeprecationReason()
- * @property Config $config
+ * @property AbstractConfig $config
  *
  */
 trait ConfigCallTrait

@@ -9,13 +9,13 @@
 namespace Youshido\GraphQL\Type\Config\Schema;
 
 
-use Youshido\GraphQL\Type\Config\Config;
+use Youshido\GraphQL\Type\Config\AbstractConfig;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
 
-class SchemaConfig extends Config
+class SchemaConfig extends AbstractConfig
 {
 
     public function getRules()

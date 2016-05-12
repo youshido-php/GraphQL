@@ -9,11 +9,11 @@
 namespace Youshido\GraphQL\Type\Config\Field;
 
 
-use Youshido\GraphQL\Type\Config\Config;
+use Youshido\GraphQL\Type\Config\AbstractConfig;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
 
-class InputFieldConfig extends Config
+class InputFieldConfig extends AbstractConfig
 {
 
     public function getRules()

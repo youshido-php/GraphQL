@@ -209,7 +209,7 @@ class Processor
         $value            = null;
         $preResolvedValue = $this->getPreResolvedValue($contextValue, $astField, $field);
 
-        if ($field->getConfig()->getType()->getKind() == TypeMap::KIND_LIST) {
+        if ($field->getType()->getKind() == TypeMap::KIND_LIST) {
             if (!is_array($preResolvedValue)) {
                 $this->resolveValidator->addError(new ResolveException('Not valid resolve value for list type'));
 
