@@ -19,11 +19,13 @@ final class ObjectType extends AbstractObjectType
         if (empty($config)) {
             throw new ConfigurationException('Config should not be empty for the inline ObjectType');
         }
+
         $this->config = new ObjectTypeConfig($config, $this, true);
     }
 
-    public function build($config) {}
-
+    public function build($config)
+    {
+    }
 
     public function getName()
     {

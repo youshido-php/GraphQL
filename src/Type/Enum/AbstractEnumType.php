@@ -24,9 +24,12 @@ abstract class AbstractEnumType extends AbstractType
      */
     public function __construct($config = [])
     {
-        if (empty($config)) {
-            $config['name']   = $this->getName();
-            $config['values'] = $this->getValues();
+        if (empty($config['name'])) {
+            $config['name'] = $this->getName();
+        }
+
+        if (empty($config['values'])) {
+            $config['name'] = $this->getValues();
         }
 
         $this->config = new EnumTypeConfig($config, $this);
@@ -47,12 +50,16 @@ abstract class AbstractEnumType extends AbstractType
      */
     public function isValidValue($value)
     {
-        return in_array($value, array_map(function ($item) { return $item['value']; }, $this->getConfig()->get('values')));
+        return in_array($value, array_map(function ($item) {
+            return $item['value'];
+        }, $this->getConfig()->get('values')));
     }
 
     abstract public function getValues();
 
-    public function build($config) {}
+    public function build($config)
+    {
+    }
 
     public function serialize($value)
     {

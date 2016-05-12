@@ -8,8 +8,6 @@
 
 namespace Youshido\GraphQL\Type\InputObject;
 
-use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
-
 final class InputObjectType extends AbstractInputObjectType
 {
 

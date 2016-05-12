@@ -24,7 +24,7 @@ class InterfaceTypeConfig extends AbstractConfig implements TypeConfigInterface
     {
         return [
             'name'        => ['type' => TypeMap::TYPE_STRING, 'required' => true],
-            'fields'      => ['type' => TypeService::TYPE_ARRAY_OF_FIELDS],
+            'fields'      => ['type' => TypeService::TYPE_ARRAY_OF_FIELDS], //todo: must be required
             'description' => ['type' => TypeMap::TYPE_STRING],
             'resolveType' => ['type' => TypeService::TYPE_FUNCTION] //todo: must be required
         ];

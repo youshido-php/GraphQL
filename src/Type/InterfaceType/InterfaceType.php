@@ -10,7 +10,7 @@ namespace Youshido\GraphQL\Type\InterfaceType;
 
 use Youshido\GraphQL\Config\TypeConfigInterface;
 
-class InterfaceType extends AbstractInterfaceType
+final class InterfaceType extends AbstractInterfaceType
 {
 
     public function resolveType($object)

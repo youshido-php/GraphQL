@@ -22,12 +22,15 @@ trait AutoNameTrait
         }
 
         $className = get_called_class();
+
         if (substr($className, -4) == 'Type') {
             $className = substr($className, 0, -4);
         }
+
         if ($prevPos = strrpos($className, '\\')) {
             $className = substr($className, $prevPos + 1);
         }
+
         return $className;
     }
 
