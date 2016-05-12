@@ -24,12 +24,9 @@ abstract class AbstractEnumType extends AbstractType
      */
     public function __construct($config = [])
     {
-        if (empty($config['name'])) {
-            $config['name'] = $this->getName();
-        }
-
-        if (empty($config['values'])) {
-            $config['name'] = $this->getValues();
+        if (empty($config)) {
+            $config['name']       = $this->getName();
+            $config['values'] = $this->getValues();
         }
 
         $this->config = new EnumTypeConfig($config, $this);
@@ -65,10 +62,6 @@ abstract class AbstractEnumType extends AbstractType
 
     abstract public function getValues();
 
-    public function build($config)
-    {
-    }
-
     public function serialize($value)
     {
         foreach ($this->getConfig()->get('values') as $valueItem) {
@@ -80,14 +73,4 @@ abstract class AbstractEnumType extends AbstractType
         return null;
     }
 
-    public function resolve($value) //todo: this method be here, or maybe another must be in enum type?
-    {
-        foreach ($this->getConfig()->get('values') as $valueItem) {
-            if ($value == $valueItem['value']) {
-                return $valueItem['name'];
-            }
-        }
-
-        return null;
-    }
 }

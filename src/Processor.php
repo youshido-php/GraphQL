@@ -230,12 +230,8 @@ class Processor
                         $listValue = null;
                         break;
                     }
-
-                    $listValue[] = $type->resolve($resolvedValueItem);
-                } else {
-                    /** @var AbstractScalarType $type */
-                    $listValue[] = $type->serialize($preResolvedValue);
                 }
+                $listValue[] = $type->serialize($preResolvedValue);
             }
 
             $value = $listValue;

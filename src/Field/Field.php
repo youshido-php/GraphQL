@@ -45,6 +45,10 @@ class Field
         return $this->config->get('type');
     }
 
+    public function getKind()
+    {
+        return $this->getType()->getKind();
+    }
 
     public function resolve($value, $args, $type)
     {

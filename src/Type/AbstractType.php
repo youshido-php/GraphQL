@@ -23,8 +23,6 @@ abstract class AbstractType implements TypeInterface
      */
     protected $config;
 
-    protected $isBuild = false;
-
     public function getDescription()
     {
         return $this->getConfigValue('description', null);
@@ -35,11 +33,6 @@ abstract class AbstractType implements TypeInterface
      */
     public function getConfig()
     {
-        if (!$this->isBuild) {
-            $this->isBuild = true;
-            $this->build($this->config);
-        }
-
         return $this->config;
     }
 
@@ -52,12 +45,6 @@ abstract class AbstractType implements TypeInterface
     {
         return false;
     }
-
-    /**
-     * @param TypeConfigInterface $config
-     * @return mixed
-     */
-    abstract public function build($config);
 
     /**
      * @return AbstractType

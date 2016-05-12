@@ -11,6 +11,7 @@ namespace Youshido\GraphQL\Type\Object;
 
 use Youshido\GraphQL\Config\Object\ObjectTypeConfig;
 use Youshido\GraphQL\Config\Traits\ConfigCallTrait;
+use Youshido\GraphQL\Config\TypeConfigInterface;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
@@ -32,12 +33,15 @@ abstract class AbstractObjectType extends AbstractType
 {
     use AutoNameTrait, ConfigCallTrait;
 
+    protected $isBuild = false;
+
     /**
      * ObjectType constructor.
      * @param $config
      */
     public function __construct($config = [])
     {
+
         if (empty($config)) {
             $config['name']       = $this->getName();
             $config['interfaces'] = $this->getInterfaces();
@@ -65,6 +69,21 @@ abstract class AbstractObjectType extends AbstractType
     {
         return $this;
     }
+
+    public function getConfig()
+    {
+        if (!$this->isBuild) {
+            $this->isBuild = true;
+            $this->build($this->config);
+        }
+        return parent::getConfig();
+    }
+
+    /**
+     * @param TypeConfigInterface $config
+     * @return mixed
+     */
+    abstract public function build($config);
 
     /**
      * @return AbstractInterfaceType[]

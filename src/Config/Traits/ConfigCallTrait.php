@@ -42,14 +42,14 @@ trait ConfigCallTrait
             $propertyName = lcfirst(substr($method, 3));
         } elseif (substr($method, 0, 3) == 'set') {
             $propertyName = lcfirst(substr($method, 3));
-            $this->config->set($propertyName, $arguments[0]);
+            $this->getConfig()->set($propertyName, $arguments[0]);
 
             return $this;
         } elseif (substr($method, 0, 2) == 'is') {
             $propertyName = lcfirst(substr($method, 2));
         }
         if (in_array($propertyName, ['name', 'description', 'deprecationReason', 'isDeprecated', 'field', 'type'])) {
-            return $this->config->get($propertyName);
+            return $this->getConfig()->get($propertyName);
         }
 
         throw new \Exception('Call to undefined method ' . $method);

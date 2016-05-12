@@ -31,8 +31,4 @@ abstract class AbstractScalarType extends AbstractType
         return $this->serialize($value);
     }
 
-    public function build($config)
-    {
-    }
-
 }

@@ -10,6 +10,7 @@ namespace Youshido\Tests\Library\Type;
 
 use Youshido\GraphQL\Type\Enum\EnumType;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\Tests\DataProvider\TestEnumType;
 
 class EnumTypeTest extends \PHPUnit_Framework_TestCase
 {
@@ -75,35 +76,44 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
         ]);
     }
 
-    public function testNormalCreatingParam()
+    public function testNormalCreatingParams()
     {
-        $objectType = new EnumType([
-            'name'   => 'Bool',
-            'values' => [
-                [
-                    'name'  => 'ENABLE',
-                    'value' => true
-                ],
-                [
-                    'name'  => 'DISABLE',
-                    'value' => 'disable'
-                ]
+        $valuesData = [
+            [
+                'name'  => 'ENABLE',
+                'value' => true
+            ],
+            [
+                'name'  => 'DISABLE',
+                'value' => 'disable'
             ]
+        ];
+        $enumType   = new EnumType([
+            'name'   => 'BoolEnum',
+            'values' => $valuesData
         ]);
 
-        $this->assertEquals($objectType->getKind(), TypeMap::KIND_ENUM);
-        $this->assertEquals($objectType->getName(), 'Bool');
-        $this->assertEquals($objectType->getType(), $objectType);
-        $this->assertEquals($objectType->getNamedType(), $objectType);
+        $this->assertEquals($enumType->getKind(), TypeMap::KIND_ENUM);
+        $this->assertEquals($enumType->getName(), 'BoolEnum');
+        $this->assertEquals($enumType->getType(), $enumType);
+        $this->assertEquals($enumType->getNamedType(), $enumType);
 
-        $this->assertFalse($objectType->isValidValue($objectType));
-        $this->assertFalse($objectType->isValidValue(null));
+        $this->assertFalse($enumType->isValidValue($enumType));
+        $this->assertFalse($enumType->isValidValue(null));
 
-        $this->assertTrue($objectType->isValidValue(true));
-        $this->assertTrue($objectType->isValidValue('disable'));
+        $this->assertTrue($enumType->isValidValue(true));
+        $this->assertTrue($enumType->isValidValue('disable'));
 
-        $this->assertNull($objectType->serialize('NOT EXIST'));
-        $this->assertTrue($objectType->serialize('ENABLE'));
+        $this->assertNull($enumType->serialize('NOT EXIST'));
+        $this->assertTrue($enumType->serialize('ENABLE'));
+
+        $this->assertEquals($valuesData, $enumType->getValues());
+    }
+
+    public function testExtendedObject()
+    {
+        $testEnumType = new TestEnumType();
+        $this->assertEquals('TestEnum', $testEnumType->getName());
     }
 
 }

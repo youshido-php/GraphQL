@@ -34,7 +34,4 @@ class EnumTypeConfig extends AbstractConfig implements TypeConfigInterface
         return $this->get('values', []);
     }
 
-    protected function build()
-    {
-    }
 }
