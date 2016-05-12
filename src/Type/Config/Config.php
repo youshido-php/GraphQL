@@ -30,6 +30,8 @@ class Config
 
     protected $contextObject;
 
+    protected $finalClass = false;
+
     /** @var ConfigValidatorInterface */
     protected $validator;
 
@@ -37,11 +39,12 @@ class Config
      * TypeConfig constructor.
      * @param array $configData
      * @param mixed $contextObject
+     * @param bool  $finalClass
      *
      * @throws ConfigurationException
      * @throws ValidationException
      */
-    public function __construct($configData, $contextObject = null)
+    public function __construct($configData, $contextObject = null, $finalClass = false)
     {
         if (!is_array($configData)) {
             throw new ConfigurationException('Config for Type should be an array');
@@ -49,13 +52,28 @@ class Config
 
         $this->contextObject = $contextObject;
         $this->data          = $configData;
+        $this->finalClass    = $finalClass;
         $this->validator     = new ConfigValidator($contextObject);
 
-        if (!$this->validator->validate($this->data, $this->getRules())) {
+        if (!$this->validator->validate($this->data, $this->getContextRules())) {
             throw new ConfigurationException('Config is not valid for ' . get_class($contextObject) . "\n" . implode("\n", $this->validator->getErrorsArray(false)));
         }
 
         $this->build();
+    }
+
+    public function getContextRules()
+    {
+        $rules = $this->getRules();
+        if ($this->finalClass) {
+            foreach ($rules as $name => $info) {
+                if (!empty($info['final'])) {
+                    $rules[$name]['required'] = true;
+                }
+            }
+        }
+
+        return $rules;
     }
 
     public function getRules()

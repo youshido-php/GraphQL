@@ -11,6 +11,12 @@ namespace Youshido\GraphQL\Type\Scalar;
 
 class IdType extends AbstractScalarType
 {
+
+    public function getName()
+    {
+        return 'ID';
+    }
+
     public function serialize($value)
     {
         return (string)$value;

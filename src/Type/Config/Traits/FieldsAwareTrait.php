@@ -12,6 +12,7 @@ namespace Youshido\GraphQL\Type\Config\Traits;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Field\InputField;
+use Youshido\GraphQL\Type\TypeFactory;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
@@ -65,7 +66,7 @@ trait FieldsAwareTrait
                 throw new ConfigurationException('You can\'t pass ' . $type . ' as a string type.');
             }
 
-            $type = TypeMap::getScalarTypeObject($type);
+            $type = TypeFactory::getScalarType($type);
         } else {
             if (empty($config['resolve']) && (method_exists($type, 'resolve'))) {
                 $config['resolve'] = [$type, 'resolve'];

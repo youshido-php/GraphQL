@@ -11,6 +11,11 @@ namespace Youshido\GraphQL\Type\Scalar;
 
 class DateTimeType extends AbstractScalarType
 {
+    
+    public function getName()
+    {
+        return 'DateTime';
+    }
 
     /**
      * @param $value \DateTime
@@ -40,11 +45,5 @@ class DateTimeType extends AbstractScalarType
     {
         return 'Representation of date and time in "Y-m-d H:i:s" format';
     }
-
-    public function getName()
-    {
-        return 'DateTime';
-    }
-
 
 }

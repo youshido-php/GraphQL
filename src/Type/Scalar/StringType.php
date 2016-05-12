@@ -12,6 +12,11 @@ namespace Youshido\GraphQL\Type\Scalar;
 class StringType extends AbstractScalarType
 {
 
+    public function getName()
+    {
+        return 'String';
+    }
+
     public function parseValue($value)
     {
         return $this->serialize($value);

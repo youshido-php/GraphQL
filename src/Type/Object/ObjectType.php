@@ -8,17 +8,31 @@
 
 namespace Youshido\GraphQL\Type\Object;
 
+use Youshido\GraphQL\Type\Config\Object\ObjectTypeConfig;
 use Youshido\GraphQL\Type\Traits\FinalTypesConfigTrait;
+use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 final class ObjectType extends AbstractObjectType
 {
-
     use FinalTypesConfigTrait;
+
+    public function __construct($config)
+    {
+        if (empty($config)) {
+            throw new ConfigurationException('Config should not be empty for the inline ObjectType');
+        }
+        $this->config = new ObjectTypeConfig($config, $this, true);
+    }
 
     public function build($config) {}
 
     public function getNamedType()
     {
         return $this;
+    }
+
+    public function getName()
+    {
+        return $this->config->get('name');
     }
 }

@@ -20,15 +20,15 @@ use Youshido\GraphQL\Type\Config\Object\ObjectTypeConfig;
 trait FinalTypesConfigTrait
 {
 
-    public function getName()
-    {
-        return $this->getConfig()->getName();
-    }
-
-    public function getType()
-    {
-        return $this;
-    }
+//    public function getName()
+//    {
+//        return $this->getConfig()->getName();
+//    }
+//
+//    public function getType()
+//    {
+//        return $this;
+//    }
 
     public function resolve($value = null, $args = [], $type = null)
     {

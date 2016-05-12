@@ -51,8 +51,6 @@ class TypeMap
     const TYPE_ANY_OBJECT          = 'any_object';
     const TYPE_ANY_INPUT           = 'any_input';
 
-    private static $scalarObjectsCache = [];
-
     /**
      * @param mixed|AbstractType $type
      * @return bool
@@ -84,34 +82,11 @@ class TypeMap
         throw new \Exception('Invalid type');
     }
 
-    /**
-     * @param string $type
-     *
-     * @return ObjectType
-     */
-    public static function getScalarTypeObject($type)
-    {
-        if (self::isScalarType($type)) {
-            if (empty(self::$scalarObjectsCache[$type])) {
-                $name = ucfirst($type);
-                $name = $name == 'Datetime' ? 'DateTime' : $name;
-                $name = $name == 'Datetimetz' ? 'DateTimeTz' : $name;
-
-                $className                       = 'Youshido\GraphQL\Type\Scalar\\' . $name . 'Type';
-                self::$scalarObjectsCache[$type] = new $className();
-            }
-
-            return self::$scalarObjectsCache[$type];
-        } else {
-            return null;
-        }
-    }
 
     public static function isInterface(TypeInterface $type)
     {
         return $type->getKind() == self::KIND_INTERFACE;
     }
-
 
     public static function isScalarType($typeName)
     {
@@ -119,25 +94,8 @@ class TypeMap
             return false;
         }
 
-        return in_array($typeName, self::getScalarTypes());
+        return in_array($typeName, TypeFactory::getScalarTypesNames());
     }
 
-    /**
-     * @return AbstractType[]
-     */
-    public static function getScalarTypes()
-    {
-        return [
-            self::TYPE_INT,
-            self::TYPE_FLOAT,
-            self::TYPE_STRING,
-            self::TYPE_BOOLEAN,
-            self::TYPE_ID,
-            self::TYPE_DATETIME,
-            self::TYPE_DATE,
-            self::TYPE_TIMESTAMP,
-            self::TYPE_DATETIMETZ,
-        ];
-    }
 
 }

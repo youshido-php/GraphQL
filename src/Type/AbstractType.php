@@ -62,6 +62,14 @@ abstract class AbstractType implements TypeInterface
     /**
      * @return AbstractType
      */
+    public function getType()
+    {
+        return $this;
+    }
+
+    /**
+     * @return AbstractType
+     */
     public function getNamedType()
     {
         return $this->getType();
@@ -80,14 +88,6 @@ abstract class AbstractType implements TypeInterface
     public function serialize($value)
     {
         return $value;
-    }
-
-    /**
-     * @return AbstractType
-     */
-    public function getType()
-    {
-        return $this;
     }
 
     public function __toString()

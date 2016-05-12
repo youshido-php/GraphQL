@@ -15,6 +15,7 @@ use Youshido\GraphQL\Type\Field\Field;
 use Youshido\GraphQL\Type\Field\InputField;
 use Youshido\GraphQL\Type\Object\AbstractInputObjectType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\TypeFactory;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
@@ -69,7 +70,7 @@ class TypeValidationRule implements ValidationRuleInterface
 
                 default:
                     if (TypeMap::isScalarType($ruleInfo)) {
-                        return TypeMap::getScalarTypeObject($ruleInfo)->isValidValue($data);
+                        return TypeFactory::getScalarType($ruleInfo)->isValidValue($data);
                     }
             }
         } else {
@@ -105,7 +106,7 @@ class TypeValidationRule implements ValidationRuleInterface
 
     private function isArrayOfFields($data)
     {
-        if (!is_array($data)) return false;
+        if (!is_array($data) || empty($data)) return false;
 
         foreach ($data as $name => $item) {
             if (!$this->isField($item, $name)) return false;

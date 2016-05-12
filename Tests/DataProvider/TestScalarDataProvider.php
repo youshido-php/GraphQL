@@ -40,6 +40,7 @@ class TestScalarDataProvider
             [-1e100, null, false],
             ['-1.1', -1, false],
             ['one', null, false],
+            [null, null, false],
             [false, 0, false],
             [true, 1, false],
         ];
@@ -66,6 +67,7 @@ class TestScalarDataProvider
             ["string", "string", true],
             [1, "1", false],
             [1.1, "1.1", false],
+            [null, null, false],
             [true, "true", false],
             [false, "false", false],
         ];
@@ -81,6 +83,8 @@ class TestScalarDataProvider
             [null, false, false],
             [true, true, true],
             [false, false, true],
+            ["true", true, false],
+            ["false", false, false],
         ];
     }
 
@@ -105,6 +109,7 @@ class TestScalarDataProvider
     {
         return [
             [null, null, false],
+            [new \DateTime('now'), date('r'), true],
         ];
     }
 
@@ -120,8 +125,8 @@ class TestScalarDataProvider
     public static function getTimestampTestData()
     {
         return [
-//            [null, null, false],
             [new \DateTime('now'), time(), true],
+            [null, null, false],
         ];
     }
 

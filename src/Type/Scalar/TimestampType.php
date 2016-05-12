@@ -12,13 +12,18 @@ namespace Youshido\GraphQL\Type\Scalar;
 class TimestampType extends AbstractScalarType
 {
 
+    public function getName()
+    {
+        return 'Timestamp';
+    }
+
     /**
      * @param $value \DateTime
      * @return null|string
      */
     public function serialize($value)
     {
-        if ($value === null) {
+        if ($value === null || !is_object($value)) {
             return null;
         }
 

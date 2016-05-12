@@ -12,6 +12,11 @@ namespace Youshido\GraphQL\Type\Scalar;
 class DateType extends AbstractScalarType
 {
 
+    public function getName()
+    {
+        return 'Date';
+    }
+
     /**
      * @param $value \DateTime
      * @return null|string

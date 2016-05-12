@@ -11,6 +11,7 @@ namespace Youshido\GraphQL\Type\Config\Traits;
 
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Field\InputField;
+use Youshido\GraphQL\Type\TypeFactory;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
@@ -46,7 +47,7 @@ trait ArgumentsAwareTrait
         }
 
         $config['name'] = $name;
-        $config['type'] = is_string($type) ? TypeMap::getScalarTypeObject($type) : $type;
+        $config['type'] = is_string($type) ? TypeFactory::getScalarType($type) : $type;
 
         $this->arguments[$name] = new InputField($config);
 

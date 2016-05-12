@@ -11,6 +11,11 @@ namespace Youshido\GraphQL\Type\Scalar;
 class FloatType extends AbstractScalarType
 {
 
+    public function getName()
+    {
+        return 'Float';
+    }
+
     public function serialize($value)
     {
         return floatval($value);

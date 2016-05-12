@@ -54,6 +54,7 @@ class ConfigValidator implements ConfigValidatorInterface
             } elseif (!array_key_exists($fieldName, $data)) {
                 continue;
             }
+            if (!empty($fieldRules['final'])) unset($fieldRules['final']);
 
             /** Validation of all other rules*/
             foreach ($fieldRules as $ruleName => $ruleInfo) {

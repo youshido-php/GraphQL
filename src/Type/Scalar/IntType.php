@@ -12,6 +12,11 @@ namespace Youshido\GraphQL\Type\Scalar;
 class IntType extends AbstractScalarType
 {
 
+    public function getName()
+    {
+        return 'Int';
+    }
+
     public function serialize($value)
     {
         if ($value === null) {
@@ -25,7 +30,6 @@ class IntType extends AbstractScalarType
     {
         return is_int($value);
     }
-
 
     public function getDescription()
     {

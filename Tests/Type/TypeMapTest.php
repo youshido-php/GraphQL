@@ -9,6 +9,7 @@
 namespace Youshido\Tests\Type;
 
 
+use Youshido\GraphQL\Type\TypeFactory;
 use Youshido\GraphQL\Type\TypeMap;
 
 class TypeMapTest extends \PHPUnit_Framework_TestCase
@@ -16,7 +17,7 @@ class TypeMapTest extends \PHPUnit_Framework_TestCase
 
     public function testScalarTypesSet()
     {
-        $this->assertEquals($this->getScalarTypes(), TypeMap::getScalarTypes());
+        $this->assertEquals($this->getScalarTypes(), TypeFactory::getScalarTypesNames());
     }
 
     public function testScalarTypeCheck()
@@ -29,7 +30,7 @@ class TypeMapTest extends \PHPUnit_Framework_TestCase
     public function testScalarTypeObjectCreation()
     {
         foreach ($this->getScalarTypes() as $type) {
-            $object = TypeMap::getScalarTypeObject($type);
+            $object = TypeFactory::getScalarType($type);
             $this->assertEquals($object->getKind(), TypeMap::KIND_SCALAR);
         }
     }
