@@ -17,7 +17,6 @@ use Youshido\GraphQL\Type\AbstractType;
  * Class ConfigCallTrait
  * @package Youshido\GraphQL\Config\Traits
  *
- * @method string getDescription()
  * @method string getKind()
  * @method AbstractType getNamedType()
  * @method $this setType($type)
@@ -29,6 +28,15 @@ use Youshido\GraphQL\Type\AbstractType;
  */
 trait ConfigCallTrait
 {
+    use ConfigAwareTrait;
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->getConfigValue('description');
+    }
+
     public function __call($method, $arguments)
     {
         $propertyName     = false;

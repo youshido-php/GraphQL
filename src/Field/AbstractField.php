@@ -8,6 +8,7 @@
 namespace Youshido\GraphQL\Field;
 
 use Youshido\GraphQL\Config\Field\FieldConfig;
+use Youshido\GraphQL\Config\Traits\ConfigAwareTrait;
 use Youshido\GraphQL\Config\Traits\ConfigCallTrait;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
@@ -36,19 +37,6 @@ abstract class AbstractField
         }
 
         $this->config = new FieldConfig($config, $this, $this->isFinal);
-    }
-
-    /**
-     * @return FieldConfig
-     */
-    public function getConfig()
-    {
-        return $this->config;
-    }
-
-    protected function getConfigValue($key, $defaultValue = null)
-    {
-        return !empty($this->config) ? $this->config->get($key, $defaultValue) : $defaultValue;
     }
 
     /**

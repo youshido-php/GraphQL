@@ -39,7 +39,7 @@ abstract class AbstractInputField
             $config['type'] = TypeFactory::getScalarType($config['type']);
         }
 
-        $this->config = new InputFieldConfig($config, $this->isFinal);
+        $this->config = new InputFieldConfig($config, $this, $this->isFinal);
     }
 
     /**
@@ -47,22 +47,9 @@ abstract class AbstractInputField
      */
     abstract public function getType();
 
-    /**
-     * @return InputFieldConfig
-     */
-    public function getConfig()
-    {
-        return $this->config;
-    }
-
     public function getDefaultValue()
     {
         return $this->config->getDefaultValue();
-    }
-
-    protected function getConfigValue($key, $defaultValue = null)
-    {
-        return !empty($this->config) ? $this->config->get($key, $defaultValue) : $defaultValue;
     }
 
     //todo: think about serialize, parseValue methods

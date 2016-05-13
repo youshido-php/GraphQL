@@ -31,5 +31,4 @@ final class Field extends AbstractField
     {
         return $this->getConfigValue('name', null);
     }
-
 }
