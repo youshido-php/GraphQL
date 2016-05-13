@@ -24,9 +24,9 @@ class InterfaceTypeConfig extends AbstractConfig implements TypeConfigInterface
     public function getRules()
     {
         return [
-            'name'        => ['type' => TypeMap::TYPE_STRING, 'final' => true],
+            'name'        => ['type' => TypeService::TYPE_STRING, 'final' => true],
             'fields'      => ['type' => TypeService::TYPE_FIELDS_LIST_CONFIG, 'final' => true],
-            'description' => ['type' => TypeMap::TYPE_STRING],
+            'description' => ['type' => TypeService::TYPE_STRING],
             'resolveType' => ['type' => TypeService::TYPE_FUNCTION, 'final' => true],
         ];
     }

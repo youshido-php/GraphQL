@@ -23,7 +23,7 @@ class SchemaConfig extends AbstractConfig
         return [
             'query'    => ['type' => TypeService::TYPE_OBJECT_TYPE, 'required' => true],
             'mutation' => ['type' => TypeService::TYPE_OBJECT_TYPE],
-            'name'     => ['type' => TypeMap::TYPE_STRING],
+            'name'     => ['type' => TypeService::TYPE_STRING],
         ];
     }
 

@@ -23,6 +23,7 @@ class TypeService
     const TYPE_OBJECT_INPUT_TYPE   = 'object_input_type';
     const TYPE_LIST                = 'list';
     const TYPE_BOOLEAN             = TypeMap::TYPE_BOOLEAN;
+    const TYPE_STRING              = TypeMap::TYPE_STRING;
     const TYPE_ARRAY               = 'array';
     const TYPE_FIELDS_LIST_CONFIG  = 'array_of_fields';
     const TYPE_ARRAY_OF_INPUTS     = 'array_of_inputs';

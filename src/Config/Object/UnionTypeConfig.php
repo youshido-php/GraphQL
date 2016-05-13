@@ -23,9 +23,9 @@ class UnionTypeConfig extends AbstractConfig implements TypeConfigInterface
     public function getRules()
     {
         return [
-            'name'        => ['type' => TypeMap::TYPE_STRING, 'required' => true],
+            'name'        => ['type' => TypeService::TYPE_STRING, 'required' => true],
             'types'       => ['type' => TypeService::TYPE_FIELDS_LIST_CONFIG],
-            'description' => ['type' => TypeMap::TYPE_STRING],
+            'description' => ['type' => TypeService::TYPE_STRING],
             'resolve'     => ['type' => TypeService::TYPE_FUNCTION],
             'resolveType' => ['type' => TypeService::TYPE_FUNCTION] //todo: must be required
         ];

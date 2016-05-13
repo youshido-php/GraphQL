@@ -26,13 +26,13 @@ class FieldConfig extends AbstractConfig
     public function getRules()
     {
         return [
-            'name'              => ['type' => TypeMap::TYPE_STRING, 'required' => true],
+            'name'              => ['type' => TypeService::TYPE_STRING, 'required' => true],
             'type'              => ['type' => TypeService::TYPE_ANY, 'required' => true],
             'args'              => ['type' => TypeService::TYPE_ARRAY],
-            'description'       => ['type' => TypeMap::TYPE_STRING],
+            'description'       => ['type' => TypeService::TYPE_STRING],
             'resolve'           => ['type' => TypeService::TYPE_FUNCTION],
-            'isDeprecated'      => ['type' => TypeMap::TYPE_BOOLEAN],
-            'deprecationReason' => ['type' => TypeMap::TYPE_STRING],
+            'isDeprecated'      => ['type' => TypeService::TYPE_BOOLEAN],
+            'deprecationReason' => ['type' => TypeService::TYPE_STRING],
         ];
     }
 
