@@ -19,7 +19,7 @@ class Tokenizer
     /** @var  Token */
     protected $lookAhead;
 
-    public function setSource($source)
+    protected function initTokenizer($source)
     {
         $this->source    = $source;
         $this->lookAhead = $this->next();
@@ -94,18 +94,6 @@ class Tokenizer
                 ++$this->pos;
 
                 return new Token(Token::TYPE_RBRACE);
-            case Token::TYPE_LT:
-                ++$this->pos;
-
-                return new Token(Token::TYPE_LT);
-            case Token::TYPE_GT:
-                ++$this->pos;
-
-                return new Token(Token::TYPE_GT);
-            case Token::TYPE_AMP:
-                ++$this->pos;
-
-                return new Token(Token::TYPE_AMP);
             case Token::TYPE_COMMA:
                 ++$this->pos;
 
@@ -126,9 +114,9 @@ class Tokenizer
             case Token::TYPE_POINT:
                 if ($this->checkFragment()) {
                     return new Token(Token::TYPE_FRAGMENT_REFERENCE);
+                } else {
+                    return new Token(Token::TYPE_POINT);
                 }
-
-                break;
 
             case Token::TYPE_VARIABLE:
                 ++$this->pos;
@@ -148,7 +136,7 @@ class Tokenizer
             return $this->scanString();
         }
 
-        throw $this->createIllegal();
+        throw $this->createException('Can\t recognize token type');
     }
 
     protected function checkFragment()
@@ -218,6 +206,20 @@ class Tokenizer
         return Token::TYPE_IDENTIFIER;
     }
 
+    protected function expect($type)
+    {
+        if ($this->match($type)) {
+            return $this->lex();
+        }
+
+        throw $this->createUnexpectedException($this->peek());
+    }
+
+    protected function match($type)
+    {
+        return $this->peek()->getType() === $type;
+    }
+
     protected function scanNumber()
     {
         $start = $this->pos;
@@ -227,7 +229,7 @@ class Tokenizer
 
         $this->skipInteger();
 
-        if ($this->source[$this->pos] === '.') {
+        if (isset($this->source[$this->pos]) && $this->source[$this->pos] === '.') {
             $this->pos++;
             $this->skipInteger();
         }
@@ -245,8 +247,6 @@ class Tokenizer
 
     protected function skipInteger()
     {
-        $start = $this->pos;
-
         while ($this->pos < strlen($this->source)) {
             $ch = $this->source[$this->pos];
             if ('0' <= $ch && $ch <= '9') {
@@ -255,22 +255,11 @@ class Tokenizer
                 break;
             }
         }
-
-        if ($this->pos - $start === 0) {
-            throw $this->createIllegal();
-        }
     }
 
-    protected function createIllegal()
+    protected function createException($message)
     {
-        return $this->pos < strlen($this->source)
-            ? $this->createError("Unexpected {$this->source[$this->pos]}")
-            : $this->createError('Unexpected end of input');
-    }
-
-    protected function createError($message)
-    {
-        return new SyntaxErrorException($message . " ({$this->line}:{$this->getColumn()})");
+        return new SyntaxErrorException(sprintf('%s at (%s:%s)', $message, $this->line, $this->getColumn()));
     }
 
     protected function getColumn()
@@ -295,7 +284,7 @@ class Tokenizer
             $this->pos++;
         }
 
-        throw $this->createIllegal();
+        throw $this->createUnexpectedTokenTypeException(Token::TYPE_END);
     }
 
     protected function end()
@@ -316,19 +305,13 @@ class Tokenizer
         return $prev;
     }
 
-    protected function createUnexpected(Token $token)
+    protected function createUnexpectedException(Token $token)
     {
-        switch ($token->getType()) {
-            case Token::TYPE_END:
-                return $this->createError('Unexpected end of input');
-            case Token::TYPE_NUMBER:
-                return $this->createError('Unexpected number');
-            case Token::TYPE_STRING:
-                return $this->createError('Unexpected string');
-            case Token::TYPE_IDENTIFIER:
-                return $this->createError('Unexpected identifier');
-        }
+        return $this->createUnexpectedTokenTypeException($token->getType());
+    }
 
-        return new SyntaxErrorException('Unexpected token');
+    protected function createUnexpectedTokenTypeException($tokenType)
+    {
+        return $this->createException(sprintf('Unexpected token "%s"', Token::tokenName($tokenType)));
     }
 }

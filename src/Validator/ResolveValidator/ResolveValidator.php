@@ -10,10 +10,10 @@ namespace Youshido\GraphQL\Validator\ResolveValidator;
 
 use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Parser\Ast\Argument;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
-use Youshido\GraphQL\Parser\Value\Literal;
-use Youshido\GraphQL\Parser\Value\Variable;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\InputObject\InputObjectType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;

@@ -5,22 +5,22 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphQL\Parser\Value;
+namespace Youshido\GraphQL\Parser\Ast\ArgumentValue;
 
 
-class InputObject implements ValueInterface
+class InputList implements ValueInterface
 {
 
-    protected $object = [];
+    protected $list = [];
 
     /**
      * InputList constructor.
      *
-     * @param array $object
+     * @param array $list
      */
-    public function __construct(array $object)
+    public function __construct(array $list)
     {
-        $this->object = $object;
+        $this->list = $list;
     }
 
     /**
@@ -28,7 +28,7 @@ class InputObject implements ValueInterface
      */
     public function getValue()
     {
-        return $this->object;
+        return $this->list;
     }
 
     /**
@@ -36,7 +36,6 @@ class InputObject implements ValueInterface
      */
     public function setValue($value)
     {
-        $this->object = $value;
+        $this->list = $value;
     }
-
 }

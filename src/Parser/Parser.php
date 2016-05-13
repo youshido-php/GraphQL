@@ -10,6 +10,10 @@ namespace Youshido\GraphQL\Parser;
 
 
 use Youshido\GraphQL\Parser\Ast\Argument;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputList;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputObject;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
 use Youshido\GraphQL\Parser\Ast\Field;
 use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
@@ -20,10 +24,6 @@ use Youshido\GraphQL\Parser\Exception\DuplicationVariableException;
 use Youshido\GraphQL\Parser\Exception\SyntaxErrorException;
 use Youshido\GraphQL\Parser\Exception\UnusedVariableException;
 use Youshido\GraphQL\Parser\Exception\VariableTypeNotDefined;
-use Youshido\GraphQL\Parser\Value\InputList;
-use Youshido\GraphQL\Parser\Value\InputObject;
-use Youshido\GraphQL\Parser\Value\Literal;
-use Youshido\GraphQL\Parser\Value\Variable;
 
 class Parser extends Tokenizer
 {
@@ -36,9 +36,8 @@ class Parser extends Tokenizer
 
     public function parse($source = null)
     {
-        if ($source) {
-            $this->setSource($source);
-        }
+        $this->initTokenizer($source);
+
         $data = ['queries' => [], 'mutations' => [], 'fragments' => []];
 
         while (!$this->end()) {
@@ -147,27 +146,18 @@ class Parser extends Tokenizer
         return $types;
     }
 
-    protected function expect($type)
-    {
-        if ($this->match($type)) {
-            return $this->lex();
-        }
-
-        throw $this->createUnexpected($this->peek());
-    }
-
     protected function expectMulti($types)
     {
         if ($this->matchMulti($types)) {
             return $this->lex();
         }
 
-        throw $this->createUnexpected($this->peek());
+        throw $this->createUnexpectedException($this->peek());
     }
 
     protected function parseReference()
     {
-        $this->expectMulti([Token::TYPE_AMP, Token::TYPE_VARIABLE]);
+        $this->expectMulti([Token::TYPE_VARIABLE]);
 
         if ($this->match(Token::TYPE_NUMBER) || $this->match(Token::TYPE_IDENTIFIER)) {
             $name = $this->lex()->getData();
@@ -181,7 +171,7 @@ class Parser extends Tokenizer
             return new Variable($name, $this->variablesTypes[$name]);
         }
 
-        throw $this->createUnexpected($this->peek());
+        throw $this->createUnexpectedException($this->peek());
     }
 
     protected function parseFragmentReference()
@@ -263,6 +253,11 @@ class Parser extends Tokenizer
         return new Argument($name, $value);
     }
 
+    /**
+     * @return array|InputList|InputObject|Literal|Variable
+     *
+     * @throws VariableTypeNotDefined
+     */
     protected function parseValue()
     {
         switch ($this->lookAhead->getType()) {
@@ -272,7 +267,6 @@ class Parser extends Tokenizer
             case Token::TYPE_LBRACE:
                 return $this->parseObject();
 
-            case Token::TYPE_AMP:
             case Token::TYPE_VARIABLE:
                 return $this->parseReference();
 
@@ -287,7 +281,7 @@ class Parser extends Tokenizer
                 return new Literal($this->lex()->getData());
         }
 
-        throw $this->createUnexpected($this->lookAhead);
+        throw $this->createUnexpectedException($this->lookAhead);
     }
 
     protected function parseList($createType = true)
@@ -312,28 +306,18 @@ class Parser extends Tokenizer
     {
         switch ($this->lookAhead->getType()) {
             case Token::TYPE_NUMBER:
-                return $this->expect(Token::TYPE_NUMBER)->getData();
-
             case Token::TYPE_STRING:
-                return $this->expect(Token::TYPE_STRING)->getData();
+            case Token::TYPE_TRUE:
+            case Token::TYPE_FALSE:
+            case Token::TYPE_NULL:
+            case Token::TYPE_IDENTIFIER:
+                return $this->expect($this->lookAhead->getType())->getData();
 
             case Token::TYPE_LBRACE:
                 return $this->parseObject(false);
 
             case Token::TYPE_LSQUARE_BRACE:
                 return $this->parseList(false);
-
-            case Token::TYPE_TRUE:
-                return $this->expect(Token::TYPE_TRUE)->getData();
-
-            case Token::TYPE_FALSE:
-                return $this->expect(Token::TYPE_FALSE)->getData();
-
-            case Token::TYPE_NULL:
-                return $this->expect(Token::TYPE_NULL)->getData();
-
-            case Token::TYPE_IDENTIFIER:
-                return $this->expect(Token::TYPE_IDENTIFIER)->getData();
         }
 
         throw new SyntaxErrorException('Can\'t parse argument');
@@ -401,10 +385,5 @@ class Parser extends Tokenizer
         }
 
         return false;
-    }
-
-    protected function match($type)
-    {
-        return $this->peek()->getType() === $type;
     }
 }

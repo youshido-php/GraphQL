@@ -26,13 +26,13 @@ class Fragment
      *
      * @param                 $name
      * @param                 $model
-     * @param Field[]|Query[] $children
+     * @param Field[]|Query[] $fields
      */
-    public function __construct($name, $model, $children)
+    public function __construct($name, $model, array $fields)
     {
         $this->name   = $name;
         $this->model  = $model;
-        $this->fields = $children;
+        $this->fields = $fields;
     }
 
     /**

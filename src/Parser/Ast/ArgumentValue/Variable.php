@@ -5,7 +5,7 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphQL\Parser\Value;
+namespace Youshido\GraphQL\Parser\Ast\ArgumentValue;
 
 class Variable implements ValueInterface
 {
@@ -28,12 +28,12 @@ class Variable implements ValueInterface
     /**
      * @return mixed
      *
-     * @throws \Exception
+     * @throws \LogicException
      */
     public function getValue()
     {
         if (!$this->value) {
-            throw new \Exception('Value not setted to variable');
+            throw new \LogicException('Value not set to variable else');
         }
 
         return $this->value;

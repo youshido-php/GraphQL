@@ -8,7 +8,7 @@
 namespace Youshido\GraphQL\Parser\Ast;
 
 
-use Youshido\GraphQL\Parser\Value\ValueInterface;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\ValueInterface;
 
 class Argument
 {
@@ -16,10 +16,10 @@ class Argument
     /** @var string */
     private $name;
 
-    /** @var  ValueInterface */
+    /** @var ValueInterface */
     private $value;
 
-    public function __construct($name, $value)
+    public function __construct($name, ValueInterface $value)
     {
         $this->name  = $name;
         $this->value = $value;

@@ -49,6 +49,14 @@ class Query
         return $this->arguments;
     }
 
+    /**
+     * @param $arguments Argument[]
+     */
+    public function setArguments($arguments)
+    {
+        $this->arguments = $arguments;
+    }
+
     public function addArgument(Argument $argument)
     {
         $this->arguments[$argument->getName()] = $argument;
@@ -92,11 +100,6 @@ class Query
     public function getAlias()
     {
         return $this->alias;
-    }
-
-    public function hasAlias()
-    {
-        return $this->alias ? true : false;
     }
 
 }

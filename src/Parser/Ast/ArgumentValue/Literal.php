@@ -5,7 +5,7 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphQL\Parser\Value;
+namespace Youshido\GraphQL\Parser\Ast\ArgumentValue;
 
 
 class Literal implements ValueInterface
