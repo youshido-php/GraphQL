@@ -14,7 +14,7 @@ use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 final class ObjectType extends AbstractObjectType
 {
 
-    public function __construct($config)
+    public function __construct(array $config)
     {
         if (empty($config)) {
             throw new ConfigurationException('Config should not be empty for the inline ObjectType');

@@ -9,21 +9,22 @@
 namespace Youshido\GraphQL\Field;
 
 
-use Youshido\GraphQL\Config\Field\InputFieldConfig;
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
 
-class InputField extends Field
+final class InputField extends AbstractInputField
 {
-    /** @var InputFieldConfig */
-    protected $config;
 
-    public function __construct($config)
+    /**
+     * @return AbstractObjectType
+     */
+    public function getType()
     {
-        $this->config = new InputFieldConfig($config);
+        return $this->getConfigValue('type');
     }
 
-    public function getDefaultValue()
+    public function getName()
     {
-        return $this->config->getDefaultValue();
+        return $this->getConfigValue('name');
     }
 
 }

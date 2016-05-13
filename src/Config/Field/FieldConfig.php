@@ -25,8 +25,8 @@ class FieldConfig extends AbstractConfig
     public function getRules()
     {
         return [
-            'name'              => ['type' => TypeService::TYPE_STRING, 'required' => true],
-            'type'              => ['type' => TypeService::TYPE_ANY, 'required' => true],
+            'name'              => ['type' => TypeService::TYPE_STRING, 'final' => true],
+            'type'              => ['type' => TypeService::TYPE_OBJECT_TYPE, 'final' => true],
             'args'              => ['type' => TypeService::TYPE_ARRAY],
             'description'       => ['type' => TypeService::TYPE_STRING],
             'resolve'           => ['type' => TypeService::TYPE_CALLABLE],
@@ -38,13 +38,6 @@ class FieldConfig extends AbstractConfig
     protected function build()
     {
         $this->buildArguments();
-    }
-
-    public function issetResolve()
-    {
-        $resolveFunction = $this->getResolveFunction();
-
-        return $resolveFunction && is_callable($resolveFunction);
     }
 
     /**

@@ -18,7 +18,7 @@ class TestConfig extends AbstractConfig
     {
         return [
             'name' => ['type' => TypeService::TYPE_ANY, 'required' => true],
-            'resolve' => ['type' => TypeService::TYPE_FUNCTION, 'final' => true],
+            'resolve' => ['type' => TypeService::TYPE_CALLABLE, 'final' => true],
         ];
     }
 

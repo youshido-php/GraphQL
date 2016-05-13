@@ -73,7 +73,16 @@ class TypeService
         return in_array($type->getKind(), [TypeMap::KIND_INTERFACE, TypeMap::KIND_UNION]);
     }
 
-    public static function isScalarType($typeName)
+    public static function isScalarType($type)
+    {
+        if (is_object($type)) {
+            return $type instanceof AbstractScalarType;
+        }
+
+        return false;
+    }
+
+    public static function isScalarTypeName($typeName)
     {
         if (is_object($typeName) && !($typeName instanceof AbstractScalarType)) {
             return false;
@@ -92,11 +101,10 @@ class TypeService
             $type = $type->getNullableType();
 
             return ($type instanceof AbstractScalarType)
-                   || ($type instanceof AbstractInputObjectType)
-                   || ($type instanceof AbstractEnumType)
-                   || ($type instanceof AbstractListType);
+            || ($type instanceof AbstractInputObjectType)
+            || ($type instanceof AbstractListType);
         } else {
-            return TypeService::isScalarType($type);
+            return TypeService::isScalarTypeName($type);
         }
     }
 }

@@ -44,7 +44,7 @@ abstract class AbstractConfig
      * @throws ConfigurationException
      * @throws ValidationException
      */
-    public function __construct($configData, $contextObject = null, $finalClass = false)
+    public function __construct(array $configData, $contextObject = null, $finalClass = false)
     {
         if (!is_array($configData) || empty($configData)) {
             throw new ConfigurationException('Config for Type should be an array');

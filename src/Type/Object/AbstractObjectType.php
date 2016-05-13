@@ -39,9 +39,8 @@ abstract class AbstractObjectType extends AbstractType
      * ObjectType constructor.
      * @param $config
      */
-    public function __construct($config = [])
+    public function __construct(array $config = [])
     {
-
         if (empty($config)) {
             $config['name']       = $this->getName();
             $config['interfaces'] = $this->getInterfaces();

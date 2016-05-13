@@ -59,7 +59,7 @@ class TypeValidationRule implements ValidationRuleInterface
                     return is_array($data);
 
                 case TypeService::TYPE_OBJECT_TYPE:
-                    return $data instanceof AbstractObjectType;
+                    return $data instanceof AbstractObjectType || TypeService::isScalarType($data);
 
                 case TypeService::TYPE_FIELDS_LIST_CONFIG:
                     return $this->isFieldsListConfig($data);
@@ -80,7 +80,7 @@ class TypeValidationRule implements ValidationRuleInterface
                     return $this->isArrayOfInterfaces($data);
 
                 default:
-                    if (TypeService::isScalarType($ruleInfo)) {
+                    if (TypeService::isScalarTypeName($ruleInfo)) {
                         return TypeFactory::getScalarType($ruleInfo)->isValidValue($data);
                     }
             }

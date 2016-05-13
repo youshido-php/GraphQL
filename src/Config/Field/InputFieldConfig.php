@@ -18,10 +18,8 @@ class InputFieldConfig extends AbstractConfig
     public function getRules()
     {
         return [
-            'name'        => ['type' => TypeService::TYPE_STRING, 'required' => true],
-            'type'        => ['type' => TypeService::TYPE_ANY_INPUT, 'required' => true],
-            'resolve'     => ['type' => TypeService::TYPE_CALLABLE],
-            'required'    => ['type' => TypeService::TYPE_BOOLEAN],
+            'name'        => ['type' => TypeService::TYPE_STRING, 'final' => true],
+            'type'        => ['type' => TypeService::TYPE_ANY_INPUT, 'final' => true],
             'default'     => ['type' => TypeService::TYPE_ANY],
             'description' => ['type' => TypeService::TYPE_STRING],
         ];
