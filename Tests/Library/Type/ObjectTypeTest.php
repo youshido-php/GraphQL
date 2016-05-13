@@ -6,7 +6,7 @@
 * created: 5/11/16 9:43 PM
 */
 
-namespace Youshido\Tests\Library;
+namespace Youshido\Tests\Library\Type;
 
 
 use Youshido\GraphQL\Type\Object\ObjectType;

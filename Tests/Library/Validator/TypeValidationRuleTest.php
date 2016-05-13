@@ -6,7 +6,7 @@
 * created: 5/12/16 10:37 PM
 */
 
-namespace Youshido\Tests\Library;
+namespace Youshido\Tests\Library\Validator;
 
 
 use Youshido\GraphQL\Field\Field;

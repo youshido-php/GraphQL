@@ -6,9 +6,8 @@
 * created: 5/11/16 10:41 PM
 */
 
-namespace Youshido\Tests\Library;
+namespace Youshido\Tests\Library\Config;
 
-require_once __DIR__ . '/../../DataProvider/TestConfig.php';
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\TypeService;

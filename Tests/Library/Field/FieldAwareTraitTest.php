@@ -6,7 +6,7 @@
 * created: 5/12/16 7:46 PM
 */
 
-namespace Youshido\Tests\Library;
+namespace Youshido\Tests\Library\Field;
 
 
 use Youshido\GraphQL\Config\Object\ObjectTypeConfig;

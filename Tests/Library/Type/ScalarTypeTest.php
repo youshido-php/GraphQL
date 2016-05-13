@@ -6,7 +6,7 @@
 * created: 11/27/15 1:11 AM
 */
 
-namespace Youshido\Tests\Library;
+namespace Youshido\Tests\Library\Type;
 
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 use Youshido\GraphQL\Type\Scalar\StringType;
