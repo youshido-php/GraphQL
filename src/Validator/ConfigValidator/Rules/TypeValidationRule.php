@@ -59,7 +59,10 @@ class TypeValidationRule implements ValidationRuleInterface
                     return is_array($data);
 
                 case TypeService::TYPE_OBJECT_TYPE:
-                    return $data instanceof AbstractObjectType || TypeService::isScalarType($data);
+                    return $this->isObject($data);
+
+                case TypeService::TYPE_ARRAY_OF_OBJECTS:
+                    return $this->isArrayOfObjects($data);
 
                 case TypeService::TYPE_FIELDS_LIST_CONFIG:
                     return $this->isFieldsListConfig($data);
@@ -87,6 +90,26 @@ class TypeValidationRule implements ValidationRuleInterface
         } else {
             return false;
         }
+    }
+
+    private function isArrayOfObjects($data)
+    {
+        if (!is_array($data) || !count($data)) {
+            return false;
+        }
+
+        foreach($data as $item) {
+            if(!$this->isObject($item)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function isObject($data)
+    {
+        return $data instanceof AbstractObjectType || TypeService::isScalarType($data);
     }
 
     private function isArrayOfValues($data)

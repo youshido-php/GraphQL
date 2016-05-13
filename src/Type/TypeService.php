@@ -9,7 +9,6 @@
 namespace Youshido\GraphQL\Type;
 
 
-use Youshido\GraphQL\Type\Enum\AbstractEnumType;
 use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
 use Youshido\GraphQL\Type\ListType\AbstractListType;
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
@@ -26,6 +25,7 @@ class TypeService
     const TYPE_STRING              = TypeMap::TYPE_STRING;
     const TYPE_ARRAY               = 'array';
     const TYPE_FIELDS_LIST_CONFIG  = 'array_of_fields';
+    const TYPE_ARRAY_OF_OBJECTS    = 'array_of_objects';
     const TYPE_ARRAY_OF_INPUTS     = 'array_of_inputs';
     const TYPE_ARRAY_OF_VALUES     = 'array_of_values';
     const TYPE_ARRAY_OF_INTERFACES = 'array_of_interfaces';
