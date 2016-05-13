@@ -14,19 +14,23 @@ use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IdType;
+use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\Tests\DataProvider\TestField;
+use Youshido\Tests\DataProvider\TestInputField;
 
 class FieldTest extends \PHPUnit_Framework_TestCase
 {
 
-    public function testFieldCreation()
+    public function testInlineFieldCreation()
     {
         $field = new Field([
             'name' => 'id',
             'type' => new IdType()
         ]);
         $this->assertEquals('id', $field->getName());
+        $this->assertEquals(new IdType(), $field->getType());
         $this->assertNull($field->resolve('data', null, null));
 
         $fieldWithResolve = new Field([
@@ -41,11 +45,21 @@ class FieldTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('CTO', $fieldWithResolve->resolve('CTO'));
     }
 
-    public function testInputFieldCreation()
+    public function testObjectFieldCreation()
+    {
+        $field = new TestField();
+
+        $this->assertEquals('Test', $field->getName());
+        $this->assertEquals('description', $field->getDescription());
+        $this->assertEquals(new IntType(), $field->getType());
+        $this->assertEquals('test', $field->resolve('test'));
+    }
+
+    public function testInlineInputFieldCreation()
     {
         $field = new InputField([
             'name'        => 'id',
-            'type'        => new IdType(),
+            'type'        => 'id',
             'description' => 'description',
             'default'     => 123
         ]);
@@ -56,6 +70,17 @@ class FieldTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(123, $field->getDefaultValue());
     }
 
+
+    public function testObjectInputFieldCreation()
+    {
+        $field = new TestInputField();
+
+        $this->assertEquals('TestInput', $field->getName());
+        $this->assertEquals('description', $field->getDescription());
+        $this->assertEquals(new IntType(), $field->getType());
+        $this->assertEquals('default', $field->getDefaultValue());
+
+    }
 
     /**
      * @dataProvider invalidFieldProvider

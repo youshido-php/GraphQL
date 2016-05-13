@@ -25,7 +25,7 @@ abstract class AbstractInputField
 
     protected $isFinal = false;
 
-    public function __construct($config)
+    public function __construct(array $config = [])
     {
         if (empty($config['type'])) {
             $config['type'] = $this->getType();
