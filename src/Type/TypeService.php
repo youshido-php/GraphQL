@@ -18,7 +18,7 @@ use Youshido\GraphQL\Type\Scalar\StringType;
 class TypeService
 {
 
-    const TYPE_FUNCTION            = 'function';
+    const TYPE_CALLABLE            = 'callable';
     const TYPE_OBJECT_TYPE         = 'object_type';
     const TYPE_OBJECT_INPUT_TYPE   = 'object_input_type';
     const TYPE_LIST                = 'list';

@@ -13,7 +13,6 @@ use Youshido\GraphQL\Config\AbstractConfig;
 use Youshido\GraphQL\Config\Traits\ArgumentsAwareTrait;
 use Youshido\GraphQL\Config\Traits\FieldsAwareTrait;
 use Youshido\GraphQL\Config\TypeConfigInterface;
-use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
 
 class UnionTypeConfig extends AbstractConfig implements TypeConfigInterface
@@ -26,8 +25,8 @@ class UnionTypeConfig extends AbstractConfig implements TypeConfigInterface
             'name'        => ['type' => TypeService::TYPE_STRING, 'required' => true],
             'types'       => ['type' => TypeService::TYPE_FIELDS_LIST_CONFIG],
             'description' => ['type' => TypeService::TYPE_STRING],
-            'resolve'     => ['type' => TypeService::TYPE_FUNCTION],
-            'resolveType' => ['type' => TypeService::TYPE_FUNCTION] //todo: must be required
+            'resolve'     => ['type' => TypeService::TYPE_CALLABLE],
+            'resolveType' => ['type' => TypeService::TYPE_CALLABLE] //todo: must be required
         ];
     }
 

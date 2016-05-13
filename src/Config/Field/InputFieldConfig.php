@@ -10,7 +10,6 @@ namespace Youshido\GraphQL\Config\Field;
 
 
 use Youshido\GraphQL\Config\AbstractConfig;
-use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
 
 class InputFieldConfig extends AbstractConfig
@@ -21,7 +20,7 @@ class InputFieldConfig extends AbstractConfig
         return [
             'name'        => ['type' => TypeService::TYPE_STRING, 'required' => true],
             'type'        => ['type' => TypeService::TYPE_ANY_INPUT, 'required' => true],
-            'resolve'     => ['type' => TypeService::TYPE_FUNCTION],
+            'resolve'     => ['type' => TypeService::TYPE_CALLABLE],
             'required'    => ['type' => TypeService::TYPE_BOOLEAN],
             'default'     => ['type' => TypeService::TYPE_ANY],
             'description' => ['type' => TypeService::TYPE_STRING],

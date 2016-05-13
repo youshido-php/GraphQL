@@ -9,17 +9,14 @@
 namespace Youshido\GraphQL\Validator\ConfigValidator\Rules;
 
 
-use Youshido\GraphQL\Config\Field\FieldConfig;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeFactory;
-use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
 use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
-use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 class TypeValidationRule implements ValidationRuleInterface
 {
@@ -48,7 +45,11 @@ class TypeValidationRule implements ValidationRuleInterface
                 case TypeService::TYPE_ANY_OBJECT:
                     return is_object($data);
 
-                case TypeService::TYPE_FUNCTION:
+                case TypeService::TYPE_CALLABLE:
+                    //todo: need discuss about this,
+                    // todo: I want to have ability to pass ['FolderHelper', 'doSomething'] and somehow inject ['@app.helper.folder', 'toSomething'] for symfony in future
+                    //todo: I don\'t know how to validate
+
                     return is_callable($data);
 
                 case TypeService::TYPE_BOOLEAN:
@@ -187,7 +188,7 @@ class TypeValidationRule implements ValidationRuleInterface
             'type'              => ['type' => TypeService::TYPE_ANY, 'required' => true],
             'args'              => ['type' => TypeService::TYPE_ARRAY],
             'description'       => ['type' => TypeService::TYPE_STRING],
-            'resolve'           => ['type' => TypeService::TYPE_FUNCTION],
+            'resolve'           => ['type' => TypeService::TYPE_CALLABLE],
             'isDeprecated'      => ['type' => TypeService::TYPE_BOOLEAN],
             'deprecationReason' => ['type' => TypeService::TYPE_STRING],
         ];

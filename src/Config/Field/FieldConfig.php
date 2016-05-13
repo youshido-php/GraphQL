@@ -12,7 +12,6 @@ use Youshido\GraphQL\Config\AbstractConfig;
 use Youshido\GraphQL\Config\Traits\ArgumentsAwareTrait;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeInterface;
-use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
 
 class FieldConfig extends AbstractConfig
@@ -30,7 +29,7 @@ class FieldConfig extends AbstractConfig
             'type'              => ['type' => TypeService::TYPE_ANY, 'required' => true],
             'args'              => ['type' => TypeService::TYPE_ARRAY],
             'description'       => ['type' => TypeService::TYPE_STRING],
-            'resolve'           => ['type' => TypeService::TYPE_FUNCTION],
+            'resolve'           => ['type' => TypeService::TYPE_CALLABLE],
             'isDeprecated'      => ['type' => TypeService::TYPE_BOOLEAN],
             'deprecationReason' => ['type' => TypeService::TYPE_STRING],
         ];

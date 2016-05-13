@@ -31,6 +31,7 @@ class Field
     {
         $this->config = new FieldConfig($config);
         $type         = $this->config->get('type');
+
         if (!is_object($type)) {
             if (TypeService::isScalarType($type)) {
                 $this->config->set('type', TypeFactory::getScalarType($type));
