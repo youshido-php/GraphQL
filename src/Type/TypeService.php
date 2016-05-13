@@ -71,7 +71,7 @@ class TypeService
 
     public static function isScalarType($typeName)
     {
-        if (is_object($typeName)) {
+        if (is_object($typeName) && !($typeName instanceof AbstractScalarType)) {
             return false;
         }
 

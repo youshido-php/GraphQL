@@ -38,61 +38,46 @@ trait FieldsAwareTrait
      */
     public function addFields($fieldsArray)
     {
-        foreach ($fieldsArray as $fieldName => $fieldInfo) {
-            if ($fieldInfo instanceof Field) {
-                $this->fields[$fieldName] = $fieldInfo;
-                continue;
-            } elseif ($fieldInfo instanceof AbstractType) {
-                $config    = [];
-                $namedType = $fieldInfo->getNamedType();
-                if ($fieldInfo->getConfig() && $fieldInfo->getConfig()->get('resolve')) {
-                    $config['resolve'] = $fieldInfo->getConfig()->get('resolve');
-                } elseif (empty($config['resolve']) && (method_exists($fieldInfo, 'resolve'))) {
-                    $config['resolve'] = [$fieldInfo, 'resolve'];
-                }
-                if ($fieldInfo->getConfig() && $fieldInfo->getConfig()->hasArguments()) {
-                    $config['args'] = $fieldInfo->getConfig()->getArguments();
-                }
-                $this->addField($fieldName, $namedType, $config);
+        foreach ($fieldsArray as $fieldName => $fieldConfig) {
+
+            if ($fieldConfig instanceof Field) {
+                $this->addField($fieldConfig);
             } else {
-                $this->addField($fieldName, $fieldInfo['type'], $fieldInfo);
+                $this->addField($fieldName, $this->buildFieldConfig($fieldName, $fieldConfig));
             }
         }
 
         return $this;
     }
 
-    public function addField($name, $type, $config = [])
+    /**
+     * @param Field|string $field
+     * @param mixed|array  $fieldConfig
+     * @return $this
+     */
+    public function addField($field, $fieldConfig = [])
     {
-        if (is_string($type)) {
-            if (!TypeService::isScalarType($type)) {
-                throw new ConfigurationException('You can\'t pass ' . $type . ' as a string type.');
-            }
-
-            $type = TypeFactory::getScalarType($type);
-        } else {
-            if (empty($config['resolve']) && (method_exists($type, 'resolve'))) {
-                $config['resolve'] = [$type, 'resolve'];
-            }
+        if (!($field instanceof Field)) {
+            $field = new Field($this->buildFieldConfig($field, $fieldConfig));
         }
-
-        $config['name'] = $name;
-        $config['type'] = $type;
-
-        if (
-            isset($this->contextObject)
-            && method_exists($this->contextObject, 'getKind')
-            && $this->contextObject->getKind() == TypeMap::KIND_INPUT_OBJECT
-        ) {
-            $field = new InputField($config);
-        } else {
-            $field = new Field($config);
-        }
-
-
-        $this->fields[$name] = $field;
+        $this->fields[$field->getName()] = $field;
 
         return $this;
+    }
+
+    protected function buildFieldConfig($name, $fieldConfig = [])
+    {
+        if (!is_array($fieldConfig)) {
+            return [
+                'type' => $fieldConfig,
+                'name' => $name
+            ];
+        }
+        if (empty($fieldConfig['name'])) {
+            $fieldConfig['name'] = $name;
+        }
+
+        return $fieldConfig;
     }
 
     /**
@@ -133,5 +118,6 @@ trait FieldsAwareTrait
         if ($this->hasField($name)) {
             unset($this->fields[$name]);
         }
+        return $this;
     }
 }

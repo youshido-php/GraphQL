@@ -11,6 +11,9 @@ namespace Youshido\GraphQL\Field;
 use Youshido\GraphQL\Config\Field\FieldConfig;
 use Youshido\GraphQL\Config\Traits\ConfigCallTrait;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\TypeFactory;
+use Youshido\GraphQL\Type\TypeService;
+use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 /**
  * Class Field
@@ -27,6 +30,14 @@ class Field
     public function __construct($config)
     {
         $this->config = new FieldConfig($config);
+        $type         = $this->config->get('type');
+        if (!is_object($type)) {
+            if (TypeService::isScalarType($type)) {
+                $this->config->set('type', TypeFactory::getScalarType($type));
+            } else {
+                throw new ConfigurationException('Invalid type for the field ' . $this->config->getName());
+            }
+        }
     }
 
     /**

@@ -13,6 +13,7 @@ use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
 use Youshido\Tests\DataProvider\TestInterfaceType;
+use Youshido\Tests\DataProvider\TestObjectType;
 
 class TypeUtilitiesTest extends \PHPUnit_Framework_TestCase
 {
@@ -21,6 +22,7 @@ class TypeUtilitiesTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertTrue(TypeService::isScalarType(TypeMap::TYPE_STRING));
         $this->assertFalse(TypeService::isScalarType('gibberish'));
+        $this->assertFalse(TypeService::isScalarType(new TestObjectType()));
 
         $stringType = new StringType();
 

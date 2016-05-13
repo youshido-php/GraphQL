@@ -36,7 +36,17 @@ class FieldTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('true', $fieldWithResolve->resolve(true), 'Resolve bool to string');
         $this->assertEquals('CTO', $fieldWithResolve->resolve('CTO'));
+    }
 
+    /**
+     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     */
+    public function testInvalidStringType()
+    {
+        new Field([
+            'name' => 'id',
+            'type' => 'invalid type'
+        ]);
     }
 
 }
