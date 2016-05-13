@@ -17,7 +17,7 @@ use Youshido\GraphQL\Type\Object\AbstractObjectType;
 final class Field extends AbstractField
 {
 
-    protected $isFinal = false;
+    protected $isFinal = true;
 
     /**
      * @return AbstractObjectType
@@ -25,6 +25,11 @@ final class Field extends AbstractField
     public function getType()
     {
         return $this->getConfigValue('type');
+    }
+
+    public function getName()
+    {
+        return $this->getConfigValue('name', null);
     }
 
 }

@@ -28,9 +28,6 @@ abstract class AbstractField
     {
         if (empty($config['type'])) {
             $config['type'] = $this->getType();
-        }
-
-        if (empty($config['name'])) {
             $config['name'] = $this->getName();
         }
 
