@@ -3,8 +3,9 @@
 <phpunit colors="true">
     <testsuites>
         <testsuite name="Library">
-            <directory suffix="Test.php">./Tests/Library</directory>
-            <directory suffix="Test.php">./Tests/Schema</directory>
+            <directory suffix="Test.php">./tests/Library</directory>
+            <directory suffix="Test.php">./tests/Schema</directory>
+            <directory suffix="Test.php">./tests/Parser</directory>
         </testsuite>
     </testsuites>
 

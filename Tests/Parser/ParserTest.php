@@ -5,23 +5,30 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\tests\GraphQL\Parser;
+namespace Youshido\Tests\Parser;
 
 use Youshido\GraphQL\Parser\Ast\Argument;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputList;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputObject;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
 use Youshido\GraphQL\Parser\Ast\Field;
 use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Mutation;
-use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
-use Youshido\GraphQL\Parser\Value\InputList;
-use Youshido\GraphQL\Parser\Value\InputObject;
-use Youshido\GraphQL\Parser\Value\Literal;
 use Youshido\GraphQL\Parser\Ast\Query;
+use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
 use Youshido\GraphQL\Parser\Parser;
-use Youshido\GraphQL\Parser\Value\Variable;
 
 class ParserTest extends \PHPUnit_Framework_TestCase
 {
+
+    public function testEmptyParser()
+    {
+        $parser = new Parser();
+
+        $this->assertEquals(['queries' => [], 'mutations' => [], 'fragments' => []], $parser->parse());
+    }
 
     /**
      * @expectedException Youshido\GraphQL\Parser\Exception\VariableTypeNotDefined
@@ -29,7 +36,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     public function testTypeNotDefinedException()
     {
         $parser = new Parser();
-        $parser->setSource('query getZuckProfile($devicePicSize: Int, $second: Int) {
+        $parser->parse('query getZuckProfile($devicePicSize: Int, $second: Int) {
                   user(id: 4) {
                     profilePic(size: $devicePicSize, test: $second, a: $c) {
                         url
@@ -37,7 +44,6 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                   }
                 }');
 
-        $parser->parse();
     }
 
     /**
@@ -46,15 +52,13 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     public function testTypeUnusedVariableException()
     {
         $parser = new Parser();
-        $parser->setSource('query getZuckProfile($devicePicSize: Int, $second: Int) {
+        $parser->parse('query getZuckProfile($devicePicSize: Int, $second: Int) {
                   user(id: 4) {
                     profilePic(size: $devicePicSize) {
                         url
                     }
                   }
                 }');
-
-        $parser->parse();
     }
 
     /**
@@ -63,15 +67,13 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     public function testDuplicationVariableException()
     {
         $parser = new Parser();
-        $parser->setSource('query getZuckProfile($devicePicSize: Int, $second: Int, $second: Int) {
+        $parser->parse('query getZuckProfile($devicePicSize: Int, $second: Int, $second: Int) {
                   user(id: 4) {
                     profilePic(size: $devicePicSize, test: $second) {
                         url
                     }
                   }
                 }');
-
-        $parser->parse();
     }
 
     public function testComments()
@@ -90,9 +92,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $parser = new Parser();
 
-        $parser->setSource($query);
-
-        $this->assertEquals($parser->parse(), [
+        $this->assertEquals($parser->parse($query), [
             'queries'   => [
                 new Query('authors', null,
                     [
@@ -118,15 +118,14 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     {
         $parser = new Parser();
 
-        $parser->setSource($query);
-        $parser->parse();
+        $parser->parse($query);
     }
 
-    public function testGoogleExtensionQuery()
+    public function testInspectionQuery()
     {
         $parser = new Parser();
 
-        $parser->setSource('
+        $data = $parser->parse('
             query IntrospectionQuery {
                 __schema {
                     queryType { name }
@@ -205,9 +204,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             }
         ');
 
-        $this->assertTrue(is_array($parser->parse()));
+        $this->assertTrue(is_array($data));
     }
-
 
     public function wrongQueriesProvider()
     {
@@ -219,7 +217,11 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             ['{ test (asd: { "a": 4, "m": null, "asd": false  "b": 5, "c" : { a }}) { id } }'],
             ['asdasd'],
             ['mutation { test(asd: ... ){ ...,asd, asd } }'],
-            ['mutation { test( asd: $,as ){ ...,asd, asd } }']
+            ['mutation { test( asd: $,as ){ ...,asd, asd } }'],
+            ['mutation { test{ . test on Test { id } } }'],
+            ['mutation { test( a: "asdd'],
+            ['mutation { test( a: { "asd": 12 12'],
+            ['mutation { test( a: { "asd": 12'],
         ];
     }
 
@@ -229,9 +231,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     public function testMutations($query, $structure)
     {
         $parser = new Parser();
-        $parser->setSource($query);
 
-        $parsedStructure = $parser->parse();
+        $parsedStructure = $parser->parse($query);
 
         $this->assertEquals($parsedStructure, $structure);
     }
@@ -239,7 +240,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     public function testTypedFragment()
     {
         $parser = new Parser();
-        $parser->setSource('
+        $parsedStructure = $parser->parse('
             {
                 test: test {
                     name,
@@ -249,8 +250,6 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 }
             }
         ');
-
-        $parsedStructure = $parser->parse();
 
         $this->assertEquals($parsedStructure, [
             'queries'   => [
@@ -342,9 +341,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     public function testParser($query, $structure)
     {
         $parser = new Parser();
-        $parser->setSource($query);
-
-        $parsedStructure = $parser->parse();
+        $parsedStructure = $parser->parse($query);
 
         $this->assertEquals($parsedStructure, $structure);
     }
@@ -355,6 +352,20 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         return [
             [
                 '{ test (id: -5) { id } } ',
+                [
+                    'queries'   => [
+                        new Query('test', null, [
+                            new Argument('id', new Literal(-5))
+                        ], [
+                            new Field('id'),
+                        ])
+                    ],
+                    'mutations' => [],
+                    'fragments' => []
+                ]
+            ],
+            [
+                "{ test (id: -5) \r\n { id } } ",
                 [
                     'queries'   => [
                         new Query('test', null, [
