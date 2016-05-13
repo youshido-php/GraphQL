@@ -130,9 +130,9 @@ class TypeValidationRule implements ValidationRuleInterface
             /** @todo need to change it to optimize performance */
             if (empty($data['name'])) $data['name'] = $name;
 
-            $config = new FieldConfig($data);
+            new FieldConfig($data);
 
-            return $config->isValid();
+            return true;
         } catch (ConfigurationException $e) {
             /** just need to return false in this case */
         }

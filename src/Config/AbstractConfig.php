@@ -30,6 +30,8 @@ abstract class AbstractConfig
 
     protected $finalClass = false;
 
+    protected $extraFieldsAllowed = null;
+
     /** @var ConfigValidatorInterface */
     protected $validator;
 
@@ -53,7 +55,7 @@ abstract class AbstractConfig
         $this->finalClass    = $finalClass;
         $this->validator     = new ConfigValidator($contextObject);
 
-        if (!$this->validator->validate($this->data, $this->getContextRules())) {
+        if (!$this->validator->validate($this->data, $this->getContextRules(), $this->extraFieldsAllowed)) {
             throw new ConfigurationException('Config is not valid for ' . get_class($contextObject) . "\n" . implode("\n", $this->validator->getErrorsArray(false)));
         }
 
@@ -113,14 +115,6 @@ abstract class AbstractConfig
         $this->data[$key] = $value;
 
         return $this;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isValid()
-    {
-        return $this->validator->isValid();
     }
 
     public function __call($method, $arguments)

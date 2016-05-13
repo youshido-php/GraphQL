@@ -72,7 +72,7 @@ class ConfigValidator implements ConfigValidatorInterface
             }
         }
 
-        if (!$this->extraFieldsAllowed) {
+        if (!$this->isExtraFieldsAllowed()) {
             foreach (array_keys($data) as $fieldName) {
                 if (!in_array($fieldName, $processedFields)) {
                     $this->addError(
@@ -104,21 +104,6 @@ class ConfigValidator implements ConfigValidatorInterface
             return $this->contextObject ? $this->contextObject : '(context)';
         }
     }
-
-    public function setRules($rules)
-    {
-        $this->rules = (array)$rules;
-
-        return $this;
-    }
-
-    public function setRuleForField($fieldName, $rule)
-    {
-        $this->rules[$fieldName] = $rule;
-
-        return $this;
-    }
-
 
     public function isValid()
     {

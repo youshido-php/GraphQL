@@ -13,6 +13,8 @@ use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\TypeService;
 use Youshido\Tests\DataProvider\TestConfig;
+use Youshido\Tests\DataProvider\TestConfigExtraFields;
+use Youshido\Tests\DataProvider\TestConfigInvalidRule;
 
 class ConfigTest extends \PHPUnit_Framework_TestCase
 {
@@ -65,7 +67,6 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($config->getRules(), $rules);
         $this->assertEquals($config->getContextRules(), $rules);
-        $this->assertTrue($config->isValid());
         $this->assertNull($config->getResolveFunction());
 
         $object = new ObjectType(['name' => 'TestObject', 'fields' => ['id' => new IntType()]]);
@@ -77,6 +78,12 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($finalConfig->getContextRules(), $rules);
 
         $this->assertNotNull($finalConfig->getResolveFunction());
+
+        $configExtraFields = new TestConfigExtraFields([
+            'name' => 'Test',
+            'extraField' => 'extraValue'
+        ]);
+        $this->assertEquals('extraValue', $configExtraFields->get('extraField'));
     }
 
     /**
@@ -85,6 +92,14 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     public function testFinalRule()
     {
         new TestConfig(['name' => 'Test' . 'final'], null, true);
+    }
+
+    /**
+     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     */
+    public function testInvalidRule()
+    {
+        new TestConfigInvalidRule(['name' => 'Test', 'invalidRuleField' => 'test'], null, null);
     }
 
 }

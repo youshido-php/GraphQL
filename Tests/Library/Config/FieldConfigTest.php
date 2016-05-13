@@ -27,7 +27,10 @@ class FieldConfigTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('FirstName', $fieldConfig->getName());
         $this->assertEquals(new StringType(), $fieldConfig->getType());
 
-        $this->assertEquals('John', $fieldConfig->resolve());
+        $resolveFunction = $fieldConfig->getResolveFunction();
+        $this->assertEquals('John', $resolveFunction([]));
+
+        $this->assertTrue($fieldConfig->issetResolve());
     }
 
 }

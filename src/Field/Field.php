@@ -68,8 +68,12 @@ class Field
 
     public function resolve($value, $args = [], $type = null)
     {
-        $resolveFn = $this->config->get('resolve', null);
+        if ($this->config->issetResolve()) {
+            $resolveFunc = $this->config->getResolveFunction();
 
-        return $resolveFn ? $resolveFn($value, $args, $type ?: $this->getType()) : null;
+            return $resolveFunc($value, $args, $this->getType());
+        }
+
+        return null;
     }
 }

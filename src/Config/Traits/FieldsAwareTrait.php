@@ -81,6 +81,40 @@ trait FieldsAwareTrait
     }
 
     /**
+     * public function addFieldOld($name, $type, $config = [])
+     * {
+     * if (is_string($type)) {
+     * if (!TypeService::isScalarType($type)) {
+     * throw new ConfigurationException('You can\'t pass ' . $type . ' as a string type.');
+     * }
+     *
+     * $type = TypeFactory::getScalarType($type);
+     * } else {
+     * if (empty($config['resolve']) && (method_exists($type, 'resolve'))) {
+     * $config['resolve'] = [$type, 'resolve'];
+     * }
+     * }
+     *
+     * $config['name'] = $name;
+     * $config['type'] = $type;
+     *
+     * if (
+     * isset($this->contextObject)
+     * && method_exists($this->contextObject, 'getKind')
+     * && $this->contextObject->getKind() == TypeMap::KIND_INPUT_OBJECT
+     * ) {
+     * $field = new InputField($config);
+     * } else {
+     * $field = new Field($config);
+     * }
+     *
+     *
+     * $this->fields[$name] = $field;
+     *
+     * return $this;
+     * }
+     */
+    /**
      * @param $name
      *
      * @return Field

@@ -41,18 +41,6 @@ class FieldConfig extends AbstractConfig
         $this->buildArguments();
     }
 
-    public function resolve($value = null, $args = [])
-    {
-        if ($this->issetResolve()) {
-            $resolveFunc = $this->getResolveFunction();
-
-            return $resolveFunc($value, $args, $this->getType());
-        }
-
-        return $this->getType()->resolve($value, $args, $this->getType());
-    }
-
-
     public function issetResolve()
     {
         $resolveFunction = $this->getResolveFunction();
