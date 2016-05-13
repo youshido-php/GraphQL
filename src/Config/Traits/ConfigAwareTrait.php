@@ -14,7 +14,7 @@ use Youshido\GraphQL\Config\AbstractConfig;
 trait ConfigAwareTrait
 {
 
-    /** @var  AbstractConfig */
+    /** @var AbstractConfig */
     protected $config;
 
     public function getConfig()

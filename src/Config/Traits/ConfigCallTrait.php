@@ -29,13 +29,6 @@ use Youshido\GraphQL\Type\AbstractType;
 trait ConfigCallTrait
 {
     use ConfigAwareTrait;
-    /**
-     * @return string
-     */
-    public function getDescription()
-    {
-        return $this->getConfigValue('description');
-    }
 
     public function __call($method, $arguments)
     {

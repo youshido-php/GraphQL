@@ -13,32 +13,17 @@ use Youshido\GraphQL\Config\Object\EnumTypeConfig;
 use Youshido\GraphQL\Config\Object\InputObjectTypeConfig;
 use Youshido\GraphQL\Config\Object\InterfaceTypeConfig;
 use Youshido\GraphQL\Config\Object\ObjectTypeConfig;
+use Youshido\GraphQL\Config\Traits\ConfigAwareTrait;
 use Youshido\GraphQL\Config\TypeConfigInterface;
 
 abstract class AbstractType implements TypeInterface
 {
 
-    /**
-     * @var ObjectTypeConfig|InputObjectTypeConfig
-     */
-    protected $config;
+    use ConfigAwareTrait;
 
     public function getDescription()
     {
         return $this->getConfigValue('description', null);
-    }
-
-    /**
-     * @return ObjectTypeConfig|InputObjectTypeConfig|EnumTypeConfig|InterfaceTypeConfig
-     */
-    public function getConfig()
-    {
-        return $this->config;
-    }
-
-    protected function getConfigValue($key, $defaultValue = null)
-    {
-        return !empty($this->config) ? $this->config->get($key, $defaultValue) : $defaultValue;
     }
 
     public function isCompositeType()

@@ -68,7 +68,8 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
             'name' => 'Post',
             'fields' => [
                 'id' => new IntType()
-            ]
+            ],
+            'description' => 'Post type description'
         ]);
         $this->assertEquals($objectType->getKind(), TypeMap::KIND_OBJECT);
         $this->assertEquals($objectType->getName(), 'Post');
@@ -80,7 +81,7 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($objectType->isValidValue($objectType));
         $this->assertFalse($objectType->isValidValue(null));
 
-        $this->assertNull($objectType->getDescription());
+        $this->assertEquals('Post type description', $objectType->getDescription());
     }
 
     public function testExtendedClass()
@@ -88,6 +89,8 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
         $objectType = new TestObjectType();
         $this->assertEquals($objectType->getName(), 'TestObject');
         $this->assertEquals($objectType->getType(), $objectType, 'test type of extended object');
+
+        $this->assertNull($objectType->getDescription());
     }
 
 }
