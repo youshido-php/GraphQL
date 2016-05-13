@@ -55,6 +55,9 @@ class TypeValidationRule implements ValidationRuleInterface
                 case TypeService::TYPE_ARRAY:
                     return is_array($data);
 
+                case TypeService::TYPE_STRING:
+                    return TypeFactory::getScalarType($ruleInfo)->isValidValue($data);
+
                 case TypeService::TYPE_GRAPHQL_TYPE:
                     return TypeService::isGraphQLType($data);
 
@@ -83,10 +86,9 @@ class TypeValidationRule implements ValidationRuleInterface
                     return $this->isArrayOfInterfaces($data);
 
                 default:
-                    if (TypeService::isScalarType($ruleInfo)) {
-                        return TypeFactory::getScalarType($ruleInfo)->isValidValue($data);
-                    }
+                    return false;
             }
+        return false;
 
     }
 
