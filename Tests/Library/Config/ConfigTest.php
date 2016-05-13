@@ -48,7 +48,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $name = 'Test';
         $rules = [
             'name' => ['type' => TypeService::TYPE_ANY, 'required' => true],
-            'resolve' => ['type' => TypeService::TYPE_FUNCTION, 'final' => true],
+            'resolve' => ['type' => TypeService::TYPE_CALLABLE, 'final' => true],
         ];
 
         $config = new TestConfig(['name' => $name]);
@@ -68,7 +68,14 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($config->getContextRules(), $rules);
         $this->assertNull($config->getResolveFunction());
 
-        $object = new ObjectType(['name' => 'TestObject', 'fields' => ['id' => new IntType()]]);
+        $object = new ObjectType([
+            'name' => 'TestObject',
+            'fields' => [
+                'id' => [
+                    'type' => new IntType()
+                ]
+            ]
+        ]);
 
         $finalConfig = new TestConfig(['name' => $name . 'final', 'resolve' => function() { return []; }], $object, true);
         $this->assertEquals($finalConfig->getType(), null);

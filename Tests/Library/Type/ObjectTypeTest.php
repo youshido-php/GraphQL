@@ -87,7 +87,6 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
     {
         $objectType = new TestObjectType();
         $this->assertEquals($objectType->getName(), 'TestObject');
-        $this->assertEquals($objectType->getField('name')->getKind(), TypeMap::KIND_SCALAR);
         $this->assertEquals($objectType->getType(), $objectType, 'test type of extended object');
     }
 

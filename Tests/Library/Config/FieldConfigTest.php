@@ -24,13 +24,12 @@ class FieldConfigTest extends \PHPUnit_Framework_TestCase
                 return 'John';
             }
         ]);
+
         $this->assertEquals('FirstName', $fieldConfig->getName());
         $this->assertEquals(new StringType(), $fieldConfig->getType());
 
         $resolveFunction = $fieldConfig->getResolveFunction();
         $this->assertEquals('John', $resolveFunction([]));
-
-        $this->assertTrue($fieldConfig->issetResolve());
     }
 
 }
