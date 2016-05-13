@@ -24,7 +24,7 @@ class UnionTypeConfig extends AbstractConfig implements TypeConfigInterface
     {
         return [
             'name'        => ['type' => TypeMap::TYPE_STRING, 'required' => true],
-            'types'       => ['type' => TypeService::TYPE_ARRAY_OF_FIELDS],
+            'types'       => ['type' => TypeService::TYPE_FIELDS_LIST_CONFIG],
             'description' => ['type' => TypeMap::TYPE_STRING],
             'resolve'     => ['type' => TypeService::TYPE_FUNCTION],
             'resolveType' => ['type' => TypeService::TYPE_FUNCTION] //todo: must be required

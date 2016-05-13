@@ -6,7 +6,7 @@
 * created: 5/12/16 7:08 PM
 */
 
-namespace Youshido\Library;
+namespace Youshido\Tests\Library;
 
 
 use Youshido\GraphQL\Config\Field\FieldConfig;

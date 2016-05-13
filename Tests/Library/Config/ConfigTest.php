@@ -6,7 +6,7 @@
 * created: 5/11/16 10:41 PM
 */
 
-namespace Youshido\Library;
+namespace Youshido\Tests\Library;
 
 require_once __DIR__ . '/../../DataProvider/TestConfig.php';
 use Youshido\GraphQL\Type\Object\ObjectType;

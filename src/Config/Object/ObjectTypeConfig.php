@@ -25,7 +25,7 @@ class ObjectTypeConfig extends AbstractConfig implements TypeConfigInterface
         return [
             'name'        => ['type' => TypeMap::TYPE_STRING, 'required' => true],
             'description' => ['type' => TypeMap::TYPE_STRING],
-            'fields'      => ['type' => TypeService::TYPE_ARRAY_OF_FIELDS, 'final' => true],
+            'fields'      => ['type' => TypeService::TYPE_FIELDS_LIST_CONFIG, 'final' => true],
             'args'        => ['type' => TypeService::TYPE_ARRAY_OF_INPUTS],
             'resolve'     => ['type' => TypeService::TYPE_FUNCTION],
             'interfaces'  => ['type' => TypeService::TYPE_ARRAY_OF_INTERFACES]

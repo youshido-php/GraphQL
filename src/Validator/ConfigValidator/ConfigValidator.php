@@ -87,7 +87,7 @@ class ConfigValidator implements ConfigValidatorInterface
 
     protected function initializeRules()
     {
-        $this->validationRules['type'] = new TypeValidationRule();
+        $this->validationRules['type'] = new TypeValidationRule($this);
     }
 
     /**

@@ -22,8 +22,9 @@ class TypeService
     const TYPE_OBJECT_TYPE         = 'object_type';
     const TYPE_OBJECT_INPUT_TYPE   = 'object_input_type';
     const TYPE_LIST                = 'list';
+    const TYPE_BOOLEAN             = TypeMap::TYPE_BOOLEAN;
     const TYPE_ARRAY               = 'array';
-    const TYPE_ARRAY_OF_FIELDS     = 'array_of_fields';
+    const TYPE_FIELDS_LIST_CONFIG  = 'array_of_fields';
     const TYPE_ARRAY_OF_INPUTS     = 'array_of_inputs';
     const TYPE_ARRAY_OF_VALUES     = 'array_of_values';
     const TYPE_ARRAY_OF_INTERFACES = 'array_of_interfaces';
@@ -54,6 +55,7 @@ class TypeService
         if (!is_object($type)) {
             return false;
         }
+
         return $type->getKind() == TypeMap::KIND_INTERFACE;
     }
 
@@ -66,6 +68,7 @@ class TypeService
         if (!is_object($type)) {
             return false;
         }
+
         return in_array($type->getKind(), [TypeMap::KIND_INTERFACE, TypeMap::KIND_UNION]);
     }
 
@@ -88,9 +91,9 @@ class TypeService
             $type = $type->getNullableType();
 
             return ($type instanceof AbstractScalarType)
-            || ($type instanceof AbstractInputObjectType)
-            || ($type instanceof AbstractEnumType)
-            || ($type instanceof AbstractListType);
+                   || ($type instanceof AbstractInputObjectType)
+                   || ($type instanceof AbstractEnumType)
+                   || ($type instanceof AbstractListType);
         } else {
             return TypeService::isScalarType($type);
         }

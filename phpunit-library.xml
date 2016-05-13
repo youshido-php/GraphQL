@@ -2,8 +2,9 @@
 
 <phpunit colors="true">
     <testsuites>
-        <testsuite name="Project Tests">
+        <testsuite name="Library">
             <directory suffix="Test.php">./Tests/Library</directory>
+            <directory suffix="Test.php">./Tests/Schema</directory>
         </testsuite>
     </testsuites>
 
@@ -16,4 +17,7 @@
             <directory>./Tests/</directory>
         </blacklist>
     </filter>
+    <!--<logging>-->
+        <!--<log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>-->
+    <!--</logging>-->
 </phpunit>

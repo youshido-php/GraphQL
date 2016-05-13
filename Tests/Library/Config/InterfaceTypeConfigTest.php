@@ -6,7 +6,7 @@
 * created: 5/12/16 4:17 PM
 */
 
-namespace Youshido\Library;
+namespace Youshido\Tests\Library;
 
 
 use Youshido\GraphQL\Config\Object\InterfaceTypeConfig;

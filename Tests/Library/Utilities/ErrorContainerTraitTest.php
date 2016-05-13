@@ -6,7 +6,7 @@
 * created: 5/12/16 9:39 PM
 */
 
-namespace Youshido\Library;
+namespace Youshido\Tests\Library;
 
 
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerInterface;
