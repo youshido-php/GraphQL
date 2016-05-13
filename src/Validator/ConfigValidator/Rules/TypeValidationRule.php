@@ -64,7 +64,7 @@ class TypeValidationRule implements ValidationRuleInterface
                 case TypeService::TYPE_ARRAY_OF_OBJECTS:
                     return $this->isArrayOfObjects($data);
 
-                case TypeService::TYPE_FIELDS_LIST_CONFIG:
+                case TypeService::TYPE_ARRAY_OF_FIELDS_CONFIG:
                     return $this->isFieldsListConfig($data);
 
                 case TypeService::TYPE_OBJECT_INPUT_TYPE:

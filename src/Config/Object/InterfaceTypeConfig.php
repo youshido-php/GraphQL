@@ -24,7 +24,7 @@ class InterfaceTypeConfig extends AbstractConfig implements TypeConfigInterface
     {
         return [
             'name'        => ['type' => TypeService::TYPE_STRING, 'final' => true],
-            'fields'      => ['type' => TypeService::TYPE_FIELDS_LIST_CONFIG, 'final' => true],
+            'fields'      => ['type' => TypeService::TYPE_ARRAY_OF_FIELDS_CONFIG, 'final' => true],
             'description' => ['type' => TypeService::TYPE_STRING],
             'resolveType' => ['type' => TypeService::TYPE_CALLABLE, 'final' => true],
         ];
