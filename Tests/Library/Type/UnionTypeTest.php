@@ -10,6 +10,7 @@ namespace Youshido\tests\Library\Type;
 
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
+use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\Union\UnionType;
 use Youshido\Tests\DataProvider\TestUnionType;
 
@@ -34,6 +35,9 @@ class UnionTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Union collect cars types', $type->getDescription());
         $this->assertEquals([new IntType(), new StringType()], $type->getTypes());
         $this->assertEquals('test', $type->resolveType('test'));
+        $this->assertEquals(TypeMap::KIND_UNION, $type->getKind());
+        $this->assertEquals($type, $type->getNamedType());
+        $this->assertTrue($type->isValidValue(true));
     }
 
     public function testObjectCreation()
