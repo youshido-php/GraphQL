@@ -16,7 +16,7 @@ class NonNullTypeConfig extends ObjectTypeConfig
     public function getRules()
     {
         return [
-            'item' => ['type' => TypeService::TYPE_OBJECT_TYPE, 'required' => true],
+            'item' => ['type' => TypeService::TYPE_GRAPHQL_TYPE, 'required' => true],
         ];
     }
 

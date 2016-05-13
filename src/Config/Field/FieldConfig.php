@@ -26,7 +26,7 @@ class FieldConfig extends AbstractConfig
     {
         return [
             'name'              => ['type' => TypeService::TYPE_STRING, 'final' => true],
-            'type'              => ['type' => TypeService::TYPE_OBJECT_TYPE, 'final' => true],
+            'type'              => ['type' => TypeService::TYPE_GRAPHQL_TYPE, 'final' => true],
             'args'              => ['type' => TypeService::TYPE_ARRAY],
             'description'       => ['type' => TypeService::TYPE_STRING],
             'resolve'           => ['type' => TypeService::TYPE_CALLABLE],

@@ -20,9 +20,9 @@ class TypeUtilitiesTest extends \PHPUnit_Framework_TestCase
 
     public function testTypeService()
     {
-        $this->assertTrue(TypeService::isScalarTypeName(TypeMap::TYPE_STRING));
-        $this->assertFalse(TypeService::isScalarTypeName('gibberish'));
-        $this->assertFalse(TypeService::isScalarTypeName(new TestObjectType()));
+        $this->assertTrue(TypeService::isScalarType(TypeMap::TYPE_STRING));
+        $this->assertFalse(TypeService::isScalarType('gibberish'));
+        $this->assertFalse(TypeService::isScalarType(new TestObjectType()));
 
         $stringType = new StringType();
 

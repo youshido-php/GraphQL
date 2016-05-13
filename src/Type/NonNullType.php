@@ -19,7 +19,7 @@ final class NonNullType extends AbstractType implements CompositeTypeInterface
      */
     public function __construct($fieldType)
     {
-        if (TypeService::isScalarTypeName($fieldType)) {
+        if (TypeService::isScalarType($fieldType)) {
             $fieldType = TypeFactory::getScalarType($fieldType);
         }
 

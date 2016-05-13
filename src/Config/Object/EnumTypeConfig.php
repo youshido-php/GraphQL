@@ -25,7 +25,7 @@ class EnumTypeConfig extends AbstractConfig implements TypeConfigInterface
         return [
             'name'        => ['type' => TypeService::TYPE_STRING, 'final' => true],
             'description' => ['type' => TypeService::TYPE_STRING],
-            'values'      => ['type' => TypeService::TYPE_ARRAY_OF_VALUES, 'required' => true],
+            'values'      => ['type' => TypeService::TYPE_ENUM_VALUES, 'required' => true],
         ];
     }
 

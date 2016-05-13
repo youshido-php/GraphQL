@@ -32,7 +32,7 @@ abstract class AbstractField
             $config['name'] = $this->getName();
         }
 
-        if (TypeService::isScalarTypeName($config['type'])) {
+        if (TypeService::isScalarType($config['type'])) {
             $config['type'] = TypeFactory::getScalarType($config['type']);
         }
 

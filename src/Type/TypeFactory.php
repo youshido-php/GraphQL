@@ -10,6 +10,7 @@ namespace Youshido\GraphQL\Type;
 
 
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
+use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 class TypeFactory
 {
@@ -18,11 +19,17 @@ class TypeFactory
     /**
      * @param string $typeName
      *
+     * @throws ConfigurationException
      * @return AbstractScalarType
      */
     public static function getScalarType($typeName)
     {
-        if (TypeService::isScalarTypeName($typeName)) {
+        if (is_object($typeName)) {
+            /** freeing memory */
+            if (!($typeName instanceof AbstractScalarType)) throw new ConfigurationException('Configuration problem with type ' . $typeName);
+            $typeName = $typeName->getName();
+        }
+        if (TypeService::isScalarType($typeName)) {
             if (empty(self::$objectsHash[$typeName])) {
                 $name = ucfirst($typeName);
                 $name = $name == 'Datetime' ? 'DateTime' : $name;

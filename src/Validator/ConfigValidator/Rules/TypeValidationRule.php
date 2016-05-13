@@ -30,13 +30,14 @@ class TypeValidationRule implements ValidationRuleInterface
 
     public function validate($data, $ruleInfo)
     {
-        /** why can it be an object? */
-        if (is_object($ruleInfo)) {
-            $className = get_class($data);
-            $className = substr($className, strrpos($className, '\\') + 1, -4);
-
-            return ($className == $ruleInfo);
-        } elseif (is_string($ruleInfo)) {
+            if (!is_string($ruleInfo)) return false;
+//        /** why can it be an object? */
+//        if (is_object($ruleInfo)) {
+//            $className = get_class($data);
+//            $className = substr($className, strrpos($className, '\\') + 1, -4);
+//
+//            return ($className == $ruleInfo);
+//        } elseif (is_string($ruleInfo)) {
 
             switch ($ruleInfo) {
                 case TypeService::TYPE_ANY:
@@ -46,10 +47,6 @@ class TypeValidationRule implements ValidationRuleInterface
                     return is_object($data);
 
                 case TypeService::TYPE_CALLABLE:
-                    //todo: need discuss about this,
-                    // todo: I want to have ability to pass ['FolderHelper', 'doSomething'] and somehow inject ['@app.helper.folder', 'toSomething'] for symfony in future
-                    //todo: I don\'t know how to validate
-
                     return is_callable($data);
 
                 case TypeService::TYPE_BOOLEAN:
@@ -58,20 +55,23 @@ class TypeValidationRule implements ValidationRuleInterface
                 case TypeService::TYPE_ARRAY:
                     return is_array($data);
 
-                case TypeService::TYPE_OBJECT_TYPE:
-                    return $this->isObjectType($data);
+                case TypeService::TYPE_GRAPHQL_TYPE:
+                    return TypeService::isGraphQLType($data);
 
-                case TypeService::TYPE_ARRAY_OF_OBJECT_TYPES:
-                    return $this->isArrayOfObjectTypes($data);
+                case TypeService::TYPE_OBJECT_TYPE:
+                    return TypeService::isObjectType($data);
+
+                case TypeService::TYPE_ARRAY_OF_GRAPHQL_TYPES:
+                    return $this->isArrayOfGraphQLTypes($data);
 
                 case TypeService::TYPE_ARRAY_OF_FIELDS_CONFIG:
                     return $this->isFieldsListConfig($data);
 
                 case TypeService::TYPE_OBJECT_INPUT_TYPE:
-                    return $data instanceof AbstractInputObjectType;
+                    return TypeService::isInputObjectType($data);
 
-                case TypeService::TYPE_ARRAY_OF_VALUES:
-                    return $this->isArrayOfValues($data);
+                case TypeService::TYPE_ENUM_VALUES:
+                    return $this->isEnumValues($data);
 
                 case TypeService::TYPE_ARRAY_OF_INPUTS:
                     return $this->isArrayOfInputs($data);
@@ -83,23 +83,21 @@ class TypeValidationRule implements ValidationRuleInterface
                     return $this->isArrayOfInterfaces($data);
 
                 default:
-                    if (TypeService::isScalarTypeName($ruleInfo)) {
+                    if (TypeService::isScalarType($ruleInfo)) {
                         return TypeFactory::getScalarType($ruleInfo)->isValidValue($data);
                     }
             }
-        } else {
-            return false;
-        }
+
     }
 
-    private function isArrayOfObjectTypes($data)
+    private function isArrayOfGraphQLTypes($data)
     {
         if (!is_array($data) || !count($data)) {
             return false;
         }
 
         foreach($data as $item) {
-            if(!$this->isObjectType($item)) {
+            if(!TypeService::isGraphQLType($item)) {
                 return false;
             }
         }
@@ -107,12 +105,7 @@ class TypeValidationRule implements ValidationRuleInterface
         return true;
     }
 
-    private function isObjectType($data)
-    {
-        return $data instanceof AbstractObjectType || TypeService::isScalarType($data);
-    }
-
-    private function isArrayOfValues($data)
+    private function isEnumValues($data)
     {
         if (!is_array($data) || empty($data)) return false;
 
@@ -187,7 +180,7 @@ class TypeValidationRule implements ValidationRuleInterface
             if ($data instanceof InputField) {
                 return true;
             } elseif ($data instanceof AbstractType) {
-                return TypeService::isInputType($data->getNullableType());
+                return TypeService::isInputType($data);
             }
         } else {
             if (!isset($data['type'])) {
