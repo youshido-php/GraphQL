@@ -25,24 +25,7 @@ class UnionTypeConfig extends AbstractConfig implements TypeConfigInterface
             'name'        => ['type' => TypeService::TYPE_STRING, 'required' => true],
             'types'       => ['type' => TypeService::TYPE_ARRAY_OF_OBJECTS],
             'description' => ['type' => TypeService::TYPE_STRING],
-            'resolve'     => ['type' => TypeService::TYPE_CALLABLE],
-            'resolveType' => ['type' => TypeService::TYPE_CALLABLE] //todo: must be required
+            'resolveType' => ['type' => TypeService::TYPE_CALLABLE, 'final' => true]
         ];
-    }
-
-    public function resolveType($object)
-    {
-        $callable = $this->get('resolveType');
-
-        if ($callable && is_callable($callable)) {
-            return call_user_func_array($callable, [$object]);
-        }
-
-        return $this->contextObject->resolveType($object);
-    }
-
-    protected function build()
-    {
-        $this->buildFields();
     }
 }

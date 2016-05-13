@@ -23,7 +23,9 @@ trait AutoNameTrait
 
         $className = get_called_class();
 
-        if (substr($className, -4) == 'Type') {
+        if (substr($className, -5) == 'Field') {
+            $className = substr($className, 0, -5);
+        } elseif (substr($className, -4) == 'Type') {
             $className = substr($className, 0, -4);
         }
 

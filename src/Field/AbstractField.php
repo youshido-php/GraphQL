@@ -10,16 +10,19 @@ namespace Youshido\GraphQL\Field;
 use Youshido\GraphQL\Config\Field\FieldConfig;
 use Youshido\GraphQL\Config\Traits\ConfigCallTrait;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\TypeFactory;
 use Youshido\GraphQL\Type\TypeService;
 
 abstract class AbstractField
 {
 
-    use ConfigCallTrait;
+    use ConfigCallTrait, AutoNameTrait;
 
     /** @var FieldConfig */
     protected $config;
+
+    protected $isFinal = false;
 
     public function __construct(array $config = [])
     {
@@ -35,7 +38,7 @@ abstract class AbstractField
             $config['type'] = TypeFactory::getScalarType($config['type']);
         }
 
-        $this->config = new FieldConfig($config, $this);
+        $this->config = new FieldConfig($config, $this, $this->isFinal);
     }
 
     /**
@@ -55,11 +58,6 @@ abstract class AbstractField
      * @return AbstractObjectType
      */
     abstract public function getType();
-
-    /**
-     * @return string
-     */
-    abstract public function getName();
 
     public function resolve($value, $args = [], $type = null)
     {

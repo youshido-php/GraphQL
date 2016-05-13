@@ -11,16 +11,19 @@ namespace Youshido\GraphQL\Field;
 use Youshido\GraphQL\Config\Field\InputFieldConfig;
 use Youshido\GraphQL\Config\Traits\ConfigCallTrait;
 use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
+use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\TypeFactory;
 use Youshido\GraphQL\Type\TypeService;
 
 abstract class AbstractInputField
 {
 
-    use ConfigCallTrait;
+    use ConfigCallTrait, AutoNameTrait;
 
     /** @var InputFieldConfig */
     protected $config;
+
+    protected $isFinal = false;
 
     public function __construct($config)
     {
@@ -36,18 +39,13 @@ abstract class AbstractInputField
             $config['type'] = TypeFactory::getScalarType($config['type']);
         }
 
-        $this->config = new InputFieldConfig($config);
+        $this->config = new InputFieldConfig($config, $this->isFinal);
     }
 
     /**
      * @return AbstractInputObjectType
      */
     abstract public function getType();
-
-    /**
-     * @return string
-     */
-    abstract public function getName();
 
     /**
      * @return InputFieldConfig

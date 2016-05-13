@@ -8,14 +8,16 @@
 
 namespace Youshido\GraphQL\Type\Union;
 
-use Youshido\GraphQL\Type\TypeService;
-
 final class UnionType extends AbstractUnionType
 {
 
+    protected $isFinal = true;
+
     public function resolveType($object)
     {
-        return TypeService::resolveNamedType($object);
+        $callable = $this->getConfigValue('resolveType');
+
+        return call_user_func_array($callable, [$object]);
     }
 
     public function getTypes()

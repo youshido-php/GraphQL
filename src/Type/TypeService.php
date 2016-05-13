@@ -44,6 +44,7 @@ class TypeService
         } elseif (is_scalar($object)) {
             return new StringType();
         }
+
         throw new \Exception('Invalid type');
     }
 

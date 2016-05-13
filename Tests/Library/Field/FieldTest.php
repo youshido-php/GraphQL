@@ -103,11 +103,6 @@ class FieldTest extends \PHPUnit_Framework_TestCase
             ],
             [
                 [
-                    'type' => TypeMap::TYPE_FLOAT
-                ]
-            ],
-            [
-                [
                     'name' => 'id',
                     'type' => new ObjectType([
                         'name'   => 'test',

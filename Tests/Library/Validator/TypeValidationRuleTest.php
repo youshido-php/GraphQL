@@ -54,10 +54,10 @@ class TypeValidationRuleTest extends \PHPUnit_Framework_TestCase
             [TypeService::TYPE_OBJECT_TYPE, new TestObjectType()],
             [TypeService::TYPE_OBJECT_TYPE, new StringType(), true],
 
-            [TypeService::TYPE_FIELDS_LIST_CONFIG, ["name" => new StringType()]],
-            [TypeService::TYPE_FIELDS_LIST_CONFIG, ["name" => TypeMap::TYPE_STRING]],
-            [TypeService::TYPE_FIELDS_LIST_CONFIG, [new Field(['name' => 'id', 'type' => new StringType()])]],
-            [TypeService::TYPE_FIELDS_LIST_CONFIG, [], false],
+            [TypeService::TYPE_ARRAY_OF_FIELDS_CONFIG, ["name" => new StringType()]],
+            [TypeService::TYPE_ARRAY_OF_FIELDS_CONFIG, ["name" => TypeMap::TYPE_STRING]],
+            [TypeService::TYPE_ARRAY_OF_FIELDS_CONFIG, [new Field(['name' => 'id', 'type' => new StringType()])]],
+            [TypeService::TYPE_ARRAY_OF_FIELDS_CONFIG, [], false],
 
             [null, null, false],
 
