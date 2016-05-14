@@ -20,7 +20,6 @@ use Youshido\GraphQL\Type\AbstractType;
  * @method string getKind()
  * @method AbstractType getNamedType()
  * @method $this setType($type)
- * @method Field getField($field)
  * @method bool hasField($field)
  * @method bool hasFields()
  * @method bool isDeprecated()
@@ -29,6 +28,11 @@ use Youshido\GraphQL\Type\AbstractType;
 trait ConfigCallTrait
 {
     use ConfigAwareTrait;
+
+    public function getField(string $fieldName)
+    {
+        return $this->getConfig()->getField($fieldName);
+    }
 
     public function __call($method, $arguments)
     {

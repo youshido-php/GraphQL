@@ -11,13 +11,13 @@ namespace Youshido\GraphQL\Config\Object;
 
 use Youshido\GraphQL\Config\AbstractConfig;
 use Youshido\GraphQL\Config\Traits\ArgumentsAwareTrait;
-use Youshido\GraphQL\Config\Traits\FieldsAwareTrait;
+use Youshido\GraphQL\Config\Traits\FieldsAwareConfigTrait;
 use Youshido\GraphQL\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\TypeService;
 
 class UnionTypeConfig extends AbstractConfig implements TypeConfigInterface
 {
-    use FieldsAwareTrait, ArgumentsAwareTrait;
+    use FieldsAwareConfigTrait, ArgumentsAwareTrait;
 
     public function getRules()
     {

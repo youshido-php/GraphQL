@@ -24,7 +24,8 @@ final class Field extends AbstractField
      */
     public function getType()
     {
-        return $this->getConfigValue('type');
+        /** we can access config directly here because of __construct architecture */
+        return $this->config->get('type');
     }
 
     public function getName()

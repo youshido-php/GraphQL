@@ -20,9 +20,11 @@ use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
 use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Schema\AbstractSchema;
+use Youshido\GraphQL\Type\AbstractInterfaceTypeInterface;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Enum\AbstractEnumType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
@@ -126,13 +128,13 @@ class Processor
 
     /**
      * @param Query|Field          $query
-     * @param ObjectType|QueryType $currentLevelSchema
+     * @param AbstractObjectType   $currentLevelSchema
      * @param null                 $contextValue
      * @return array|bool|mixed
      */
-    protected function executeQuery($query, $currentLevelSchema, $contextValue = null)
+    protected function executeQuery($query, AbstractObjectType $currentLevelSchema, $contextValue = null)
     {
-        if (!$this->resolveValidator->checkFieldExist($currentLevelSchema, $query)) {
+        if (!$this->resolveValidator->objectHasField($currentLevelSchema, $query)) {
             return null;
         }
 
@@ -164,7 +166,7 @@ class Processor
     {
         if (!$currentLevelSchema) throw new ConfigurationException('There is no mutation ' . $mutation->getName());
 
-        if (!$this->resolveValidator->checkFieldExist($currentLevelSchema, $mutation)) {
+        if (!$this->resolveValidator->objectHasField($currentLevelSchema, $mutation)) {
             return null;
         }
 
@@ -269,19 +271,40 @@ class Processor
      * @return null
      * @throws \Exception
      */
-    protected function processFieldTypeQuery($query, $contextValue, $field)
+    protected function processFieldTypeQuery($query, $contextValue, Field $field)
     {
         if (!($resolvedValue = $this->resolveValue($field, $contextValue, $query))) {
             return $resolvedValue;
         }
 
         if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $field->getType())) {
-            $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolved value for query "%s"', $field->getType()->getName())));
+            $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolved value for field "%s"', $field->getType()->getName())));
 
             return null;
         }
 
         return $this->collectListOrSingleValue($field->getType(), $resolvedValue, $query);
+    }
+
+    /**
+     * @param Field $field
+     * @param mixed $contextValue
+     * @param Query $query
+     *
+     * @return mixed
+     */
+    protected function resolveValue(Field $field, $contextValue, $query)
+    {
+        $type          = $field->getType();
+        $resolvedValue = $field->resolve($contextValue, $this->parseArgumentsValues($field, $query), $type);
+
+        if (TypeService::isAbstractType($type)) {
+            /** @var AbstractInterfaceType $type */
+            $resolvedType = $type->resolveType($resolvedValue);
+            $field->setType($resolvedType);
+        }
+
+        return $resolvedValue;
     }
 
     /**
@@ -301,8 +324,10 @@ class Processor
                 $namedType = $fieldType->getNamedType();
 
                 if (TypeService::isAbstractType($namedType)) {
-                    $resolvedType = $namedType->getConfig()->resolveType($resolvedValueItem);
+                    /** @var AbstractInterfaceTypeInterface $namedType */
+                    $resolvedType = $namedType->resolveType($resolvedValueItem);
                     if ($namedType instanceof AbstractInterfaceType) {
+                        /** @var AbstractInterfaceType $namedType */
                         $this->resolveValidator->assertTypeImplementsInterface($resolvedType, $namedType);
                     }
                     $namedType = $resolvedType;
@@ -381,25 +406,6 @@ class Processor
     }
 
     /**
-     * @param Field $field
-     * @param mixed $contextValue
-     * @param Query $query
-     *
-     * @return mixed
-     */
-    protected function resolveValue($field, $contextValue, $query)
-    {
-        $resolvedValue = $field->resolve($contextValue, $this->parseArgumentsValues($field, $query), $field->getType());
-
-        if (TypeService::isAbstractType($field->getType())) {
-            $resolvedType = $field->getType()->resolveType($resolvedValue);
-            $field->setType($resolvedType);
-        }
-
-        return $resolvedValue;
-    }
-
-    /**
      * @param $field     Field
      * @param $query     Query
      *
@@ -407,7 +413,7 @@ class Processor
      */
     protected function parseArgumentsValues($field, $query)
     {
-        if ($query instanceof \Youshido\GraphQL\Parser\Ast\Field) {
+        if ($query instanceof AstField) {
             return [];
         }
 

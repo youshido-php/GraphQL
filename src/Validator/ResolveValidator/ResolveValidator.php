@@ -30,11 +30,11 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
     use ErrorContainerTrait;
 
     /**
-     * @param $objectType InputObjectType|ObjectType
+     * @param AbstractObjectType $objectType
      * @param $field      Mutation|Query
      * @return null
      */
-    public function checkFieldExist($objectType, $field)
+    public function objectHasField(AbstractObjectType $objectType, $field)
     {
         if (!$objectType->hasField($field->getName())) {
             $this->addError(new ResolveException(sprintf('Field "%s" not found in type "%s"', $field->getName(), $objectType->getNamedType()->getName())));
@@ -117,7 +117,7 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
         return true;
     }
 
-    public function assertTypeImplementsInterface(AbstractObjectType $type, AbstractInterfaceType $interface)
+    public function assertTypeImplementsInterface(AbstractType $type, AbstractInterfaceType $interface)
     {
         if (!$interface->isValidValue($type)) {
             throw new ResolveException('Type ' . $type->getName() . ' does not implement ' . $interface->getName());

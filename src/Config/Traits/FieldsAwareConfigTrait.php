@@ -21,7 +21,7 @@ use Youshido\GraphQL\Validator\Exception\ConfigurationException;
  * Class FieldsAwareTrait
  * @package Youshido\GraphQL\Config\Traits
  */
-trait FieldsAwareTrait
+trait FieldsAwareConfigTrait
 {
     protected $fields = [];
 

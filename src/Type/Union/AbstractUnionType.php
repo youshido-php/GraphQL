@@ -11,13 +11,14 @@ namespace Youshido\GraphQL\Type\Union;
 
 use Youshido\GraphQL\Config\Object\UnionTypeConfig;
 use Youshido\GraphQL\Config\Traits\ConfigCallTrait;
+use Youshido\GraphQL\Type\AbstractInterfaceTypeInterface;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\TypeMap;
 
-abstract class AbstractUnionType extends AbstractType
+abstract class AbstractUnionType extends AbstractType implements AbstractInterfaceTypeInterface
 {
 
     use ConfigCallTrait, AutoNameTrait;
@@ -42,13 +43,6 @@ abstract class AbstractUnionType extends AbstractType
      * @return AbstractObjectType[]|AbstractScalarType[]
      */
     abstract public function getTypes();
-
-    /**
-     * @param $object object from resolve function
-     *
-     * @return AbstractObjectType|AbstractScalarType
-     */
-    abstract public function resolveType($object);
 
     public function getKind()
     {

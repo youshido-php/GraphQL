@@ -67,6 +67,14 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             ])
         ]);
         $processor->setSchema($schema);
+
+        $processor->processRequest('{ me { firstName } }');
+        $this->assertEquals(['data' => ['me' => ['firstName' => 'John']]], $processor->getResponseData());
+
+        $processor->processRequest('{ me { firstName, lastName } }');
+        $this->assertEquals(['data' => ['me' => ['firstName' => 'John', 'lastName' => null]]], $processor->getResponseData());
     }
+
+
 
 }

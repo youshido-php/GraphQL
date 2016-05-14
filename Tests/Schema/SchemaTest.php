@@ -18,7 +18,6 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
 
     public function testInlineSchema()
     {
-        return true;
         $queryType = new ObjectType([
             'name'   => 'RootQueryType',
             'fields' => [
@@ -36,7 +35,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
                 ]
             ]
         ]);
-        /** it's probably wrong to not use default arguemnts in resolve */
+        /** it's probably wrong to not pass the default ARGS in the resolve */
         $this->assertEquals('May 5, 9:00am', $queryType->getField('currentTime')->resolve([]));
 
 
