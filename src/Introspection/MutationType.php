@@ -7,7 +7,7 @@
 
 namespace Youshido\GraphQL\Introspection;
 
-use Youshido\GraphQL\AbstractSchema;
+use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Field\Field;
 
 class MutationType extends QueryType

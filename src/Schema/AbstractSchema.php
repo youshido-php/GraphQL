@@ -25,7 +25,7 @@ abstract class AbstractSchema
             $config['query'] = new ObjectType(['name' => $this->getName() . 'Query', 'fields' => []]);
         }
         if (!array_key_exists('mutation', $config)) {
-            $config['mutation'] = new ObjectType(['name' => $this->getName() . 'Mutation', 'fields' => []]);
+            $config['mutation'] = new InternalSchemaMutationObject(['name' => $this->getName() . 'Mutation']);
         }
 
         $this->config = new SchemaConfig($config, $this);

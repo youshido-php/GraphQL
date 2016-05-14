@@ -7,7 +7,7 @@
 
 namespace Youshido\GraphQL\Introspection;
 
-use Youshido\GraphQL\AbstractSchema;
+use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
