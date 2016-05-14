@@ -48,11 +48,6 @@ class FieldConfig extends AbstractConfig
         return $this->data['type'];
     }
 
-    public function getNamedType()
-    {
-        return $this->getType()->getNamedType();
-    }
-
     public function getArgument($name)
     {
         return $this->traitGetArgument($name) ?: $this->getType()->getConfig()->getArgument($name);

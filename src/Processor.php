@@ -365,7 +365,7 @@ class Processor
                 $resolved      = true;
             } catch (\Exception $e) {
             }
-        } elseif ($field->getNamedType()->getKind() == TypeMap::KIND_SCALAR) {
+        } elseif ($field->getType()->getNamedType()->getKind() == TypeMap::KIND_SCALAR) {
             $resolved = true;
         }
 
