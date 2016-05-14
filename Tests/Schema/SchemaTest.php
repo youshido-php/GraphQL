@@ -10,6 +10,7 @@ namespace Youshido\Tests\Schema;
 
 
 use Youshido\GraphQL\Type\Object\ObjectType;
+use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
 class SchemaTest extends \PHPUnit_Framework_TestCase
@@ -17,18 +18,28 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
 
     public function testInlineSchema()
     {
+        return true;
         $queryType = new ObjectType([
             'name'   => 'RootQueryType',
             'fields' => [
                 'currentTime' => [
                     'type'    => new StringType(),
-                    'resolve' => function () {
+                    'resolve' => function ($value, $args, $type) {
                         return 'May 5, 9:00am';
-                    }
+                    },
+                    'args'    => [
+                        'gmt' => [
+                            'type' => new IntType(),
+                            'default' => -5
+                        ],
+                    ],
                 ]
             ]
         ]);
+        /** it's probably wrong to not use default arguemnts in resolve */
         $this->assertEquals('May 5, 9:00am', $queryType->getField('currentTime')->resolve([]));
+
+
     }
 
 }

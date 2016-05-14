@@ -23,7 +23,6 @@ use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Enum\AbstractEnumType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Object\ObjectType;
-use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
@@ -84,8 +83,9 @@ class Processor
     {
         if (!$this->getSchema()) {
             $this->addError(new ConfigurationException('You have to set GraphQL Schema to process'));
+            return $this;
         }
-        if (empty($payload) || $this->hasErrors()) return $this;
+        if (empty($payload)) return $this;
 
         $this->data = [];
 
@@ -404,7 +404,7 @@ class Processor
      *
      * @return array
      */
-    public function parseArgumentsValues($field, $query)
+    protected function parseArgumentsValues($field, $query)
     {
         if ($query instanceof \Youshido\GraphQL\Parser\Ast\Field) {
             return [];

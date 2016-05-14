@@ -21,7 +21,6 @@
   "autoload": {
     "psr-4": {
       "Youshido\\GraphQL\\": "src",
-      "Examples\\StarWars\\": "examples/03_relay_star_wars/Schema"
     }
   },
   "autoload-dev": {
