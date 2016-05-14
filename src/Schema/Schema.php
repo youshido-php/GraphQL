@@ -6,7 +6,7 @@
 * created: 11/28/15 3:40 PM
 */
 
-namespace Youshido\GraphQL;
+namespace Youshido\GraphQL\Schema;
 
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
 

@@ -20,7 +20,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Youshido\\GraphQL\\": "src",
+      "Youshido\\GraphQL\\": "src"
     }
   },
   "autoload-dev": {

@@ -6,7 +6,7 @@
 * created: 5/5/16 9:24 PM
 */
 
-namespace Youshido\GraphQL;
+namespace Youshido\GraphQL\Schema;
 
 
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
@@ -22,10 +22,10 @@ abstract class AbstractSchema
     public function __construct($config = [])
     {
         if (!array_key_exists('query', $config)) {
-            $config['query'] = new ObjectType(['name' => $this->getName() . 'Query']);
+            $config['query'] = new ObjectType(['name' => $this->getName() . 'Query', 'fields' => []]);
         }
         if (!array_key_exists('mutation', $config)) {
-            $config['mutation'] = new ObjectType(['name' => $this->getName() . 'Mutation']);
+            $config['mutation'] = new ObjectType(['name' => $this->getName() . 'Mutation', 'fields' => []]);
         }
 
         $this->config = new SchemaConfig($config, $this);
