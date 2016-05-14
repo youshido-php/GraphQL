@@ -7,15 +7,15 @@
 
 namespace Youshido\GraphQL\Validator\ResolveValidator;
 
-
+use Youshido\GraphQL\Parser\Ast\Field as AstField;
 use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Parser\Ast\Argument;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
+use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Type\AbstractType;
-use Youshido\GraphQL\Type\InputObject\InputObjectType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
@@ -122,6 +122,23 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
         if (!$interface->isValidValue($type)) {
             throw new ResolveException('Type ' . $type->getName() . ' does not implement ' . $interface->getName());
         };
+    }
+
+    /**
+     * @param Fragment $fragment
+     * @param AstField $field
+     * @param ObjectType $queryType
+     * @throws \Exception
+     */
+    public function assertValidFragmentForField($fragment, $field, $queryType)
+    {
+        if (!$fragment) {
+            throw new \Exception(sprintf('Fragment reference "%s" not found', $field->getName()));
+        }
+
+        if ($fragment->getModel() !== $queryType->getName()) {
+            throw new \Exception(sprintf('Fragment reference "%s" not found on model "%s"', $field->getName(), $queryType->getName()));
+        }
 
     }
 

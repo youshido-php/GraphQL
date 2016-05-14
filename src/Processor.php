@@ -10,10 +10,11 @@
 namespace Youshido\GraphQL;
 
 use Youshido\GraphQL\Field\Field;
-use Youshido\GraphQL\Introspection\QueryType;
 use Youshido\GraphQL\Introspection\SchemaType;
 use Youshido\GraphQL\Introspection\TypeDefinitionType;
 use Youshido\GraphQL\Parser\Ast\Field as AstField;
+use Youshido\GraphQL\Parser\Ast\Fragment;
+use Youshido\GraphQL\Parser\Ast\FragmentInterface;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
@@ -86,6 +87,7 @@ class Processor
     {
         if (!$this->getSchema()) {
             $this->addError(new ConfigurationException('You have to set GraphQL Schema to process'));
+
             return $this;
         }
         if (empty($payload)) return $this;
@@ -127,9 +129,9 @@ class Processor
     }
 
     /**
-     * @param Query|Field          $query
-     * @param AbstractObjectType   $currentLevelSchema
-     * @param null                 $contextValue
+     * @param Query|Field        $query
+     * @param AbstractObjectType $currentLevelSchema
+     * @param null               $contextValue
      * @return array|bool|mixed
      */
     protected function executeQuery($query, AbstractObjectType $currentLevelSchema, $contextValue = null)
@@ -178,7 +180,7 @@ class Processor
             return null;
         }
 
-        $resolvedValue = $this->resolveValue($field, null, $mutation);
+        $resolvedValue = $this->resolveFieldValue($field, null, $mutation);
 
         if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $field->getType())) {
             $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolved value for mutation "%s"', $field->getType()->getName())));
@@ -195,7 +197,7 @@ class Processor
                 $outputType = $field->getType();
             }
 
-            $value = $this->collectListOrSingleValue($outputType, $resolvedValue, $mutation);
+            $value = $this->collectTypeResolvedValue($outputType, $resolvedValue, $mutation);
         }
 
         return [$alias => $value];
@@ -211,9 +213,10 @@ class Processor
     protected function processAstFieldQuery(AstField $astField, $contextValue, Field $field)
     {
         $value            = null;
+        $fieldType        = $field->getType();
         $preResolvedValue = $this->getPreResolvedValue($contextValue, $astField, $field);
 
-        if ($field->getType()->getKind() == TypeMap::KIND_LIST) {
+        if ($fieldType->getKind() == TypeMap::KIND_LIST) {
             if (!is_array($preResolvedValue)) {
                 $this->resolveValidator->addError(new ResolveException('Not valid resolve value for list type'));
 
@@ -223,7 +226,7 @@ class Processor
             $listValue = [];
             foreach ($preResolvedValue as $resolvedValueItem) {
                 /** @var TypeInterface $type */
-                $type = $field->getType()->getConfig()->getItem();
+                $type = $fieldType->getNamedType();
 
                 if ($type->getKind() == TypeMap::KIND_ENUM) {
                     /** @var $type AbstractEnumType */
@@ -239,25 +242,25 @@ class Processor
 
             $value = $listValue;
         } else {
-            if ($field->getType()->getKind() == TypeMap::KIND_ENUM) {
-                if (!$field->getType()->isValidValue($preResolvedValue)) {
-                    $this->resolveValidator->addError(new ResolveException(sprintf('Not valid value for %s type', ($field->getType()->getKind()))));
+            if ($fieldType->getKind() == TypeMap::KIND_ENUM) {
+                if (!$fieldType->isValidValue($preResolvedValue)) {
+                    $this->resolveValidator->addError(new ResolveException(sprintf('Not valid value for %s type', ($fieldType->getKind()))));
                     $value = null;
                 } else {
                     $value = $preResolvedValue;
                     /** $field->getType()->resolve($preResolvedValue); */
                 }
-            } elseif ($field->getType()->getKind() == TypeMap::KIND_NON_NULL) {
-                if (!$field->getType()->isValidValue($preResolvedValue)) {
+            } elseif ($fieldType->getKind() == TypeMap::KIND_NON_NULL) {
+                if (!$fieldType->isValidValue($preResolvedValue)) {
                     $this->resolveValidator->addError(new ResolveException(sprintf('Cannot return null for non-nullable field %s', $astField->getName() . '.' . $field->getName())));
-                } elseif (!$field->getType()->getNullableType()->isValidValue($preResolvedValue)) {
-                    $this->resolveValidator->addError(new ResolveException(sprintf('Not valid value for %s field %s', $field->getType()->getNullableType()->getKind(), $field->getName())));
+                } elseif (!$fieldType->getNullableType()->isValidValue($preResolvedValue)) {
+                    $this->resolveValidator->addError(new ResolveException(sprintf('Not valid value for %s field %s', $fieldType->getNullableType()->getKind(), $field->getName())));
                     $value = null;
                 } else {
                     $value = $preResolvedValue;
                 }
             } else {
-                $value = $field->getType()->serialize($preResolvedValue);
+                $value = $fieldType->serialize($preResolvedValue);
             }
         }
 
@@ -273,7 +276,7 @@ class Processor
      */
     protected function processFieldTypeQuery($query, $contextValue, Field $field)
     {
-        if (!($resolvedValue = $this->resolveValue($field, $contextValue, $query))) {
+        if (!($resolvedValue = $this->resolveFieldValue($field, $contextValue, $query))) {
             return $resolvedValue;
         }
 
@@ -283,7 +286,7 @@ class Processor
             return null;
         }
 
-        return $this->collectListOrSingleValue($field->getType(), $resolvedValue, $query);
+        return $this->collectTypeResolvedValue($field->getType(), $resolvedValue, $query);
     }
 
     /**
@@ -293,7 +296,7 @@ class Processor
      *
      * @return mixed
      */
-    protected function resolveValue(Field $field, $contextValue, $query)
+    protected function resolveFieldValue(Field $field, $contextValue, $query)
     {
         $type          = $field->getType();
         $resolvedValue = $field->resolve($contextValue, $this->parseArgumentsValues($field, $query), $type);
@@ -314,7 +317,7 @@ class Processor
      * @return array|mixed
      * @throws \Exception
      */
-    protected function collectListOrSingleValue(AbstractType $fieldType, $resolvedValue, $query)
+    protected function collectTypeResolvedValue(AbstractType $fieldType, $resolvedValue, $query)
     {
         $value = [];
         if ($fieldType->getKind() == TypeMap::KIND_LIST) {
@@ -370,7 +373,7 @@ class Processor
         }
 
         if ($resolved) {
-            if ($field->getConfig() && ($field->getConfig()->issetResolve())) {
+            if ($field->getConfig()->getResolveFunction()) {
                 $resolverValue = $field->resolve($resolverValue, $astField->getKeyValueArguments(), $field->getType());
             }
 
@@ -437,27 +440,21 @@ class Processor
      *
      * @return array
      */
-    protected function processQueryFields($query, $queryType, $resolvedValue, $value)
+    protected function processQueryFields($query, ObjectType $queryType, $resolvedValue, $value)
     {
         foreach ($query->getFields() as $field) {
-            if ($field instanceof FragmentReference) {
-                if (!$fragment = $this->request->getFragment($field->getName())) {
-                    throw new \Exception(sprintf('Fragment reference "%s" not found', $field->getName()));
-                }
-
-                if ($fragment->getModel() !== $queryType->getName()) {
-                    throw new \Exception(sprintf('Fragment reference "%s" not found on model "%s"', $field->getName(), $queryType->getName()));
-                }
-
-                foreach ($fragment->getFields() as $fragmentField) {
-                    $value = $this->collectValue($value, $this->executeQuery($fragmentField, $queryType, $resolvedValue));
-                }
-            } elseif ($field instanceof TypedFragmentReference) {
-                if ($field->getTypeName() !== $queryType->getName()) {
+            if ($field instanceof FragmentInterface) {
+                /** @var TypedFragmentReference $fragment */
+                $fragment = $field;
+                if ($field instanceof FragmentReference) {
+                    /** @var Fragment $fragment */
+                    $fragment = $this->request->getFragment($field->getName());
+                    $this->resolveValidator->assertValidFragmentForField($fragment, $field, $queryType);
+                } elseif ($fragment->getTypeName() !== $queryType->getName()) {
                     continue;
                 }
 
-                foreach ($field->getFields() as $fragmentField) {
+                foreach ($fragment->getFields() as $fragmentField) {
                     $value = $this->collectValue($value, $this->executeQuery($fragmentField, $queryType, $resolvedValue));
                 }
             } elseif ($field->getName() == self::TYPE_NAME_QUERY) {
