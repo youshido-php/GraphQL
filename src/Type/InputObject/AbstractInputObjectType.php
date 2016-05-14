@@ -33,10 +33,11 @@ abstract class AbstractInputObjectType extends AbstractType
         $this->config = new InputObjectTypeConfig($config, $this);
     }
 
-    public function resolve($value = null, $args = [])
-    {
-
-    }
+    /**
+     * @param InputObjectTypeConfig $config
+     * @return mixed
+     */
+    abstract public function build($config);
 
     public function isValidValue($value)
     {

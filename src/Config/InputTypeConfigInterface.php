@@ -15,9 +15,9 @@ interface InputTypeConfigInterface
 
     /**
      * @param Field|string $field
-     * @param array        $fieldConfig
+     * @param array        $fieldInfo
      */
-    public function addField($field, $fieldConfig = []);
+    public function addField($field, $fieldInfo = null);
 
     public function getField($name);
 

@@ -19,7 +19,7 @@ class ListTypeConfig extends ObjectTypeConfig
         return [
             'item'    => ['type' => TypeService::TYPE_ANY, 'required' => true],
             'resolve' => ['type' => TypeService::TYPE_CALLABLE],
-            'args'    => ['type' => TypeService::TYPE_ARRAY_OF_INPUTS],
+            'args'    => ['type' => TypeService::TYPE_ARRAY_OF_INPUT_FIELDS],
         ];
     }
 

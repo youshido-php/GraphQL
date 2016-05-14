@@ -15,25 +15,37 @@ use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
 use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
 use Youshido\GraphQL\Validator\ConfigValidator\Rules\TypeValidationRule;
+use Youshido\Tests\DataProvider\TestInputField;
+use Youshido\Tests\DataProvider\TestInputObjectType;
 use Youshido\Tests\DataProvider\TestObjectType;
 
 class TypeValidationRuleTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
+     * @var TypeValidationRule
+     */
+    protected $rule;
+
+    protected function setUp()
+    {
+        $this->rule = new TypeValidationRule(new ConfigValidator());
+    }
+
+
+    /**
      * @param      $ruleInfo
      * @param      $data
      * @param bool $isValid
      *
-     * @dataProvider simpleRules
+     * @dataProvider simpleRulesProvider
      */
     public function testSimpleRules($ruleInfo, $data, $isValid = true)
     {
-        $rule = new TypeValidationRule(new ConfigValidator());
-        $this->assertEquals($isValid, $rule->validate($data, $ruleInfo));
+        $this->assertEquals($isValid, $this->rule->validate($data, $ruleInfo));
     }
 
-    public function simpleRules()
+    public function simpleRulesProvider()
     {
         return [
             [TypeService::TYPE_ANY, null],
@@ -41,7 +53,7 @@ class TypeValidationRuleTest extends \PHPUnit_Framework_TestCase
             [TypeService::TYPE_ANY_OBJECT, new StringType()],
             [TypeService::TYPE_ANY_OBJECT, null, false],
 
-            [TypeService::TYPE_CALLABLE, function () {}],
+            [TypeService::TYPE_CALLABLE, function () { }],
             [TypeService::TYPE_CALLABLE, null, false],
 
             [TypeService::TYPE_BOOLEAN, true],
@@ -60,7 +72,34 @@ class TypeValidationRuleTest extends \PHPUnit_Framework_TestCase
             [TypeService::TYPE_ARRAY_OF_FIELDS_CONFIG, [], false],
 
             [null, null, false],
+            ['invalid rule', null, false],
+        ];
+    }
 
+    /**
+     * @param      $ruleInfo
+     * @param      $data
+     * @param bool $isValid
+     *
+     * @dataProvider complexRuleProvider
+     */
+    public function testComplexRules($ruleInfo, $data, $isValid = true)
+    {
+        $this->assertEquals($isValid, $this->rule->validate($data, $ruleInfo));
+    }
+
+    public static function complexRuleProvider()
+    {
+        return [
+            [TypeService::TYPE_OBJECT_INPUT_TYPE, new TestInputObjectType()],
+            [TypeService::TYPE_OBJECT_INPUT_TYPE, new StringType(), false],
+
+            [TypeService::TYPE_ARRAY_OF_INPUT_FIELDS, [new TestInputObjectType(), new TestInputField()]],
+            [TypeService::TYPE_ARRAY_OF_INPUT_FIELDS, [new StringType()]],
+            [TypeService::TYPE_ARRAY_OF_INPUT_FIELDS, new StringType(), false],
+
+            [TypeService::TYPE_ARRAY_OF_GRAPHQL_TYPES, [new StringType()]],
+            [TypeService::TYPE_ARRAY_OF_GRAPHQL_TYPES, [], false],
 
         ];
     }

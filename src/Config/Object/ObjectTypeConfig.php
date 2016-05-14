@@ -25,7 +25,7 @@ class ObjectTypeConfig extends AbstractConfig implements TypeConfigInterface
             'name'        => ['type' => TypeService::TYPE_STRING, 'required' => true],
             'description' => ['type' => TypeService::TYPE_STRING],
             'fields'      => ['type' => TypeService::TYPE_ARRAY_OF_FIELDS_CONFIG, 'final' => true],
-            'args'        => ['type' => TypeService::TYPE_ARRAY_OF_INPUTS],
+            'args'        => ['type' => TypeService::TYPE_ARRAY_OF_INPUT_FIELDS],
             'resolve'     => ['type' => TypeService::TYPE_CALLABLE],
             'interfaces'  => ['type' => TypeService::TYPE_ARRAY_OF_INTERFACES]
         ];

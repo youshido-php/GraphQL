@@ -51,21 +51,21 @@ trait FieldsAwareTrait
     }
 
     /**
-     * @param Field|string $field
-     * @param mixed|array  $fieldConfig
+     * @param Field|string $field Field name or Field Object
+     * @param mixed        $fieldInfo Field Type or Field Config array
      * @return $this
      */
-    public function addField($field, $fieldConfig = [])
+    public function addField($field, $fieldInfo = null)
     {
         if (!($field instanceof Field)) {
-            $field = new Field($this->buildFieldConfig($field, $fieldConfig));
+            $field = new Field($this->buildFieldConfig($field, $fieldInfo));
         }
         $this->fields[$field->getName()] = $field;
 
         return $this;
     }
 
-    protected function buildFieldConfig($name, $fieldConfig = [])
+    protected function buildFieldConfig($name, $fieldConfig = null)
     {
         if (!is_array($fieldConfig)) {
             return [
@@ -152,6 +152,7 @@ trait FieldsAwareTrait
         if ($this->hasField($name)) {
             unset($this->fields[$name]);
         }
+
         return $this;
     }
 }

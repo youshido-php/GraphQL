@@ -13,6 +13,5 @@ final class InputObjectType extends AbstractInputObjectType
 
     public function build($config)
     {
-
     }
 }

@@ -9,11 +9,9 @@
 namespace Youshido\GraphQL\Validator\ConfigValidator\Rules;
 
 
+use Youshido\GraphQL\Field\AbstractInputField;
 use Youshido\GraphQL\Field\Field;
-use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Type\AbstractType;
-use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
-use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeFactory;
 use Youshido\GraphQL\Type\TypeService;
 use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
@@ -68,7 +66,7 @@ class TypeValidationRule implements ValidationRuleInterface
                     return $this->isArrayOfGraphQLTypes($data);
 
                 case TypeService::TYPE_ARRAY_OF_FIELDS_CONFIG:
-                    return $this->isFieldsListConfig($data);
+                    return $this->isArrayOfFields($data);
 
                 case TypeService::TYPE_OBJECT_INPUT_TYPE:
                     return TypeService::isInputObjectType($data);
@@ -76,8 +74,8 @@ class TypeValidationRule implements ValidationRuleInterface
                 case TypeService::TYPE_ENUM_VALUES:
                     return $this->isEnumValues($data);
 
-                case TypeService::TYPE_ARRAY_OF_INPUTS:
-                    return $this->isArrayOfInputs($data);
+                case TypeService::TYPE_ARRAY_OF_INPUT_FIELDS:
+                    return $this->isArrayOfInputFields($data);
 
                 case TypeService::TYPE_ANY_INPUT:
                     return TypeService::isInputType($data);
@@ -88,8 +86,6 @@ class TypeValidationRule implements ValidationRuleInterface
                 default:
                     return false;
             }
-        return false;
-
     }
 
     private function isArrayOfGraphQLTypes($data)
@@ -137,7 +133,7 @@ class TypeValidationRule implements ValidationRuleInterface
         return true;
     }
 
-    private function isFieldsListConfig($data)
+    private function isArrayOfFields($data)
     {
         if (!is_array($data) || empty($data)) return false;
 
@@ -165,7 +161,7 @@ class TypeValidationRule implements ValidationRuleInterface
         return $this->configValidator->isValid();
     }
 
-    private function isArrayOfInputs($data)
+    private function isArrayOfInputFields($data)
     {
         if (!is_array($data)) return false;
 
@@ -176,12 +172,12 @@ class TypeValidationRule implements ValidationRuleInterface
         return true;
     }
 
-    private function isInputField($data, $name = null)
+    private function isInputField($data)
     {
         if (is_object($data)) {
-            if ($data instanceof InputField) {
+            if ($data instanceof AbstractInputField) {
                 return true;
-            } elseif ($data instanceof AbstractType) {
+            } else {
                 return TypeService::isInputType($data);
             }
         } else {

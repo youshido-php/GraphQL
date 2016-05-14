@@ -19,7 +19,7 @@ class InputObjectTypeConfig extends ObjectTypeConfig
         return [
             'name'        => ['type' => TypeService::TYPE_STRING, 'required' => true],
             'description' => ['type' => TypeService::TYPE_STRING],
-            'fields'      => ['type' => TypeService::TYPE_ARRAY_OF_INPUTS],
+            'fields'      => ['type' => TypeService::TYPE_ARRAY_OF_INPUT_FIELDS],
         ];
     }
 }
