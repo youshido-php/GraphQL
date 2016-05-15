@@ -17,10 +17,7 @@ use Youshido\GraphQL\Type\TypeService;
 class FieldConfig extends AbstractConfig
 {
 
-    use ArgumentsAwareConfigTrait {
-        getArguments as traitGetArguments;
-        getArgument as traitGetArgument;
-    }
+    use ArgumentsAwareConfigTrait;
 
     public function getRules()
     {
@@ -46,19 +43,6 @@ class FieldConfig extends AbstractConfig
     public function getType()
     {
         return $this->data['type'];
-    }
-
-    public function getArgument($name)
-    {
-        return $this->traitGetArgument($name) ?: $this->getType()->getConfig()->getArgument($name);
-    }
-
-    /**
-     * @return \Youshido\GraphQL\Field\InputField[]
-     */
-    public function getArguments()
-    {
-        return $this->traitGetArguments() ?: $this->getType()->getConfig()->getArguments();
     }
 
 }
