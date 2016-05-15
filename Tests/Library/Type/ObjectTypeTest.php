@@ -9,6 +9,7 @@
 namespace Youshido\Tests\Library\Type;
 
 
+use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
@@ -82,6 +83,28 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($objectType->isValidValue(null));
 
         $this->assertEquals('Post type description', $objectType->getDescription());
+    }
+
+    public function testFieldsTrait()
+    {
+        $objectType = new ObjectType([
+            'name' => 'Post',
+            'fields' => [
+                'id' => new IntType()
+            ],
+            'description' => 'Post type description'
+        ]);
+        $this->assertTrue($objectType->hasFields());
+        $this->assertEquals([
+            'id' => new Field(['name' => 'id', 'type' => new IntType()])
+        ], $objectType->getFields());
+
+        $objectType->addField('name', new StringType());
+        $this->assertEquals([
+            'id' => new Field(['name' => 'id', 'type' => new IntType()]),
+            'name' => new Field(['name' => 'name', 'type' => new StringType()]),
+        ], $objectType->getFields());
+
     }
 
     public function testExtendedClass()

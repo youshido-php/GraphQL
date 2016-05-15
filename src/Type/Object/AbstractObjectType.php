@@ -10,28 +10,22 @@ namespace Youshido\GraphQL\Type\Object;
 
 
 use Youshido\GraphQL\Config\Object\ObjectTypeConfig;
-use Youshido\GraphQL\Config\Traits\ConfigCallTrait;
 use Youshido\GraphQL\Config\TypeConfigInterface;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
+use Youshido\GraphQL\Type\Traits\FieldsArgumentsAwareObjectTrait;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 
 /**
  * Class AbstractObjectType
  * @package Youshido\GraphQL\Type\Object
- *
- * @method bool hasFields()
- * @method bool hasField($field)
- * @method Field getField($field)
- * @method $this addField($name, $type, $config = [])
- * @method $this addFields($fields)
  */
 abstract class AbstractObjectType extends AbstractType
 {
-    use AutoNameTrait, ConfigCallTrait;
+    use AutoNameTrait, FieldsArgumentsAwareObjectTrait;
 
     protected $isBuild = false;
 
@@ -80,7 +74,7 @@ abstract class AbstractObjectType extends AbstractType
     }
 
     /**
-     * @param TypeConfigInterface $config
+     * @param ObjectTypeConfig $config
      * @return mixed
      */
     abstract public function build($config);

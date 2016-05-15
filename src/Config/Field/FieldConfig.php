@@ -9,7 +9,7 @@
 namespace Youshido\GraphQL\Config\Field;
 
 use Youshido\GraphQL\Config\AbstractConfig;
-use Youshido\GraphQL\Config\Traits\ArgumentsAwareTrait;
+use Youshido\GraphQL\Config\Traits\ArgumentsAwareConfigTrait;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeService;
@@ -17,7 +17,7 @@ use Youshido\GraphQL\Type\TypeService;
 class FieldConfig extends AbstractConfig
 {
 
-    use ArgumentsAwareTrait {
+    use ArgumentsAwareConfigTrait {
         getArguments as traitGetArguments;
         getArgument as traitGetArgument;
     }

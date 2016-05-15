@@ -22,7 +22,7 @@ class TestObjectType extends AbstractObjectType
     }
 
 
-    public function resolve($value = null, $args = [], $type = null)
+    public function getData()
     {
         return [
             'id'   => 1,

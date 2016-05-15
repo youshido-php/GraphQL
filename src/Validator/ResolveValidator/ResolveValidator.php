@@ -7,6 +7,7 @@
 
 namespace Youshido\GraphQL\Validator\ResolveValidator;
 
+use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Parser\Ast\Field as AstField;
 use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Parser\Ast\Argument;
@@ -15,6 +16,7 @@ use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
 use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
+use Youshido\GraphQL\Request;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
@@ -48,27 +50,27 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
     /**
      * @inheritdoc
      */
-    public function validateArguments($field, $query, $request)
+    public function validateArguments(Field $field, $query, Request $request)
     {
-        if (!count($field->getConfig()->getArguments())) return true;
+        if (!count($field->getArguments())) return true;
 
-        $requiredArguments = array_filter($field->getConfig()->getArguments(), function (InputField $argument) {
-            return $argument->getConfig()->getType()->getKind() == TypeMap::KIND_NON_NULL;
+        $requiredArguments = array_filter($field->getArguments(), function (InputField $argument) {
+            return $argument->getType()->getKind() == TypeMap::KIND_NON_NULL;
         });
 
-        $withDefaultArguments = array_filter($field->getConfig()->getArguments(), function (InputField $argument) {
+        $withDefaultArguments = array_filter($field->getArguments(), function (InputField $argument) {
             return $argument->getConfig()->get('default') !== null;
         });
 
         foreach ($query->getArguments() as $argument) {
-            if (!array_key_exists($argument->getName(), $field->getConfig()->getArguments())) {
+            if (!array_key_exists($argument->getName(), $field->getArguments())) {
                 $this->addError(new ResolveException(sprintf('Unknown argument "%s" on field "%s".', $argument->getName(), $field->getName())));
 
                 return false;
             }
 
             /** @var AbstractType $argumentType */
-            $argumentType = $field->getConfig()->getArgument($argument->getName())->getType();
+            $argumentType = $field->getArgument($argument->getName())->getType();
             if ($argument->getValue() instanceof Variable) {
                 /** @var Variable $variable */
                 $variable = $argument->getValue();

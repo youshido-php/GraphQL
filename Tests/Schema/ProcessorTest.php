@@ -12,6 +12,8 @@ namespace Youshido\Tests\Schema;
 use Youshido\GraphQL\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\Object\ObjectType;
+use Youshido\GraphQL\Type\Scalar\BooleanType;
+use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
 class ProcessorTest extends \PHPUnit_Framework_TestCase
@@ -49,19 +51,33 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $schema = new Schema([
             'query' => new ObjectType([
-                'name' => 'RootQuery',
+                'name'   => 'RootQuery',
                 'fields' => [
                     'me' => [
-                        'type' => new ObjectType([
-                            'name' => 'User',
+                        'type'    => new ObjectType([
+                            'name'   => 'User',
                             'fields' => [
                                 'firstName' => new StringType(),
-                                'lastName' => new StringType(),
+                                'lastName'  => new StringType(),
+                                'code'      => new IntType(),
                             ]
                         ]),
-                        'resolve' => function() {
-                            return ['firstName' => 'John'];
-                        }
+                        'resolve' => function ($value, $args) {
+                            $data = ['firstName' => 'John', 'code' => '007'];
+                            if (!empty($args['upper'])) {
+                                foreach ($data as $key => $value) {
+                                    $data[$key] = strtoupper($value);
+                                }
+                            }
+
+                            return $data;
+                        },
+                        'args'    => [
+                            'upper' => [
+                                'type'    => new BooleanType(),
+                                'default' => false
+                            ]
+                        ]
                     ],
                 ],
             ])
@@ -73,8 +89,13 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $processor->processRequest('{ me { firstName, lastName } }');
         $this->assertEquals(['data' => ['me' => ['firstName' => 'John', 'lastName' => null]]], $processor->getResponseData());
-    }
 
+        $processor->processRequest('{ me { code } }');
+        $this->assertEquals(['data' => ['me' => ['code' => 7]]], $processor->getResponseData());
+
+        $processor->processRequest('{ me(upper:true) { firstName } }');
+        $this->assertEquals(['data' => ['me' => ['firstName' => 'JOHN']]], $processor->getResponseData());
+    }
 
 
 }

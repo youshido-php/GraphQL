@@ -10,7 +10,7 @@ namespace Youshido\GraphQL\Type\Union;
 
 
 use Youshido\GraphQL\Config\Object\UnionTypeConfig;
-use Youshido\GraphQL\Config\Traits\ConfigCallTrait;
+use Youshido\GraphQL\Config\Traits\ConfigAwareTrait;
 use Youshido\GraphQL\Type\AbstractInterfaceTypeInterface;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
@@ -21,7 +21,7 @@ use Youshido\GraphQL\Type\TypeMap;
 abstract class AbstractUnionType extends AbstractType implements AbstractInterfaceTypeInterface
 {
 
-    use ConfigCallTrait, AutoNameTrait;
+    use ConfigAwareTrait, AutoNameTrait;
 
     protected $isFinal = false;
 

@@ -17,13 +17,9 @@ use Youshido\GraphQL\Type\AbstractType;
  * Class ConfigCallTrait
  * @package Youshido\GraphQL\Config\Traits
  *
- * @method string getKind()
- * @method AbstractType getNamedType()
- * @method $this setType($type)
- * @method bool hasField($field)
- * @method bool hasFields()
- * @method bool isDeprecated()
- * @method string getDeprecationReason()
+ * @deprecated This class is not used anywhere in the framework anymore.
+ *             Replace it with the new traits available.
+ *             To be deleted in the next release
  */
 trait ConfigCallTrait
 {

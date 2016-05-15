@@ -17,13 +17,13 @@ interface ResolveValidatorInterface
 {
 
     /**
-     * @param $field     Field
+     * @param $field
      * @param $query     Query
      * @param $request   Request
      *
      * @return bool
      */
-    public function validateArguments($field, $query, $request);
+    public function validateArguments(Field $field, $query, Request $request);
 
     /**
      * @param mixed        $value

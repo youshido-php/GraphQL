@@ -8,17 +8,16 @@
 namespace Youshido\GraphQL\Field;
 
 use Youshido\GraphQL\Config\Field\FieldConfig;
-use Youshido\GraphQL\Config\Traits\ConfigAwareTrait;
-use Youshido\GraphQL\Config\Traits\ConfigCallTrait;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
+use Youshido\GraphQL\Type\Traits\FieldsArgumentsAwareObjectTrait;
 use Youshido\GraphQL\Type\TypeFactory;
 use Youshido\GraphQL\Type\TypeService;
 
 abstract class AbstractField
 {
 
-    use ConfigCallTrait, AutoNameTrait;
+    use FieldsArgumentsAwareObjectTrait, AutoNameTrait;
 
     /** @var FieldConfig */
     protected $config;

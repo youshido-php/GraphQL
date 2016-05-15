@@ -14,7 +14,7 @@ use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
-class FieldAwareTraitTest extends \PHPUnit_Framework_TestCase
+class FieldAwareConfigTraitTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testAddField()

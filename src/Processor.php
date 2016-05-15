@@ -79,8 +79,8 @@ class Processor
 
         $__type = new TypeDefinitionType();
 
-        $this->schema->addQuery('__schema', $__schema);
-        $this->schema->addQuery('__type', $__type);
+        $this->schema->addQueryField('__schema', $__schema);
+        $this->schema->addQueryField('__type', $__type);
     }
 
     public function processRequest($payload, $variables = [])

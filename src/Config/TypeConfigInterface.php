@@ -14,13 +14,12 @@ interface TypeConfigInterface extends InputTypeConfigInterface
 {
 
     /**
-     * @param       $name
-     * @param       $type
-     * @param array $config
+     * @param       $argument
+     * @param       $info
      *
      * @return TypeConfigInterface
      */
-    public function addArgument($name, $type, $config = []);
+    public function addArgument($argument, $info = null);
 
     /**
      * @param $name

@@ -33,15 +33,16 @@ trait FieldsAwareConfigTrait
     }
 
     /**
-     * @param array $fieldsArray
+     * @param array $fieldsList
      * @return $this
      */
-    public function addFields($fieldsArray)
+    public function addFields($fieldsList)
     {
-        foreach ($fieldsArray as $fieldName => $fieldConfig) {
+        foreach ($fieldsList as $fieldName => $fieldConfig) {
 
             if ($fieldConfig instanceof Field) {
-                $this->addField($fieldConfig);
+                $this->fields[$fieldConfig->getName()] = $fieldConfig;
+                continue;
             } else {
                 $this->addField($fieldName, $this->buildFieldConfig($fieldName, $fieldConfig));
             }
@@ -65,19 +66,19 @@ trait FieldsAwareConfigTrait
         return $this;
     }
 
-    protected function buildFieldConfig($name, $fieldConfig = null)
+    protected function buildFieldConfig($name, $info = null)
     {
-        if (!is_array($fieldConfig)) {
+        if (!is_array($info)) {
             return [
-                'type' => $fieldConfig,
+                'type' => $info,
                 'name' => $name
             ];
         }
-        if (empty($fieldConfig['name'])) {
-            $fieldConfig['name'] = $name;
+        if (empty($info['name'])) {
+            $info['name'] = $name;
         }
 
-        return $fieldConfig;
+        return $info;
     }
 
     /**

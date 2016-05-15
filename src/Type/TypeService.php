@@ -9,6 +9,7 @@
 namespace Youshido\GraphQL\Type;
 
 
+use Youshido\GraphQL\Type\Enum\AbstractEnumType;
 use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
 use Youshido\GraphQL\Type\ListType\AbstractListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
@@ -87,7 +88,7 @@ class TypeService
 
     public static function isGraphQLType($type)
     {
-        return TypeService::isObjectType($type) || TypeService::isScalarType($type);
+        return $type instanceof AbstractType || TypeService::isScalarType($type);//TypeService::isObjectType($type) || TypeService::isScalarType($type);
     }
 
     public static function isObjectType($type)
@@ -106,7 +107,7 @@ class TypeService
 
             return ($type instanceof AbstractScalarType)
                    || ($type instanceof AbstractInputObjectType)
-                   || ($type instanceof AbstractListType);
+                   || ($type instanceof AbstractEnumType);
         } else {
             return TypeService::isScalarType($type);
         }

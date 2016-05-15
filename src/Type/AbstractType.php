@@ -21,11 +21,6 @@ abstract class AbstractType implements TypeInterface
 
     use ConfigAwareTrait;
 
-    public function getDescription()
-    {
-        return $this->getConfigValue('description', null);
-    }
-
     public function isCompositeType()
     {
         return false;

@@ -15,43 +15,58 @@ use Youshido\GraphQL\Type\TypeFactory;
 use Youshido\GraphQL\Type\TypeService;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
-trait ArgumentsAwareTrait
+trait ArgumentsAwareConfigTrait
 {
     protected $arguments = [];
-    protected $_isArgumentBuilt;
+    protected $_isArgumentsBuilt;
 
     public function buildArguments()
     {
-        if ($this->_isArgumentBuilt) return true;
-        $sourceArguments = empty($this->data['args']) ? [] : $this->data['args'];
-        foreach ($sourceArguments as $argumentName => $argumentInfo) {
-            if ($argumentInfo instanceof InputField) {
-                $this->arguments[$argumentName] = $argumentInfo;
-                continue;
-            } elseif ($argumentInfo instanceof AbstractType) {
-                $config = [
-                    'type' => $argumentInfo
-                ];
-                $this->addArgument($argumentName, $argumentInfo, $config);
-            } else {
-                $this->addArgument($argumentName, $argumentInfo['type'], $argumentInfo);
-            }
+        if ($this->_isArgumentsBuilt) return true;
+
+        if (!empty($this->data['args'])) {
+            $this->addArguments($this->data['args']);
         }
-        $this->_isArgumentBuilt = true;
+        $this->_isArgumentsBuilt = true;
     }
 
-    public function addArgument($name, $type, $config = [])
+    public function addArguments($argsList)
     {
-        if (!TypeService::isInputType($type)) {
-            throw new ConfigurationException('Argument input type ' . $type . ' is not supported');
+        foreach ($argsList as $argumentName => $argumentInfo) {
+            if ($argumentInfo instanceof InputField) {
+                $this->arguments[$argumentInfo->getName()] = $argumentInfo;
+                continue;
+            } else {
+                $this->addArgument($argumentName, $this->buildConfig($argumentName, $argumentInfo));
+            }
         }
 
-        $config['name'] = $name;
-        $config['type'] = is_string($type) ? TypeFactory::getScalarType($type) : $type;
+        return $this;
+    }
 
-        $this->arguments[$name] = new InputField($config);
+    public function addArgument($argument, $argumentInfo = null)
+    {
+        if (!($argument instanceof InputField)) {
+            $argument = new InputField($this->buildConfig($argument, $argumentInfo));
+        }
+        $this->arguments[$argument->getName()] = $argument;
 
         return $this;
+    }
+
+    protected function buildConfig($name, $info = null)
+    {
+        if (!is_array($info)) {
+            return [
+                'type' => $info,
+                'name' => $name
+            ];
+        }
+        if (empty($info['name'])) {
+            $info['name'] = $name;
+        }
+
+        return $info;
     }
 
     /**

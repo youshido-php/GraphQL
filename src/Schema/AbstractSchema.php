@@ -22,7 +22,7 @@ abstract class AbstractSchema
     public function __construct($config = [])
     {
         if (!array_key_exists('query', $config)) {
-            $config['query'] = new ObjectType(['name' => $this->getName() . 'Query', 'fields' => []]);
+            $config['query'] = new InternalSchemaQueryObject(['name' => $this->getName() . 'Query']);
         }
         if (!array_key_exists('mutation', $config)) {
             $config['mutation'] = new InternalSchemaMutationObject(['name' => $this->getName() . 'Mutation']);
@@ -35,14 +35,14 @@ abstract class AbstractSchema
 
     abstract public function build(SchemaConfig $config);
 
-    public function addQuery($name, AbstractObjectType $query, $config = [])
+    public function addQueryField($field, $fieldInfo = null)
     {
-        $this->getQueryType()->getConfig()->addField($name, $query, $config);
+        $this->getQueryType()->addField($field, $fieldInfo);
     }
 
-    public function addMutation($name, AbstractObjectType $query, $config = [])
+    public function addMutationField($field, $fieldInfo = null)
     {
-        $this->getMutationType()->getConfig()->addField($name, $query, $config);
+        $this->getMutationType()->addField($field, $fieldInfo);
     }
 
     final public function getQueryType()

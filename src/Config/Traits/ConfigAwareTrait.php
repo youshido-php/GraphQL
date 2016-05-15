@@ -10,11 +10,12 @@ namespace Youshido\GraphQL\Config\Traits;
 
 
 use Youshido\GraphQL\Config\AbstractConfig;
+use Youshido\GraphQL\Config\Object\ObjectTypeConfig;
 
 trait ConfigAwareTrait
 {
 
-    /** @var AbstractConfig */
+    /** @var AbstractConfig|ObjectTypeConfig */
     protected $config;
 
     public function getConfig()
@@ -25,5 +26,10 @@ trait ConfigAwareTrait
     protected function getConfigValue($key, $defaultValue = null)
     {
         return !empty($this->config) ? $this->config->get($key, $defaultValue) : $defaultValue;
+    }
+
+    public function getDescription()
+    {
+        return $this->getConfigValue('description');
     }
 }

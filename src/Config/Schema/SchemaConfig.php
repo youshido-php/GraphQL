@@ -28,7 +28,7 @@ class SchemaConfig extends AbstractConfig
     }
 
     /**
-     * @return ObjectType
+     * @return AbstractObjectType
      */
     public function getQuery()
     {
