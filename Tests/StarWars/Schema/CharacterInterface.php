@@ -8,13 +8,11 @@
 
 namespace Youshido\Tests\StarWars\Schema;
 
-use Youshido\GraphQL\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Scalar\IdType;
 use Youshido\GraphQL\Type\Scalar\StringType;
-use Youshido\GraphQL\Type\TypeMap;
 
 class CharacterInterface extends AbstractInterfaceType
 {

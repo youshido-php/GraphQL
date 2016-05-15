@@ -104,8 +104,9 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($enumType->isValidValue(true));
         $this->assertTrue($enumType->isValidValue('disable'));
 
-        $this->assertNull($enumType->serialize('NOT EXIST'));
-        $this->assertTrue($enumType->serialize('ENABLE'));
+        $this->assertNull($enumType->serialize('invalid value'));
+        $this->assertNull($enumType->parseValue('invalid literal'));
+        $this->assertTrue($enumType->parseValue('ENABLE'));
 
         $this->assertEquals($valuesData, $enumType->getValues());
     }

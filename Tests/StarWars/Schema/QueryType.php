@@ -8,6 +8,7 @@
 namespace Youshido\Tests\StarWars\Schema;
 
 
+use Youshido\GraphQL\Field\FieldFactory;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 
 class QueryType extends AbstractObjectType
@@ -37,7 +38,7 @@ class QueryType extends AbstractObjectType
                     return StarWarsData::getHero(isset($args['episode']) ? $args['episode'] : null);
                 },
             ])
-            ->addField('human', new HumanType())
-            ->addField('droid', new DroidType());
+            ->addField(FieldFactory::fromTypeWithResolver('human', new HumanType()))
+            ->addField(FieldFactory::fromTypeWithResolver('droid', new DroidType()));
     }
 }

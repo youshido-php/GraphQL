@@ -238,7 +238,7 @@ class Processor
                         break;
                     }
                 }
-                $listValue[] = $type->serialize($preResolvedValue);
+                $listValue[] = $type->serialize($resolvedValueItem);
             }
 
             $value = $listValue;

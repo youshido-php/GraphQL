@@ -49,7 +49,7 @@ class StarWarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($data, [
             'errors' => [
                 [
-                    'message' => 'Invalid variable "someId" type, allowed type is "Id"'
+                    'message' => 'Invalid variable "someId" type, allowed type is "ID"'
                 ]
             ]
         ]);
@@ -188,7 +188,7 @@ class StarWarsTest extends \PHPUnit_Framework_TestCase
                 []
             ],
             [
-                'query($someId: Id){
+                'query($someId: ID){
                   human(id: $someId) {
                     name
                   }
