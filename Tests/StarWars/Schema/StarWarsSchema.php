@@ -8,10 +8,10 @@
 namespace Youshido\Tests\StarWars\Schema;
 
 
-use Youshido\GraphQL\AbstractSchema;
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Schema\AbstractSchema;
 
-class Schema extends AbstractSchema
+class StarWarsSchema extends AbstractSchema
 {
 
     public function build(SchemaConfig $config)

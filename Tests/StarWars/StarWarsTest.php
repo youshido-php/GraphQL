@@ -9,8 +9,7 @@ namespace Youshido\Tests\StarWars;
 
 
 use Youshido\GraphQL\Processor;
-use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
-use Youshido\Tests\StarWars\Schema\Schema;
+use Youshido\Tests\StarWars\Schema\StarWarsSchema;
 
 class StarWarsTest extends \PHPUnit_Framework_TestCase
 {
@@ -24,19 +23,19 @@ class StarWarsTest extends \PHPUnit_Framework_TestCase
      */
     public function testSchema($query, $validResult, $variables)
     {
-        $processor = new Processor(new ResolveValidator());
-        $processor->setSchema(new Schema());
+        $processor = new Processor();
+        $processor->setSchema(new StarWarsSchema());
 
         $processor->processRequest($query, $variables);
 
         $responseData = $processor->getResponseData();
-        $this->assertEquals($responseData, $validResult);
+        $this->assertEquals($validResult, $responseData);
     }
 
     public function testInvalidVariableType()
     {
-        $processor = new Processor(new ResolveValidator());
-        $processor->setSchema(new Schema());
+        $processor = new Processor();
+        $processor->setSchema(new StarWarsSchema());
 
         $processor->processRequest(
             'query($someId: Int){

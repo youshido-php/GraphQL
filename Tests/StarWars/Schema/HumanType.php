@@ -28,7 +28,8 @@ class HumanType extends AbstractObjectType
         $config
             ->addField('id', TypeMap::TYPE_ID)
             ->addField('name', TypeMap::TYPE_STRING)
-            ->addField('friends', new ListType(new CharacterInterface()), [
+            ->addField('friends', [
+                'type' => new ListType(new CharacterInterface()),
                 'resolve' => function ($droid) {
                     return StarWarsData::getFriends($droid);
                 },

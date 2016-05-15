@@ -43,6 +43,11 @@ abstract class AbstractField
      */
     abstract public function getType();
 
+    public function setType($type)
+    {
+        $this->getConfig()->set('type', $type);
+    }
+
     public function resolve($value, $args = [], $type = null)
     {
         if ($resolveFunc = $this->getConfig()->getResolveFunction()) {

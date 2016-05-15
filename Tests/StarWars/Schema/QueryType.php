@@ -8,7 +8,6 @@
 namespace Youshido\Tests\StarWars\Schema;
 
 
-use Youshido\GraphQL\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 
 class QueryType extends AbstractObjectType
@@ -29,7 +28,8 @@ class QueryType extends AbstractObjectType
     public function build($config)
     {
         $config
-            ->addField('hero', new CharacterInterface(), [
+            ->addField('hero', [
+                'type'    => new CharacterInterface(),
                 'args'    => [
                     'episode' => ['type' => new EpisodeEnum()]
                 ],
