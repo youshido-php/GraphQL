@@ -7,6 +7,7 @@
 
 namespace Youshido\GraphQL\Introspection;
 
+use Youshido\GraphQL\Field\FieldFactory;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Introspection\Traits\TypeCollectorTrait;
@@ -44,7 +45,8 @@ class QueryType extends AbstractObjectType
             ->addField('name', TypeMap::TYPE_STRING)
             ->addField('kind', TypeMap::TYPE_STRING)
             ->addField('description', TypeMap::TYPE_STRING)
-            ->addField('ofType', new QueryType(), [
+            ->addField('ofType', [
+                'type'    => new QueryType(),
                 'resolve' => function ($value) {
                     if ($value instanceof CompositeTypeInterface) {
                         return $value->getTypeOf();
@@ -53,11 +55,12 @@ class QueryType extends AbstractObjectType
                     return null;
                 }
             ])
-            ->addField('inputFields', new InputValueListType())
-            ->addField('enumValues', new EnumValueListType())
-            ->addField('fields', new FieldListType())
-            ->addField('interfaces', new InterfaceListType())
-            ->addField('possibleTypes', new ListType(new QueryType()), [
+            ->addField(FieldFactory::fromTypeWithResolver('inputFields', new InputValueListType()))
+            ->addField(FieldFactory::fromTypeWithResolver('enumValues', new EnumValueListType()))
+            ->addField(FieldFactory::fromTypeWithResolver('fields', new FieldListType()))
+            ->addField(FieldFactory::fromTypeWithResolver('interfaces', new InterfaceListType()))
+            ->addField('possibleTypes', [
+                'type'    => new ListType(new QueryType()),
                 'resolve' => function ($value) {
                     if ($value) {
                         if ($value->getKind() == TypeMap::KIND_INTERFACE) {

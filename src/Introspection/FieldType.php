@@ -21,7 +21,8 @@ class FieldType extends AbstractObjectType
             ->addField('description', TypeMap::TYPE_STRING)
             ->addField('isDeprecated', TypeMap::TYPE_BOOLEAN)
             ->addField('deprecationReason', TypeMap::TYPE_STRING)
-            ->addField('type', new QueryType(), [
+            ->addField('type', [
+                'type'    => new QueryType(),
                 'resolve' => function (Field $value) {
                     return $value->getType()->getNamedType();
                 }

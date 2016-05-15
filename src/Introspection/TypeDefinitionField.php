@@ -10,7 +10,7 @@ namespace Youshido\GraphQL\Introspection;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\TypeMap;
 
-class TypeDefinitionType extends QueryType
+class TypeDefinitionField extends QueryType
 {
 
     public function resolve($value = null, $args = [], $type = null)

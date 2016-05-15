@@ -18,10 +18,7 @@ trait TypeCollectorTrait
 
     protected $types = [];
 
-    /**
-     * @param $type TypeInterface
-     */
-    protected function collectTypes($type)
+    protected function collectTypes(AbstractType $type)
     {
         if (!$type) {
             return;

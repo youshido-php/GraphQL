@@ -8,6 +8,7 @@
 namespace Youshido\GraphQL\Introspection;
 
 
+use Youshido\GraphQL\Field\FieldFactory;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 
@@ -32,7 +33,7 @@ class DirectiveType extends AbstractObjectType
         $config
             ->addField('name', TypeMap::TYPE_STRING)
             ->addField('description', TypeMap::TYPE_STRING)
-            ->addField('args', new InputValueListType())
+            ->addField(FieldFactory::fromTypeWithResolver('args', new InputValueListType()))
             ->addField('onOperation', TypeMap::TYPE_BOOLEAN)
             ->addField('onFragment', TypeMap::TYPE_BOOLEAN)
             ->addField('onField', TypeMap::TYPE_BOOLEAN);

@@ -8,6 +8,7 @@
 namespace Youshido\GraphQL\Introspection;
 
 
+use Youshido\GraphQL\Field\FieldFactory;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 
@@ -19,7 +20,7 @@ class InputValueType extends AbstractObjectType
         $config
             ->addField('name', TypeMap::TYPE_STRING)
             ->addField('description', TypeMap::TYPE_STRING)
-            ->addField('type', new QueryType())
+            ->addField(FieldFactory::fromTypeWithResolver('type', new QueryType()))
             ->addField('defaultValue', TypeMap::TYPE_STRING);
     }
 

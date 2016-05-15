@@ -10,8 +10,9 @@
 namespace Youshido\GraphQL;
 
 use Youshido\GraphQL\Field\Field;
+use Youshido\GraphQL\Field\FieldFactory;
 use Youshido\GraphQL\Introspection\SchemaType;
-use Youshido\GraphQL\Introspection\TypeDefinitionType;
+use Youshido\GraphQL\Introspection\TypeDefinitionField;
 use Youshido\GraphQL\Parser\Ast\Field as AstField;
 use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\FragmentInterface;
@@ -77,10 +78,10 @@ class Processor
         $__schema = new SchemaType();
         $__schema->setSchema($schema);
 
-        $__type = new TypeDefinitionType();
+        $__type = new TypeDefinitionField();
 
-        $this->schema->addQueryField('__schema', $__schema);
-        $this->schema->addQueryField('__type', $__type);
+        $this->schema->addQueryField(FieldFactory::fromTypeWithResolver('__schema', $__schema));
+        $this->schema->addQueryField(FieldFactory::fromTypeWithResolver('__type', $__type));
     }
 
     public function processRequest($payload, $variables = [])
@@ -386,7 +387,10 @@ class Processor
     protected function getPropertyValue($data, $path)
     {
         if (is_object($data)) {
-            $getter = 'get' . $this->classify($path);
+            $getter = $path;
+            if (substr($path, 0, 2) != 'is') {
+                $getter = 'get' . $this->classify($path);
+            }
 
             return is_callable([$data, $getter]) ? $data->$getter() : null;
         } elseif (is_array($data)) {
@@ -432,7 +436,7 @@ class Processor
 
     /**
      * @param $query         Query
-     * @param $queryType     ObjectType|TypeInterface|Field
+     * @param $queryType     AbstractObjectType|TypeInterface|Field
      * @param $resolvedValue mixed
      * @param $value         array
      *
@@ -440,7 +444,7 @@ class Processor
      *
      * @return array
      */
-    protected function processQueryFields($query, ObjectType $queryType, $resolvedValue, $value)
+    protected function processQueryFields($query, AbstractObjectType $queryType, $resolvedValue, $value)
     {
         foreach ($query->getFields() as $field) {
             if ($field instanceof FragmentInterface) {

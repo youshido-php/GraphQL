@@ -7,6 +7,7 @@
 
 namespace Youshido\GraphQL\Introspection;
 
+use Youshido\GraphQL\Field\FieldFactory;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
@@ -50,8 +51,8 @@ class SchemaType extends AbstractObjectType
     public function build($config)
     {
         $config
-            ->addField('queryType', new QueryType())
-            ->addField('mutationType', new MutationType())
+            ->addField(FieldFactory::fromTypeWithResolver('queryType', new QueryType()))
+            ->addField(FieldFactory::fromTypeWithResolver('mutationType', new MutationType()))
             ->addField('subscriptionType', new ObjectType([
                 'name'    => '__Subscription',
                 'fields'  => ['name' => ['type' => TypeMap::TYPE_STRING]],
@@ -59,7 +60,7 @@ class SchemaType extends AbstractObjectType
                     return null;
                 }
             ]))
-            ->addField('types', new QueryListType())
-            ->addField('directives', new DirectiveListType());
+            ->addField(FieldFactory::fromTypeWithResolver('types', new QueryListType()))
+            ->addField(FieldFactory::fromTypeWithResolver('directives', new DirectiveListType()));
     }
 }

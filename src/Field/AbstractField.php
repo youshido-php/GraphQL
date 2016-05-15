@@ -51,4 +51,14 @@ abstract class AbstractField
 
         return null;
     }
+
+    public function isDeprecated()
+    {
+        return $this->getConfigValue('isDeprecated');
+    }
+
+    public function getDeprecationReason()
+    {
+        return $this->getConfigValue('deprecationReason');
+    }
 }
