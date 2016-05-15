@@ -20,9 +20,6 @@ abstract class AbstractInputField
 
     use FieldsArgumentsAwareObjectTrait, AutoNameTrait;
 
-    /** @var InputFieldConfig */
-    protected $config;
-
     protected $isFinal = false;
 
     public function __construct(array $config = [])
