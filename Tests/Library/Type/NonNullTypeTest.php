@@ -17,6 +17,14 @@ use Youshido\GraphQL\Type\TypeService;
 class NonNullTypeTest extends \PHPUnit_Framework_TestCase
 {
 
+    /**
+     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     */
+    public function testInvalidParams()
+    {
+        new NonNullType('invalid param');
+    }
+
     public function testNonNullType()
     {
         $stringType  = new StringType();

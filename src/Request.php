@@ -79,11 +79,26 @@ class Request
         return $this->fragments;
     }
 
-    public function addFragment($fragment)
+    public function addFragment(Fragment $fragment)
     {
         $this->fragments[] = $fragment;
     }
 
+    /**
+     * @param $name
+     *
+     * @return null|Fragment
+     */
+    public function getFragment($name)
+    {
+        foreach ($this->fragments as $fragment) {
+            if ($fragment->getName() == $name) {
+                return $fragment;
+            }
+        }
+
+        return null;
+    }
     /**
      * @return Mutation[]
      */
@@ -126,10 +141,13 @@ class Request
 
     /**
      * @param array $variables
+     * @return $this
      */
     public function setVariables($variables)
     {
         $this->variables = $variables;
+
+        return $this;
     }
 
     public function getVariable($name)
@@ -142,19 +160,4 @@ class Request
         return array_key_exists($name, $this->variables);
     }
 
-    /**
-     * @param $name
-     *
-     * @return null|Fragment
-     */
-    public function getFragment($name)
-    {
-        foreach ($this->fragments as $fragment) {
-            if ($fragment->getName() == $name) {
-                return $fragment;
-            }
-        }
-
-        return null;
-    }
 }
