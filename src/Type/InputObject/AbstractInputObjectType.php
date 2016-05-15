@@ -10,6 +10,7 @@ namespace Youshido\GraphQL\Type\InputObject;
 
 
 use Youshido\GraphQL\Config\Object\InputObjectTypeConfig;
+use Youshido\GraphQL\Config\Traits\ConfigAwareTrait;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
@@ -18,7 +19,7 @@ use Youshido\GraphQL\Type\TypeMap;
 abstract class AbstractInputObjectType extends AbstractType
 {
 
-    use AutoNameTrait;
+    use AutoNameTrait, ConfigAwareTrait;
 
     /**
      * ObjectType constructor.

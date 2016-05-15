@@ -8,11 +8,13 @@
 
 namespace Youshido\GraphQL\Type\Scalar;
 
+use Youshido\GraphQL\Config\Traits\ConfigAwareTrait;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\TypeMap;
 
 abstract class AbstractScalarType extends AbstractType
 {
+    use ConfigAwareTrait;
 
     public function getName()
     {

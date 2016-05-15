@@ -19,8 +19,6 @@ use Youshido\GraphQL\Config\TypeConfigInterface;
 abstract class AbstractType implements TypeInterface
 {
 
-    use ConfigAwareTrait;
-
     public function isCompositeType()
     {
         return false;

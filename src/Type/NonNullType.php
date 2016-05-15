@@ -9,8 +9,12 @@
 namespace Youshido\GraphQL\Type;
 
 
+use Youshido\GraphQL\Config\Traits\ConfigAwareTrait;
+
 final class NonNullType extends AbstractType implements CompositeTypeInterface
 {
+    use ConfigAwareTrait;
+
     private $_typeOf;
 
     /**
