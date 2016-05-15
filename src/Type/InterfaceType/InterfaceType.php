@@ -18,6 +18,14 @@ final class InterfaceType extends AbstractInterfaceType
         $this->config = new InterfaceTypeConfig($config, $this, true);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
+    public function build($config)
+    {
+    }
+
+
     public function resolveType($object)
     {
         return $this->getConfig()->resolveType($object);

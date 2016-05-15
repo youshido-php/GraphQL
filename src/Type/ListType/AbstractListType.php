@@ -20,13 +20,9 @@ abstract class AbstractListType extends AbstractObjectType implements CompositeT
      */
     protected $config;
 
-    public function __construct($item = null)
+    public function __construct()
     {
-        if (!$item) {
-            $item = $this->getItemType();
-        }
-
-        $this->config = new ListTypeConfig(['item' => $item], $this);
+        $this->config = new ListTypeConfig(['itemType' => $this->getItemType()], $this);
     }
 
     /**
@@ -56,15 +52,6 @@ abstract class AbstractListType extends AbstractObjectType implements CompositeT
         return $this->getItemType();
     }
 
-
-    /**
-     * @return String type name
-     */
-    public function getName()
-    {
-        return $this->getConfig()->get('item')->getName();
-    }
-
     final public function getKind()
     {
         return TypeMap::KIND_LIST;
@@ -72,7 +59,7 @@ abstract class AbstractListType extends AbstractObjectType implements CompositeT
 
     public function getTypeOf()
     {
-        return $this->getConfig()->getItem();
+        return $this->getNamedType();
     }
 
 

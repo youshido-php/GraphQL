@@ -10,7 +10,10 @@ namespace Youshido\Tests\StarWars\Schema;
 
 use Youshido\GraphQL\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\ListType\ListType;
+use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\Scalar\IdType;
+use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\TypeMap;
 
 class HumanType extends AbstractObjectType
@@ -26,8 +29,8 @@ class HumanType extends AbstractObjectType
     public function build($config)
     {
         $config
-            ->addField('id', TypeMap::TYPE_ID)
-            ->addField('name', TypeMap::TYPE_STRING)
+            ->addField('id', new NonNullType(new IdType()))
+            ->addField('name', new NonNullType(new StringType()))
             ->addField('friends', [
                 'type' => new ListType(new CharacterInterface()),
                 'resolve' => function ($droid) {

@@ -20,6 +20,16 @@ abstract class AbstractInterfaceType extends AbstractType
 {
     use FieldsAwareObjectTrait, AutoNameTrait;
 
+    protected $isBuilt = false;
+
+    public function getConfig()
+    {
+        if (!$this->isBuilt) {
+            $this->isBuilt = true;
+            $this->build($this->config);
+        }
+        return $this->config;
+    }
     /**
      * ObjectType constructor.
      * @param $config
@@ -34,6 +44,12 @@ abstract class AbstractInterfaceType extends AbstractType
     }
 
     abstract public function resolveType($object);
+
+    /**
+     * @param InterfaceTypeConfig $config
+     * @return mixed
+     */
+    abstract public function build($config);
 
     public function getKind()
     {

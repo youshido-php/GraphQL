@@ -34,4 +34,5 @@ trait ConfigAwareTrait
     {
         return $this->getConfigValue('description');
     }
+
 }

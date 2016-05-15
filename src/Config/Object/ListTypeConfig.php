@@ -17,45 +17,10 @@ class ListTypeConfig extends ObjectTypeConfig
     public function getRules()
     {
         return [
-            'item'    => ['type' => TypeService::TYPE_ANY, 'required' => true],
-            'resolve' => ['type' => TypeService::TYPE_CALLABLE],
-            'args'    => ['type' => TypeService::TYPE_ARRAY_OF_INPUT_FIELDS],
+            'itemType' => ['type' => TypeService::TYPE_GRAPHQL_TYPE, 'final' => true],
+            'resolve'  => ['type' => TypeService::TYPE_CALLABLE],
+            'args'     => ['type' => TypeService::TYPE_ARRAY_OF_INPUT_FIELDS],
         ];
     }
 
-    /**
-     * @param $name
-     * @return Field
-     */
-    public function getField($name)
-    {
-        return $this->getItemConfig()->getField($name);
-    }
-
-    public function hasField($name)
-    {
-        return $this->getItemConfig()->hasField($name);
-    }
-
-    public function getFields()
-    {
-        if ($itemConfig = $this->getItemConfig()) {
-            return $itemConfig->getFields();
-        } else {
-            return [];
-        }
-    }
-
-    /**
-     * @return ObjectTypeConfig
-     */
-    public function getItemConfig()
-    {
-        return $this->getItem()->getConfig();
-    }
-
-    public function getItem()
-    {
-        return $this->get('item');
-    }
 }

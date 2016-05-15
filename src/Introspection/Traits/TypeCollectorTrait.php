@@ -61,8 +61,7 @@ trait TypeCollectorTrait
                 break;
 
             case TypeMap::KIND_LIST:
-                $subItem = $type->getConfig()->getItem();
-                $this->collectTypes($subItem);
+                $this->collectTypes($type->getNamedType());
 
                 foreach ($type->getConfig()->getArguments() as $argument) {
                     $this->collectTypes($argument->getConfig()->getType());
@@ -77,7 +76,7 @@ trait TypeCollectorTrait
         }
     }
 
-    private function checkAndInsertInterfaces($type)
+    private function checkAndInsertInterfaces(AbstractType $type)
     {
         $interfaces = $type->getConfig()->getInterfaces();
 

@@ -25,8 +25,16 @@ abstract class AbstractObjectType extends AbstractType
 {
     use AutoNameTrait, FieldsArgumentsAwareObjectTrait;
 
-    protected $isBuild = false;
+    protected $isBuilt = false;
 
+    public function getConfig()
+    {
+        if (!$this->isBuilt) {
+            $this->isBuilt = true;
+            $this->build($this->config);
+        }
+        return $this->config;
+    }
     /**
      * ObjectType constructor.
      * @param $config
@@ -60,15 +68,6 @@ abstract class AbstractObjectType extends AbstractType
     public function getNamedType()
     {
         return $this;
-    }
-
-    public function getConfig()
-    {
-        if (!$this->isBuild) {
-            $this->isBuild = true;
-            $this->build($this->config);
-        }
-        return $this->config;
     }
 
     /**

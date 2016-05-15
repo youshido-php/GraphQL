@@ -107,6 +107,8 @@ trait ArgumentsAwareConfigTrait
         if ($this->hasArgument($name)) {
             unset($this->arguments[$name]);
         }
+
+        return $this;
     }
 
 }

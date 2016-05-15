@@ -40,6 +40,10 @@ class FieldTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('true', $fieldWithResolve->resolve(true), 'Resolve bool to string');
         $this->assertEquals('CTO', $fieldWithResolve->resolve('CTO'));
+
+        $fieldWithResolve->setType(new IntType());
+        $this->assertEquals(new IntType(), $fieldWithResolve->getType());
+
     }
 
     public function testObjectFieldCreation()

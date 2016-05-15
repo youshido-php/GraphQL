@@ -15,9 +15,14 @@ trait ArgumentsAwareObjectTrait
 {
     use ConfigAwareTrait;
 
-    public function addArgument($argument, $ArgumentInfo = null)
+    public function addArgument($argument, $argumentInfo = null)
     {
-        return $this->getConfig()->addArgument($argument, $ArgumentInfo);
+        return $this->getConfig()->addArgument($argument, $argumentInfo);
+    }
+
+    public function removeArgument($argumentName)
+    {
+        return $this->getConfig()->removeArgument($argumentName);
     }
 
     public function getArguments()

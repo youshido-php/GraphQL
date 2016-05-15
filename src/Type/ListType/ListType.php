@@ -9,12 +9,19 @@
 namespace Youshido\GraphQL\Type\ListType;
 
 
+use Youshido\GraphQL\Config\Object\ListTypeConfig;
+
 final class ListType extends AbstractListType
 {
 
+    public function __construct($itemType)
+    {
+        $this->config = new ListTypeConfig(['itemType' => $itemType], $this, true);
+    }
+
     public function getItemType()
     {
-        return $this->config->getItem();
+        return $this->getConfig()->get('itemType');
     }
 
     public function getName()
