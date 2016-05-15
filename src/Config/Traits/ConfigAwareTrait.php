@@ -10,12 +10,13 @@ namespace Youshido\GraphQL\Config\Traits;
 
 
 use Youshido\GraphQL\Config\AbstractConfig;
+use Youshido\GraphQL\Config\Field\FieldConfig;
 use Youshido\GraphQL\Config\Object\ObjectTypeConfig;
 
 trait ConfigAwareTrait
 {
 
-    /** @var AbstractConfig|ObjectTypeConfig */
+    /** @var AbstractConfig|ObjectTypeConfig|FieldConfig */
     protected $config;
 
     public function getConfig()

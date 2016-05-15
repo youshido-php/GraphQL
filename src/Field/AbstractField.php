@@ -19,9 +19,6 @@ abstract class AbstractField
 
     use FieldsArgumentsAwareObjectTrait, AutoNameTrait;
 
-    /** @var FieldConfig */
-    protected $config;
-
     protected $isFinal = false;
 
     public function __construct(array $config = [])
