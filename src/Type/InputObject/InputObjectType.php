@@ -8,9 +8,19 @@
 
 namespace Youshido\GraphQL\Type\InputObject;
 
+use Youshido\GraphQL\Config\Object\InputObjectTypeConfig;
+
 final class InputObjectType extends AbstractInputObjectType
 {
 
+    public function __construct($config)
+    {
+        $this->config = new InputObjectTypeConfig($config, $this, true);
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
     public function build($config)
     {
     }

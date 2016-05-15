@@ -21,16 +21,13 @@ abstract class AbstractInputObjectType extends AbstractType
 
     use AutoNameTrait, ConfigAwareTrait;
 
-    /**
-     * ObjectType constructor.
-     * @param $config
-     */
     public function __construct($config = [])
     {
-        if (empty($config) && (get_class($this) != 'Youshido\GraphQL\Type\InputObject\InputObjectType')) {
-            $config['name'] = $this->getName();
+        if (empty($config)) {
+            $config = [
+                'name' => $this->getName()
+            ];
         }
-
         $this->config = new InputObjectTypeConfig($config, $this);
     }
 
@@ -46,12 +43,13 @@ abstract class AbstractInputObjectType extends AbstractType
             return false;
         }
 
-        $requiredFields = array_filter($this->getConfig()->getFields(), function (Field $field) {
-            return $field->getConfig()->getType()->getKind() == TypeMap::KIND_NON_NULL;
+        $typeConfig = $this->getConfig();
+        $requiredFields = array_filter($typeConfig->getFields(), function (Field $field) {
+            return $field->getType()->getKind() == TypeMap::KIND_NON_NULL;
         });
 
         foreach ($value as $valueKey => $valueItem) {
-            if (!$this->getConfig()->hasField($valueKey) || !$this->getConfig()->getField($valueKey)->getType()->isValidValue($valueItem)) {
+            if (!$typeConfig->hasField($valueKey) || !$typeConfig->getField($valueKey)->getType()->isValidValue($valueItem)) {
                 return false;
             }
 

@@ -16,10 +16,6 @@ final class ObjectType extends AbstractObjectType
 
     public function __construct(array $config)
     {
-        if (empty($config)) {
-            throw new ConfigurationException('Config should not be empty for the inline ObjectType');
-        }
-
         $this->config = new ObjectTypeConfig($config, $this, true);
     }
 

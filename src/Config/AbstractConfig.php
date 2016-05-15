@@ -46,7 +46,7 @@ abstract class AbstractConfig
      */
     public function __construct(array $configData, $contextObject = null, $finalClass = false)
     {
-        if (!is_array($configData) || empty($configData)) {
+        if (empty($configData)) {
             throw new ConfigurationException('Config for Type should be an array');
         }
 
