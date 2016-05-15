@@ -14,6 +14,7 @@ use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\Tests\DataProvider\TestMutationObjectType;
 use Youshido\Tests\DataProvider\TestObjectType;
 
 class ObjectTypeTest extends \PHPUnit_Framework_TestCase
@@ -114,6 +115,12 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($objectType->getType(), $objectType, 'test type of extended object');
 
         $this->assertNull($objectType->getDescription());
+    }
+
+    public function testMutationObjectClass()
+    {
+        $mutation = new TestMutationObjectType();
+        $this->assertEquals(new StringType(), $mutation->getType());
     }
 
 }
