@@ -11,6 +11,8 @@ namespace Youshido\GraphQL\Validator\SchemaValidator;
 
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Field\Field;
+use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
+use Youshido\GraphQL\Type\InterfaceType\InterfaceType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerInterface;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
@@ -23,12 +25,15 @@ class SchemaValidator implements ErrorContainerInterface
     public function validate(AbstractSchema $schema)
     {
         try {
+            if (!$schema->getQueryType()->hasFields()) {
+                throw new ConfigurationException('Schema has to have fields');
+            }
             foreach ($schema->getQueryType()->getConfig()->getFields() as $field) {
                 if ($field->getType() instanceof AbstractObjectType) {
                     $this->assertInterfaceImplementationCorrect($field->getType());
                 }
             }
-        } catch (\Exception $e) {
+        } catch (ConfigurationException $e) {
             $this->addError($e);
 
             return false;
@@ -51,19 +56,18 @@ class SchemaValidator implements ErrorContainerInterface
     /**
      * @param Field $intField
      * @param Field $objField
+     * @param AbstractInterfaceType $interface
      * @return bool
      * @throws ConfigurationException
      */
-    protected function assertFieldsIdentical($intField, $objField, $interface)
+    protected function assertFieldsIdentical($intField, $objField, AbstractInterfaceType $interface)
     {
-        $intType = $intField->getConfig()->getType();
-        $objType = $objField->getConfig()->getType();
 
         $isValid = true;
-        if ($intType->getName() != $objType->getName()) {
+        if ($intField->getType()->isCompositeType() !== $objField->getType()->isCompositeType()) {
             $isValid = false;
         }
-        if ($intType->isCompositeType() && ($intType->getNamedType()->getName() != $objType->getNamedType()->getName())) {
+        if ($intField->getType()->getNamedType()->getName() != $objField->getType()->getNamedType()->getName()) {
             $isValid = false;
         }
 

@@ -96,6 +96,7 @@ class TypeValidationRuleTest extends \PHPUnit_Framework_TestCase
 
             [TypeService::TYPE_ARRAY_OF_INPUT_FIELDS, [new TestInputObjectType(), new TestInputField()]],
             [TypeService::TYPE_ARRAY_OF_INPUT_FIELDS, [new StringType()]],
+            [TypeService::TYPE_ARRAY_OF_INPUT_FIELDS, [[]], false],
             [TypeService::TYPE_ARRAY_OF_INPUT_FIELDS, new StringType(), false],
 
             [TypeService::TYPE_ARRAY_OF_GRAPHQL_TYPES, [new StringType()]],

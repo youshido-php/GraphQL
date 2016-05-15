@@ -29,13 +29,6 @@ class TypeValidationRule implements ValidationRuleInterface
     public function validate($data, $ruleInfo)
     {
             if (!is_string($ruleInfo)) return false;
-//        /** why can it be an object? */
-//        if (is_object($ruleInfo)) {
-//            $className = get_class($data);
-//            $className = substr($className, strrpos($className, '\\') + 1, -4);
-//
-//            return ($className == $ruleInfo);
-//        } elseif (is_string($ruleInfo)) {
 
             switch ($ruleInfo) {
                 case TypeService::TYPE_ANY:
@@ -166,7 +159,7 @@ class TypeValidationRule implements ValidationRuleInterface
         if (!is_array($data)) return false;
 
         foreach ($data as $name => $item) {
-            if (!$this->isInputField($item, $name)) return false;
+            if (!$this->isInputField($item)) return false;
         }
 
         return true;
@@ -187,8 +180,6 @@ class TypeValidationRule implements ValidationRuleInterface
 
             return TypeService::isInputType($data['type']);
         }
-
-        return false;
     }
 
     /**
