@@ -32,8 +32,8 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
     use ErrorContainerTrait;
 
     /**
-     * @param AbstractObjectType $objectType
-     * @param $field      Mutation|Query
+     * @param AbstractObjectType      $objectType
+     * @param Mutation|Query|AstField $field
      * @return null
      */
     public function objectHasField(AbstractObjectType $objectType, $field)
@@ -63,8 +63,8 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
         });
 
         foreach ($query->getArguments() as $argument) {
-            if (!array_key_exists($argument->getName(), $field->getArguments())) {
-                $this->addError(new ResolveException(sprintf('Unknown argument "%s" on field "%s".', $argument->getName(), $field->getName())));
+            if (!$field->hasArgument($argument->getName())) {
+                $this->addError(new ResolveException(sprintf('Unknown argument "%s" on field "%s"', $argument->getName(), $field->getName())));
 
                 return false;
             }
@@ -84,7 +84,7 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
                 if ($request->hasVariable($variable->getName())) {
                     $variable->setValue($request->getVariable($variable->getName()));
                 } else {
-                    $this->addError(new ResolveException(sprintf('Variable "%s" not exist for query "%s"', $argument->getName(), $field->getName())));
+                    $this->addError(new ResolveException(sprintf('Variable "%s" does not exist for query "%s"', $argument->getName(), $field->getName())));
 
                     return false;
                 }
@@ -127,19 +127,19 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
     }
 
     /**
-     * @param Fragment $fragment
-     * @param AstField $field
+     * @param Fragment   $fragment
+     * @param AstField   $field
      * @param ObjectType $queryType
      * @throws \Exception
      */
-    public function assertValidFragmentForField($fragment, $field, $queryType)
+    public function assertValidFragmentForField($fragment, AstField $field, $queryType)
     {
         if (!$fragment) {
-            throw new \Exception(sprintf('Fragment reference "%s" not found', $field->getName()));
+            throw new ResolveException(sprintf('Fragment reference "%s" not found', $field->getName()));
         }
 
         if ($fragment->getModel() !== $queryType->getName()) {
-            throw new \Exception(sprintf('Fragment reference "%s" not found on model "%s"', $field->getName(), $queryType->getName()));
+            throw new ResolveException(sprintf('Fragment reference "%s" not found on model "%s"', $field->getName(), $queryType->getName()));
         }
 
     }
@@ -153,14 +153,26 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
             case TypeMap::KIND_OBJECT:
             case TypeMap::KIND_INPUT_OBJECT:
             case TypeMap::KIND_INTERFACE:
-                return is_object($value) || is_null($value) || is_array($value);
+                $isValid = is_object($value) || is_null($value) || is_array($value);
+                break;
             case TypeMap::KIND_LIST:
-                return is_null($value) || is_array($value) || (is_object($value) && in_array('IteratorAggregate', class_implements($value)));
+                $isValid = is_null($value) || is_array($value) || (is_object($value) && in_array('IteratorAggregate', class_implements($value)));
+                break;
             case TypeMap::KIND_SCALAR:
-                return is_scalar($value);
+                $isValid = is_scalar($value);
+                break;
+            case TypeMap::KIND_NON_NULL:
+            case TypeMap::KIND_ENUM:
+            default:
+                $isValid = $type->isValidValue($value);
         }
 
-        return false;
+        if (!$isValid) {
+            $this->addError(new ResolveException(sprintf('Not valid resolved value for "%s"', $type->getName())));
+        }
+
+        return $isValid;
+
     }
 
 }

@@ -184,8 +184,6 @@ class Processor
         $resolvedValue = $this->resolveFieldValue($field, null, $mutation);
 
         if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $field->getType())) {
-            $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolved value for mutation "%s"', $field->getType()->getName())));
-
             return [$alias => null];
         }
 
@@ -282,8 +280,6 @@ class Processor
         }
 
         if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $field->getType())) {
-            $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolved value for field "%s"', $field->getType()->getName())));
-
             return null;
         }
 

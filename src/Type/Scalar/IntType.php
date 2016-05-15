@@ -21,9 +21,14 @@ class IntType extends AbstractScalarType
     {
         if ($value === null) {
             return null;
+        } else {
+            if (is_int($value)) {
+                return $value;
+            } else {
+                $value = (int)$value;
+                return $value != 0 ? $value : null;
+            }
         }
-
-        return (int)$value;
     }
 
     public function isValidValue($value)

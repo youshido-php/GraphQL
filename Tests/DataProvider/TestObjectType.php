@@ -9,6 +9,8 @@
 namespace Youshido\Tests\DataProvider;
 
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\Scalar\IntType;
+use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\TypeMap;
 
 class TestObjectType extends AbstractObjectType
@@ -17,8 +19,8 @@ class TestObjectType extends AbstractObjectType
     public function build($config)
     {
         $config
-            ->addField('id', TypeMap::TYPE_INT)
-            ->addField('name', TypeMap::TYPE_STRING);
+            ->addField('id', new IntType())
+            ->addField('name', new StringType());
     }
 
 
