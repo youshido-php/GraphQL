@@ -75,19 +75,21 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
                 /** @var Variable $variable */
                 $variable = $argument->getValue();
 
-                if ($variable->getType() !== $argumentType->getName()) {
+                if ($variable->getTypeName() !== $argumentType->getName()) {
                     $this->addError(new ResolveException(sprintf('Invalid variable "%s" type, allowed type is "%s"', $variable->getName(), $argumentType->getName())));
 
                     return false;
                 }
 
-                if ($request->hasVariable($variable->getName())) {
-                    $variable->setValue($request->getVariable($variable->getName()));
-                } else {
+                /** @var Variable $requestVariable */
+                $requestVariable = $request->getVariable($variable->getName());
+                if (!$requestVariable) {
                     $this->addError(new ResolveException(sprintf('Variable "%s" does not exist for query "%s"', $argument->getName(), $field->getName())));
 
                     return false;
                 }
+                $variable->setValue($requestVariable);
+
             }
 
             if (!$argumentType->isValidValue($argumentType->parseValue($argument->getValue()->getValue()))) {

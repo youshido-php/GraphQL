@@ -135,10 +135,12 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testArgumentsValidation()
     {
-        $variable          = new Variable('year', new IntType());
-        $variableWrongType = new Variable('year', new StringType());
+        $variable          = new Variable('year', 'Int');
+        $variableWrongType = new Variable('year', 'String');
+        $variable->setValue(2016);
 
-        $field             = new Field([
+
+        $field     = new Field([
             'name' => 'hero',
             'type' => new ObjectType([
                 'name'   => 'User',
@@ -151,10 +153,8 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
                 'year'   => new IntType(),
             ]
         ]);
-        $validator         = new ResolveValidator();
-        $request           = new Request([]);
-        $request->setVariables(['year' => $variable]);
-        $variable->setValue(2016);
+        $validator = new ResolveValidator();
+        $request   = new Request([]);
 
 
         $validQuery               = new Query('hero', null, [
@@ -166,8 +166,11 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
         $invalidArgumentTypeQuery = new Query('hero', null, [
             new Argument('year', new Literal('invalid type'))
         ]);
-        $argumentWithVariable = new Query('hero', null, [
+        $argumentWithVariable     = new Query('hero', null, [
             new Argument('year', $variable)
+        ]);
+        $argumentWithVariableWrongType     = new Query('hero', null, [
+            new Argument('year', $variableWrongType)
         ]);
 
 
@@ -188,11 +191,22 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
         ], $validator->getErrorsArray());
         $validator->clearErrors();
 
-//        $validator->validateArguments($field, $argumentWithVariable, $request);
-//        $this->assertEquals([
-//            ['message' => 'Variable "year" does not exist for query "hero"']
-//        ], $validator->getErrorsArray());
-//        $validator->clearErrors();
+        $validator->validateArguments($field, $argumentWithVariable, $request);
+        $this->assertEquals([
+            ['message' => 'Variable "year" does not exist for query "hero"']
+        ], $validator->getErrorsArray());
+        $validator->clearErrors();
+
+        $request->setVariables(['year' => '2016']);
+        $validator->validateArguments($field, $argumentWithVariable, $request);
+        $this->assertFalse($validator->hasErrors());
+
+        $validator->validateArguments($field, $argumentWithVariableWrongType, $request);
+        $this->assertEquals([
+            ['message' => 'Invalid variable "year" type, allowed type is "Int"']
+        ], $validator->getErrorsArray());
+        $validator->clearErrors();
+
 
     }
 }

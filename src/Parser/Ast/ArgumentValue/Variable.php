@@ -66,7 +66,7 @@ class Variable implements ValueInterface
     /**
      * @return string
      */
-    public function getType()
+    public function getTypeName()
     {
         return $this->type;
     }
@@ -74,7 +74,7 @@ class Variable implements ValueInterface
     /**
      * @param string $type
      */
-    public function setType($type)
+    public function setTypeName($type)
     {
         $this->type = $type;
     }
