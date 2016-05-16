@@ -117,14 +117,15 @@ class IntrospectionTest extends \PHPUnit_Framework_TestCase
             [
                 'type'              => new ObjectType([
                     'name'   => 'latest',
-                    'args'   => [
-                        'id' => ['type' => TypeMap::TYPE_INT]
-                    ],
+
                     'fields' => [
                         'id'   => ['type' => TypeMap::TYPE_INT],
                         'name' => ['type' => TypeMap::TYPE_STRING]
                     ],
                 ]),
+                'args'   => [
+                    'id' => ['type' => TypeMap::TYPE_INT]
+                ],
                 'description'       => 'latest description',
                 'deprecationReason' => 'for test',
                 'isDeprecated'      => true,
@@ -180,8 +181,8 @@ class IntrospectionTest extends \PHPUnit_Framework_TestCase
                         '__schema' => [
                             'types' => [
                                 ['name' => 'TestSchemaQuery', 'fields' => [['name' => 'latest']]],
-                                ['name' => 'latest', 'fields' => [['name' => 'id'], ['name' => 'name']]],
                                 ['name' => 'Int', 'fields' => null],
+                                ['name' => 'latest', 'fields' => [['name' => 'id'], ['name' => 'name']]],
                                 ['name' => 'String', 'fields' => null],
                                 ['name' => '__Schema', 'fields' => [['name' => 'queryType'], ['name' => 'mutationType'], ['name' => 'subscriptionType'], ['name' => 'types'], ['name' => 'directives']]],
                                 ['name' => '__Type', 'fields' => [['name' => 'name'], ['name' => 'kind'], ['name' => 'description'], ['name' => 'ofType'], ['name' => 'inputFields'], ['name' => 'enumValues'], ['name' => 'fields'], ['name' => 'interfaces'], ['name' => 'possibleTypes']]],

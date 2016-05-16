@@ -32,9 +32,6 @@ class HumanType extends AbstractObjectType
             ])
             ->addField('appearsIn', new ListType(new EpisodeEnum()))
             ->addField('homePlanet', TypeMap::TYPE_STRING);
-
-        $config
-            ->addArgument('id', TypeMap::TYPE_ID);
     }
 
     public function getInterfaces()
