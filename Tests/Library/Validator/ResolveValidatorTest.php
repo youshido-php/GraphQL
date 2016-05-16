@@ -87,7 +87,7 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Youshido\GraphQL\Validator\Exception\ResolveException
      */
-    public function testInvalidFragmentNull()
+    public function testInvalidFragmentType()
     {
         $userType  = new ObjectType([
             'name'   => 'User',

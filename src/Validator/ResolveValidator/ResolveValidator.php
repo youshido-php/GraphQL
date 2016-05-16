@@ -137,9 +137,9 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
      */
     public function assertValidFragmentForField(Fragment $fragment, FragmentReference $fragmentReference, AbstractType $queryType)
     {
-        if (!$fragment) {
-            throw new ResolveException(sprintf('Fragment reference "%s" not found', $fragmentReference->getName()));
-        }
+//        if (!$fragment) {
+//            throw new ResolveException(sprintf('Fragment reference "%s" not found', $fragmentReference->getName()));
+//        }
 
         if ($fragment->getModel() !== $queryType->getName()) {
             throw new ResolveException(sprintf('Fragment reference "%s" not found on model "%s"', $fragmentReference->getName(), $queryType->getName()));
