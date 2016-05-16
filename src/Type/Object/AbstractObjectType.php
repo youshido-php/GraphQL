@@ -52,6 +52,7 @@ abstract class AbstractObjectType extends AbstractType
     final public function serialize($value)
     {
         /** why final? */
+        /** and why we need this method in *ObjectType? */
         throw new ResolveException('You can not serialize object value directly');
     }
 

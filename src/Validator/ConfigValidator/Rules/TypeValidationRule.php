@@ -9,8 +9,8 @@
 namespace Youshido\GraphQL\Validator\ConfigValidator\Rules;
 
 
+use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\AbstractInputField;
-use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\TypeFactory;
 use Youshido\GraphQL\Type\TypeService;
@@ -140,7 +140,7 @@ class TypeValidationRule implements ValidationRuleInterface
     private function isField($data, $name = null)
     {
         if (is_object($data)) {
-            return ($data instanceof Field) || ($data instanceof AbstractType);
+            return ($data instanceof AbstractField) || ($data instanceof AbstractType);
         }
         if (!is_array($data)) {
             $data = [

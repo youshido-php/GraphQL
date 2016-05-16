@@ -6,7 +6,7 @@
 namespace Examples\Blog\Schema;
 
 
-use Youshido\GraphQL\Config\InputTypeConfigInterface;
+use Youshido\GraphQL\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
 use Youshido\GraphQL\Type\Scalar\StringType;

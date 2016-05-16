@@ -7,21 +7,20 @@
 
 namespace Youshido\GraphQL\Validator\ResolveValidator;
 
-use Youshido\GraphQL\Field\Field;
-use Youshido\GraphQL\Parser\Ast\Field as AstField;
+use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Parser\Ast\Argument;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
+use Youshido\GraphQL\Parser\Ast\Field as AstField;
 use Youshido\GraphQL\Parser\Ast\Fragment;
+use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Request;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
-use Youshido\GraphQL\Type\Object\ObjectType;
-use Youshido\GraphQL\Type\Traits\FieldsAwareObjectTrait;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerInterface;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
@@ -51,7 +50,7 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
     /**
      * @inheritdoc
      */
-    public function validateArguments(Field $field, $query, Request $request)
+    public function validateArguments(AbstractField $field, $query, Request $request)
     {
         if (!count($field->getArguments())) return true;
 
@@ -130,21 +129,21 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
     }
 
     /**
-     * @param Fragment   $fragment
-     * @param AstField   $field
-     * @param ObjectType $queryType
+     * @param Fragment          $fragment
+     * @param FragmentReference $fragmentReference
+     * @param AbstractType      $queryType
+     *
      * @throws \Exception
      */
-    public function assertValidFragmentForField($fragment, AstField $field, $queryType)
+    public function assertValidFragmentForField(Fragment $fragment, FragmentReference $fragmentReference, AbstractType $queryType)
     {
         if (!$fragment) {
-            throw new ResolveException(sprintf('Fragment reference "%s" not found', $field->getName()));
+            throw new ResolveException(sprintf('Fragment reference "%s" not found', $fragmentReference->getName()));
         }
 
         if ($fragment->getModel() !== $queryType->getName()) {
-            throw new ResolveException(sprintf('Fragment reference "%s" not found on model "%s"', $field->getName(), $queryType->getName()));
+            throw new ResolveException(sprintf('Fragment reference "%s" not found on model "%s"', $fragmentReference->getName(), $queryType->getName()));
         }
-
     }
 
     /**

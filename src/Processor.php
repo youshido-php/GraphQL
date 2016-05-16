@@ -9,10 +9,10 @@
 
 namespace Youshido\GraphQL;
 
+use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\Field;
-use Youshido\GraphQL\Field\FieldFactory;
-use Youshido\GraphQL\Introspection\SchemaType;
-use Youshido\GraphQL\Introspection\TypeDefinitionField;
+use Youshido\GraphQL\Introspection\Field\SchemaField;
+use Youshido\GraphQL\Introspection\Field\TypeDefinitionField;
 use Youshido\GraphQL\Parser\Ast\Field as AstField;
 use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\FragmentInterface;
@@ -75,13 +75,11 @@ class Processor
 
         $this->schema = $schema;
 
-        $__schema = new SchemaType();
-        $__schema->setSchema($schema);
+        $schemaField = new SchemaField();
+        $schemaField->setSchema($schema);
 
-        $__type = new TypeDefinitionField();
-
-        $this->schema->addQueryField(FieldFactory::fromTypeWithResolver('__schema', $__schema));
-        $this->schema->addQueryField(FieldFactory::fromTypeWithResolver('__type', $__type));
+        $this->schema->addQueryField($schemaField);
+        $this->schema->addQueryField(new TypeDefinitionField());
     }
 
     public function processRequest($payload, $variables = [])
@@ -141,7 +139,7 @@ class Processor
             return null;
         }
 
-        /** @var Field $field */
+        /** @var AbstractField $field */
         $field = $currentLevelSchema->getField($query->getName());
         $alias = $query->getAlias() ?: $query->getName();
 
@@ -171,7 +169,7 @@ class Processor
             return null;
         }
 
-        /** @var Field $field */
+        /** @var AbstractField $field */
         $field = $currentLevelSchema->getConfig()->getField($mutation->getName());
         $alias = $mutation->getAlias() ?: $mutation->getName();
 
@@ -201,13 +199,15 @@ class Processor
     }
 
     /**
-     * @param AstField $astField
-     * @param mixed    $contextValue
-     * @param Field    $field
+     * @param AstField      $astField
+     * @param mixed         $contextValue
+     * @param AbstractField $field
+     *
      * @return array|mixed|null
+     *
      * @throws \Exception
      */
-    protected function processAstFieldQuery(AstField $astField, $contextValue, Field $field)
+    protected function processAstFieldQuery(AstField $astField, $contextValue, AbstractField $field)
     {
         $value            = null;
         $fieldType        = $field->getType();
@@ -265,13 +265,14 @@ class Processor
     }
 
     /**
-     * @param       $query
-     * @param mixed $contextValue
-     * @param Field $field
+     * @param               $query
+     * @param mixed         $contextValue
+     * @param AbstractField $field
+     *
      * @return null
      * @throws \Exception
      */
-    protected function processFieldTypeQuery($query, $contextValue, Field $field)
+    protected function processFieldTypeQuery($query, $contextValue, AbstractField $field)
     {
         if (!($resolvedValue = $this->resolveFieldValue($field, $contextValue, $query))) {
             return $resolvedValue;
@@ -285,13 +286,13 @@ class Processor
     }
 
     /**
-     * @param Field $field
-     * @param mixed $contextValue
-     * @param Query $query
+     * @param AbstractField $field
+     * @param mixed         $contextValue
+     * @param Query         $query
      *
      * @return mixed
      */
-    protected function resolveFieldValue(Field $field, $contextValue, $query)
+    protected function resolveFieldValue(AbstractField $field, $contextValue, $query)
     {
         $type          = $field->getType();
         $resolvedValue = $field->resolve($contextValue, $this->parseArgumentsValues($field, $query), $type);
@@ -341,15 +342,15 @@ class Processor
     }
 
     /**
-     * @param          $value
-     * @param AstField $astField
-     * @param Field    $field
+     * @param               $value
+     * @param AstField      $astField
+     * @param AbstractField $field
      *
      * @throws \Exception
      *
      * @return mixed
      */
-    protected function getPreResolvedValue($value, AstField $astField, Field $field)
+    protected function getPreResolvedValue($value, AstField $astField, AbstractField $field)
     {
         $resolved      = false;
         $resolverValue = null;
@@ -407,12 +408,12 @@ class Processor
     }
 
     /**
-     * @param $field     Field
+     * @param $field     AbstractField
      * @param $query     Query
      *
      * @return array
      */
-    protected function parseArgumentsValues($field, $query)
+    protected function parseArgumentsValues(AbstractField $field, $query)
     {
         if ($query instanceof AstField) {
             return [];

@@ -1,6 +1,6 @@
 <?php
 /**
- * Date: 02.12.15
+ * Date: 17.12.15
  *
  * @author Portey Vasil <portey@gmail.com>
  */
@@ -8,29 +8,23 @@
 namespace Youshido\GraphQL\Config;
 
 
-use Youshido\GraphQL\Config\Field\FieldConfig;
+use Youshido\GraphQL\Field\Field;
 
-interface TypeConfigInterface extends InputTypeConfigInterface
+interface TypeConfigInterface
 {
 
     /**
-     * @param       $argument
-     * @param       $info
-     *
-     * @return TypeConfigInterface
+     * @param Field|string $field
+     * @param array        $fieldInfo
      */
-    public function addArgument($argument, $info = null);
+    public function addField($field, $fieldInfo = null);
 
-    /**
-     * @param $name
-     *
-     * @return FieldConfig
-     */
-    public function getArgument($name);
+    public function getField($name);
 
-    public function removeArgument($name);
+    public function removeField($name);
 
-    public function hasArgument($name);
+    public function hasField($name);
 
-    public function getArguments();
+    public function getFields();
+
 }

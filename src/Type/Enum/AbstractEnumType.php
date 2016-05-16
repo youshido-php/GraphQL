@@ -57,6 +57,9 @@ abstract class AbstractEnumType extends AbstractType
         return false;
     }
 
+    /**
+     * @return array
+     */
     abstract public function getValues();
 
     public function serialize($value)

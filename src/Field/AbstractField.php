@@ -17,7 +17,8 @@ use Youshido\GraphQL\Type\TypeService;
 abstract class AbstractField
 {
 
-    use FieldsArgumentsAwareObjectTrait, AutoNameTrait;
+    use FieldsArgumentsAwareObjectTrait { getArguments as traitGetArguments; }
+    use AutoNameTrait;
 
     protected $isFinal = false;
 
@@ -33,12 +34,20 @@ abstract class AbstractField
         }
 
         $this->config = new FieldConfig($config, $this, $this->isFinal);
+        $this->build($this->config);
     }
 
     /**
      * @return AbstractObjectType
      */
     abstract public function getType();
+
+    /**
+     * @param FieldConfig $config
+     */
+    public function build(FieldConfig $config) {
+
+    }
 
     public function setType($type)
     {

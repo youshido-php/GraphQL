@@ -7,29 +7,22 @@
 
 namespace Youshido\GraphQL\Introspection;
 
-use Youshido\GraphQL\Field\FieldFactory;
-use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Field\Field;
+use Youshido\GraphQL\Introspection\Field\SchemaField;
 use Youshido\GraphQL\Introspection\Traits\TypeCollectorTrait;
+use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\CompositeTypeInterface;
+use Youshido\GraphQL\Type\Enum\AbstractEnumType;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
-use Youshido\GraphQL\Type\TypeInterface;
+use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\Union\AbstractUnionType;
 
 class QueryType extends AbstractObjectType
 {
+
     use TypeCollectorTrait;
-
-    public function resolve($value = null, $args = [], $type = null)
-    {
-        /** @var AbstractSchema|Field $value */
-        if ($value instanceof AbstractSchema) {
-            return $value->getQueryType();
-        }
-
-        return $value->getConfig()->getType();
-    }
 
     /**
      * @return String type name
@@ -55,38 +48,121 @@ class QueryType extends AbstractObjectType
                     return null;
                 }
             ])
-            ->addField(FieldFactory::fromTypeWithResolver('inputFields', new InputValueListType()))
-            ->addField(FieldFactory::fromTypeWithResolver('enumValues', new EnumValueListType()))
-            ->addField(FieldFactory::fromTypeWithResolver('fields', new FieldListType()))
-            ->addField(FieldFactory::fromTypeWithResolver('interfaces', new InterfaceListType()))
+            ->addField(new Field([
+                'name'    => 'inputFields',
+                'type'    => new ListType(new InputValueType()),
+                'resolve' => function ($value) {
+                    /** @var $value AbstractObjectType */
+                    if ($value instanceof AbstractScalarType) {
+                        return null;
+                    }
+
+                    if ($value->getKind() == TypeMap::KIND_INPUT_OBJECT) {
+                        return $value->getConfig()->getFields() ?: null;
+                    } else {
+                        return $value->getConfig()->getArguments() ?: null;
+                    }
+                }
+            ]))
+            ->addField(new Field([
+                'name'    => 'enumValues',
+                'type'    => new EnumValueType(),
+                'resolve' => function ($value) {
+                    /** @var $value AbstractType|AbstractEnumType */
+                    if ($value && $value->getKind() == TypeMap::KIND_ENUM) {
+                        $data = [];
+                        foreach ($value->getValues() as $enumValue) {
+                            if (!array_key_exists('description', $enumValue)) {
+                                $value['description'] = '';
+                            }
+                            if (!array_key_exists('isDeprecated', $enumValue)) {
+                                $value['isDeprecated'] = false;
+                            }
+                            if (!array_key_exists('deprecationReason', $enumValue)) {
+                                $value['deprecationReason'] = '';
+                            }
+
+                            $data[] = $value;
+                        }
+
+                        return $data;
+                    }
+
+                    return null;
+                }
+            ]))
+            ->addField(new Field([
+                'name'    => 'fields',
+                'type'    => new ListType(new FieldType()),
+                'resolve' => function ($value) {
+                    /** @var AbstractType $value */
+                    if (!$value || in_array($value->getKind(), [
+                            TypeMap::KIND_SCALAR,
+                            TypeMap::KIND_UNION,
+                            TypeMap::KIND_INPUT_OBJECT
+                        ])
+                    ) {
+                        return null;
+                    }
+
+                    /** @var AbstractObjectType $value */
+                    $fields = $value->getConfig()->getFields();
+
+                    foreach ($fields as $key => $field) {
+                        if (in_array($field->getName(), ['__type', '__schema'])) {
+                            unset($fields[$key]);
+                        }
+                    }
+
+                    return $fields;
+                }
+            ]))
+            ->addField(new Field([
+                'name'    => 'interfaces',
+                'type'    => new ListType(new QueryType()),
+                'resolve' => function ($value) {
+                    /** @var $value AbstractType */
+                    if ($value->getKind() == TypeMap::KIND_OBJECT) {
+                        /** @var $value AbstractObjectType */
+                        return $value->getConfig()->getInterfaces() ?: [];
+                    } elseif ($value->getKind() == TypeMap::KIND_UNION) {
+                        return null;
+                    }
+
+                    return [];
+                }
+            ]))
             ->addField('possibleTypes', [
                 'type'    => new ListType(new QueryType()),
                 'resolve' => function ($value) {
-                    if ($value) {
-                        if ($value->getKind() == TypeMap::KIND_INTERFACE) {
-                            $this->collectTypes(SchemaType::$schema->getQueryType());
+                    if (!$value) {
+                        return null;
+                    }
 
-                            $possibleTypes = [];
-                            foreach ($this->types as $type) {
-                                /** @var $type TypeInterface */
-                                if ($type->getKind() == TypeMap::KIND_OBJECT) {
-                                    $interfaces = $type->getConfig()->getInterfaces();
+                    /** @var $value AbstractObjectType */
+                    if ($value->getKind() == TypeMap::KIND_INTERFACE) {
+                        $this->collectTypes(SchemaField::$schema->getQueryType());
 
-                                    if ($interfaces) {
-                                        foreach ($interfaces as $interface) {
-                                            if (get_class($interface) == get_class($value)) {
-                                                $possibleTypes[] = $type;
-                                            }
+                        $possibleTypes = [];
+                        foreach ($this->types as $type) {
+                            /** @var $type AbstractObjectType */
+                            if ($type->getKind() == TypeMap::KIND_OBJECT) {
+                                $interfaces = $type->getConfig()->getInterfaces();
+
+                                if ($interfaces) {
+                                    foreach ($interfaces as $interface) {
+                                        if (get_class($interface) == get_class($value)) {
+                                            $possibleTypes[] = $type;
                                         }
                                     }
                                 }
                             }
-
-                            return $possibleTypes ?: [];
-                        } elseif ($value->getKind() == TypeMap::KIND_UNION) {
-                            return $value->getTypes();
                         }
 
+                        return $possibleTypes ?: [];
+                    } elseif ($value->getKind() == TypeMap::KIND_UNION) {
+                        /** @var $value AbstractUnionType */
+                        return $value->getTypes();
                     }
 
                     return null;

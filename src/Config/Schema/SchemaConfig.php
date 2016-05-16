@@ -52,9 +52,6 @@ class SchemaConfig extends AbstractConfig
      */
     public function getMutation()
     {
-//        if (!$this->get('mutation')) {
-//            $this->set('mutation', new ObjectType(['name' => $this->getName()]));
-//        }
         return $this->get('mutation');
     }
 

@@ -9,14 +9,8 @@
 namespace Youshido\GraphQL\Config\Traits;
 
 
+use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\Field;
-use Youshido\GraphQL\Field\InputField;
-use Youshido\GraphQL\Type\AbstractType;
-use Youshido\GraphQL\Type\Object\AbstractObjectType;
-use Youshido\GraphQL\Type\TypeFactory;
-use Youshido\GraphQL\Type\TypeMap;
-use Youshido\GraphQL\Type\TypeService;
-use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 /**
  * Class FieldsAwareTrait
@@ -41,7 +35,7 @@ trait FieldsAwareConfigTrait
     {
         foreach ($fieldsList as $fieldName => $fieldConfig) {
 
-            if ($fieldConfig instanceof Field) {
+            if ($fieldConfig instanceof AbstractField) {
                 $this->fields[$fieldConfig->getName()] = $fieldConfig;
                 continue;
             } else {
@@ -53,15 +47,16 @@ trait FieldsAwareConfigTrait
     }
 
     /**
-     * @param Field|string $field Field name or Field Object
-     * @param mixed        $fieldInfo Field Type or Field Config array
+     * @param AbstractField|string $field     Field name or Field Object
+     * @param mixed                $fieldInfo Field Type or Field Config array
      * @return $this
      */
     public function addField($field, $fieldInfo = null)
     {
-        if (!($field instanceof Field)) {
+        if (!($field instanceof AbstractField)) {
             $field = new Field($this->buildFieldConfig($field, $fieldInfo));
         }
+
         $this->fields[$field->getName()] = $field;
 
         return $this;

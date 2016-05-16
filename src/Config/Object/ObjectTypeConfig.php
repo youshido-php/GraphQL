@@ -17,7 +17,7 @@ use Youshido\GraphQL\Type\TypeService;
 class ObjectTypeConfig extends AbstractConfig implements TypeConfigInterface
 {
 
-    use FieldsAwareConfigTrait, ArgumentsAwareConfigTrait;
+    use FieldsAwareConfigTrait;
 
     public function getRules()
     {
@@ -25,8 +25,6 @@ class ObjectTypeConfig extends AbstractConfig implements TypeConfigInterface
             'name'        => ['type' => TypeService::TYPE_STRING, 'required' => true],
             'description' => ['type' => TypeService::TYPE_STRING],
             'fields'      => ['type' => TypeService::TYPE_ARRAY_OF_FIELDS_CONFIG, 'final' => true],
-            'args'        => ['type' => TypeService::TYPE_ARRAY_OF_INPUT_FIELDS],
-            'resolve'     => ['type' => TypeService::TYPE_CALLABLE],
             'interfaces'  => ['type' => TypeService::TYPE_ARRAY_OF_INTERFACES]
         ];
     }
@@ -34,7 +32,6 @@ class ObjectTypeConfig extends AbstractConfig implements TypeConfigInterface
     protected function build()
     {
         $this->buildFields();
-        $this->buildArguments();
     }
 
     public function getInterfaces()
