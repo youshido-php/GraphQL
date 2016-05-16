@@ -17,8 +17,7 @@ use Youshido\GraphQL\Type\TypeService;
 abstract class AbstractField
 {
 
-    use FieldsArgumentsAwareObjectTrait { getArguments as traitGetArguments; }
-    use AutoNameTrait;
+    use FieldsArgumentsAwareObjectTrait, AutoNameTrait;
 
     protected $isFinal = false;
 
