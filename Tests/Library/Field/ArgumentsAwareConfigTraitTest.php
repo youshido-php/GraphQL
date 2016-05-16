@@ -9,7 +9,7 @@
 namespace Youshido\Tests\Library\Field;
 
 
-use Youshido\GraphQL\Config\Object\ObjectTypeConfig;
+use Youshido\GraphQL\Config\Field\FieldConfig;
 use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
@@ -19,18 +19,13 @@ class ArgumentsAwareConfigTraitTest extends \PHPUnit_Framework_TestCase
 
     public function testArguments()
     {
-        $fieldsData = [
-            'id' => [
-                'type' => new IntType()
-            ]
-        ];
         $argsData   = [
             'id' => new IntType()
         ];
-        $config     = new ObjectTypeConfig([
-            'name'   => 'UserType',
-            'fields' => $fieldsData,
-            'args'   => $argsData
+        $config     = new FieldConfig([
+            'name' => 'UserType',
+            'type' => new IntType(),
+            'args' => $argsData
         ]);
 
         $this->assertTrue($config->hasArguments());

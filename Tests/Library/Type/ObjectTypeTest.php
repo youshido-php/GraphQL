@@ -108,34 +108,6 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
         ], $objectType->getFields());
     }
 
-    public function testArgumentsTrait()
-    {
-        $objectType = new ObjectType([
-            'name' => 'Post',
-            'fields' => [
-                'id' => new IntType()
-            ],
-            'description' => 'Post type description'
-        ]);
-        $this->assertFalse($objectType->hasArguments());
-
-        $objectType->addArgument(new InputField(['name' => 'id', 'type' => new IntType()]));
-        $this->assertEquals([
-            'id' => new InputField(['name' => 'id', 'type' => new IntType()])
-        ], $objectType->getArguments());
-
-        $objectType->addArguments([
-            new InputField(['name' => 'name', 'type' => new StringType()])
-        ]);
-        $this->assertEquals([
-            'id' => new InputField(['name' => 'id', 'type' => new IntType()]),
-            'name' => new InputField(['name' => 'name', 'type' => new StringType()]),
-        ], $objectType->getArguments());
-
-        $objectType->removeArgument('name');
-        $this->assertFalse($objectType->hasArgument('name'));
-    }
-
     public function testExtendedClass()
     {
         $objectType = new TestObjectType();

@@ -34,11 +34,7 @@ class SchemaType extends AbstractObjectType
                 'type'    => new QueryType(),
                 'resolve' => function ($value) {
                     /** @var AbstractSchema|Field $value */
-                    if ($value instanceof AbstractSchema) {
-                        return $value->getQueryType();
-                    }
-
-                    return $value->getConfig()->getType();
+                    return $value->getQueryType();
                 }
             ]))
             ->addField(new Field([
@@ -46,11 +42,7 @@ class SchemaType extends AbstractObjectType
                 'type'    => new QueryType(),
                 'resolve' => function ($value) {
                     /** @var AbstractSchema|Field $value */
-                    if ($value instanceof AbstractSchema) {
-                        return $value->getMutationType()->hasFields() ? $value->getMutationType() : null;
-                    }
-
-                    return $value->getConfig()->getType();
+                    return $value->getMutationType()->hasFields() ? $value->getMutationType() : null;
                 }
             ]))
             ->addField(new Field([

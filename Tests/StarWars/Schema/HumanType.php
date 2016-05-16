@@ -19,13 +19,6 @@ use Youshido\GraphQL\Type\TypeMap;
 class HumanType extends AbstractObjectType
 {
 
-    public function resolve($value = null, $args = [], $type = null)
-    {
-        $humans = StarWarsData::humans();
-
-        return isset($humans[$args['id']]) ? $humans[$args['id']] : null;
-    }
-
     public function build($config)
     {
         $config

@@ -8,6 +8,8 @@
 
 namespace Youshido\GraphQL\Type;
 
+use Youshido\GraphQL\Config\AbstractConfig;
+
 Interface TypeInterface
 {
     /**
@@ -48,5 +50,8 @@ Interface TypeInterface
      */
     public function isValidValue($value);
 
+    /**
+     * @return AbstractConfig
+     */
     public function getConfig();
 }

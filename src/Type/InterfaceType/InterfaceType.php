@@ -25,7 +25,6 @@ final class InterfaceType extends AbstractInterfaceType
     {
     }
 
-
     public function resolveType($object)
     {
         return $this->getConfig()->resolveType($object);

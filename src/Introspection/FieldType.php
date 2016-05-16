@@ -38,24 +38,9 @@ class FieldType extends AbstractObjectType
                         return $value->getConfig()->getArguments();
                     }
 
-                    $valueType = $value->getConfig()->getType();
-                    if ($valueType instanceof AbstractScalarType) {
-                        return [];
-                    }
-
-                    if ($valueType->getKind() == TypeMap::KIND_INPUT_OBJECT) {
-                        return $valueType->getConfig()->getFields() ?: [];
-                    } else {
-                        return $valueType->getConfig() ? $valueType->getConfig()->getArguments() : [];
-                    }
+                    return [];
                 }
             ]);
-    }
-
-    public function resolve($value = null, $args = [], $type = null)
-    {
-        /** @var $value Field */
-        return $value->getType();
     }
 
     /**

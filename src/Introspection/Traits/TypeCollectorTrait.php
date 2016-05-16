@@ -7,10 +7,7 @@
 
 namespace Youshido\GraphQL\Introspection\Traits;
 
-use Youshido\GraphQL\Config\Field\FieldConfig;
 use Youshido\GraphQL\Type\AbstractType;
-use Youshido\GraphQL\Type\Object\AbstractObjectType;
-use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 
 trait TypeCollectorTrait
@@ -34,11 +31,7 @@ trait TypeCollectorTrait
 
                 if ($type->getKind() == TypeMap::KIND_UNION) {
                     foreach ($type->getTypes() as $subType) {
-                        if ($this->insertType($subType->getName(), $subType)) {
-                            $this->collectFieldsArgsTypes($subType);
-
-                            $this->checkAndInsertInterfaces($subType);
-                        }
+                        $this->collectTypes($subType);
                     }
                 }
 
@@ -62,11 +55,6 @@ trait TypeCollectorTrait
 
             case TypeMap::KIND_LIST:
                 $this->collectTypes($type->getNamedType());
-
-                foreach ($type->getConfig()->getArguments() as $argument) {
-                    $this->collectTypes($argument->getConfig()->getType());
-                }
-
                 break;
 
             case TypeMap::KIND_NON_NULL:
@@ -82,9 +70,7 @@ trait TypeCollectorTrait
 
         if (is_array($interfaces) && $interfaces) {
             foreach ($interfaces as $interface) {
-                if ($this->insertType($interface->getName(), $interface)) {
-                    $this->collectFieldsArgsTypes($interface);
-                }
+                $this->insertType($interface->getName(), $interface);
             }
         }
     }
@@ -99,21 +85,14 @@ trait TypeCollectorTrait
         }
 
         foreach ($type->getConfig()->getFields() as $field) {
-            if ($field->getConfig()->getType() instanceof AbstractObjectType) {
-                $arguments = $field->getConfig()->getArguments();
+            $arguments = $field->getConfig()->getArguments();
 
-                if (is_array($arguments)) {
-                    foreach ($arguments as $argument) {
-                        $this->collectTypes($argument->getType());
-                    }
+            if (is_array($arguments)) {
+                foreach ($arguments as $argument) {
+                    $this->collectTypes($argument->getType());
                 }
             }
 
-            $this->collectTypes($field->getType());
-        }
-
-        foreach ($type->getConfig()->getArguments() as $field) {
-            /** @var FieldConfig $field */
             $this->collectTypes($field->getType());
         }
     }

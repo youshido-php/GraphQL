@@ -15,6 +15,7 @@ use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
 use Youshido\GraphQL\Parser\Ast\Field as AstField;
 use Youshido\GraphQL\Parser\Ast\Fragment;
+use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Request;
 use Youshido\GraphQL\Type\NonNullType;
@@ -56,7 +57,8 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
         $validator->assertTypeImplementsInterface($userType, new TestInterfaceType());
 
         $fragment = new Fragment('name', 'User', []);
-        $validator->assertValidFragmentForField($fragment, $fieldName, $userType);
+        $fragmentReference = new FragmentReference('name');
+        $validator->assertValidFragmentForField($fragment, $fragmentReference, $userType);
     }
 
     public function testValidateValue()
@@ -85,23 +87,6 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Youshido\GraphQL\Validator\Exception\ResolveException
      */
-    public function testInvalidInterfaceImplementation()
-    {
-        $userType  = new ObjectType([
-            'name'   => 'User',
-            'fields' => [
-                'name' => new StringType(),
-            ],
-        ]);
-        $fieldName = new AstField('name');
-
-        $validator = new ResolveValidator();
-        $validator->assertValidFragmentForField(null, $fieldName, $userType);
-    }
-
-    /**
-     * @expectedException \Youshido\GraphQL\Validator\Exception\ResolveException
-     */
     public function testInvalidFragmentNull()
     {
         $userType  = new ObjectType([
@@ -110,11 +95,11 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
                 'name' => new StringType(),
             ],
         ]);
-        $fieldName = new AstField('name');
+        $fragmentReference = new FragmentReference('user');
         $fragment  = new Fragment('name', 'Product', []);
 
         $validator = new ResolveValidator();
-        $validator->assertValidFragmentForField($fragment, $fieldName, $userType);
+        $validator->assertValidFragmentForField($fragment, $fragmentReference, $userType);
     }
 
     /**

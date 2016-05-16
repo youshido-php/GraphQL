@@ -51,38 +51,29 @@ class QueryType extends AbstractObjectType
             ->addField(new Field([
                 'name'    => 'inputFields',
                 'type'    => new ListType(new InputValueType()),
-                'resolve' => function ($value) {
-                    /** @var $value AbstractObjectType */
-                    if ($value instanceof AbstractScalarType) {
-                        return null;
-                    }
-
-                    if ($value->getKind() == TypeMap::KIND_INPUT_OBJECT) {
-                        return $value->getConfig()->getFields() ?: null;
-                    } else {
-                        return $value->getConfig()->getArguments() ?: null;
-                    }
+                'resolve' => function () {
+                    return null;
                 }
             ]))
             ->addField(new Field([
                 'name'    => 'enumValues',
-                'type'    => new EnumValueType(),
+                'type'    => new ListType(new EnumValueType()),
                 'resolve' => function ($value) {
                     /** @var $value AbstractType|AbstractEnumType */
                     if ($value && $value->getKind() == TypeMap::KIND_ENUM) {
                         $data = [];
                         foreach ($value->getValues() as $enumValue) {
                             if (!array_key_exists('description', $enumValue)) {
-                                $value['description'] = '';
+                                $enumValue['description'] = '';
                             }
                             if (!array_key_exists('isDeprecated', $enumValue)) {
-                                $value['isDeprecated'] = false;
+                                $enumValue['isDeprecated'] = false;
                             }
                             if (!array_key_exists('deprecationReason', $enumValue)) {
-                                $value['deprecationReason'] = '';
+                                $enumValue['deprecationReason'] = '';
                             }
 
-                            $data[] = $value;
+                            $data[] = $enumValue;
                         }
 
                         return $data;
@@ -96,11 +87,8 @@ class QueryType extends AbstractObjectType
                 'type'    => new ListType(new FieldType()),
                 'resolve' => function ($value) {
                     /** @var AbstractType $value */
-                    if (!$value || in_array($value->getKind(), [
-                            TypeMap::KIND_SCALAR,
-                            TypeMap::KIND_UNION,
-                            TypeMap::KIND_INPUT_OBJECT
-                        ])
+                    if (!$value ||
+                        in_array($value->getKind(), [TypeMap::KIND_SCALAR, TypeMap::KIND_UNION, TypeMap::KIND_INPUT_OBJECT, TypeMap::KIND_ENUM])
                     ) {
                         return null;
                     }
@@ -125,11 +113,9 @@ class QueryType extends AbstractObjectType
                     if ($value->getKind() == TypeMap::KIND_OBJECT) {
                         /** @var $value AbstractObjectType */
                         return $value->getConfig()->getInterfaces() ?: [];
-                    } elseif ($value->getKind() == TypeMap::KIND_UNION) {
-                        return null;
                     }
 
-                    return [];
+                    return null;
                 }
             ]))
             ->addField('possibleTypes', [
