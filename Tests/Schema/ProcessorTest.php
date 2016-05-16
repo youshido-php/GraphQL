@@ -9,6 +9,7 @@
 namespace Youshido\Tests\Schema;
 
 
+use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\Object\ObjectType;
@@ -18,6 +19,8 @@ use Youshido\GraphQL\Type\Scalar\StringType;
 
 class ProcessorTest extends \PHPUnit_Framework_TestCase
 {
+
+    private $_counter = 0;
 
     public function testInit()
     {
@@ -57,7 +60,15 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                         'type'    => new ObjectType([
                             'name'   => 'User',
                             'fields' => [
-                                'firstName' => new StringType(),
+                                'firstName' => [
+                                    'type' => new StringType(),
+                                    'args' => [
+                                        'shorten' => new BooleanType()
+                                    ],
+                                    'resolve' => function($value, $args = []) {
+                                        return empty($args['shorten']) ? $value : $value[0];
+                                    }
+                                ],
                                 'lastName'  => new StringType(),
                                 'code'      => new IntType(),
                             ]
@@ -95,6 +106,47 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $processor->processRequest('{ me(upper:true) { firstName } }');
         $this->assertEquals(['data' => ['me' => ['firstName' => 'JOHN']]], $processor->getResponseData());
+
+        $schema->addMutationField(new Field([
+            'name'    => 'increaseCounter',
+            'type'    => new IntType(),
+            'resolve' => function ($value, $args, IntType $type) {
+                return $this->_counter += $args['amount'];
+            },
+            'args'    => [
+                'amount' => [
+                    'type'    => new IntType(),
+                    'default' => 1
+                ]
+            ]
+        ]));
+        $processor->processRequest('mutation { increaseCounter }');
+        $this->assertEquals(['data' => ['increaseCounter' => 1]], $processor->getResponseData());
+
+        $processor->processRequest('mutation { invalidMutation }');
+        $this->assertEquals(['errors' => [['message' => 'Field "invalidMutation" not found in type "RootSchemaMutation"']]], $processor->getResponseData());
+        $processor->clearErrors();
+
+        $processor->processRequest('mutation { increaseCounter(noArg: 2) }');
+        $this->assertEquals(['errors' => [['message' => 'Unknown argument "noArg" on field "increaseCounter"']]], $processor->getResponseData());
+        $processor->clearErrors();
+
+        $processor->processRequest('mutation { increaseCounter(amount: 2) { invalidProp } }');
+        $this->assertEquals(['errors' => [['message' => 'Field "invalidProp" not found in type "Int"']], 'data' => ['increaseCounter' => null]], $processor->getResponseData());
+        $processor->clearErrors();
+
+        $processor->processRequest('mutation { increaseCounter(amount: 2) }');
+        $this->assertEquals(['data' => ['increaseCounter' => 5]], $processor->getResponseData());
+        $processor->clearErrors();
+
+        $processor->processRequest('{ invalidQuery }');
+        $this->assertEquals(['errors' => [['message' => 'Field "invalidQuery" not found in type "RootQuery"']]], $processor->getResponseData());
+        $processor->clearErrors();
+
+        $processor->processRequest('{ me { firstName(shorten: true), middle }}');
+        $this->assertEquals(['errors' => [['message' => 'Field "middle" not found in type "User"']], 'data' => [ 'me' => null]], $processor->getResponseData());
+        $processor->clearErrors();
+
     }
 
 

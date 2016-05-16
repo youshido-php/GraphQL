@@ -21,6 +21,7 @@ use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
+use Youshido\GraphQL\Type\Traits\FieldsAwareObjectTrait;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerInterface;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
@@ -36,9 +37,9 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
      * @param Mutation|Query|AstField $field
      * @return null
      */
-    public function objectHasField(AbstractObjectType $objectType, $field)
+    public function objectHasField($objectType, $field)
     {
-        if (!$objectType->hasField($field->getName())) {
+        if (!($objectType instanceof AbstractObjectType) || !$objectType->hasField($field->getName())) {
             $this->addError(new ResolveException(sprintf('Field "%s" not found in type "%s"', $field->getName(), $objectType->getNamedType()->getName())));
 
             return false;

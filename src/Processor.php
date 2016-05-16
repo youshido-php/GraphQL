@@ -135,7 +135,7 @@ class Processor
      * @param null               $contextValue
      * @return array|bool|mixed
      */
-    protected function executeQuery($query, AbstractObjectType $currentLevelSchema, $contextValue = null)
+    protected function executeQuery($query, $currentLevelSchema, $contextValue = null)
     {
         if (!$this->resolveValidator->objectHasField($currentLevelSchema, $query)) {
             return null;
@@ -167,8 +167,6 @@ class Processor
      */
     protected function executeMutation(Mutation $mutation, $currentLevelSchema)
     {
-        if (!$currentLevelSchema) throw new ConfigurationException('There is no mutation ' . $mutation->getName());
-
         if (!$this->resolveValidator->objectHasField($currentLevelSchema, $mutation)) {
             return null;
         }
@@ -432,7 +430,7 @@ class Processor
 
     /**
      * @param $query         Query
-     * @param $queryType     AbstractObjectType|TypeInterface|Field
+     * @param $queryType     AbstractObjectType|TypeInterface|Field|AbstractType
      * @param $resolvedValue mixed
      * @param $value         array
      *
@@ -440,7 +438,7 @@ class Processor
      *
      * @return array
      */
-    protected function processQueryFields($query, AbstractObjectType $queryType, $resolvedValue, $value)
+    protected function processQueryFields($query, AbstractType $queryType, $resolvedValue, $value)
     {
         foreach ($query->getFields() as $field) {
             if ($field instanceof FragmentInterface) {
@@ -460,6 +458,7 @@ class Processor
             } elseif ($field->getName() == self::TYPE_NAME_QUERY) {
                 $value = $this->collectValue($value, [$field->getAlias() ?: $field->getName() => $queryType->getName()]);
             } else {
+                /** need to add check if $queryType is not an objecttype $value */
                 $value = $this->collectValue($value, $this->executeQuery($field, $queryType, $resolvedValue));
             }
         }
