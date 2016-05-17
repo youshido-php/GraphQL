@@ -9,7 +9,7 @@
 namespace Examples\StarWars;
 
 
-use Youshido\GraphQL\Relay\Connection;
+use Youshido\GraphQL\Relay\Connection\Connection;
 use Youshido\GraphQL\Relay\Field\GlobalIdField;
 use Youshido\GraphQL\Relay\NodeInterface;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
@@ -18,10 +18,12 @@ use Youshido\GraphQL\Type\TypeMap;
 class FactionType extends AbstractObjectType
 {
 
+    const TYPE_KEY = 'faction';
+
     public function build($config)
     {
         $config
-            ->addField(new GlobalIdField())
+            ->addField(new GlobalIdField(self::TYPE_KEY))
             ->addField('name', [
                 'type'        => TypeMap::TYPE_STRING,
                 'description' => 'The name of the faction.'

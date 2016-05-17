@@ -5,7 +5,7 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphQL\Relay;
+namespace Youshido\GraphQL\Relay\Connection;
 
 
 use Youshido\GraphQL\Type\AbstractType;

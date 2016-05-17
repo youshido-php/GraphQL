@@ -5,7 +5,7 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphQl\Relay;
+namespace Youshido\GraphQl\Relay\Connection;
 
 
 class ArrayConnection

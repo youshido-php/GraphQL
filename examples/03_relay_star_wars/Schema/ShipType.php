@@ -16,10 +16,12 @@ use Youshido\GraphQL\Type\TypeMap;
 
 class ShipType extends AbstractObjectType
 {
+    const TYPE_KEY = 'ship';
+
     public function build($config)
     {
         $config
-            ->addField(new GlobalIdField())
+            ->addField(new GlobalIdField(self::TYPE_KEY))
             ->addField('name', ['type' => TypeMap::TYPE_STRING, 'description' => 'The name of the ship.']);
     }
 
@@ -27,7 +29,6 @@ class ShipType extends AbstractObjectType
     {
         return TestDataProvider::getShip($id);
     }
-
 
     public function getDescription()
     {

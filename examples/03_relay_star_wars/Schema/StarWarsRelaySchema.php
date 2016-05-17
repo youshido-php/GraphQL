@@ -3,7 +3,8 @@
 namespace Examples\StarWars;
 
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
-use Youshido\GraphQL\Relay\Connection;
+use Youshido\GraphQL\Relay\Connection\Connection;
+use Youshido\GraphQL\Relay\Fetcher\CallableFetcher;
 use Youshido\GraphQL\Relay\Field\NodeField;
 use Youshido\GraphQL\Schema\AbstractSchema;
 
@@ -11,6 +12,24 @@ class StarWarsRelaySchema extends AbstractSchema
 {
     public function build(SchemaConfig $config)
     {
+        $fetcher = new CallableFetcher(
+            function ($type, $id) {
+                switch ($type) {
+                    case FactionType::TYPE_KEY:
+                        return TestDataProvider::getFaction($id);
+
+                    case
+                        ShipType::TYPE_KEY:
+                        return TestDataProvider::getShip($id);
+                }
+
+                return null;
+            },
+            function ($object) {
+                return $object && array_key_exists('ships', $object) ? new FactionType() : new ShipType();
+            }
+        );
+
         $config->getQuery()
             ->addField('rebels', [
                 'type'    => new FactionType(),
@@ -24,7 +43,7 @@ class StarWarsRelaySchema extends AbstractSchema
                     return TestDataProvider::getFaction('empire');
                 }
             ])
-            ->addField(new NodeField())
+            ->addField(new NodeField($fetcher))
             ->addField('factions', [
                 'type'    => Connection::connectionDefinition(new FactionType()),
                 'args'    => Connection::connectionArgs(),

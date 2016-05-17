@@ -9,11 +9,15 @@
 namespace Youshido\GraphQL\Relay;
 
 
+use Youshido\GraphQL\Relay\Fetcher\FetcherInterface;
 use Youshido\GraphQL\Relay\Field\GlobalIdField;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 
 class NodeInterface extends AbstractInterfaceType
 {
+
+    /** @var  FetcherInterface */ //todo: maybe there are better solution
+    protected $fetcher;
 
     public function getName()
     {
@@ -27,8 +31,30 @@ class NodeInterface extends AbstractInterfaceType
 
     public function resolveType($object)
     {
-        /** Need to find the best way to pass "TypeResolver" here */
+        if ($this->fetcher) {
+            return $this->fetcher->resolveType($object);
+        }
+
         return null;
     }
 
+    /**
+     * @return FetcherInterface
+     */
+    public function getFetcher()
+    {
+        return $this->fetcher;
+    }
+
+    /**
+     * @param FetcherInterface $fetcher
+     *
+     * @return NodeInterface
+     */
+    public function setFetcher($fetcher)
+    {
+        $this->fetcher = $fetcher;
+
+        return $this;
+    }
 }

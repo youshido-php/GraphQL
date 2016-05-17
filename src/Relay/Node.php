@@ -18,7 +18,11 @@ class Node
      */
     public static function fromGlobalId($id)
     {
-        return explode(':', base64_decode($id));
+        if ($decoded = base64_decode($id)) {
+            return explode(':', $decoded);
+        }
+
+        return [null, null];
     }
 
     /**

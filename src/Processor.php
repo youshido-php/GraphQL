@@ -283,7 +283,13 @@ class Processor
             return null;
         }
 
-        return $this->collectTypeResolvedValue($field->getType(), $resolvedValue, $query);
+        $type = $field->getType();
+        if (TypeService::isAbstractType($type)) {
+            /** @var AbstractInterfaceType $type */
+            $type = $type->resolveType($resolvedValue);
+        }
+
+        return $this->collectTypeResolvedValue($type, $resolvedValue, $query);
     }
 
     /**
@@ -297,12 +303,6 @@ class Processor
     {
         $type          = $field->getType();
         $resolvedValue = $field->resolve($contextValue, $this->parseArgumentsValues($field, $query), $type);
-
-        if (TypeService::isAbstractType($type)) {
-            /** @var AbstractInterfaceType $type */
-            $resolvedType = $type->resolveType($resolvedValue);
-            $field->setType($resolvedType);
-        }
 
         return $resolvedValue;
     }
@@ -362,7 +362,9 @@ class Processor
         } elseif (is_object($value)) {
             $resolverValue = $this->getPropertyValue($value, $astField->getName());
             $resolved      = true;
-        } elseif ($field->getType()->getNamedType()->getKind() == TypeMap::KIND_SCALAR) {
+        }
+
+        if ($field->getType()->getNamedType()->getKind() == TypeMap::KIND_SCALAR) {
             $resolved = true;
         }
 

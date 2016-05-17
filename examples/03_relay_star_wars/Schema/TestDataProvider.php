@@ -58,24 +58,23 @@ class TestDataProvider
 
     public static function getShip($id)
     {
-        return empty(self::$ships[$id]) ? null : self::$ships[$id];
+        foreach(self::$ships as $ship) {
+            if($ship['id'] == $id) {
+                return $ship;
+            }
+        }
+
+        return null;
     }
 
     public static function getFaction($id)
     {
-        return empty(self::$factions[$id]) ? null : self::$factions[$id];
+        foreach(self::$factions as $faction) {
+            if($faction['id'] == $id) {
+                return $faction;
+            }
+        }
+
+        return null;
     }
-    /**
-     * export function getFactions(names) {
-    return names.map(name => {
-    if (name === 'empire') {
-    return empire;
-    }
-    if (name === 'rebels') {
-    return rebels;
-    }
-    return null;
-    });
-    }
-     */
 }
