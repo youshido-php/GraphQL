@@ -28,6 +28,7 @@ class StarWarsRelaySchema extends AbstractSchema
             ])->addField(new NodeField());
 
         /** I want to get to the point where it works the same as JS and then go with OOP approach */
+        /** https://github.com/graphql/graphql-relay-js/blob/master/src/__tests__/starWarsSchema.js */
 //        $config->getMutation()->addField('introduceShip', [
 //            'args' => [
 //                'shipName'  => new NonNullType(new StringType()),
