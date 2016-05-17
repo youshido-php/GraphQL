@@ -29,7 +29,7 @@ class StarWarsRelaySchema extends AbstractSchema
                 'type'    => Connection::connectionDefinition(new FactionType()),
                 'args'    => Connection::connectionArgs(),
                 'resolve' => function ($value = null, $args = [], $type = null) {
-                    return [];
+                    return Connection::connectionFromArray(TestDataProvider::getFactions(), $args);
                 }
             ]);
 

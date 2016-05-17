@@ -135,6 +135,8 @@ class Processor
      */
     protected function executeQuery($query, $currentLevelSchema, $contextValue = null)
     {
+        $currentLevelSchema = $currentLevelSchema->getNullableType(); //todo: somehow we need to validate for not null
+
         if (!$this->resolveValidator->objectHasField($currentLevelSchema, $query)) {
             return null;
         }

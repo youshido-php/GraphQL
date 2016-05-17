@@ -19,7 +19,7 @@ class ShipType extends AbstractObjectType
     public function build($config)
     {
         $config
-            ->addField(new GlobalIdField('Ship'))
+            ->addField(new GlobalIdField())
             ->addField('name', ['type' => TypeMap::TYPE_STRING, 'description' => 'The name of the ship.']);
     }
 

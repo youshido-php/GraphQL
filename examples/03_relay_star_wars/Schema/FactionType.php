@@ -29,15 +29,11 @@ class FactionType extends AbstractObjectType
             ->addField('ships', [
                 'type'        => Connection::connectionDefinition(new ShipType()),
                 'description' => 'The ships used by the faction',
-                'args' => Connection::connectionArgs(),
+                'args'        => Connection::connectionArgs(),
                 'resolve'     => function ($value = null, $args = [], $type = null) {
-                    /**
-                     *       resolve: (faction, args) => connectionFromArray(
-                     * faction.ships.map((id) => getShip(id)),
-                     * args
-                     * ),
-                     */
-                    return [];
+                    return Connection::connectionFromArray(array_map(function ($id) {
+                        return TestDataProvider::getShip($id);
+                    }, $value['ships']), $args);
                 }
             ]);
 
