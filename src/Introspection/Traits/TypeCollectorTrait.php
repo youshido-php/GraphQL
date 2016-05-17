@@ -70,14 +70,10 @@ trait TypeCollectorTrait
     }
 
     /**
-     * @param $type AbstractType
+     * @param $type AbstractObjectType
      */
-    private function collectFieldsArgsTypes($type)
+    private function collectFieldsArgsTypes(AbstractObjectType $type)
     {
-        if (!$type->getConfig()) {
-            return;
-        }
-
         foreach ($type->getConfig()->getFields() as $field) {
             $arguments = $field->getConfig()->getArguments();
 
