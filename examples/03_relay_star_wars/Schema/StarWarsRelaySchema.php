@@ -2,30 +2,36 @@
 
 namespace Examples\StarWars;
 
+use Youshido\GraphQL\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Relay\Connection;
 use Youshido\GraphQL\Relay\Field\NodeField;
 use Youshido\GraphQL\Schema\AbstractSchema;
-use Youshido\GraphQL\Relay\Node;
-use Youshido\GraphQL\Config\Schema\SchemaConfig;
-use Youshido\GraphQL\Type\NonNullType;
-use Youshido\GraphQL\Type\Scalar\IdType;
-use Youshido\GraphQL\Type\Scalar\StringType;
 
 class StarWarsRelaySchema extends AbstractSchema
 {
     public function build(SchemaConfig $config)
     {
         $config->getQuery()
-               ->addField('rebels', [
-                   'type'    => new FactionType(),
-                   'resolve' => function () {
-                       return TestDataProvider::getFaction('rebels');
-                   }
-               ])->addField('empire', [
+            ->addField('rebels', [
+                'type'    => new FactionType(),
+                'resolve' => function () {
+                    return TestDataProvider::getFaction('rebels');
+                }
+            ])
+            ->addField('empire', [
                 'type'    => new FactionType(),
                 'resolve' => function () {
                     return TestDataProvider::getFaction('empire');
                 }
-            ])->addField(new NodeField());
+            ])
+            ->addField(new NodeField())
+            ->addField('factions', [
+                'type'    => Connection::connectionDefinition(new FactionType()),
+                'args'    => Connection::connectionArgs(),
+                'resolve' => function ($value = null, $args = [], $type = null) {
+                    return [];
+                }
+            ]);
 
         /** I want to get to the point where it works the same as JS and then go with OOP approach */
         /** https://github.com/graphql/graphql-relay-js/blob/master/src/__tests__/starWarsSchema.js */

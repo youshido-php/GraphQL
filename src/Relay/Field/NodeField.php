@@ -9,26 +9,33 @@
 namespace Youshido\GraphQL\Relay\Field;
 
 
+use Youshido\GraphQL\Config\Field\FieldConfig;
 use Youshido\GraphQL\Field\AbstractField;
+use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Relay\NodeInterface;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Scalar\IdType;
 
 class NodeField extends AbstractField
 {
-    public function __construct()
+
+    public function getName()
     {
-        $config = [
-            'name'        => 'node',
-            'description' => 'Fetches an object given its ID',
-            'args'        => [
-                'id' => [
-                    'type'        => new NonNullType(new IdType()),
-                    'description' => 'The ID of an object'
-                ]
-            ]
-        ];
-        parent::__construct($config);
+        return 'node';
+    }
+
+    public function getDescription()
+    {
+        return 'Fetches an object given its ID';
+    }
+
+    public function build(FieldConfig $config)
+    {
+        $config->addArgument(new InputField([
+            'name'        => 'id',
+            'type'        => new NonNullType(new IdType()),
+            'description' => 'The ID of an object'
+        ]));
     }
 
     public function getType()

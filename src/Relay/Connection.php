@@ -8,56 +8,48 @@
 namespace Youshido\GraphQL\Relay;
 
 
-use Youshido\GraphQL\Config\TypeConfigInterface;
+use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\NonNullType;
-use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 
 class Connection
 {
 
-    /**
-     * @param $config TypeConfigInterface
-     */
-    public static function addConnectionArgs($config)
+    public static function connectionArgs()
     {
-        self::addForwardArgs($config);
-        self::addBackwardArgs($config);
+        return array_merge(self::forwardArgs(), self::backwardArgs());
+    }
+
+    public static function forwardArgs()
+    {
+        return [
+            'after' => ['type' => TypeMap::TYPE_STRING],
+            'first' => ['type' => TypeMap::TYPE_INT]
+        ];
+    }
+
+    public static function backwardArgs()
+    {
+        return [
+            'before' => ['type' => TypeMap::TYPE_STRING],
+            'last'   => ['type' => TypeMap::TYPE_INT]
+        ];
     }
 
     /**
-     * @param $config TypeConfigInterface
-     */
-    public static function addForwardArgs($config)
-    {
-        $config
-            ->addArgument('after', TypeMap::TYPE_STRING)
-            ->addArgument('first', TypeMap::TYPE_INT);
-    }
-
-    /**
-     * @param $config TypeConfigInterface
-     */
-    public static function addBackwardArgs($config)
-    {
-        $config
-            ->addArgument('before', TypeMap::TYPE_STRING)
-            ->addArgument('last', TypeMap::TYPE_INT);
-    }
-
-    /**
-     * @param AbstractObjectType $type
-     * @param null|string        $name
-     * @param array              $edgeFields
-     * @param array              $connectionFields
+     * @param AbstractType $type
+     * @param null|string  $name
+     * @param array        $config
+     * @option string  edgeFields
      *
      * @return ObjectType
      */
-    public function connectionDefinition($type, $name = null, $edgeFields = [], $connectionFields = [])
+    public static function edgeDefinition(AbstractType $type, $name = null, $config = [])
     {
-        $name = $name ?: $type->getName();
+        $name       = $name ?: $type->getName();
+        $edgeFields = !empty($config['edgeFields']) ? $config['edgeFields'] : [];
 
         $edgeType = new ObjectType([
             'name'        => $name . 'Edge',
@@ -74,6 +66,22 @@ class Connection
             ], $edgeFields)
         ]);
 
+        return $edgeType;
+    }
+
+    /**
+     * @param AbstractType $type
+     * @param null|string  $name
+     * @param array        $config
+     * @option string  connectionFields
+     *
+     * @return ObjectType
+     */
+    public static function connectionDefinition(AbstractType $type, $name = null, $config = [])
+    {
+        $name             = $name ?: $type->getName();
+        $connectionFields = !empty($config['connectionFields']) ? $config['connectionFields'] : [];
+
         $connectionType = new ObjectType([
             'name'        => $name . 'Connection',
             'description' => 'A connection to a list of items.',
@@ -83,7 +91,7 @@ class Connection
                     'description' => 'Information to aid in pagination.'
                 ],
                 'edges'    => [
-                    'type'        => new ListType($edgeType),
+                    'type'        => new ListType(self::edgeDefinition($type, $name, $config)),
                     'description' => 'A list of edges.'
                 ]
             ], $connectionFields)
@@ -94,8 +102,6 @@ class Connection
 
     public static function getPageInfoType()
     {
-        //todo: maybe use object singleton - Maybe it's time to use Factory anyway ? :)
-
         return new ObjectType([
             'name'        => 'PageInfo',
             'description' => 'Information about pagination in a connection.',

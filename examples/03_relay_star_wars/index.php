@@ -6,7 +6,7 @@ use Youshido\GraphQL\Processor;
 use Youshido\GraphQL\Schema;
 
 require_once __DIR__ . '/schema-bootstrap.php';
-/** @var Schema $schema */
+/** @var Schema\AbstractSchema $schema */
 $schema = new StarWarsRelaySchema();
 
 $processor = new Processor();

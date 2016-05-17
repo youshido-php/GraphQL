@@ -25,7 +25,6 @@ class NodeInterface extends AbstractInterfaceType
         $config->addField(new GlobalIdField());
     }
 
-
     public function resolveType($object)
     {
         /** Need to find the best way to pass "TypeResolver" here */

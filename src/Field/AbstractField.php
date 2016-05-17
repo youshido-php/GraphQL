@@ -9,6 +9,7 @@ namespace Youshido\GraphQL\Field;
 
 use Youshido\GraphQL\Config\Field\FieldConfig;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\Traits\FieldsArgumentsAwareObjectTrait;
 use Youshido\GraphQL\Type\TypeFactory;
@@ -41,8 +42,8 @@ abstract class AbstractField
      */
     abstract public function getType();
 
-    public function build(FieldConfig $config) {
-
+    public function build(FieldConfig $config)
+    {
     }
 
     public function setType($type)
@@ -50,6 +51,13 @@ abstract class AbstractField
         $this->getConfig()->set('type', $type);
     }
 
+    /**
+     * @param            $value
+     * @param array      $args
+     * @param ObjectType $type
+     *
+     * @return mixed
+     */
     public function resolve($value, $args = [], $type = null)
     {
         if ($resolveFunc = $this->getConfig()->getResolveFunction()) {
