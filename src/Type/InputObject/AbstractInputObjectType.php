@@ -29,6 +29,7 @@ abstract class AbstractInputObjectType extends AbstractType
             ];
         }
         $this->config = new InputObjectTypeConfig($config, $this);
+        $this->build($this->config);
     }
 
     /**

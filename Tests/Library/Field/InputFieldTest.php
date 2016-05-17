@@ -38,7 +38,7 @@ class InputFieldTest extends \PHPUnit_Framework_TestCase
     {
         $field = new TestInputField();
 
-        $this->assertEquals('TestInput', $field->getName());
+        $this->assertEquals('testInput', $field->getName());
         $this->assertEquals('description', $field->getDescription());
         $this->assertEquals(new IntType(), $field->getType());
         $this->assertEquals('default', $field->getDefaultValue());

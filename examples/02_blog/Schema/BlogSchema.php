@@ -41,7 +41,7 @@ class BlogSchema extends AbstractSchema
             ]
         ]);
         $config->getMutation()->addFields([
-            'likePost'   => new LikePost(),
+            new LikePostField(),
             'createPost' => [
                 'type'    => new PostType(),
                 'args'    => [

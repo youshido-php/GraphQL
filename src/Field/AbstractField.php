@@ -41,9 +41,6 @@ abstract class AbstractField
      */
     abstract public function getType();
 
-    /**
-     * @param FieldConfig $config
-     */
     public function build(FieldConfig $config) {
 
     }

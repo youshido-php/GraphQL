@@ -23,15 +23,16 @@ trait AutoNameTrait
 
         $className = get_called_class();
 
+        if ($prevPos = strrpos($className, '\\')) {
+            $className = substr($className, $prevPos + 1);
+        }
+
         if (substr($className, -5) == 'Field') {
-            $className = substr($className, 0, -5);
+            $className = lcfirst(substr($className, 0, -5));
         } elseif (substr($className, -4) == 'Type') {
             $className = substr($className, 0, -4);
         }
 
-        if ($prevPos = strrpos($className, '\\')) {
-            $className = substr($className, $prevPos + 1);
-        }
 
         return $className;
     }

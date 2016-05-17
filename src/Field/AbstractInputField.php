@@ -34,6 +34,11 @@ abstract class AbstractInputField
         }
 
         $this->config = new InputFieldConfig($config, $this, $this->isFinal);
+        $this->build($this->config);
+    }
+
+    public function build(InputFieldConfig $config) {
+
     }
 
     /**

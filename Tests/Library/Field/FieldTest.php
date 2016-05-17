@@ -51,7 +51,7 @@ class FieldTest extends \PHPUnit_Framework_TestCase
     {
         $field = new TestField();
 
-        $this->assertEquals('Test', $field->getName());
+        $this->assertEquals('test', $field->getName());
         $this->assertEquals('description', $field->getDescription());
         $this->assertEquals(new IntType(), $field->getType());
         $this->assertEquals('test', $field->resolve('test'));

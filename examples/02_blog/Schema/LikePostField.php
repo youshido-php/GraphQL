@@ -6,12 +6,12 @@
 namespace Examples\Blog\Schema;
 
 
-use Youshido\GraphQL\Config\TypeConfigInterface;
+use Youshido\GraphQL\Config\Field\FieldConfig;
+use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Type\NonNullType;
-use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 
-class LikePost extends AbstractObjectType
+class LikePostField extends AbstractField
 {
 
     /**
@@ -30,9 +30,10 @@ class LikePost extends AbstractObjectType
         return new PostType();
     }
 
-    public function build($config)
+    public function build(FieldConfig $config)
     {
-        $config->addField('id', new NonNullType(new IntType()));
+        $config->addArgument('id', new NonNullType(new IntType()));
     }
+
 
 }
