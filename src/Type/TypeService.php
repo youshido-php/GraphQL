@@ -104,10 +104,6 @@ class TypeService
     public static function isInputType($type)
     {
         if (is_object($type)) {
-            if($type instanceof AbstractField) {
-               $a = 'asd';
-            }
-
             $type = $type->getNullableType();
 
             return ($type instanceof AbstractScalarType)
