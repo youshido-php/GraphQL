@@ -170,7 +170,7 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
         }
 
         if (!$isValid) {
-            $this->addError(new ResolveException(sprintf('Not valid resolved value for "%s"', $type->getName())));
+            $this->addError(new ResolveException(sprintf('Not valid resolved value for "%s"', $type->getName() ?: 'NonNull')));
         }
 
         return $isValid;

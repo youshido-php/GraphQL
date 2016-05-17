@@ -170,8 +170,9 @@ class Processor
         }
 
         /** @var AbstractField $field */
-        $field = $currentLevelSchema->getConfig()->getField($mutation->getName());
-        $alias = $mutation->getAlias() ?: $mutation->getName();
+        $field     = $currentLevelSchema->getConfig()->getField($mutation->getName());
+        $alias     = $mutation->getAlias() ?: $mutation->getName();
+        $fieldType = $field->getType();
 
         if (!$this->resolveValidator->validateArguments($field, $mutation, $this->request)) {
             return null;
@@ -179,17 +180,18 @@ class Processor
 
         $resolvedValue = $this->resolveFieldValue($field, null, $mutation);
 
-        if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $field->getType())) {
+        if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $fieldType)) {
             return [$alias => null];
         }
 
         $value = $resolvedValue;
         if ($mutation->hasFields()) {
-            if (TypeService::isAbstractType($field->getType())) {
-                $outputType = $field->getType()->getConfig()->resolveType($resolvedValue);
+            if (TypeService::isAbstractType($fieldType)) {
+                /** @var AbstractInterfaceTypeInterface $fieldType */
+                $outputType = $fieldType->resolveType($resolvedValue);
             } else {
                 /** @var AbstractType $outputType */
-                $outputType = $field->getType();
+                $outputType = $fieldType;
             }
 
             $value = $this->collectTypeResolvedValue($outputType, $resolvedValue, $mutation);
@@ -204,8 +206,6 @@ class Processor
      * @param AbstractField $field
      *
      * @return array|mixed|null
-     *
-     * @throws \Exception
      */
     protected function processAstFieldQuery(AstField $astField, $contextValue, AbstractField $field)
     {
@@ -270,7 +270,6 @@ class Processor
      * @param AbstractField $field
      *
      * @return null
-     * @throws \Exception
      */
     protected function processFieldTypeQuery($query, $contextValue, AbstractField $field)
     {
@@ -359,11 +358,8 @@ class Processor
             $resolverValue = $value[$astField->getName()];
             $resolved      = true;
         } elseif (is_object($value)) {
-            try {
-                $resolverValue = $this->getPropertyValue($value, $astField->getName());
-                $resolved      = true;
-            } catch (\Exception $e) {
-            }
+            $resolverValue = $this->getPropertyValue($value, $astField->getName());
+            $resolved      = true;
         } elseif ($field->getType()->getNamedType()->getKind() == TypeMap::KIND_SCALAR) {
             $resolved = true;
         }

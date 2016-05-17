@@ -12,10 +12,13 @@ namespace Youshido\Tests\Schema;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Processor;
 use Youshido\GraphQL\Schema\Schema;
+use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\BooleanType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
+use Youshido\Tests\DataProvider\TestInterfaceType;
+use Youshido\Tests\DataProvider\TestObjectType;
 
 class ProcessorTest extends \PHPUnit_Framework_TestCase
 {
@@ -56,16 +59,16 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             'query' => new ObjectType([
                 'name'   => 'RootQuery',
                 'fields' => [
-                    'me' => [
+                    'me'         => [
                         'type'    => new ObjectType([
                             'name'   => 'User',
                             'fields' => [
                                 'firstName' => [
-                                    'type' => new StringType(),
-                                    'args' => [
+                                    'type'    => new StringType(),
+                                    'args'    => [
                                         'shorten' => new BooleanType()
                                     ],
-                                    'resolve' => function($value, $args = []) {
+                                    'resolve' => function ($value, $args = []) {
                                         return empty($args['shorten']) ? $value : $value[0];
                                     }
                                 ],
@@ -90,6 +93,18 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                             ]
                         ]
                     ],
+                    'randomUser' => [
+                        'type'    => new TestObjectType(),
+                        'resolve' => function () {
+                            return ['invalidField' => 'John'];
+                        }
+                    ],
+                    'invalidValueQuery' => [
+                        'type'    => new TestObjectType(),
+                        'resolve' => function () {
+                            return 'stringValue';
+                        }
+                    ],
                 ],
             ])
         ]);
@@ -107,19 +122,32 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->processRequest('{ me(upper:true) { firstName } }');
         $this->assertEquals(['data' => ['me' => ['firstName' => 'JOHN']]], $processor->getResponseData());
 
-        $schema->addMutationField(new Field([
-            'name'    => 'increaseCounter',
-            'type'    => new IntType(),
-            'resolve' => function ($value, $args, IntType $type) {
-                return $this->_counter += $args['amount'];
-            },
-            'args'    => [
-                'amount' => [
-                    'type'    => new IntType(),
-                    'default' => 1
-                ]
-            ]
-        ]));
+        $schema->getMutationType()
+               ->addField(new Field([
+                   'name'    => 'increaseCounter',
+                   'type'    => new IntType(),
+                   'resolve' => function ($value, $args, IntType $type) {
+                       return $this->_counter += $args['amount'];
+                   },
+                   'args'    => [
+                       'amount' => [
+                           'type'    => new IntType(),
+                           'default' => 1
+                       ]
+                   ]
+               ]))->addField(new Field([
+                'name'    => 'invalidResolveTypeMutation',
+                'type'    => new NonNullType(new IntType()),
+                'resolve' => function ($value, $args, $type) {
+                    return null;
+                }
+            ]))->addField(new Field([
+                'name'    => 'interfacedMutation',
+                'type'    => new TestInterfaceType(),
+                'resolve' => function () {
+                    return ['name' => 'John'];
+                }
+            ]));
         $processor->processRequest('mutation { increaseCounter }');
         $this->assertEquals(['data' => ['increaseCounter' => 1]], $processor->getResponseData());
 
@@ -143,9 +171,24 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['errors' => [['message' => 'Field "invalidQuery" not found in type "RootQuery"']]], $processor->getResponseData());
         $processor->clearErrors();
 
-        $processor->processRequest('{ me { firstName(shorten: true), middle }}');
-        $this->assertEquals(['errors' => [['message' => 'Field "middle" not found in type "User"']], 'data' => [ 'me' => null]], $processor->getResponseData());
+        $processor->processRequest('{ invalidValueQuery }');
+        $this->assertEquals(['errors' => [['message' => 'Property "invalidValueQuery" not found in resolve result']]], $processor->getResponseData());
         $processor->clearErrors();
+
+        $processor->processRequest('{ me { firstName(shorten: true), middle }}');
+        $this->assertEquals(['errors' => [['message' => 'Field "middle" not found in type "User"']], 'data' => ['me' => null]], $processor->getResponseData());
+        $processor->clearErrors();
+
+        $processor->processRequest('{ randomUser { region }}');
+        $this->assertEquals(['errors' => [['message' => 'Property "region" not found in resolve result']]], $processor->getResponseData());
+        $processor->clearErrors();
+
+        $processor->processRequest('mutation { invalidResolveTypeMutation }');
+        $this->assertEquals(['errors' => [['message' => 'Not valid resolved value for "NonNull"']], 'data' => ['invalidResolveTypeMutation' => null]], $processor->getResponseData());
+        $processor->clearErrors();
+
+        $processor->processRequest('mutation { user:interfacedMutation { name }  }');
+        $this->assertEquals(['data' => ['user' => ['name' => 'John']]], $processor->getResponseData());
 
     }
 

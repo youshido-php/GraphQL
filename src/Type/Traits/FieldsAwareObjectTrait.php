@@ -17,12 +17,14 @@ trait FieldsAwareObjectTrait
 
     public function addFields($fieldsList)
     {
-        return $this->getConfig()->addFields($fieldsList);
+        $this->getConfig()->addFields($fieldsList);
+        return $this;
     }
 
     public function addField($field, $fieldInfo = null)
     {
-        return $this->getConfig()->addField($field, $fieldInfo);
+        $this->getConfig()->addField($field, $fieldInfo);
+        return $this;
     }
 
     public function getFields()
