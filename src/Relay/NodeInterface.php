@@ -9,6 +9,7 @@
 namespace Youshido\GraphQL\Relay;
 
 
+use Youshido\GraphQL\Relay\Field\GlobalIdField;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 
 class NodeInterface extends AbstractInterfaceType
@@ -21,8 +22,7 @@ class NodeInterface extends AbstractInterfaceType
 
     public function build($config)
     {
-        Node::addGlobalId($config);
-        //$config->addField('id', new GlobalIdField());
+        $config->addField(new GlobalIdField());
     }
 
 

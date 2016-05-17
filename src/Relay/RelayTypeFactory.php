@@ -83,4 +83,9 @@ class RelayTypeFactory
 
         return $connectionType;
     }
+
+    public static function mutationWithClientMutationId($config)
+    {
+
+    }
 }

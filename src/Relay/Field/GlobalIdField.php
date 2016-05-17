@@ -9,18 +9,13 @@
 namespace Youshido\GraphQL\Relay\Field;
 
 
-use Youshido\GraphQL\Field\Field;
+use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Relay\Node;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Scalar\IdType;
 
-/**
- * todo: I think its not good to create Field instance and replace it with type.
- * todo: I think there must be only one interface: addFields($name, $type (not field))
- * todo: and using field like a type not work at this moment
- */
-class GlobalIdField extends Field
+class GlobalIdField extends AbstractField
 {
     private $typeName = null;
 
@@ -34,10 +29,14 @@ class GlobalIdField extends Field
         $config         = [
             'name'        => 'id',
             'description' => 'The ID of an object',
-            'type'        => new NonNullType(new IdType()),
         ];
         $this->typeName = $typeName;
         parent::__construct($config);
+    }
+
+    public function getType()
+    {
+        return new NonNullType(new IdType());
     }
 
     /**

@@ -2,31 +2,59 @@
 
 namespace Examples\StarWars;
 
-use Youshido\GraphQL\AbstractSchema;
+use Youshido\GraphQL\Relay\Field\NodeField;
+use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Relay\Node;
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Type\NonNullType;
+use Youshido\GraphQL\Type\Scalar\IdType;
+use Youshido\GraphQL\Type\Scalar\StringType;
 
 class StarWarsRelaySchema extends AbstractSchema
 {
     public function build(SchemaConfig $config)
     {
-        $queryTypeConfig = $config->getQuery()->getConfig();
+        $config->getQuery()
+               ->addField('rebels', [
+                   'type'    => new FactionType(),
+                   'resolve' => function () {
+                       return TestDataProvider::getFaction('rebels');
+                   }
+               ])->addField('empire', [
+                'type'    => new FactionType(),
+                'resolve' => function () {
+                    return TestDataProvider::getFaction('empire');
+                }
+            ])->addField(new NodeField());
 
-        Node::addNodeField($queryTypeConfig);
-
-        $queryTypeConfig->addField('faction', new FactionType());
-//        $queryTypeConfig->addField('latestShip', new LatestShipField());
-//
-//        $queryTypeConfig->addField('myShips', new ListType(new ShipType()));
-//        $queryTypeConfig->addField('availableShipsToBuy', new ListType(new ShipType()));
-//
-//        $queryTypeConfig->addField(new MyShipsField());
-        // getType()
-        // getArguments()
-
-
-//        $queryTypeConfig->addField('latestShip', new ShipType(), ['resolve' => '@helper.ship']);
-//        $queryTypeConfig->addField('ship', new ShipType());
+        /** I want to get to the point where it works the same as JS and then go with OOP approach */
+//        $config->getMutation()->addField('introduceShip', [
+//            'args' => [
+//                'shipName'  => new NonNullType(new StringType()),
+//                'factionId' => new NonNullType(new IdType()),
+//            ],
+//            'fields' => [
+//                'ship' => [
+//                    'type' => new ShipType(),
+//                    'resolve' => function($value, $args) {
+//                        return TestDataProvider::getShip($args['shipId']);
+//                    }
+//                ],
+//                'faction' => [
+//                    'type' => new FactionType(),
+//                    'resolve' => function($value, $args) {
+//                        return TestDataProvider::getShip($args['factionId']);
+//                    }
+//                ],
+//            ],
+//            'mutateAndGetPayload' => function($value) {
+//                $newShip = TestDataProvider::createShip($value['name'], $value['factionId']);
+//                return [
+//                    'shipId' => $newShip['id'],
+//                    'factionId' => $value['factionId']
+//                ];
+//            }
+//        ]);
 //
 //        $queryTypeConfig->addField(new AvailableShipsToBuyField());
 //

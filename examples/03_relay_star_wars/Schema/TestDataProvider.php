@@ -51,12 +51,12 @@ class TestDataProvider
         return $newShip;
     }
 
-    public function getShip($id)
+    public static function getShip($id)
     {
         return empty(self::$ships[$id]) ? null : self::$ships[$id];
     }
 
-    public function getFaction($id)
+    public static function getFaction($id)
     {
         return empty(self::$factions[$id]) ? null : self::$factions[$id];
     }

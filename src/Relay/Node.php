@@ -42,7 +42,8 @@ class Node
      */
     public static function addGlobalId($config, $name = '')
     {
-        $config->addField('id', new NonNullType(TypeMap::TYPE_ID), [
+        $config->addField('id', [
+            'type' => new NonNullType(TypeMap::TYPE_ID),
             'description' => 'The ID of an object',
             'resolve'     => function ($value = null, $args = [], $type = null) use ($name) {
                 $name = $name ?: $type->getName();
@@ -68,7 +69,8 @@ class Node
      */
     public static function addNodeField($config) //todo: here must be fetcher like argument
     {
-        $config->addField('node', new NodeInterface(), [
+        $config->addField('node', [
+            'type' => new NodeInterface(),
             'args' => [
                 'id' => [
                     'type'        => new NonNullType(TypeMap::TYPE_INT),

@@ -18,17 +18,15 @@ class ShipType extends AbstractObjectType
 {
     public function build($config)
     {
-        $config->addField('id', new GlobalIdField('Ship'))
-            ->addField('name', TypeMap::TYPE_STRING, ['description' => 'The name of the ship.']);
+        $config->addField(new GlobalIdField('Ship'))
+            ->addField('name', ['type' => TypeMap::TYPE_STRING, 'description' => 'The name of the ship.']);
     }
 
-    public function resolve($value = null, $args = [], $type = null)
+    public function getOne($id)
     {
-        // maybe we need to think of making a non-abstract resolve method on type
-        // and adding Field / resolve default executing type resolve... need to be discussed
-
-        //yes, i thought it too, and method build() is not necessary too.
+        return TestDataProvider::getShip($id);
     }
+
 
     public function getDescription()
     {

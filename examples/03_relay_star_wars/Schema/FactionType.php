@@ -10,7 +10,6 @@ namespace Examples\StarWars;
 
 
 use Youshido\GraphQL\Relay\Field\GlobalIdField;
-use Youshido\GraphQL\Relay\Node;
 use Youshido\GraphQL\Relay\NodeInterface;
 use Youshido\GraphQL\Relay\RelayTypeFactory;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
@@ -21,32 +20,27 @@ class FactionType extends AbstractObjectType
 
     public function build($config)
     {
-        //todo: what do you think about this interface
-        Node::addGlobalId($config);
-
-       // $config->addField('id', new GlobalIdField('Faction'));
-
-        // $config->addField(new Field())
-        // $config->addField('name', ['type' ])
-        // $config->addField('name', [])
-
-        $config->addField('factionId', TypeMap::TYPE_STRING, [
-                   'description' => 'id of faction id db',
-                   'resolve'     => function ($value = null, $args = [], $type = null) {
-                       return !empty($value['id']) ? $value['id'] : null;
-                   }
-               ])
-               ->addField('name', TypeMap::TYPE_STRING, [
+        $config->addField(new GlobalIdField('Faction'))
+//               ->addField('factionId', [
+//                   'type'        => TypeMap::TYPE_STRING,
+//                   'description' => 'id of faction id db',
+//                   'resolve'     => function ($value = null, $args = [], $type = null) {
+//                       return !empty($value['id']) ? $value['id'] : null;
+//                   }
+//               ])
+               ->addField('name', [
+                   'type'        => TypeMap::TYPE_STRING,
                    'description' => 'The name of the faction.'
                ])
-               ->addField('ships', RelayTypeFactory::getConnectionType(new ShipType()), [
+               ->addField('ships', [
+                   'type'        => RelayTypeFactory::getConnectionType(new ShipType()),
                    'description' => 'The ships used by the faction',
-                   'resolve' => function($value = null, $args = [], $type = null) {
+                   'resolve'     => function ($value = null, $args = [], $type = null) {
                        /**
                         *       resolve: (faction, args) => connectionFromArray(
-                       faction.ships.map((id) => getShip(id)),
-                       args
-                       ),
+                        * faction.ships.map((id) => getShip(id)),
+                        * args
+                        * ),
                         */
                        return [];
                    }
@@ -54,14 +48,14 @@ class FactionType extends AbstractObjectType
 
     }
 
-    public function resolve($value = null, $args = [], $type = null)
-    {
-    }
-
-
     public function getDescription()
     {
         return 'A faction in the Star Wars saga';
+    }
+
+    public function getOne($id)
+    {
+        return TestDataProvider::getFaction($id);
     }
 
     public function getInterfaces()
