@@ -230,7 +230,7 @@ class Processor
                 if ($type->getKind() == TypeMap::KIND_ENUM) {
                     /** @var $type AbstractEnumType */
                     if (!$type->isValidValue($resolvedValueItem)) {
-                        $this->resolveValidator->addError(new ResolveException('Not valid value for enum type'));
+                        $this->resolveValidator->addError(new ResolveException('Not valid resolve value for enum type'));
 
                         $listValue = null;
                         break;
@@ -243,7 +243,7 @@ class Processor
         } else {
             if ($fieldType->getKind() == TypeMap::KIND_ENUM) {
                 if (!$fieldType->isValidValue($preResolvedValue)) {
-                    $this->resolveValidator->addError(new ResolveException(sprintf('Not valid value for %s type', ($fieldType->getKind()))));
+                    $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolve value for enum type')));
                     $value = null;
                 } else {
                     $value = $preResolvedValue;
@@ -259,6 +259,7 @@ class Processor
                     $value = $preResolvedValue;
                 }
             } else {
+                /** @var AbstractType $value */
                 $value = $fieldType->serialize($preResolvedValue);
             }
         }
@@ -343,7 +344,7 @@ class Processor
     }
 
     /**
-     * @param               $value
+     * @param               $contextValue
      * @param AstField      $astField
      * @param AbstractField $field
      *
@@ -351,16 +352,16 @@ class Processor
      *
      * @return mixed
      */
-    protected function getPreResolvedValue($value, AstField $astField, AbstractField $field)
+    protected function getPreResolvedValue($contextValue, AstField $astField, AbstractField $field)
     {
         $resolved      = false;
         $resolverValue = null;
 
-        if (is_array($value) && array_key_exists($astField->getName(), $value)) {
-            $resolverValue = $value[$astField->getName()];
+        if (is_array($contextValue) && array_key_exists($astField->getName(), $contextValue)) {
+            $resolverValue = $contextValue[$astField->getName()];
             $resolved      = true;
-        } elseif (is_object($value)) {
-            $resolverValue = $this->getPropertyValue($value, $astField->getName());
+        } elseif (is_object($contextValue)) {
+            $resolverValue = TypeService::getPropertyValue($contextValue, $astField->getName());
             $resolved      = true;
         }
 
@@ -368,43 +369,14 @@ class Processor
             $resolved = true;
         }
 
-        if ($resolved) {
-            if ($field->getConfig()->getResolveFunction()) {
-                $resolverValue = $field->resolve($resolverValue, $astField->getKeyValueArguments(), $field->getType());
-            }
-
-            return $resolverValue;
+        if ($field->getConfig()->getResolveFunction()) {
+            $resolverValue = $field->resolve($resolverValue, $astField->getKeyValueArguments(), $field->getType());
         }
-
-        throw new \Exception(sprintf('Property "%s" not found in resolve result', $astField->getName()));
-    }
-
-    protected function getPropertyValue($data, $path)
-    {
-        if (is_object($data)) {
-            $getter = $path;
-            if (substr($path, 0, 2) != 'is') {
-                $getter = 'get' . $this->classify($path);
-            }
-
-            return is_callable([$data, $getter]) ? $data->$getter() : null;
-        } elseif (is_array($data)) {
-            return array_key_exists($path, $data) ? $data[$path] : null;
+        if (!$resolverValue && !$resolved) {
+            throw new \Exception(sprintf('Property "%s" not found in resolve result', $astField->getName()));
         }
+        return $resolverValue;
 
-        return null;
-    }
-
-    protected function classify($text)
-    {
-        $text       = explode(' ', str_replace(['_', '/', '-', '.'], ' ', $text));
-        $textLength = count($text);
-        for ($i = 0; $i < $textLength; $i++) {
-            $text[$i] = ucfirst($text[$i]);
-        }
-        $text = ucfirst(implode('', $text));
-
-        return $text;
     }
 
     /**
@@ -413,11 +385,11 @@ class Processor
      *
      * @return array
      */
-    protected function parseArgumentsValues(AbstractField $field, $query)
+    protected function parseArgumentsValues(AbstractField $field, Query $query)
     {
-        if ($query instanceof AstField) {
-            return [];
-        }
+//        if ($query instanceof AstField) {
+//            return [];
+//        }
 
         $args = [];
         foreach ($query->getArguments() as $argument) {

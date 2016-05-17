@@ -366,6 +366,7 @@ TEXT;
         $processor->processRequest($this->introspectionQuery);
         $responseData = $processor->getResponseData();
 
+        /** strange that this test got broken after I fixed the field resolve behavior */
         $this->assertArrayNotHasKey('errors', $responseData);
     }
 

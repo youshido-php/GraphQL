@@ -12,11 +12,13 @@ namespace Youshido\Tests\Schema;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Processor;
 use Youshido\GraphQL\Schema\Schema;
+use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\BooleanType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
+use Youshido\Tests\DataProvider\TestEnumType;
 use Youshido\Tests\DataProvider\TestInterfaceType;
 use Youshido\Tests\DataProvider\TestObjectType;
 
@@ -59,7 +61,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             'query' => new ObjectType([
                 'name'   => 'RootQuery',
                 'fields' => [
-                    'me'         => [
+                    'me'                => [
                         'type'    => new ObjectType([
                             'name'   => 'User',
                             'fields' => [
@@ -93,7 +95,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                             ]
                         ]
                     ],
-                    'randomUser' => [
+                    'randomUser'        => [
                         'type'    => new TestObjectType(),
                         'resolve' => function () {
                             return ['invalidField' => 'John'];
@@ -172,7 +174,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->clearErrors();
 
         $processor->processRequest('{ invalidValueQuery }');
-        $this->assertEquals(['errors' => [['message' => 'Property "invalidValueQuery" not found in resolve result']]], $processor->getResponseData());
+        $this->assertEquals(['errors' => [['message' => 'You can not serialize object value directly']]], $processor->getResponseData());
         $processor->clearErrors();
 
         $processor->processRequest('{ me { firstName(shorten: true), middle }}');
@@ -189,6 +191,113 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $processor->processRequest('mutation { user:interfacedMutation { name }  }');
         $this->assertEquals(['data' => ['user' => ['name' => 'John']]], $processor->getResponseData());
+    }
+
+    public function testListEnumsSchemaOperations()
+    {
+        $processor = new Processor();
+        $processor->setSchema(new Schema([
+            'query' => new ObjectType([
+                'name'   => 'RootQuery',
+                'fields' => [
+                    'listQuery'                 => [
+                        'type'    => new ListType(new TestEnumType()),
+                        'resolve' => function () {
+                            return 'invalid list';
+                        }
+                    ],
+                    'listEnumQuery'             => [
+                        'type'    => new ListType(new TestEnumType()),
+                        'resolve' => function () {
+                            return ['invalid enum'];
+                        }
+                    ],
+                    'invalidEnumQuery'          => [
+                        'type'    => new TestEnumType(),
+                        'resolve' => function () {
+                            return 'invalid enum';
+                        }
+                    ],
+                    'enumQuery'                 => [
+                        'type'    => new TestEnumType(),
+                        'resolve' => function () {
+                            return 1;
+                        }
+                    ],
+                    'invalidNonNullQuery'       => [
+                        'type'    => new NonNullType(new IntType()),
+                        'resolve' => function () {
+                            return null;
+                        }
+                    ],
+                    'invalidNonNullInsideQuery' => [
+                        'type'    => new NonNullType(new IntType()),
+                        'resolve' => function () {
+                            return 'hello';
+                        }
+                    ],
+                    'objectQuery'               => [
+                        'type'    => new TestObjectType(),
+                        'resolve' => function () {
+                            return ['name' => 'John'];
+                        }
+                    ],
+                    'deepObjectQuery'           => [
+                        'type' => new ObjectType([
+                            'name'   => 'deepObject',
+                            'fields' => [
+                                'object' => new TestObjectType(),
+                                'enum'   => new TestEnumType(),
+                            ],
+                        ]),
+                        'resolve' => function() {
+                            return [
+                                'object' => [
+                                    'name' => 'John'
+                                ],
+                                'enum' => 1
+                            ];
+                        },
+                    ],
+                ]
+            ])
+        ]));
+
+        $processor->processRequest('{ listQuery }');
+        $this->assertEquals(['errors' => [
+            ['message' => 'Not valid resolve value for list type']
+        ], 'data'                     => ['listQuery' => null]], $processor->getResponseData());
+        $processor->clearErrors();
+
+        $processor->processRequest('{ listEnumQuery }');
+        $this->assertEquals(['errors' => [
+            ['message' => 'Not valid resolve value for enum type']
+        ], 'data'                     => ['listEnumQuery' => null]], $processor->getResponseData());
+        $processor->clearErrors();
+
+        $processor->processRequest('{ invalidEnumQuery }');
+        $this->assertEquals(['errors' => [
+            ['message' => 'Not valid resolve value for enum type']
+        ], 'data'                     => ['invalidEnumQuery' => null]], $processor->getResponseData());
+        $processor->clearErrors();
+
+        $processor->processRequest('{ enumQuery }');
+        $this->assertEquals(['data' => ['enumQuery' => 1]], $processor->getResponseData());
+
+        $processor->processRequest('{ invalidNonNullQuery }');
+        $this->assertEquals(['errors' => [
+            ['message' => 'Cannot return null for non-nullable field invalidNonNullQuery.invalidNonNullQuery']
+        ], 'data'                     => ['invalidNonNullQuery' => null]], $processor->getResponseData());
+        $processor->clearErrors();
+
+        $processor->processRequest('{ invalidNonNullInsideQuery }');
+        $this->assertEquals(['errors' => [
+            ['message' => 'Not valid value for SCALAR field invalidNonNullInsideQuery']
+        ], 'data'                     => ['invalidNonNullInsideQuery' => null]], $processor->getResponseData());
+        $processor->clearErrors();
+
+        $processor->processRequest('{ test:deepObjectQuery { object { name } } }');
+        $this->assertEquals(['data' => ['test' => [ 'object'=> ['name' => 'John']]]], $processor->getResponseData());
 
     }
 

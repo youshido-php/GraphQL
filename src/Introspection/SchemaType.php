@@ -52,7 +52,8 @@ class SchemaType extends AbstractObjectType
                     'fields'  => [
                         'name' => ['type' => TypeMap::TYPE_STRING]
                     ]
-                ])
+                ]),
+                'resolve' => function() { return null; }
             ]))
             ->addField(new TypesField())
             ->addField(new Field([

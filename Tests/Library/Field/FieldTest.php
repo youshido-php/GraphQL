@@ -29,7 +29,7 @@ class FieldTest extends \PHPUnit_Framework_TestCase
         ]);
         $this->assertEquals('id', $field->getName());
         $this->assertEquals(new IdType(), $field->getType());
-        $this->assertNull($field->resolve('data', null, null));
+        $this->assertEquals(null, $field->resolve('data', null, null));
 
         $fieldWithResolve = new Field([
             'name'    => 'title',

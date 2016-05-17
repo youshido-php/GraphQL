@@ -118,4 +118,32 @@ class TypeService
     {
         return $type instanceof AbstractInputObjectType;
     }
+
+    public static function getPropertyValue($data, $path)
+    {
+        if (is_object($data)) {
+            $getter = $path;
+            if (substr($path, 0, 2) != 'is') {
+                $getter = 'get' . self::classify($path);
+            }
+
+            return is_callable([$data, $getter]) ? $data->$getter() : null;
+        } elseif (is_array($data)) {
+            return array_key_exists($path, $data) ? $data[$path] : null;
+        }
+
+        return null;
+    }
+
+    protected static function classify($text)
+    {
+        $text       = explode(' ', str_replace(['_', '/', '-', '.'], ' ', $text));
+        $textLength = count($text);
+        for ($i = 0; $i < $textLength; $i++) {
+            $text[$i] = ucfirst($text[$i]);
+        }
+        $text = ucfirst(implode('', $text));
+
+        return $text;
+    }
 }
