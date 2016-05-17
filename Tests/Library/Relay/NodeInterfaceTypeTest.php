@@ -25,7 +25,7 @@ class NodeInterfaceTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($type->getFetcher());
         $this->assertNull($type->resolveType($testObject));
 
-        $fetcher = new CallableFetcher(function () { }, function ($object) { return new TestObjectType(); });
+        $fetcher = new CallableFetcher(function () { }, function () { return new TestObjectType(); });
         $type->setFetcher($fetcher);
         $this->assertEquals($fetcher, $type->getFetcher());
 
