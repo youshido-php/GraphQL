@@ -152,7 +152,7 @@ class Connection
         $beforeOffset = ArrayConnection::cursorToOffsetWithDefault($before, $arrayLength);
         $afterOffset  = ArrayConnection::cursorToOffsetWithDefault($after, -1);
 
-        $startOffset = max($sliceStart - 1, $afterOffset - 1) + 1;
+        $startOffset = max($sliceStart - 1, $afterOffset, -1) + 1;
         $endOffset   = min($sliceEnd, $beforeOffset, $arrayLength);
 
         if ($first) {
@@ -160,7 +160,7 @@ class Connection
         }
 
         if ($last) {
-            $endOffset = max($startOffset, $endOffset - $last);
+            $startOffset = max($startOffset, $endOffset - $last);
         }
 
         $slice = array_slice($data, max($startOffset - $sliceStart, 0), count($data) - ($sliceEnd - $endOffset));
