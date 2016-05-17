@@ -17,11 +17,15 @@ import Relay from 'react-relay';
 import StarWarsApp from './components/StarWarsApp';
 import StarWarsAppHomeRoute from './routes/StarWarsAppHomeRoute';
 
+Relay.injectNetworkLayer(
+    new Relay.DefaultNetworkLayer('http://localhost:8000/graphql')
+);
+
 ReactDOM.render(
   <Relay.RootContainer
     Component={StarWarsApp}
     route={new StarWarsAppHomeRoute({
-      factionNames: ['empire', 'rebels'],
+      factionNames: ['empire', 'rebels']
     })}
   />,
   document.getElementById('root')

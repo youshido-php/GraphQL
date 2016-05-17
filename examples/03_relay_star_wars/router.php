@@ -1,6 +1,7 @@
 <?php
 namespace Examples\StarWars;
 
+header('Access-Control-Allow-Headers: Content-Type');
 header('Access-Control-Allow-Credentials: false', true);
 header('Access-Control-Allow-Origin: *');
 if ($_SERVER['REQUEST_METHOD'] == "OPTIONS") {
@@ -8,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] == "OPTIONS") {
 }
 
 use Youshido\GraphQL\Processor;
-use Youshido\GraphQL\Schema;
+use Youshido\GraphQL\Schema\Schema;
 
 require_once __DIR__ . '/schema-bootstrap.php';
 /** @var Schema $schema */
