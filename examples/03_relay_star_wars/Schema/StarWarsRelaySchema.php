@@ -3,10 +3,14 @@
 namespace Examples\StarWars;
 
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Relay\Connection\Connection;
 use Youshido\GraphQL\Relay\Fetcher\CallableFetcher;
 use Youshido\GraphQL\Relay\Field\NodeField;
+use Youshido\GraphQL\Relay\Mutation;
 use Youshido\GraphQL\Schema\AbstractSchema;
+use Youshido\GraphQL\Type\NonNullType;
+use Youshido\GraphQL\Type\Scalar\StringType;
 
 class StarWarsRelaySchema extends AbstractSchema
 {
@@ -19,7 +23,7 @@ class StarWarsRelaySchema extends AbstractSchema
                         return TestDataProvider::getFaction($id);
 
                     case
-                        ShipType::TYPE_KEY:
+                    ShipType::TYPE_KEY:
                         return TestDataProvider::getShip($id);
                 }
 
@@ -31,6 +35,7 @@ class StarWarsRelaySchema extends AbstractSchema
         );
 
         $config->getQuery()
+            ->addField(new NodeField($fetcher))
             ->addField('rebels', [
                 'type'    => new FactionType(),
                 'resolve' => function () {
@@ -43,7 +48,6 @@ class StarWarsRelaySchema extends AbstractSchema
                     return TestDataProvider::getFaction('empire');
                 }
             ])
-            ->addField(new NodeField($fetcher))
             ->addField('factions', [
                 'type'    => Connection::connectionDefinition(new FactionType()),
                 'args'    => Connection::connectionArgs(),
@@ -52,44 +56,41 @@ class StarWarsRelaySchema extends AbstractSchema
                 }
             ]);
 
-        /** I want to get to the point where it works the same as JS and then go with OOP approach */
+
+        $config->getMutation()
+            ->addField(
+                Mutation::buildMutation(
+                    'introduceShip',
+                    [
+                        new InputField(['name' => 'shipName', 'type' => new NonNullType(new StringType())]),
+                        new InputField(['name' => 'factionId', 'type' => new NonNullType(new StringType())])
+                    ],
+                    [
+                        'ship'    => [
+                            'type'    => new ShipType(),
+                            'resolve' => function ($value) {
+                                return TestDataProvider::getShip($value['shipId']);
+                            }
+                        ],
+                        'faction' => [
+                            'type'    => new FactionType(),
+                            'resolve' => function ($value) {
+                                return TestDataProvider::getFaction($value['factionId']);
+                            }
+                        ]
+                    ],
+                    function ($input) {
+                        $newShip = TestDataProvider::createShip($input['shipName'], $input['factionId']);
+
+                        return [
+                            'shipId'    => $newShip['id'],
+                            'factionId' => $input['factionId']
+                        ];
+                    }
+                )
+            );
+
         /** https://github.com/graphql/graphql-relay-js/blob/master/src/__tests__/starWarsSchema.js */
-//        $config->getMutation()->addField('introduceShip', [
-//            'args' => [
-//                'shipName'  => new NonNullType(new StringType()),
-//                'factionId' => new NonNullType(new IdType()),
-//            ],
-//            'fields' => [
-//                'ship' => [
-//                    'type' => new ShipType(),
-//                    'resolve' => function($value, $args) {
-//                        return TestDataProvider::getShip($args['shipId']);
-//                    }
-//                ],
-//                'faction' => [
-//                    'type' => new FactionType(),
-//                    'resolve' => function($value, $args) {
-//                        return TestDataProvider::getShip($args['factionId']);
-//                    }
-//                ],
-//            ],
-//            'mutateAndGetPayload' => function($value) {
-//                $newShip = TestDataProvider::createShip($value['name'], $value['factionId']);
-//                return [
-//                    'shipId' => $newShip['id'],
-//                    'factionId' => $value['factionId']
-//                ];
-//            }
-//        ]);
-//
-//        $queryTypeConfig->addField(new AvailableShipsToBuyField());
-//
-//
-//
-//        $queryTypeConfig->addField('ship', new ShipType(), [
-//            'args' => [],
-//            'resolve' => function() {}
-//        ]);
     }
 
 }

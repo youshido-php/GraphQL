@@ -11,6 +11,7 @@ namespace Youshido\GraphQL\Config\Traits;
 
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\Field;
+use Youshido\GraphQL\Field\FieldInterface;
 
 /**
  * Class FieldsAwareTrait
@@ -35,7 +36,7 @@ trait FieldsAwareConfigTrait
     {
         foreach ($fieldsList as $fieldName => $fieldConfig) {
 
-            if ($fieldConfig instanceof AbstractField) {
+            if ($fieldConfig instanceof FieldInterface) {
                 $this->fields[$fieldConfig->getName()] = $fieldConfig;
                 continue;
             } else {
@@ -53,7 +54,7 @@ trait FieldsAwareConfigTrait
      */
     public function addField($field, $fieldInfo = null)
     {
-        if (!($field instanceof AbstractField)) {
+        if (!($field instanceof FieldInterface)) {
             $field = new Field($this->buildFieldConfig($field, $fieldInfo));
         }
 

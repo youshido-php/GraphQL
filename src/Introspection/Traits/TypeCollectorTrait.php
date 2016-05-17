@@ -61,18 +61,18 @@ trait TypeCollectorTrait
         }
     }
 
-    private function checkAndInsertInterfaces(AbstractObjectType $type)
+    private function checkAndInsertInterfaces($type)
     {
-            foreach ((array)$type->getConfig()->getInterfaces() as $interface) {
-                /** @var AbstractInterfaceType $interface */
-                $this->insertType($interface->getName(), $interface);
-            }
+        foreach ((array)$type->getConfig()->getInterfaces() as $interface) {
+            /** @var AbstractInterfaceType $interface */
+            $this->insertType($interface->getName(), $interface);
+        }
     }
 
     /**
      * @param $type AbstractObjectType
      */
-    private function collectFieldsArgsTypes(AbstractObjectType $type)
+    private function collectFieldsArgsTypes($type)
     {
         foreach ($type->getConfig()->getFields() as $field) {
             $arguments = $field->getConfig()->getArguments();

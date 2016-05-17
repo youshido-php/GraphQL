@@ -9,6 +9,7 @@
 namespace Youshido\GraphQL\Type;
 
 
+use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Type\Enum\AbstractEnumType;
 use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
 use Youshido\GraphQL\Type\ListType\AbstractListType;
@@ -103,6 +104,10 @@ class TypeService
     public static function isInputType($type)
     {
         if (is_object($type)) {
+            if($type instanceof AbstractField) {
+               $a = 'asd';
+            }
+
             $type = $type->getNullableType();
 
             return ($type instanceof AbstractScalarType)

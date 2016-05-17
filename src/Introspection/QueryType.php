@@ -13,6 +13,7 @@ use Youshido\GraphQL\Introspection\Traits\TypeCollectorTrait;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\CompositeTypeInterface;
 use Youshido\GraphQL\Type\Enum\AbstractEnumType;
+use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
@@ -51,7 +52,12 @@ class QueryType extends AbstractObjectType
             ->addField(new Field([
                 'name'    => 'inputFields',
                 'type'    => new ListType(new InputValueType()),
-                'resolve' => function () {
+                'resolve' => function ($value) {
+                    if($value instanceof AbstractInputObjectType) {
+                        /** @var AbstractObjectType $value */
+                        return $value->getConfig()->getFields();
+                    }
+
                     return null;
                 }
             ]))

@@ -15,7 +15,7 @@ use Youshido\GraphQL\Type\Traits\FieldsArgumentsAwareObjectTrait;
 use Youshido\GraphQL\Type\TypeFactory;
 use Youshido\GraphQL\Type\TypeService;
 
-abstract class AbstractField
+abstract class AbstractField implements FieldInterface
 {
 
     use FieldsArgumentsAwareObjectTrait, AutoNameTrait;
