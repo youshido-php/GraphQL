@@ -20,9 +20,6 @@ trait TypeCollectorTrait
 
     protected function collectTypes(AbstractType $type)
     {
-//        if (!$type) {
-//            return;
-//        }
         if (is_object($type) && array_key_exists($type->getName(), $this->types)) return;
 
         switch ($type->getKind()) {
@@ -43,12 +40,8 @@ trait TypeCollectorTrait
 
             case TypeMap::KIND_INPUT_OBJECT:
             case TypeMap::KIND_OBJECT:
+                /** @var AbstractObjectType $namedType */
                 $namedType = $type->getNamedType();
-
-                if ($namedType->getKind() == TypeMap::KIND_LIST) {
-                    $namedType = $namedType->getNamedType();
-                }
-
                 $this->checkAndInsertInterfaces($namedType);
 
                 if ($this->insertType($namedType->getName(), $namedType)) {

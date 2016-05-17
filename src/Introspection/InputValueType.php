@@ -27,10 +27,6 @@ class InputValueType extends AbstractObjectType
                 'type'    => new QueryType(),
                 'resolve' => function ($value) {
                     /** @var AbstractSchema|Field $value */
-                    if ($value instanceof AbstractSchema) {
-                        return $value->getQueryType();
-                    }
-
                     return $value->getConfig()->getType();
                 }
             ]))
