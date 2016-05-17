@@ -14,7 +14,7 @@ use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Relay\Fetcher\FetcherInterface;
 use Youshido\GraphQL\Relay\Node;
-use Youshido\GraphQL\Relay\NodeInterface;
+use Youshido\GraphQL\Relay\NodeInterfaceType;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Scalar\IdType;
 
@@ -52,7 +52,7 @@ class NodeField extends AbstractField
 
     public function getType()
     {
-        return (new NodeInterface())->setFetcher($this->fetcher);
+        return (new NodeInterfaceType())->setFetcher($this->fetcher);
     }
 
     public function resolve($value, $args = [], $type = null)

@@ -13,7 +13,7 @@ use Youshido\GraphQL\Relay\Fetcher\FetcherInterface;
 use Youshido\GraphQL\Relay\Field\GlobalIdField;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 
-class NodeInterface extends AbstractInterfaceType
+class NodeInterfaceType extends AbstractInterfaceType
 {
 
     /** @var  FetcherInterface */ //todo: maybe there are better solution
@@ -49,7 +49,7 @@ class NodeInterface extends AbstractInterfaceType
     /**
      * @param FetcherInterface $fetcher
      *
-     * @return NodeInterface
+     * @return NodeInterfaceType
      */
     public function setFetcher($fetcher)
     {

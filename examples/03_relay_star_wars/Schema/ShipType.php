@@ -10,7 +10,7 @@ namespace Examples\StarWars;
 
 
 use Youshido\GraphQL\Relay\Field\GlobalIdField;
-use Youshido\GraphQL\Relay\NodeInterface;
+use Youshido\GraphQL\Relay\NodeInterfaceType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 
@@ -37,7 +37,7 @@ class ShipType extends AbstractObjectType
 
     public function getInterfaces()
     {
-        return [new NodeInterface()];
+        return [new NodeInterfaceType()];
     }
 
 }
