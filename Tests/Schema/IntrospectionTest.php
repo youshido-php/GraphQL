@@ -9,21 +9,20 @@
 namespace Youshido\Tests\Schema;
 
 
+use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Processor;
-use Youshido\GraphQL\Schema\Schema;
+use Youshido\GraphQL\Type\Enum\EnumType;
+use Youshido\GraphQL\Type\InterfaceType\InterfaceType;
 use Youshido\GraphQL\Type\Object\ObjectType;
+use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\Union\UnionType;
 use Youshido\Tests\DataProvider\TestEmptySchema;
 
 class IntrospectionTest extends \PHPUnit_Framework_TestCase
 {
-    public function testIntrospectionDirectiveRequest()
-    {
-        $processor = new Processor();
-        $processor->setSchema(new TestEmptySchema());
-
-        $processor->processRequest('
-            query IntrospectionQuery {
+    private $introspectionQuery = <<<TEXT
+query IntrospectionQuery {
                 __schema {
                     queryType { name }
                     mutationType { name }
@@ -99,7 +98,15 @@ class IntrospectionTest extends \PHPUnit_Framework_TestCase
                     }
                 }
             }
-        ', []);
+TEXT;
+
+
+    public function testIntrospectionDirectiveRequest()
+    {
+        $processor = new Processor();
+        $processor->setSchema(new TestEmptySchema());
+
+        $processor->processRequest($this->introspectionQuery, []);
 
         $this->assertTrue(is_array($processor->getResponseData()));
     }
@@ -113,30 +120,28 @@ class IntrospectionTest extends \PHPUnit_Framework_TestCase
     public function testPredefinedQueries($query, $expectedResponse)
     {
         $schema = new TestEmptySchema();
-        $schema->addQueryField('latest',
-            [
-                'type'              => new ObjectType([
-                    'name'   => 'latest',
-
-                    'fields' => [
-                        'id'   => ['type' => TypeMap::TYPE_INT],
-                        'name' => ['type' => TypeMap::TYPE_STRING]
-                    ],
-                ]),
-                'args'   => [
-                    'id' => ['type' => TypeMap::TYPE_INT]
+        $schema->addQueryField(new Field([
+            'name'              => 'latest',
+            'type'              => new ObjectType([
+                'name'   => 'LatestType',
+                'fields' => [
+                    'id'   => ['type' => TypeMap::TYPE_INT],
+                    'name' => ['type' => TypeMap::TYPE_STRING]
                 ],
-                'description'       => 'latest description',
-                'deprecationReason' => 'for test',
-                'isDeprecated'      => true,
-                'resolve'           => function () {
-                    return [
-                        'id'   => 1,
-                        'name' => 'Alex'
-                    ];
-                }
-            ]
-        );
+            ]),
+            'args'              => [
+                'id' => ['type' => TypeMap::TYPE_INT]
+            ],
+            'description'       => 'latest description',
+            'deprecationReason' => 'for test',
+            'isDeprecated'      => true,
+            'resolve'           => function () {
+                return [
+                    'id'   => 1,
+                    'name' => 'Alex'
+                ];
+            }
+        ]));
 
         $processor = new Processor();
 
@@ -166,6 +171,14 @@ class IntrospectionTest extends \PHPUnit_Framework_TestCase
                 ]
             ],
             [
+                '{ __type (name: "NoExist") { name } }',
+                [
+                    'data' => [
+                        '__type' => null
+                    ]
+                ]
+            ],
+            [
                 '{
                     __schema {
                         types {
@@ -182,7 +195,7 @@ class IntrospectionTest extends \PHPUnit_Framework_TestCase
                             'types' => [
                                 ['name' => 'TestSchemaQuery', 'fields' => [['name' => 'latest']]],
                                 ['name' => 'Int', 'fields' => null],
-                                ['name' => 'latest', 'fields' => [['name' => 'id'], ['name' => 'name']]],
+                                ['name' => 'LatestType', 'fields' => [['name' => 'id'], ['name' => 'name']]],
                                 ['name' => 'String', 'fields' => null],
                                 ['name' => '__Schema', 'fields' => [['name' => 'queryType'], ['name' => 'mutationType'], ['name' => 'subscriptionType'], ['name' => 'types'], ['name' => 'directives']]],
                                 ['name' => '__Type', 'fields' => [['name' => 'name'], ['name' => 'kind'], ['name' => 'description'], ['name' => 'ofType'], ['name' => 'inputFields'], ['name' => 'enumValues'], ['name' => 'fields'], ['name' => 'interfaces'], ['name' => 'possibleTypes']]],
@@ -221,7 +234,7 @@ class IntrospectionTest extends \PHPUnit_Framework_TestCase
                             'name'   => 'TestSchemaQuery',
                             'kind'   => 'OBJECT',
                             'fields' => [
-                                ['name' => 'latest', 'isDeprecated' => true, 'deprecationReason' => 'for test', 'description' => 'latest description', 'type' => ['name' => 'latest']]
+                                ['name' => 'latest', 'isDeprecated' => true, 'deprecationReason' => 'for test', 'description' => 'latest description', 'type' => ['name' => 'LatestType']]
                             ]
                         ]
                     ]
@@ -264,6 +277,96 @@ class IntrospectionTest extends \PHPUnit_Framework_TestCase
                 ]]
             ]
         ];
+    }
+
+    public function testCombinedFields()
+    {
+        $schema = new TestEmptySchema();
+
+        $interface = new InterfaceType([
+            'name'        => 'TestInterface',
+            'fields'      => [
+                'id'   => ['type' => new IntType()],
+                'name' => ['type' => new IntType()],
+            ],
+            'resolveType' => function ($type) {
+
+            }
+        ]);
+
+        $object1 = new ObjectType([
+            'name'       => 'Test1',
+            'fields'     => [
+                'id'       => ['type' => new IntType()],
+                'name'     => ['type' => new IntType()],
+                'lastName' => ['type' => new IntType()],
+            ],
+            'interfaces' => [$interface]
+        ]);
+
+        $object2 = new ObjectType([
+            'name'       => 'Test2',
+            'fields'     => [
+                'id'        => ['type' => new IntType()],
+                'name'      => ['type' => new IntType()],
+                'thirdName' => ['type' => new IntType()],
+            ],
+            'interfaces' => [$interface]
+        ]);
+
+        $unionType = new UnionType([
+            'name'        => 'UnionType',
+            'types'       => [$object1, $object2],
+            'resolveType' => function () {
+
+            }
+        ]);
+
+        $schema->addQueryField(new Field([
+            'name'              => 'union',
+            'type'              => $unionType,
+            'args'              => [
+                'id' => ['type' => TypeMap::TYPE_INT]
+            ],
+            'resolve'           => function () {
+                return [
+                    'id'   => 1,
+                    'name' => 'Alex'
+                ];
+            }
+        ]));
+
+        $schema->addMutationField(new Field([
+            'name' => 'mutation',
+            'type' => $unionType,
+            'args' => [
+                'type' => new EnumType([
+                    'name' => 'MutationType',
+                    'values' => [
+                        [
+                            'name' => 'Type1',
+                            'value' => 'type_1'
+                        ],
+                        [
+                            'name' => 'Type2',
+                            'value' => 'type_2'
+                        ]
+                    ]
+                ])
+            ],
+            'resolve' => function() {
+                return null;
+            }
+        ]));
+
+        $processor = new Processor();
+
+        $processor->setSchema($schema);
+
+        $processor->processRequest($this->introspectionQuery);
+        $responseData = $processor->getResponseData();
+
+        $this->assertArrayNotHasKey('errors', $responseData);
     }
 
 }

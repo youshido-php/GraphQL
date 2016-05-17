@@ -36,7 +36,7 @@ class NodeField extends AbstractField
         return new NodeInterface();
     }
 
-    public function resolve($value, $args, $type)
+    public function resolve($value, $args = [], $type = null)
     {
         /** Need to find the best way to pass "TypeResolver" and "FetcherById/Type" here */
         return null;
