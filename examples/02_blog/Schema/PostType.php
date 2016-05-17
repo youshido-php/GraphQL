@@ -16,7 +16,8 @@ class PostType extends AbstractObjectType
     public function build($config)
     {
         $config
-            ->addField('oldTitle', new NonNullType(new StringType()), [
+            ->addField('oldTitle', [
+                'type'              => new NonNullType(new StringType()),
                 'description'       => 'This field contains a post title',
                 'isDeprecated'      => true,
                 'deprecationReason' => 'field title is now deprecated',
@@ -30,18 +31,16 @@ class PostType extends AbstractObjectType
             ->addField('title', new NonNullType(new StringType()))
             ->addField('status', new PostStatus())
             ->addField('summary', new StringType())
-            ->addField('likeCount', new IntType())
-            ->addArgument('id', new IntType());
+            ->addField('likeCount', new IntType());
+    }
+
+    public function getOne($id)
+    {
+        return DataProvider::getPost($id);
     }
 
     public function getInterfaces()
     {
         return [new ContentBlockInterface()];
     }
-
-    public function resolve($value = null, $args = [], $type = null)
-    {
-        return DataProvider::getPost(empty($args['id']) ? 1 : $args['id']);
-    }
-
 }

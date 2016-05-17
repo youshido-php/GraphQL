@@ -5,7 +5,7 @@
 
 namespace Examples\Blog\Schema;
 
-use Youshido\GraphQL\AbstractSchema;
+use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Scalar\StringType;
@@ -15,7 +15,12 @@ class BlogSchema extends AbstractSchema
     public function build(SchemaConfig $config)
     {
         $config->getQuery()->addFields([
-            'latestPost'           => new PostType(),
+            'latestPost'           => [
+                'type'    => new PostType(),
+                'resolve' => function ($value, $args, PostType $type) {
+                    return $type->getOne(empty($args['id']) ? 1 : $args['id']);
+                }
+            ],
             'randomBanner'         => [
                 'type'    => new BannerType(),
                 'resolve' => function () {
@@ -38,16 +43,17 @@ class BlogSchema extends AbstractSchema
         $config->getMutation()->addFields([
             'likePost'   => new LikePost(),
             'createPost' => [
-                'type'   => new PostType(),
-                'args' => [
+                'type'    => new PostType(),
+                'args'    => [
                     'post'   => new PostInputType(),
                     'author' => new StringType()
                 ],
-                'resolve' => function($value, $args, $type) {
+                'resolve' => function ($value, $args, $type) {
                     // code for creating a new post goes here
                     // we simple use our DataProvider for now
                     $post = DataProvider::getPost(10);
                     if (!empty($args['post']['title'])) $post['title'] = $args['post']['title'];
+
                     return $post;
                 }
             ]

@@ -17,12 +17,12 @@ class LikePost extends AbstractObjectType
     /**
      * @param null  $value
      * @param array $args
-     * @param PostType  $type
+     * @param PostType $type
      * @return mixed
      */
     public function resolve($value = null, $args = [], $type = null)
     {
-        return $type->resolve($value, $args);
+        return $type->getOne($args['id']);
     }
 
     public function getType()
@@ -32,7 +32,7 @@ class LikePost extends AbstractObjectType
 
     public function build($config)
     {
-        $config->addArgument('id', new NonNullType(new IntType()));
+        $config->addField('id', new NonNullType(new IntType()));
     }
 
 }

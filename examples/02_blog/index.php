@@ -4,7 +4,7 @@ namespace BlogTest;
 
 use Examples\Blog\Schema\BlogSchema;
 use Youshido\GraphQL\Processor;
-use Youshido\GraphQL\Schema;
+use Youshido\GraphQL\Schema\Schema;
 
 require_once __DIR__ . '/schema-bootstrap.php';
 /** @var Schema $schema */

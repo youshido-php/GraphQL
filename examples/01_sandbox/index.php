@@ -2,7 +2,7 @@
 namespace Sandbox;
 
 use Youshido\GraphQL\Processor;
-use Youshido\GraphQL\Schema;
+use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 

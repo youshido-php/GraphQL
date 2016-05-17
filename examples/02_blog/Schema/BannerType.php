@@ -20,9 +20,9 @@ class BannerType extends AbstractObjectType
             ->addField('imageLink', new StringType());
     }
 
-    public function resolve($value = null, $args = [], $type = null)
+    public function getItem($id)
     {
-        return DataProvider::getBanner(1);
+
     }
 
     public function getInterfaces()
