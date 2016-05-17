@@ -8,7 +8,10 @@
 namespace Youshido\GraphQL\Introspection\Traits;
 
 use Youshido\GraphQL\Type\AbstractType;
+use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\Union\AbstractUnionType;
 
 trait TypeCollectorTrait
 {
@@ -17,9 +20,9 @@ trait TypeCollectorTrait
 
     protected function collectTypes(AbstractType $type)
     {
-        if (!$type) {
-            return;
-        }
+//        if (!$type) {
+//            return;
+//        }
         if (is_object($type) && array_key_exists($type->getName(), $this->types)) return;
 
         switch ($type->getKind()) {
@@ -30,6 +33,7 @@ trait TypeCollectorTrait
                 $this->insertType($type->getName(), $type);
 
                 if ($type->getKind() == TypeMap::KIND_UNION) {
+                    /** @var AbstractUnionType $type */
                     foreach ($type->getTypes() as $subType) {
                         $this->collectTypes($subType);
                     }
@@ -64,15 +68,12 @@ trait TypeCollectorTrait
         }
     }
 
-    private function checkAndInsertInterfaces(AbstractType $type)
+    private function checkAndInsertInterfaces(AbstractObjectType $type)
     {
-        $interfaces = $type->getConfig()->getInterfaces();
-
-        if (is_array($interfaces) && $interfaces) {
-            foreach ($interfaces as $interface) {
+            foreach ((array)$type->getConfig()->getInterfaces() as $interface) {
+                /** @var AbstractInterfaceType $interface */
                 $this->insertType($interface->getName(), $interface);
             }
-        }
     }
 
     /**
