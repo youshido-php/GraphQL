@@ -238,7 +238,7 @@ class Processor
         } else {
             $value = $preResolvedValue;
 
-            /** hotfix for enum $field->getType()->resolve($preResolvedValue); */
+            /** hotfix for enum $field->getType()->resolve($preResolvedValue); */ //todo: refactor here
             if ($fieldType->getKind() == TypeMap::KIND_NON_NULL) {
                 if (!$fieldType->isValidValue($preResolvedValue)) {
                     $this->resolveValidator->addError(new ResolveException(sprintf('Cannot return null for non-nullable field %s', $astField->getName() . '.' . $field->getName())));
@@ -306,17 +306,15 @@ class Processor
     {
         if (TypeService::isAbstractType($type)) {
             /** @var AbstractInterfaceType $type */
-            $type = $type->resolveType($resolvedValue);
+            $resolvedType = $type->resolveType($resolvedValue);
 
             if ($type instanceof AbstractInterfaceType) {
-                /** @var AbstractInterfaceType $namedType */
-                $this->resolveValidator->assertTypeImplementsInterface($type, $namedType);
+                $this->resolveValidator->assertTypeImplementsInterface($resolvedType, $type);
             } elseif ($type instanceof AbstractUnionType) {
-                /** @var AbstractUnionType $namedType */
-                $this->resolveValidator->assertTypeInUnionTypes($type, $namedType);
+                $this->resolveValidator->assertTypeInUnionTypes($resolvedType, $type);
             }
 
-            return $type;
+            return $resolvedType;
         }
 
         return $type;

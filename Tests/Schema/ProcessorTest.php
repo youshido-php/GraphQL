@@ -18,6 +18,7 @@ use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\BooleanType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
+use Youshido\GraphQL\Type\Union\UnionType;
 use Youshido\Tests\DataProvider\TestEnumType;
 use Youshido\Tests\DataProvider\TestInterfaceType;
 use Youshido\Tests\DataProvider\TestObjectType;
@@ -125,19 +126,19 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['data' => ['me' => ['firstName' => 'JOHN']]], $processor->getResponseData());
 
         $schema->getMutationType()
-               ->addField(new Field([
-                   'name'    => 'increaseCounter',
-                   'type'    => new IntType(),
-                   'resolve' => function ($value, $args, IntType $type) {
-                       return $this->_counter += $args['amount'];
-                   },
-                   'args'    => [
-                       'amount' => [
-                           'type'    => new IntType(),
-                           'default' => 1
-                       ]
-                   ]
-               ]))->addField(new Field([
+            ->addField(new Field([
+                'name'    => 'increaseCounter',
+                'type'    => new IntType(),
+                'resolve' => function ($value, $args, IntType $type) {
+                    return $this->_counter += $args['amount'];
+                },
+                'args'    => [
+                    'amount' => [
+                        'type'    => new IntType(),
+                        'default' => 1
+                    ]
+                ]
+            ]))->addField(new Field([
                 'name'    => 'invalidResolveTypeMutation',
                 'type'    => new NonNullType(new IntType()),
                 'resolve' => function ($value, $args, $type) {
@@ -298,7 +299,84 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $processor->processRequest('{ test:deepObjectQuery { object { name } } }');
         $this->assertEquals(['data' => ['test' => ['object' => ['name' => 'John']]]], $processor->getResponseData());
+    }
 
+    public function testTypedFragment()
+    {
+        $processor = new Processor();
+        $object1   = new ObjectType([
+            'name'   => 'Object1',
+            'fields' => [
+                'id' => ['type' => 'int']
+            ]
+        ]);
+
+        $object2 = new ObjectType([
+            'name'   => 'Object2',
+            'fields' => [
+                'name' => ['type' => 'string']
+            ]
+        ]);
+
+        $union = new UnionType([
+            'name'        => 'TestUnion',
+            'types'       => [$object1, $object2],
+            'resolveType' => function ($object) use ($object1, $object2) {
+                if (isset($object['id'])) {
+                    return $object1;
+                }
+
+                return $object2;
+            }
+        ]);
+
+        $processor->setSchema(new Schema([
+            'query' => new ObjectType([
+                'name'   => 'RootQuery',
+                'fields' => [
+                    'union' => [
+                        'type'    => $union,
+                        'args'    => [
+                            'type' => ['type' => 'string']
+                        ],
+                        'resolve' => function ($value, $args) {
+                            if ($args['type'] == 'object1') {
+                                return [
+                                    'id' => 43
+                                ];
+                            } else {
+                                return [
+                                    'name' => 'name resolved'
+                                ];
+                            }
+                        }
+                    ]
+                ]
+            ])
+        ]));
+
+        $processor->processRequest('{ union(type: "object1") { ... on Object2 { id } } }');
+        $this->assertEquals(['data' => ['union' => []]], $processor->getResponseData());
+        $processor->clearErrors();
+
+        $processor->processRequest('{ union(type: "object1") { ... on Object1 { name } } }');
+        $this->assertEquals([
+            'data' => [
+                'union' => null
+            ],
+            'errors' => [
+                ['message' => 'Field "name" not found in type "Object1"']
+            ]
+        ], $processor->getResponseData());
+        $processor->clearErrors();
+
+        $processor->processRequest('{ union(type: "object1") { ... on Object1 { id } } }');
+        $this->assertEquals(['data' => ['union' => ['id' => 43]]], $processor->getResponseData());
+        $processor->clearErrors();
+
+        $processor->processRequest('{ union(type: "asd") { ... on Object2 { name } } }');
+        $this->assertEquals(['data' => ['union' => ['name' => 'name resolved']]], $processor->getResponseData());
+        $processor->clearErrors();
     }
 
 
