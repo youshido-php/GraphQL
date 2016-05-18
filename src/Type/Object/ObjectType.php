@@ -9,7 +9,6 @@
 namespace Youshido\GraphQL\Type\Object;
 
 use Youshido\GraphQL\Config\Object\ObjectTypeConfig;
-use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 final class ObjectType extends AbstractObjectType
 {

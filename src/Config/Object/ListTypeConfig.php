@@ -9,7 +9,6 @@
 namespace Youshido\GraphQL\Config\Object;
 
 
-use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Type\TypeService;
 
 class ListTypeConfig extends ObjectTypeConfig

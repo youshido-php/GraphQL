@@ -24,9 +24,13 @@ class NodeField extends AbstractField
     /** @var  FetcherInterface */
     protected $fetcher;
 
+    /** @var NodeInterfaceType */
+    protected $type;
+
     public function __construct(FetcherInterface $fetcher)
     {
         $this->fetcher = $fetcher;
+        $this->type    = (new NodeInterfaceType())->setFetcher($this->fetcher);
 
         parent::__construct([]);
     }
@@ -52,7 +56,7 @@ class NodeField extends AbstractField
 
     public function getType()
     {
-        return (new NodeInterfaceType())->setFetcher($this->fetcher);
+        return $this->type;
     }
 
     public function resolve($value, $args = [], $type = null)
