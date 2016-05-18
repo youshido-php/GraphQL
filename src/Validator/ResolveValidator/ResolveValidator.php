@@ -137,9 +137,6 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
      */
     public function assertValidFragmentForField(Fragment $fragment, FragmentReference $fragmentReference, AbstractType $queryType)
     {
-//        if (!$fragment) {
-//            throw new ResolveException(sprintf('Fragment reference "%s" not found', $fragmentReference->getName()));
-//        }
 
         if ($fragment->getModel() !== $queryType->getName()) {
             throw new ResolveException(sprintf('Fragment reference "%s" not found on model "%s"', $fragmentReference->getName(), $queryType->getName()));
@@ -149,7 +146,7 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
     /**
      * @inheritdoc
      */
-    public function validateResolvedValue($value, $type)
+    public function validateResolvedValueType($value, $type)
     {
         switch ($type->getKind()) {
             case TypeMap::KIND_OBJECT:
@@ -170,7 +167,7 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
         }
 
         if (!$isValid) {
-            $this->addError(new ResolveException(sprintf('Not valid resolved value for "%s"', $type->getName() ?: 'NonNull')));
+            $this->addError(new ResolveException(sprintf('Not valid resolved value for "%s" type', $type->getName() ?: $type->getKind())));
         }
 
         return $isValid;

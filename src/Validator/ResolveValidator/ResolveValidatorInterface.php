@@ -31,5 +31,5 @@ interface ResolveValidatorInterface
      *
      * @return bool
      */
-    public function validateResolvedValue($value, $type);
+    public function validateResolvedValueType($value, $type);
 }

@@ -174,7 +174,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->clearErrors();
 
         $processor->processRequest('{ invalidValueQuery }');
-        $this->assertEquals(['errors' => [['message' => 'You can not serialize object value directly']]], $processor->getResponseData());
+        $this->assertEquals(['errors' => [['message' => 'Not valid resolved value for "TestObject" type']], 'data' => ['invalidValueQuery' => null]], $processor->getResponseData());
         $processor->clearErrors();
 
         $processor->processRequest('{ me { firstName(shorten: true), middle }}');
@@ -186,7 +186,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->clearErrors();
 
         $processor->processRequest('mutation { invalidResolveTypeMutation }');
-        $this->assertEquals(['errors' => [['message' => 'Not valid resolved value for "NonNull"']], 'data' => ['invalidResolveTypeMutation' => null]], $processor->getResponseData());
+        $this->assertEquals(['errors' => [['message' => 'Not valid resolved value for "NON_NULL" type']], 'data' => ['invalidResolveTypeMutation' => null]], $processor->getResponseData());
         $processor->clearErrors();
 
         $processor->processRequest('mutation { user:interfacedMutation { name }  }');
@@ -243,19 +243,19 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                         }
                     ],
                     'deepObjectQuery'           => [
-                        'type' => new ObjectType([
+                        'type'    => new ObjectType([
                             'name'   => 'deepObject',
                             'fields' => [
                                 'object' => new TestObjectType(),
                                 'enum'   => new TestEnumType(),
                             ],
                         ]),
-                        'resolve' => function() {
+                        'resolve' => function () {
                             return [
                                 'object' => [
                                     'name' => 'John'
                                 ],
-                                'enum' => 1
+                                'enum'   => 1
                             ];
                         },
                     ],
@@ -265,24 +265,24 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $processor->processRequest('{ listQuery }');
         $this->assertEquals(['errors' => [
-            ['message' => 'Not valid resolve value for list type']
+            ['message' => 'Not valid resolved value for "LIST" type']
         ], 'data'                     => ['listQuery' => null]], $processor->getResponseData());
         $processor->clearErrors();
 
         $processor->processRequest('{ listEnumQuery }');
         $this->assertEquals(['errors' => [
-            ['message' => 'Not valid resolve value for enum type']
+            ['message' => 'Not valid resolve value in listEnumQuery field']
         ], 'data'                     => ['listEnumQuery' => null]], $processor->getResponseData());
         $processor->clearErrors();
 
         $processor->processRequest('{ invalidEnumQuery }');
         $this->assertEquals(['errors' => [
-            ['message' => 'Not valid resolve value for enum type']
+            ['message' => 'Not valid resolved value for "TestEnum" type']
         ], 'data'                     => ['invalidEnumQuery' => null]], $processor->getResponseData());
         $processor->clearErrors();
 
         $processor->processRequest('{ enumQuery }');
-        $this->assertEquals(['data' => ['enumQuery' => 1]], $processor->getResponseData());
+        $this->assertEquals(['data' => ['enumQuery' => 'FINISHED']], $processor->getResponseData());
 
         $processor->processRequest('{ invalidNonNullQuery }');
         $this->assertEquals(['errors' => [
@@ -297,7 +297,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->clearErrors();
 
         $processor->processRequest('{ test:deepObjectQuery { object { name } } }');
-        $this->assertEquals(['data' => ['test' => [ 'object'=> ['name' => 'John']]]], $processor->getResponseData());
+        $this->assertEquals(['data' => ['test' => ['object' => ['name' => 'John']]]], $processor->getResponseData());
 
     }
 

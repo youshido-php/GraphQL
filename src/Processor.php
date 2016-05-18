@@ -182,7 +182,7 @@ class Processor
 
         $resolvedValue = $this->resolveFieldValue($field, null, $mutation);
 
-        if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $fieldType)) {
+        if (!$this->resolveValidator->validateResolvedValueType($resolvedValue, $fieldType)) {
             return [$alias => null];
         }
 
@@ -215,41 +215,31 @@ class Processor
         $fieldType        = $field->getType();
         $preResolvedValue = $this->getPreResolvedValue($contextValue, $astField, $field);
 
+        if ($preResolvedValue && !$this->resolveValidator->validateResolvedValueType($preResolvedValue, $field->getType())) {
+            return null;
+        }
+
+
         if ($fieldType->getKind() == TypeMap::KIND_LIST) {
-            if (!is_array($preResolvedValue)) {
-                $this->resolveValidator->addError(new ResolveException('Not valid resolve value for list type'));
-
-                return null;
-            }
-
             $listValue = [];
             foreach ($preResolvedValue as $resolvedValueItem) {
-                /** @var TypeInterface $type */
                 $type = $fieldType->getNamedType();
 
-                if ($type->getKind() == TypeMap::KIND_ENUM) {
-                    /** @var $type AbstractEnumType */
-                    if (!$type->isValidValue($resolvedValueItem)) {
-                        $this->resolveValidator->addError(new ResolveException('Not valid resolve value for enum type'));
+                if (!$type->isValidValue($resolvedValueItem)) {
+                    $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolve value in %s field', $field->getName())));
 
-                        $listValue = null;
-                        break;
-                    }
+                    $listValue = null;
+                    break;
                 }
-                $listValue[] = $type->serialize($resolvedValueItem);
+                $listValue[] = $type->getKind() != TypeMap::KIND_OBJECT ? $type->serialize($resolvedValueItem) : $resolvedValueItem;
             }
 
             $value = $listValue;
         } else {
-            if ($fieldType->getKind() == TypeMap::KIND_ENUM) {
-                if (!$fieldType->isValidValue($preResolvedValue)) {
-                    $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolve value for enum type')));
-                    $value = null;
-                } else {
-                    $value = $preResolvedValue;
-                    /** $field->getType()->resolve($preResolvedValue); */
-                }
-            } elseif ($fieldType->getKind() == TypeMap::KIND_NON_NULL) {
+            $value = $preResolvedValue;
+
+            /** hotfix for enum $field->getType()->resolve($preResolvedValue); */
+            if ($fieldType->getKind() == TypeMap::KIND_NON_NULL) {
                 if (!$fieldType->isValidValue($preResolvedValue)) {
                     $this->resolveValidator->addError(new ResolveException(sprintf('Cannot return null for non-nullable field %s', $astField->getName() . '.' . $field->getName())));
                 } elseif (!$fieldType->getNullableType()->isValidValue($preResolvedValue)) {
@@ -258,8 +248,7 @@ class Processor
                 } else {
                     $value = $preResolvedValue;
                 }
-            } else {
-                /** @var AbstractType $value */
+            } elseif ($fieldType->getKind() != TypeMap::KIND_OBJECT) {
                 $value = $fieldType->serialize($preResolvedValue);
             }
         }
@@ -279,8 +268,8 @@ class Processor
         if (!($resolvedValue = $this->resolveFieldValue($field, $contextValue, $query))) {
             return $resolvedValue;
         }
-
-        if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $field->getType())) {
+        /** we probably do not need this if here $type */
+        if (!$this->resolveValidator->validateResolvedValueType($resolvedValue, $field->getType())) {
             return null;
         }
 

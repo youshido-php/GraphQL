@@ -64,23 +64,23 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
     public function testValidateValue()
     {
         $validator = new ResolveValidator();
-        $validator->validateResolvedValue('string value', new StringType());
+        $validator->validateResolvedValueType('string value', new StringType());
         $this->assertFalse($validator->hasErrors());
 
-        $validator->validateResolvedValue(null, new NonNullType(new StringType()));
+        $validator->validateResolvedValueType(null, new NonNullType(new StringType()));
         $this->assertTrue($validator->hasErrors());
 
         $validator->clearErrors();
-        $validator->validateResolvedValue('some data', new NonNullType(new StringType()));
+        $validator->validateResolvedValueType('some data', new NonNullType(new StringType()));
         $this->assertFalse($validator->hasErrors());
 
-        $validator->validateResolvedValue('NEW', new TestEnumType());
+        $validator->validateResolvedValueType('NEW', new TestEnumType());
         $this->assertFalse($validator->hasErrors());
 
-        $validator->validateResolvedValue(1, new TestEnumType());
+        $validator->validateResolvedValueType(1, new TestEnumType());
         $this->assertFalse($validator->hasErrors());
 
-        $validator->validateResolvedValue(2, new TestEnumType());
+        $validator->validateResolvedValueType(2, new TestEnumType());
         $this->assertTrue($validator->hasErrors());
     }
 
