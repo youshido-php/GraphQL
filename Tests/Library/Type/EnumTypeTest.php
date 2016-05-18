@@ -76,6 +76,20 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
         ]);
     }
 
+    /**
+     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     */
+    public function testWithoutValueParams()
+    {
+        new EnumType([
+            'values' => [
+                [
+                    'name'  => 'TEST_ENUM',
+                ]
+            ]
+        ]);
+    }
+
     public function testNormalCreatingParams()
     {
         $valuesData = [

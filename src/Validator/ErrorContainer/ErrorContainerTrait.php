@@ -44,34 +44,26 @@ trait ErrorContainerTrait
         return $this;
     }
 
-    public function getErrorsArray($asObject = true)
+    public function getErrorsArray($inGraphQLStyle = true)
     {
         $errors = [];
 
         foreach ($this->errors as $error) {
-            if ($asObject) {
-                if (is_object($error)) {
-                    if ($error instanceof DatableResolveException) {
-                        $errors[] = array_merge(
-                            ['message' => $error->getMessage()],
-                            $error->getData() ?: [],
-                            $error->getCode() ? ['code' => $error->getCode()] : []
-                        );
-                    } else {
-                        $errors[] = array_merge(
-                            ['message' => $error->getMessage()],
-                            $error->getCode() ? ['code' => $error->getCode()] : []
-                        );
-                    }
+            if ($inGraphQLStyle) {
+                if ($error instanceof DatableResolveException) {
+                    $errors[] = array_merge(
+                        ['message' => $error->getMessage()],
+                        $error->getData() ?: [],
+                        $error->getCode() ? ['code' => $error->getCode()] : []
+                    );
                 } else {
-                    $errors[] = ['message' => $error];
+                    $errors[] = array_merge(
+                        ['message' => $error->getMessage()],
+                        $error->getCode() ? ['code' => $error->getCode()] : []
+                    );
                 }
             } else {
-                if (is_object($error)) {
-                    $errors[] = $error->getMessage();
-                } else {
-                    $errors[] = $error;
-                }
+                $errors[] = $error->getMessage();
             }
         }
 

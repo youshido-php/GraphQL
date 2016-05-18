@@ -49,5 +49,4 @@ class UnionTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals([new IntType(), new StringType()], $type->getTypes());
         $this->assertEquals('test', $type->resolveType('test'));
     }
-
 }

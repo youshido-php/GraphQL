@@ -30,6 +30,7 @@ use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
+use Youshido\GraphQL\Type\Union\AbstractUnionType;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
@@ -315,10 +316,15 @@ class Processor
                 if (TypeService::isAbstractType($namedType)) {
                     /** @var AbstractInterfaceTypeInterface $namedType */
                     $resolvedType = $namedType->resolveType($resolvedValueItem);
+
                     if ($namedType instanceof AbstractInterfaceType) {
                         /** @var AbstractInterfaceType $namedType */
                         $this->resolveValidator->assertTypeImplementsInterface($resolvedType, $namedType);
+                    } elseif ($namedType instanceof AbstractUnionType) {
+                        /** @var AbstractUnionType $namedType */
+                        $this->resolveValidator->assertTypeInUnionTypes($resolvedType, $namedType);
                     }
+
                     $namedType = $resolvedType;
                 }
 

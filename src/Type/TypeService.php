@@ -87,7 +87,7 @@ class TypeService
 
     public static function isGraphQLType($type)
     {
-        return $type instanceof AbstractType || TypeService::isScalarType($type);//TypeService::isObjectType($type) || TypeService::isScalarType($type);
+        return $type instanceof AbstractType || TypeService::isScalarType($type);
     }
 
     public static function isObjectType($type)

@@ -22,6 +22,7 @@ use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\Union\AbstractUnionType;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerInterface;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
@@ -125,7 +126,14 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
     {
         if (!$interface->isValidValue($type)) {
             throw new ResolveException('Type ' . $type->getName() . ' does not implement ' . $interface->getName());
-        };
+        }
+    }
+
+    public function assertTypeInUnionTypes(AbstractType $type, AbstractUnionType $unionType)
+    {
+        if (!in_array($type, $unionType->getTypes())) {
+            throw new ResolveException('Type ' . $type->getName() . ' not exist in types of ' . $unionType->getName());
+        }
     }
 
     /**
