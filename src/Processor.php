@@ -268,16 +268,13 @@ class Processor
         if (!($resolvedValue = $this->resolveFieldValue($field, $contextValue, $query))) {
             return $resolvedValue;
         }
+
         /** we probably do not need this if here $type */
         if (!$this->resolveValidator->validateResolvedValueType($resolvedValue, $field->getType())) {
             return null;
         }
 
-        $type = $field->getType();
-        if (TypeService::isAbstractType($type)) {
-            /** @var AbstractInterfaceType $type */
-            $type = $type->resolveType($resolvedValue);
-        }
+        $type = $this->resolveTypeIfAbstract($field->getType(), $resolvedValue);
 
         return $this->collectTypeResolvedValue($type, $resolvedValue, $query);
     }
@@ -298,6 +295,34 @@ class Processor
     }
 
     /**
+     * @param AbstractType $type
+     * @param              $resolvedValue
+     *
+     * @return AbstractType|AbstractInterfaceType
+     *
+     * @throws ResolveException
+     */
+    protected function resolveTypeIfAbstract(AbstractType $type, $resolvedValue)
+    {
+        if (TypeService::isAbstractType($type)) {
+            /** @var AbstractInterfaceType $type */
+            $type = $type->resolveType($resolvedValue);
+
+            if ($type instanceof AbstractInterfaceType) {
+                /** @var AbstractInterfaceType $namedType */
+                $this->resolveValidator->assertTypeImplementsInterface($type, $namedType);
+            } elseif ($type instanceof AbstractUnionType) {
+                /** @var AbstractUnionType $namedType */
+                $this->resolveValidator->assertTypeInUnionTypes($type, $namedType);
+            }
+
+            return $type;
+        }
+
+        return $type;
+    }
+
+    /**
      * @param AbstractType   $fieldType
      * @param mixed          $resolvedValue
      * @param Query|Mutation $query
@@ -312,21 +337,7 @@ class Processor
                 $value[]   = [];
                 $index     = count($value) - 1;
                 $namedType = $fieldType->getNamedType();
-
-                if (TypeService::isAbstractType($namedType)) {
-                    /** @var AbstractInterfaceTypeInterface $namedType */
-                    $resolvedType = $namedType->resolveType($resolvedValueItem);
-
-                    if ($namedType instanceof AbstractInterfaceType) {
-                        /** @var AbstractInterfaceType $namedType */
-                        $this->resolveValidator->assertTypeImplementsInterface($resolvedType, $namedType);
-                    } elseif ($namedType instanceof AbstractUnionType) {
-                        /** @var AbstractUnionType $namedType */
-                        $this->resolveValidator->assertTypeInUnionTypes($resolvedType, $namedType);
-                    }
-
-                    $namedType = $resolvedType;
-                }
+                $namedType = $this->resolveTypeIfAbstract($namedType, $resolvedValueItem);
 
                 $value[$index] = $this->processQueryFields($query, $namedType, $resolvedValueItem, $value[$index]);
             }

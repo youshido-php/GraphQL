@@ -179,7 +179,6 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
         }
 
         return $isValid;
-
     }
 
 }

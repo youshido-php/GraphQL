@@ -23,7 +23,7 @@ use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\BooleanType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
-use Youshido\GraphQL\Validator\Exception\ConfigurationException;
+use Youshido\GraphQL\Type\Union\UnionType;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
 use Youshido\Tests\DataProvider\TestEnumType;
 use Youshido\Tests\DataProvider\TestInterfaceType;
@@ -105,7 +105,7 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Youshido\GraphQL\Validator\Exception\ResolveException
      */
-    public function testInvalidFragmentModel()
+    public function testInvalidInterfaceTypeResolve()
     {
         $userType = new ObjectType([
             'name'   => 'User',
@@ -116,6 +116,42 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
 
         $validator = new ResolveValidator();
         $validator->assertTypeImplementsInterface($userType, new TestInterfaceType());
+    }
+
+    /**
+     * @expectedException \Youshido\GraphQL\Validator\Exception\ResolveException
+     */
+    public function testInvalidUnionTypeResolve()
+    {
+        $union = new UnionType([
+            'name'        => 'TestUnion',
+            'types'       => [new IntType(), new StringType()],
+            'resolveType' => function ($object) {
+                return new BooleanType();
+            }
+        ]);
+
+        $validator = new ResolveValidator();
+        $validator->assertTypeInUnionTypes($union->resolveType(true), $union);
+    }
+
+    public function testValidUnionTypeResolve()
+    {
+        $union = new UnionType([
+            'name'        => 'TestUnion',
+            'types'       => [new IntType(), new StringType()],
+            'resolveType' => function ($object) {
+                return new IntType();
+            }
+        ]);
+
+        $validator = new ResolveValidator();
+        try {
+            $validator->assertTypeInUnionTypes($union->resolveType(true), $union);
+            $this->assertTrue(true);
+        } catch (\Exception $e) {
+            $this->assertTrue(false);
+        }
     }
 
     public function testArgumentsValidation()

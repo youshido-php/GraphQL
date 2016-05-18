@@ -49,4 +49,21 @@ class UnionTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals([new IntType(), new StringType()], $type->getTypes());
         $this->assertEquals('test', $type->resolveType('test'));
     }
+
+    /**
+     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     */
+    public function testInvalidValues()
+    {
+        new UnionType([
+            'name'        => 'Car',
+            'description' => 'Union collect cars types',
+            'types'       => [
+                'test', new IntType()
+            ],
+            'resolveType' => function ($type) {
+                return $type;
+            }
+        ]);
+    }
 }
