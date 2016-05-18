@@ -109,12 +109,6 @@ class Processor
         $alias         = $mutation->hasAlias() ? $mutation->getAlias() : $mutation->getName();
         $resolvedValue = $this->resolveValue($field, null, $mutation);
 
-        if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $field->getType()->getKind())) {
-            $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolved value for mutation "%s"', $field->getType()->getName())));
-
-            return [$alias => null];
-        }
-
         $value = null;
         if ($mutation->hasFields()) {
             $outputType = $field->getType()->getOutputType();
@@ -221,7 +215,12 @@ class Processor
             $resolvedValue = $this->resolveValue($field, $contextValue, $query);
             $alias         = $query->hasAlias() ? $query->getAlias() : $query->getName();
 
-            if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $field->getType()->getKind())) {
+            $type = $field->getType();
+            if (in_array($type->getKind(), [TypeMap::KIND_UNION, TypeMap::KIND_INTERFACE])) {
+                $type = $field->getType()->resolveType($resolvedValue);
+            }
+
+            if (!$this->resolveValidator->validateResolvedValue($resolvedValue, $type->getKind())) {
                 $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolved value for query "%s"', $field->getType()->getName())));
 
                 return [$alias => null];
@@ -243,7 +242,7 @@ class Processor
                         $value[$index] = $this->processQueryFields($query, $type, $resolvedValueItem, $value[$index]);
                     }
                 } else {
-                    $value = $this->processQueryFields($query, $field->getType(), $resolvedValue, $value);
+                    $value = $this->processQueryFields($query, $type, $resolvedValue, $value);
                 }
             } else {
                 $value = $resolvedValue;
@@ -321,14 +320,7 @@ class Processor
      */
     protected function resolveValue($field, $contextValue, $query)
     {
-        $resolvedValue = $field->getConfig()->resolve($contextValue, $this->parseArgumentsValues($field, $query));
-
-        if (in_array($field->getType()->getKind(), [TypeMap::KIND_UNION, TypeMap::KIND_INTERFACE])) {
-            $resolvedType = $field->getType()->resolveType($resolvedValue);
-            $field->setType($resolvedType);
-        }
-
-        return $resolvedValue;
+        return $field->getConfig()->resolve($contextValue, $this->parseArgumentsValues($field, $query));
     }
 
     /**
