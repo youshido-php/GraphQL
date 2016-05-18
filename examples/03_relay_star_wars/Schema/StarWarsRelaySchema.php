@@ -4,6 +4,7 @@ namespace Examples\StarWars;
 
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
 use Youshido\GraphQL\Field\InputField;
+use Youshido\GraphQL\Relay\Connection\Connection;
 use Youshido\GraphQL\Relay\Fetcher\CallableFetcher;
 use Youshido\GraphQL\Relay\Field\NodeField;
 use Youshido\GraphQL\Relay\Mutation;
@@ -70,10 +71,13 @@ class StarWarsRelaySchema extends AbstractSchema
                            new InputField(['name' => 'factionId', 'type' => new NonNullType(new StringType())])
                        ],
                        [
-                           'ship'    => [
-                               'type'    => new ShipType(),
+                           'newShipEdge'    => [
+                               'type'    => Connection::edgeDefinition(new ShipType(), 'newShip'),
                                'resolve' => function ($value) {
-                                   return TestDataProvider::getShip($value['shipId']);
+                                   return [
+                                       'cursor' => md5(time()),
+                                       'node' => TestDataProvider::getShip($value['shipId'])
+                                   ];
                                }
                            ],
                            'faction' => [

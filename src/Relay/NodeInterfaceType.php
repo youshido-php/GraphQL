@@ -26,7 +26,7 @@ class NodeInterfaceType extends AbstractInterfaceType
 
     public function build($config)
     {
-        $config->addField(new GlobalIdField());
+        $config->addField(new GlobalIdField('NodeInterface'));
     }
 
     public function resolveType($object)

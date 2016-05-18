@@ -42,7 +42,7 @@ const compiler = webpack({
     output: { filename: 'app.js', path: '/' },
 });
 const app      = new WebpackDevServer(compiler, {
-    //noInfo:true,
+    noInfo:true,
     contentBase: '/public/',
     proxy:       { '/graphql': `http://localhost:${GRAPHQL_PORT}/` },
     publicPath:  '/js/',

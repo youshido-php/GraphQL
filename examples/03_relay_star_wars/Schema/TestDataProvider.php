@@ -24,12 +24,12 @@ class TestDataProvider
     ];
 
     private static $factions = [
-        'rebels' => [
+        '1' => [
             'id'    => 1,
             'name'  => 'Alliance to Restore the Republic',
             'ships' => [1, 2, 3, 4, 5]
         ],
-        'empire' => [
+        '2' => [
             'id'    => 2,
             'name'  => 'Galactic Empire',
             'ships' => [6, 7, 8]
@@ -43,8 +43,10 @@ class TestDataProvider
         $result = [];
 
         foreach($names as $name) {
-            if(array_key_exists($name, self::$factions)) {
-                $result[] = self::$factions[$name];
+            if ($name == 'rebels') {
+                $result[] = self::$factions[1];
+            } elseif($name == 'empire') {
+                $result[] = self::$factions[2];
             } else {
                 $result[] = null;
             }
@@ -84,14 +86,13 @@ class TestDataProvider
 
     public static function getFaction($id)
     {
+        if ($id == 'rebels') {
+            return self::$factions[1];
+        } elseif($id == 'empire') {
+            return self::$factions[2];
+        }
         if (array_key_exists($id, self::$factions)) {
             return self::$factions[$id];
-        }
-
-        foreach (self::$factions as $faction) {
-            if ($faction['id'] == $id) {
-                return $faction;
-            }
         }
 
         return null;

@@ -18,16 +18,15 @@ class GlobalIdField extends AbstractField
 {
 
     /** @var  string */
-    protected $name;
+    protected $typeName;
 
     /**
-     * @param string $name
+     * @param string $typeName
      */
-    public function __construct($name = '')
+    public function __construct($typeName)
     {
-        $this->name = $name;
+        $this->typeName = $typeName;
 
-        //todo: think about this, I made it for Processor, line 372
         $config = [
             'type'    => $this->getType(),
             'name'    => $this->getName(),
@@ -57,6 +56,6 @@ class GlobalIdField extends AbstractField
      */
     public function resolve($value, $args = [], $type = null)
     {
-        return Node::toGlobalId($this->name ?: $type->getName() ?: get_class($type), $value['id']);
+        return $value ? Node::toGlobalId($this->typeName, $value['id']) : null;
     }
 }
