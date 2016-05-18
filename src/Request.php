@@ -99,6 +99,7 @@ class Request
 
         return null;
     }
+
     /**
      * @return Mutation[]
      */

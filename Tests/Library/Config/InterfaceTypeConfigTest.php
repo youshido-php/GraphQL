@@ -58,15 +58,15 @@ class InterfaceTypeConfigTest extends \PHPUnit_Framework_TestCase
                 return $object->getType();
             }
         ], null, true);
-        $object = new ObjectType(['name' => 'User', 'fields' => ['name' => new StringType()]]);
+        $object          = new ObjectType(['name' => 'User', 'fields' => ['name' => new StringType()]]);
 
         $this->assertEquals($interfaceConfig->getName(), 'Test');
         $this->assertEquals($interfaceConfig->resolveType($object), $object->getType());
 
-        $testInterface = new TestInterfaceType();
+        $testInterface                = new TestInterfaceType();
         $interfaceConfigWithNoResolve = new InterfaceTypeConfig([
-            'name'        => 'Test',
-            'fields'      => ['id' => new IntType()]
+            'name'   => 'Test',
+            'fields' => ['id' => new IntType()]
         ], $testInterface, false);
         $this->assertEquals($interfaceConfigWithNoResolve->resolveType($object), $object);
     }

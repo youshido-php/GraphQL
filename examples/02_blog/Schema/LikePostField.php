@@ -15,8 +15,8 @@ class LikePostField extends AbstractField
 {
 
     /**
-     * @param null  $value
-     * @param array $args
+     * @param null     $value
+     * @param array    $args
      * @param PostType $type
      * @return mixed
      */

@@ -44,7 +44,7 @@ abstract class AbstractInputObjectType extends AbstractType
             return false;
         }
 
-        $typeConfig = $this->getConfig();
+        $typeConfig     = $this->getConfig();
         $requiredFields = array_filter($typeConfig->getFields(), function (AbstractField $field) {
             return $field->getType()->getKind() == TypeMap::KIND_NON_NULL;
         });

@@ -13,7 +13,7 @@ use Youshido\GraphQL\Config\Traits\ConfigAwareTrait;
 
 /**
  * Class ArgumentsAwareObjectTrait
- * @package Youshido\GraphQL\Type\Traits
+ * @package    Youshido\GraphQL\Type\Traits
  * @codeCoverageIgnore
  *
  * @deprecated To be removed during the release optimization

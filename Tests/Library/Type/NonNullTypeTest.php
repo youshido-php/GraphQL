@@ -27,10 +27,10 @@ class NonNullTypeTest extends \PHPUnit_Framework_TestCase
 
     public function testNonNullType()
     {
-        $stringType  = new StringType();
-        $nonNullType = new NonNullType(new StringType());
+        $stringType      = new StringType();
+        $nonNullType     = new NonNullType(new StringType());
         $nonNullOnString = new NonNullType(TypeMap::TYPE_STRING);
-        $testArray   = ['a' => 'b'];
+        $testArray       = ['a' => 'b'];
 
         $this->assertEquals($nonNullType->getName(), null, 'Empty non-null name');
         $this->assertEquals($nonNullType->getKind(), TypeMap::KIND_NON_NULL);

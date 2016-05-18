@@ -35,60 +35,60 @@ class StarWarsRelaySchema extends AbstractSchema
         );
 
         $config->getQuery()
-            ->addField(new NodeField($fetcher))
-            ->addField('rebels', [
-                'type'    => new FactionType(),
-                'resolve' => function () {
-                    return TestDataProvider::getFaction('rebels');
-                }
-            ])
-            ->addField('empire', [
-                'type'    => new FactionType(),
-                'resolve' => function () {
-                    return TestDataProvider::getFaction('empire');
-                }
-            ])
-            ->addField('factions', [
-                'type'    => Connection::connectionDefinition(new FactionType()),
-                'args'    => Connection::connectionArgs(),
-                'resolve' => function ($value = null, $args = [], $type = null) {
-                    return Connection::connectionFromArray(TestDataProvider::getFactions(), $args);
-                }
-            ]);
+               ->addField(new NodeField($fetcher))
+               ->addField('rebels', [
+                   'type'    => new FactionType(),
+                   'resolve' => function () {
+                       return TestDataProvider::getFaction('rebels');
+                   }
+               ])
+               ->addField('empire', [
+                   'type'    => new FactionType(),
+                   'resolve' => function () {
+                       return TestDataProvider::getFaction('empire');
+                   }
+               ])
+               ->addField('factions', [
+                   'type'    => Connection::connectionDefinition(new FactionType()),
+                   'args'    => Connection::connectionArgs(),
+                   'resolve' => function ($value = null, $args = [], $type = null) {
+                       return Connection::connectionFromArray(TestDataProvider::getFactions(), $args);
+                   }
+               ]);
 
 
         $config->getMutation()
-            ->addField(
-                Mutation::buildMutation(
-                    'introduceShip',
-                    [
-                        new InputField(['name' => 'shipName', 'type' => new NonNullType(new StringType())]),
-                        new InputField(['name' => 'factionId', 'type' => new NonNullType(new StringType())])
-                    ],
-                    [
-                        'ship'    => [
-                            'type'    => new ShipType(),
-                            'resolve' => function ($value) {
-                                return TestDataProvider::getShip($value['shipId']);
-                            }
-                        ],
-                        'faction' => [
-                            'type'    => new FactionType(),
-                            'resolve' => function ($value) {
-                                return TestDataProvider::getFaction($value['factionId']);
-                            }
-                        ]
-                    ],
-                    function ($input) {
-                        $newShip = TestDataProvider::createShip($input['shipName'], $input['factionId']);
+               ->addField(
+                   Mutation::buildMutation(
+                       'introduceShip',
+                       [
+                           new InputField(['name' => 'shipName', 'type' => new NonNullType(new StringType())]),
+                           new InputField(['name' => 'factionId', 'type' => new NonNullType(new StringType())])
+                       ],
+                       [
+                           'ship'    => [
+                               'type'    => new ShipType(),
+                               'resolve' => function ($value) {
+                                   return TestDataProvider::getShip($value['shipId']);
+                               }
+                           ],
+                           'faction' => [
+                               'type'    => new FactionType(),
+                               'resolve' => function ($value) {
+                                   return TestDataProvider::getFaction($value['factionId']);
+                               }
+                           ]
+                       ],
+                       function ($input) {
+                           $newShip = TestDataProvider::createShip($input['shipName'], $input['factionId']);
 
-                        return [
-                            'shipId'    => $newShip['id'],
-                            'factionId' => $input['factionId']
-                        ];
-                    }
-                )
-            );
+                           return [
+                               'shipId'    => $newShip['id'],
+                               'factionId' => $input['factionId']
+                           ];
+                       }
+                   )
+               );
 
         /** https://github.com/graphql/graphql-relay-js/blob/master/src/__tests__/starWarsSchema.js */
     }

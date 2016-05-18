@@ -19,26 +19,26 @@ class TestSchema extends AbstractSchema
     public function build(SchemaConfig $config)
     {
         $config->getQuery()->addFields([
-            'me' => [
-                'type' => new TestObjectType(),
-                'resolve' => function($value, $args, TestObjectType $type) {
+            'me'     => [
+                'type'    => new TestObjectType(),
+                'resolve' => function ($value, $args, TestObjectType $type) {
                     return $type->getData();
                 }
             ],
             'status' => [
-                'type' => new TestEnumType(),
-                'resolve' => function() {
+                'type'    => new TestEnumType(),
+                'resolve' => function () {
                     return $this->testStatusValue;
                 }
             ],
         ]);
         $config->getMutation()->addFields([
             'updateStatus' => [
-                'type' => new TestEnumType(),
-                'resolve' => function() {
+                'type'    => new TestEnumType(),
+                'resolve' => function () {
                     return $this->testStatusValue;
                 },
-                'args' => [
+                'args'    => [
                     'newStatus' => new TestEnumType()
                 ]
             ]

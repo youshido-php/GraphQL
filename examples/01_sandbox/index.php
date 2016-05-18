@@ -11,11 +11,11 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 $processor = new Processor();
 $processor->setSchema(new Schema([
     'query' => new ObjectType([
-        'name' => 'RootQueryType',
+        'name'   => 'RootQueryType',
         'fields' => [
             'currentTime' => [
-                'type' => new StringType(),
-                'resolve' => function() {
+                'type'    => new StringType(),
+                'resolve' => function () {
                     return date('Y-m-d H:ia');
                 }
             ]

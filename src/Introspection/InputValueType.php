@@ -9,7 +9,6 @@ namespace Youshido\GraphQL\Introspection;
 
 
 use Youshido\GraphQL\Field\Field;
-use Youshido\GraphQL\Field\FieldFactory;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;

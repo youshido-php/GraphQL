@@ -22,12 +22,12 @@ class InterfaceTypeTest extends \PHPUnit_Framework_TestCase
     {
         $interface = new TestInterfaceType();
         $this->assertEquals($interface->getNamedType(), $interface->getType());
-        $this->assertEquals(['name' => new Field(['name' => 'name', 'type'=> new StringType()])],
+        $this->assertEquals(['name' => new Field(['name' => 'name', 'type' => new StringType()])],
             $interface->getFields());
 
         $object = new ObjectType([
-            'name' => 'Test',
-            'fields' => [
+            'name'       => 'Test',
+            'fields'     => [
                 'name' => new StringType()
             ],
             'interfaces' => [$interface],
@@ -39,11 +39,11 @@ class InterfaceTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($interface->serialize($object), $object);
 
         $interfaceType = new InterfaceType([
-            'name' => 'UserInterface',
-            'fields' => [
+            'name'        => 'UserInterface',
+            'fields'      => [
                 'name' => new StringType()
             ],
-            'resolveType' => function($object) {
+            'resolveType' => function ($object) {
                 return $object;
             }
         ]);

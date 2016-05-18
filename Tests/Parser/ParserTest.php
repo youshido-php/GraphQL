@@ -239,7 +239,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     public function testTypedFragment()
     {
-        $parser = new Parser();
+        $parser          = new Parser();
         $parsedStructure = $parser->parse('
             {
                 test: test {
@@ -340,7 +340,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
      */
     public function testParser($query, $structure)
     {
-        $parser = new Parser();
+        $parser          = new Parser();
         $parsedStructure = $parser->parse($query);
 
         $this->assertEquals($parsedStructure, $structure);

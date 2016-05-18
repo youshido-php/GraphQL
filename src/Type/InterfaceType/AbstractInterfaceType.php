@@ -28,8 +28,10 @@ abstract class AbstractInterfaceType extends AbstractType
             $this->isBuilt = true;
             $this->build($this->config);
         }
+
         return $this->config;
     }
+
     /**
      * ObjectType constructor.
      * @param $config

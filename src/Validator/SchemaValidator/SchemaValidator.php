@@ -53,8 +53,8 @@ class SchemaValidator implements ErrorContainerInterface
     }
 
     /**
-     * @param Field $intField
-     * @param Field $objField
+     * @param Field                 $intField
+     * @param Field                 $objField
      * @param AbstractInterfaceType $interface
      * @return bool
      * @throws ConfigurationException

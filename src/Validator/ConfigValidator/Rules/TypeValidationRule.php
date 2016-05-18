@@ -28,57 +28,57 @@ class TypeValidationRule implements ValidationRuleInterface
 
     public function validate($data, $ruleInfo)
     {
-            if (!is_string($ruleInfo)) return false;
+        if (!is_string($ruleInfo)) return false;
 
-            switch ($ruleInfo) {
-                case TypeService::TYPE_ANY:
-                    return true;
+        switch ($ruleInfo) {
+            case TypeService::TYPE_ANY:
+                return true;
 
-                case TypeService::TYPE_ANY_OBJECT:
-                    return is_object($data);
+            case TypeService::TYPE_ANY_OBJECT:
+                return is_object($data);
 
-                case TypeService::TYPE_CALLABLE:
-                    return is_callable($data);
+            case TypeService::TYPE_CALLABLE:
+                return is_callable($data);
 
-                case TypeService::TYPE_BOOLEAN:
-                    return is_bool($data);
+            case TypeService::TYPE_BOOLEAN:
+                return is_bool($data);
 
-                case TypeService::TYPE_ARRAY:
-                    return is_array($data);
+            case TypeService::TYPE_ARRAY:
+                return is_array($data);
 
-                case TypeService::TYPE_STRING:
-                    return TypeFactory::getScalarType($ruleInfo)->isValidValue($data);
+            case TypeService::TYPE_STRING:
+                return TypeFactory::getScalarType($ruleInfo)->isValidValue($data);
 
-                case TypeService::TYPE_GRAPHQL_TYPE:
-                    return TypeService::isGraphQLType($data);
+            case TypeService::TYPE_GRAPHQL_TYPE:
+                return TypeService::isGraphQLType($data);
 
-                case TypeService::TYPE_OBJECT_TYPE:
-                    return TypeService::isObjectType($data);
+            case TypeService::TYPE_OBJECT_TYPE:
+                return TypeService::isObjectType($data);
 
-                case TypeService::TYPE_ARRAY_OF_GRAPHQL_TYPES:
-                    return $this->isArrayOfGraphQLTypes($data);
+            case TypeService::TYPE_ARRAY_OF_GRAPHQL_TYPES:
+                return $this->isArrayOfGraphQLTypes($data);
 
-                case TypeService::TYPE_ARRAY_OF_FIELDS_CONFIG:
-                    return $this->isArrayOfFields($data);
+            case TypeService::TYPE_ARRAY_OF_FIELDS_CONFIG:
+                return $this->isArrayOfFields($data);
 
-                case TypeService::TYPE_OBJECT_INPUT_TYPE:
-                    return TypeService::isInputObjectType($data);
+            case TypeService::TYPE_OBJECT_INPUT_TYPE:
+                return TypeService::isInputObjectType($data);
 
-                case TypeService::TYPE_ENUM_VALUES:
-                    return $this->isEnumValues($data);
+            case TypeService::TYPE_ENUM_VALUES:
+                return $this->isEnumValues($data);
 
-                case TypeService::TYPE_ARRAY_OF_INPUT_FIELDS:
-                    return $this->isArrayOfInputFields($data);
+            case TypeService::TYPE_ARRAY_OF_INPUT_FIELDS:
+                return $this->isArrayOfInputFields($data);
 
-                case TypeService::TYPE_ANY_INPUT:
-                    return TypeService::isInputType($data);
+            case TypeService::TYPE_ANY_INPUT:
+                return TypeService::isInputType($data);
 
-                case TypeService::TYPE_ARRAY_OF_INTERFACES:
-                    return $this->isArrayOfInterfaces($data);
+            case TypeService::TYPE_ARRAY_OF_INTERFACES:
+                return $this->isArrayOfInterfaces($data);
 
-                default:
-                    return false;
-            }
+            default:
+                return false;
+        }
     }
 
     private function isArrayOfGraphQLTypes($data)
@@ -87,8 +87,8 @@ class TypeValidationRule implements ValidationRuleInterface
             return false;
         }
 
-        foreach($data as $item) {
-            if(!TypeService::isGraphQLType($item)) {
+        foreach ($data as $item) {
+            if (!TypeService::isGraphQLType($item)) {
                 return false;
             }
         }
@@ -151,6 +151,7 @@ class TypeValidationRule implements ValidationRuleInterface
             $data['name'] = $name;
         }
         $this->configValidator->validate($data, $this->getFieldConfigRules());
+
         return $this->configValidator->isValid();
     }
 

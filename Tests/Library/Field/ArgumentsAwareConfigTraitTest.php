@@ -19,10 +19,10 @@ class ArgumentsAwareConfigTraitTest extends \PHPUnit_Framework_TestCase
 
     public function testArguments()
     {
-        $argsData   = [
+        $argsData = [
             'id' => new IntType()
         ];
-        $config     = new FieldConfig([
+        $config   = new FieldConfig([
             'name' => 'UserType',
             'type' => new IntType(),
             'args' => $argsData

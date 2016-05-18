@@ -56,7 +56,7 @@ abstract class AbstractConfig
         $this->validator     = new ConfigValidator($contextObject);
 
         if (!$this->validator->validate($this->data, $this->getContextRules(), $this->extraFieldsAllowed)) {
-            throw new ConfigurationException('Config is not valid for ' . ($contextObject ? get_class($contextObject) : null ) . "\n" . implode("\n", $this->validator->getErrorsArray(false)));
+            throw new ConfigurationException('Config is not valid for ' . ($contextObject ? get_class($contextObject) : null) . "\n" . implode("\n", $this->validator->getErrorsArray(false)));
         }
 
         $this->build();

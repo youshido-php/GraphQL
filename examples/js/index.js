@@ -85,8 +85,8 @@ const postType = new GraphQLObjectType({
 });
 
 const bannerType = new GraphQLObjectType({
-    name:   'Banner',
-    fields: {
+    name:       'Banner',
+    fields:     {
         id:        { type: new GraphQLNonNull(GraphQLString) },
         title:     { type: new GraphQLNonNull(GraphQLString) },
         summary:   { type: GraphQLString },
@@ -110,7 +110,7 @@ var { nodeInterface, nodeField } = nodeDefinitions(
         var {type, id} = fromGlobalId(globalId);
         return {
             type: type,
-            id: id
+            id:   id
         };
     },
     (obj) => {
@@ -119,8 +119,8 @@ var { nodeInterface, nodeField } = nodeDefinitions(
 );
 
 var factionType = new GraphQLObjectType({
-    name: 'Faction',
-    fields: () => ({
+    name:       'Faction',
+    fields:     () => ({
         id: globalIdField()
     }),
     interfaces: [nodeInterface]
@@ -130,19 +130,19 @@ const blogSchema = new GraphQLSchema({
     query:    new GraphQLObjectType({
         name:   'RootQueryType',
         fields: {
-            node: nodeField,
-            faction: {
+            node:                     nodeField,
+            faction:                  {
                 type: factionType
             },
-            connectionArgs: {
+            connectionArgs:           {
                 args: connectionArgs,
                 type: GraphQLString
             },
-            forwardConnectionArgs: {
+            forwardConnectionArgs:    {
                 args: forwardConnectionArgs,
                 type: GraphQLString
             },
-            backwardConnectionArgs: {
+            backwardConnectionArgs:   {
                 args: backwardConnectionArgs,
                 type: GraphQLString
             },
@@ -150,25 +150,25 @@ const blogSchema = new GraphQLSchema({
                 args: connectionArgs,
                 type: StringConnection
             },
-            latestPost:           {
+            latestPost:               {
                 type:    postType,
                 resolve: () => {
                     return DataProvider.getPost(1)
                 }
             },
-            randomBanner:         {
+            randomBanner:             {
                 type:    bannerType,
                 resolve: () => {
                     return DataProvider.getBanner(Math.floor((Math.random() * 10) + 1))
                 }
             },
-            pageContentUnion:     {
+            pageContentUnion:         {
                 type:    new GraphQLList(contentBlockUnion),
                 resolve: () => {
                     return [DataProvider.getPost(2), DataProvider.getBanner(3)];
                 }
             },
-            pageContentInterface: {
+            pageContentInterface:     {
                 type:    new GraphQLList(contentBlockInterface),
                 resolve: () => {
                     return [DataProvider.getPost(2), DataProvider.getBanner(3)];

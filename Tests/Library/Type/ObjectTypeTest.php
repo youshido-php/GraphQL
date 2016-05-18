@@ -45,7 +45,7 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
     public function testInvalidFieldsParam()
     {
         new ObjectType([
-            'name' => 'SomeName',
+            'name'   => 'SomeName',
             'fields' => []
         ]);
     }
@@ -56,7 +56,7 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
     public function testSerialize()
     {
         $object = new ObjectType([
-            'name' => 'SomeName',
+            'name'   => 'SomeName',
             'fields' => [
                 'name' => new StringType()
             ]
@@ -68,8 +68,8 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
     public function testNormalCreatingParam()
     {
         $objectType = new ObjectType([
-            'name' => 'Post',
-            'fields' => [
+            'name'        => 'Post',
+            'fields'      => [
                 'id' => new IntType()
             ],
             'description' => 'Post type description'
@@ -90,8 +90,8 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
     public function testFieldsTrait()
     {
         $objectType = new ObjectType([
-            'name' => 'Post',
-            'fields' => [
+            'name'        => 'Post',
+            'fields'      => [
                 'id' => new IntType()
             ],
             'description' => 'Post type description'
@@ -103,7 +103,7 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
 
         $objectType->addField('name', new StringType());
         $this->assertEquals([
-            'id' => new Field(['name' => 'id', 'type' => new IntType()]),
+            'id'   => new Field(['name' => 'id', 'type' => new IntType()]),
             'name' => new Field(['name' => 'name', 'type' => new StringType()]),
         ], $objectType->getFields());
     }

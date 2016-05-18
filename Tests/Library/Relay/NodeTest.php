@@ -15,7 +15,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 {
     public function testMethods()
     {
-        $global = Node::toGlobalId('user', 1);
+        $global     = Node::toGlobalId('user', 1);
         $fromGlobal = Node::fromGlobalId($global);
 
         $this->assertEquals('user', $fromGlobal[0]);

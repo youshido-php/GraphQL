@@ -17,8 +17,8 @@ class NodeFieldTest extends \PHPUnit_Framework_TestCase
 
     public function testMethods()
     {
-        $fetcher = new CallableFetcher(function() {}, function() {});
-        $field = new NodeField($fetcher);
+        $fetcher = new CallableFetcher(function () { }, function () { });
+        $field   = new NodeField($fetcher);
 
         $this->assertEquals('Fetches an object given its ID', $field->getDescription());
         $this->assertEquals('node', $field->getName());

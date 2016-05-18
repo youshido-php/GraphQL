@@ -45,9 +45,9 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testMethods()
     {
-        $name = 'Test';
+        $name  = 'Test';
         $rules = [
-            'name' => ['type' => TypeService::TYPE_ANY, 'required' => true],
+            'name'    => ['type' => TypeService::TYPE_ANY, 'required' => true],
             'resolve' => ['type' => TypeService::TYPE_CALLABLE, 'final' => true],
         ];
 
@@ -69,7 +69,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($config->getResolveFunction());
 
         $object = new ObjectType([
-            'name' => 'TestObject',
+            'name'   => 'TestObject',
             'fields' => [
                 'id' => [
                     'type' => new IntType()
@@ -77,7 +77,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
             ]
         ]);
 
-        $finalConfig = new TestConfig(['name' => $name . 'final', 'resolve' => function() { return []; }], $object, true);
+        $finalConfig = new TestConfig(['name' => $name . 'final', 'resolve' => function () { return []; }], $object, true);
         $this->assertEquals($finalConfig->getType(), null);
 
         $rules['resolve']['required'] = true;
@@ -86,7 +86,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->assertNotNull($finalConfig->getResolveFunction());
 
         $configExtraFields = new TestConfigExtraFields([
-            'name' => 'Test',
+            'name'       => 'Test',
             'extraField' => 'extraValue'
         ]);
         $this->assertEquals('extraValue', $configExtraFields->get('extraField'));

@@ -10,31 +10,31 @@ namespace Youshido\GraphQL\Parser;
 class Token
 {
 
-    const TYPE_END = 'end';
+    const TYPE_END        = 'end';
     const TYPE_IDENTIFIER = 'identifier';
-    const TYPE_NUMBER = 'number';
-    const TYPE_STRING = 'string';
-    const TYPE_ON = 'on';
+    const TYPE_NUMBER     = 'number';
+    const TYPE_STRING     = 'string';
+    const TYPE_ON         = 'on';
 
-    const TYPE_QUERY = 'query';
-    const TYPE_MUTATION = 'mutation';
-    const TYPE_FRAGMENT = 'fragment';
+    const TYPE_QUERY              = 'query';
+    const TYPE_MUTATION           = 'mutation';
+    const TYPE_FRAGMENT           = 'fragment';
     const TYPE_FRAGMENT_REFERENCE = '...';
-    const TYPE_TYPED_FRAGMENT = 'typed fragment';
+    const TYPE_TYPED_FRAGMENT     = 'typed fragment';
 
-    const TYPE_LBRACE = '{';
-    const TYPE_RBRACE = '}';
-    const TYPE_LPAREN = '(';
-    const TYPE_RPAREN = ')';
+    const TYPE_LBRACE        = '{';
+    const TYPE_RBRACE        = '}';
+    const TYPE_LPAREN        = '(';
+    const TYPE_RPAREN        = ')';
     const TYPE_LSQUARE_BRACE = '[';
     const TYPE_RSQUARE_BRACE = ']';
-    const TYPE_COLON = ':';
-    const TYPE_COMMA = ',';
-    const TYPE_VARIABLE = '$';
-    const TYPE_POINT = '.';
+    const TYPE_COLON         = ':';
+    const TYPE_COMMA         = ',';
+    const TYPE_VARIABLE      = '$';
+    const TYPE_POINT         = '.';
 
-    const TYPE_NULL = 'null';
-    const TYPE_TRUE = 'true';
+    const TYPE_NULL  = 'null';
+    const TYPE_TRUE  = 'true';
     const TYPE_FALSE = 'false';
 
 

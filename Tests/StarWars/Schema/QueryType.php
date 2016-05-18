@@ -41,24 +41,24 @@ class QueryType extends AbstractObjectType
                 },
             ])
             ->addField(new Field([
-                'name' => 'human',
-                'type' => new HumanType(),
-                'args' => [
+                'name'    => 'human',
+                'type'    => new HumanType(),
+                'args'    => [
                     'id' => new IdType()
                 ],
-                'resolve' => function($value = null, $args = []) {
+                'resolve' => function ($value = null, $args = []) {
                     $humans = StarWarsData::humans();
 
                     return isset($humans[$args['id']]) ? $humans[$args['id']] : null;
                 }
             ]))
             ->addField(new Field([
-                'name' => 'droid',
-                'type' => new DroidType(),
-                'args' => [
+                'name'    => 'droid',
+                'type'    => new DroidType(),
+                'args'    => [
                     'id' => new IdType()
                 ],
-                'resolve' => function($value = null, $args = []) {
+                'resolve' => function ($value = null, $args = []) {
                     $droids = StarWarsData::droids();
 
                     return isset($droids[$args['id']]) ? $droids[$args['id']] : null;

@@ -32,7 +32,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
                     },
                     'args'    => [
                         'gmt' => [
-                            'type' => new IntType(),
+                            'type'    => new IntType(),
                             'default' => -5
                         ],
                     ],
@@ -57,7 +57,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(1, count($schema->getMutationType()->getFields()));
 
-        $schema->addMutationField('changeUser', ['type' => new TestObjectType(), 'resolve' => function() {}]);
+        $schema->addMutationField('changeUser', ['type' => new TestObjectType(), 'resolve' => function () { }]);
         $this->assertEquals(2, count($schema->getMutationType()->getFields()));
 
     }

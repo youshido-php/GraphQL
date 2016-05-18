@@ -15,7 +15,7 @@ interface FetcherInterface
      * Resolve node
      *
      * @param $type string
-     * @param $id string
+     * @param $id   string
      *
      * @return mixed
      */

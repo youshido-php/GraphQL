@@ -58,8 +58,8 @@ class TestDataProvider
 
     public static function getShip($id)
     {
-        foreach(self::$ships as $ship) {
-            if($ship['id'] == $id) {
+        foreach (self::$ships as $ship) {
+            if ($ship['id'] == $id) {
                 return $ship;
             }
         }
@@ -69,12 +69,12 @@ class TestDataProvider
 
     public static function getFaction($id)
     {
-        if(array_key_exists($id, self::$factions)) {
+        if (array_key_exists($id, self::$factions)) {
             return self::$factions[$id];
         }
 
-        foreach(self::$factions as $faction) {
-            if($faction['id'] == $id) {
+        foreach (self::$factions as $faction) {
+            if ($faction['id'] == $id) {
                 return $faction;
             }
         }

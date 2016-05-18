@@ -46,14 +46,14 @@ class SchemaType extends AbstractObjectType
                 }
             ]))
             ->addField(new Field([
-                'name' => 'subscriptionType',
-                'type' => new ObjectType([
-                    'name'    => '__Subscription',
-                    'fields'  => [
+                'name'    => 'subscriptionType',
+                'type'    => new ObjectType([
+                    'name'   => '__Subscription',
+                    'fields' => [
                         'name' => ['type' => TypeMap::TYPE_STRING]
                     ]
                 ]),
-                'resolve' => function() { return null; }
+                'resolve' => function () { return null; }
             ]))
             ->addField(new TypesField())
             ->addField(new Field([

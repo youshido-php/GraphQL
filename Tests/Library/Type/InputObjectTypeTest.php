@@ -21,7 +21,7 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
     public function testInternal()
     {
         $inputObjectType = new InputObjectType([
-            'name' => 'PostData',
+            'name'   => 'PostData',
             'fields' => [
                 'title' => new NonNullType(new StringType())
             ]

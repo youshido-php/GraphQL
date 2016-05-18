@@ -323,12 +323,12 @@ TEXT;
         ]);
 
         $schema->addQueryField(new Field([
-            'name'              => 'union',
-            'type'              => $unionType,
-            'args'              => [
+            'name'    => 'union',
+            'type'    => $unionType,
+            'args'    => [
                 'id' => ['type' => TypeMap::TYPE_INT]
             ],
-            'resolve'           => function () {
+            'resolve' => function () {
                 return [
                     'id'   => 1,
                     'name' => 'Alex'
@@ -337,24 +337,24 @@ TEXT;
         ]));
 
         $schema->addMutationField(new Field([
-            'name' => 'mutation',
-            'type' => $unionType,
-            'args' => [
+            'name'    => 'mutation',
+            'type'    => $unionType,
+            'args'    => [
                 'type' => new EnumType([
-                    'name' => 'MutationType',
+                    'name'   => 'MutationType',
                     'values' => [
                         [
-                            'name' => 'Type1',
+                            'name'  => 'Type1',
                             'value' => 'type_1'
                         ],
                         [
-                            'name' => 'Type2',
+                            'name'  => 'Type2',
                             'value' => 'type_2'
                         ]
                     ]
                 ])
             ],
-            'resolve' => function() {
+            'resolve' => function () {
                 return null;
             }
         ]));

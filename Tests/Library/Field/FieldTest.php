@@ -56,6 +56,7 @@ class FieldTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(new IntType(), $field->getType());
         $this->assertEquals('test', $field->resolve('test'));
     }
+
     public function testArgumentsTrait()
     {
         $testField = new TestField();
@@ -70,13 +71,14 @@ class FieldTest extends \PHPUnit_Framework_TestCase
             new InputField(['name' => 'name', 'type' => new StringType()])
         ]);
         $this->assertEquals([
-            'id' => new InputField(['name' => 'id', 'type' => new IntType()]),
+            'id'   => new InputField(['name' => 'id', 'type' => new IntType()]),
             'name' => new InputField(['name' => 'name', 'type' => new StringType()]),
         ], $testField->getArguments());
 
         $testField->removeArgument('name');
         $this->assertFalse($testField->hasArgument('name'));
     }
+
     /**
      * @param $fieldConfig
      *

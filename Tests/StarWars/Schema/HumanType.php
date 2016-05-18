@@ -25,7 +25,7 @@ class HumanType extends AbstractObjectType
             ->addField('id', new NonNullType(new IdType()))
             ->addField('name', new NonNullType(new StringType()))
             ->addField('friends', [
-                'type' => new ListType(new CharacterInterface()),
+                'type'    => new ListType(new CharacterInterface()),
                 'resolve' => function ($droid) {
                     return StarWarsData::getFriends($droid);
                 },

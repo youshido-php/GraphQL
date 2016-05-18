@@ -363,6 +363,7 @@ class Processor
         if (!$resolverValue && !$resolved) {
             throw new \Exception(sprintf('Property "%s" not found in resolve result', $astField->getName()));
         }
+
         return $resolverValue;
 
     }

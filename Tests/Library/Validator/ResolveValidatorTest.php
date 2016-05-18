@@ -56,7 +56,7 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
 
         $validator->assertTypeImplementsInterface($userType, new TestInterfaceType());
 
-        $fragment = new Fragment('name', 'User', []);
+        $fragment          = new Fragment('name', 'User', []);
         $fragmentReference = new FragmentReference('name');
         $validator->assertValidFragmentForField($fragment, $fragmentReference, $userType);
     }
@@ -89,14 +89,14 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidFragmentType()
     {
-        $userType  = new ObjectType([
+        $userType          = new ObjectType([
             'name'   => 'User',
             'fields' => [
                 'name' => new StringType(),
             ],
         ]);
         $fragmentReference = new FragmentReference('user');
-        $fragment  = new Fragment('name', 'Product', []);
+        $fragment          = new Fragment('name', 'Product', []);
 
         $validator = new ResolveValidator();
         $validator->assertValidFragmentForField($fragment, $fragmentReference, $userType);
@@ -142,19 +142,19 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
         $request   = new Request([]);
 
 
-        $validQuery               = new Query('hero', null, [
+        $validQuery                    = new Query('hero', null, [
             new Argument('planet', new Literal('earth'))
         ]);
-        $invalidArgumentQuery     = new Query('hero', null, [
+        $invalidArgumentQuery          = new Query('hero', null, [
             new Argument('planets', new Literal('earth'))
         ]);
-        $invalidArgumentTypeQuery = new Query('hero', null, [
+        $invalidArgumentTypeQuery      = new Query('hero', null, [
             new Argument('year', new Literal('invalid type'))
         ]);
-        $argumentWithVariable     = new Query('hero', null, [
+        $argumentWithVariable          = new Query('hero', null, [
             new Argument('year', $variable)
         ]);
-        $argumentWithVariableWrongType     = new Query('hero', null, [
+        $argumentWithVariableWrongType = new Query('hero', null, [
             new Argument('year', $variableWrongType)
         ]);
 

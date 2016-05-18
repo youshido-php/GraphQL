@@ -36,7 +36,7 @@ class ErrorContainerTraitTest extends \PHPUnit_Framework_TestCase implements Err
         $this->clearErrors();
         $this->addError(new DatableResolveException('Wrong data', 412, ['user_id' => '1']));
         $this->assertEquals([
-            ['message' => 'Wrong data', 'code' => 412, 'user_id' => '1' ],
+            ['message' => 'Wrong data', 'code' => 412, 'user_id' => '1'],
         ], $this->getErrorsArray());
 
         $this->clearErrors();

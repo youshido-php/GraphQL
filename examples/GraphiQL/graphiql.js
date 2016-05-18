@@ -28,7 +28,7 @@
                     var f = new Error("Cannot find module '" + o + "'");
                     throw f.code = "MODULE_NOT_FOUND", f
                 }
-                var l = n[o] = {exports: {}};
+                var l = n[o] = { exports: {} };
                 t[o][0].call(l.exports, function (e) {
                     var n = t[o][1][e];
                     return s(n ? n : e)
@@ -53,7 +53,7 @@
             'use strict';
 
             function _interopRequireDefault(obj) {
-                return obj && obj.__esModule ? obj : {'default': obj};
+                return obj && obj.__esModule ? obj : { 'default': obj };
             }
 
             var _codemirror = require('codemirror');
@@ -86,7 +86,7 @@
                 }
                 return _codemirror2['default'].Pos(line, column);
             }
-        }, {"./jsonLint": 2, "codemirror": 44}],
+        }, { "./jsonLint": 2, "codemirror": 44 }],
         2:   [function (require, module, exports) {
             /**
              *  Copyright (c) 2015, Facebook, Inc.
@@ -173,7 +173,7 @@
             }
 
             function syntaxError(message) {
-                return {message: message, start: start, end: end};
+                return { message: message, start: start, end: end };
             }
 
             function expect(str) {
@@ -391,7 +391,7 @@
                 })();
 
                 function _interopRequireDefault(obj) {
-                    return obj && obj.__esModule ? obj : {'default': obj};
+                    return obj && obj.__esModule ? obj : { 'default': obj };
                 }
 
                 function _classCallCheck(instance, Constructor) {
@@ -453,7 +453,7 @@
                         if (!isCurrentlyShown) {
                             navStack = navStack.concat([typeOrField]);
                         }
-                        this.setState({navStack: navStack});
+                        this.setState({ navStack: navStack });
                     };
 
                     _createClass(DocExplorer, null, [{
@@ -472,18 +472,18 @@
                         _React$Component.call(this);
 
                         this._onToggleBtnClick = function () {
-                            _this.setState({expanded: !_this.state.expanded});
+                            _this.setState({ expanded: !_this.state.expanded });
                         };
 
                         this._onNavBackClick = function () {
-                            _this.setState({navStack: _this.state.navStack.slice(0, -1)});
+                            _this.setState({ navStack: _this.state.navStack.slice(0, -1) });
                         };
 
                         this._onClickTypeOrField = function (typeOrField) {
                             _this.showDoc(typeOrField);
                         };
 
-                        this.state = {navStack: []};
+                        this.state = { navStack: [] };
                     }
 
                     // Render the top level Schema
@@ -532,29 +532,29 @@
 
                         return _react2['default'].createElement(
                             'div',
-                            {className: 'doc-explorer'},
+                            { className: 'doc-explorer' },
                             _react2['default'].createElement(
                                 'div',
-                                {className: 'doc-explorer-title-bar'},
+                                { className: 'doc-explorer-title-bar' },
                                 prevName && _react2['default'].createElement(
                                     'div',
-                                    {className: 'doc-explorer-back', onClick: this._onNavBackClick},
+                                    { className: 'doc-explorer-back', onClick: this._onNavBackClick },
                                     prevName
                                 ),
                                 _react2['default'].createElement(
                                     'div',
-                                    {className: 'doc-explorer-title'},
+                                    { className: 'doc-explorer-title' },
                                     title
                                 ),
                                 _react2['default'].createElement(
                                     'div',
-                                    {className: 'doc-explorer-rhs'},
+                                    { className: 'doc-explorer-rhs' },
                                     this.props.children
                                 )
                             ),
                             _react2['default'].createElement(
                                 'div',
-                                {className: 'doc-explorer-contents'},
+                                { className: 'doc-explorer-contents' },
                                 content
                             )
                         );
@@ -595,18 +595,18 @@
                             }),
                             _react2['default'].createElement(
                                 'div',
-                                {className: 'doc-category'},
+                                { className: 'doc-category' },
                                 _react2['default'].createElement(
                                     'div',
-                                    {className: 'doc-category-title'},
+                                    { className: 'doc-category-title' },
                                     'root types'
                                 ),
                                 _react2['default'].createElement(
                                     'div',
-                                    {className: 'doc-category-item'},
+                                    { className: 'doc-category-item' },
                                     _react2['default'].createElement(
                                         'span',
-                                        {className: 'keyword'},
+                                        { className: 'keyword' },
                                         'query'
                                     ),
                                     ': ',
@@ -617,10 +617,10 @@
                                 ),
                                 mutationType && _react2['default'].createElement(
                                     'div',
-                                    {className: 'doc-category-item'},
+                                    { className: 'doc-category-item' },
                                     _react2['default'].createElement(
                                         'span',
-                                        {className: 'keyword'},
+                                        { className: 'keyword' },
                                         'mutation'
                                     ),
                                     ': ',
@@ -631,10 +631,10 @@
                                 ),
                                 subscriptionType && _react2['default'].createElement(
                                     'div',
-                                    {className: 'doc-category-item'},
+                                    { className: 'doc-category-item' },
                                     _react2['default'].createElement(
                                         'span',
-                                        {className: 'keyword'},
+                                        { className: 'keyword' },
                                         'subscription'
                                     ),
                                     ': ',
@@ -689,16 +689,16 @@
                         if (types && types.length > 0) {
                             typesDef = _react2['default'].createElement(
                                 'div',
-                                {className: 'doc-category'},
+                                { className: 'doc-category' },
                                 _react2['default'].createElement(
                                     'div',
-                                    {className: 'doc-category-title'},
+                                    { className: 'doc-category-title' },
                                     typesTitle
                                 ),
                                 types.map(function (subtype) {
                                     return _react2['default'].createElement(
                                         'div',
-                                        {key: subtype.name, className: 'doc-category-item'},
+                                        { key: subtype.name, className: 'doc-category-item' },
                                         _react2['default'].createElement(TypeLink, {
                                             type:    subtype,
                                             onClick: onClickType
@@ -717,10 +717,10 @@
                             });
                             fieldsDef    = _react2['default'].createElement(
                                 'div',
-                                {className: 'doc-category'},
+                                { className: 'doc-category' },
                                 _react2['default'].createElement(
                                     'div',
-                                    {className: 'doc-category-title'},
+                                    { className: 'doc-category-title' },
                                     'fields'
                                 ),
                                 fields.map(function (field) {
@@ -731,10 +731,10 @@
                                         argsDef = field.args.map(function (arg) {
                                             return _react2['default'].createElement(
                                                 'span',
-                                                {className: 'arg', key: arg.name},
+                                                { className: 'arg', key: arg.name },
                                                 _react2['default'].createElement(
                                                     'span',
-                                                    {className: 'arg-name'},
+                                                    { className: 'arg-name' },
                                                     arg.name
                                                 ),
                                                 ': ',
@@ -748,7 +748,7 @@
 
                                     return _react2['default'].createElement(
                                         'div',
-                                        {key: field.name, className: 'doc-category-item'},
+                                        { key: field.name, className: 'doc-category-item' },
                                         _react2['default'].createElement(
                                             'a',
                                             {
@@ -778,19 +778,19 @@
                         if (type instanceof _graphqlType.GraphQLEnumType) {
                             valuesDef = _react2['default'].createElement(
                                 'div',
-                                {className: 'doc-category'},
+                                { className: 'doc-category' },
                                 _react2['default'].createElement(
                                     'div',
-                                    {className: 'doc-category-title'},
+                                    { className: 'doc-category-title' },
                                     'values'
                                 ),
                                 type.getValues().map(function (value) {
                                     return _react2['default'].createElement(
                                         'div',
-                                        {key: value.name, className: 'doc-category-item'},
+                                        { key: value.name, className: 'doc-category-item' },
                                         _react2['default'].createElement(
                                             'div',
-                                            {className: 'enum-value'},
+                                            { className: 'enum-value' },
                                             value.name
                                         ),
                                         _react2['default'].createElement(Description, {
@@ -843,22 +843,22 @@
                         if (field.args && field.args.length > 0) {
                             argsDef = _react2['default'].createElement(
                                 'div',
-                                {className: 'doc-category'},
+                                { className: 'doc-category' },
                                 _react2['default'].createElement(
                                     'div',
-                                    {className: 'doc-category-title'},
+                                    { className: 'doc-category-title' },
                                     'arguments'
                                 ),
                                 field.args.map(function (arg) {
                                     return _react2['default'].createElement(
                                         'div',
-                                        {key: arg.name, className: 'doc-category-item'},
+                                        { key: arg.name, className: 'doc-category-item' },
                                         _react2['default'].createElement(
                                             'div',
                                             null,
                                             _react2['default'].createElement(
                                                 'span',
-                                                {className: 'arg-name'},
+                                                { className: 'arg-name' },
                                                 arg.name
                                             ),
                                             ': ',
@@ -885,10 +885,10 @@
                             }),
                             _react2['default'].createElement(
                                 'div',
-                                {className: 'doc-category'},
+                                { className: 'doc-category' },
                                 _react2['default'].createElement(
                                     'div',
-                                    {className: 'doc-category-title'},
+                                    { className: 'doc-category-title' },
                                     'type'
                                 ),
                                 _react2['default'].createElement(TypeLink, {
@@ -976,14 +976,14 @@
                         var html = _marked2['default'](markdown);
                         return _react2['default'].createElement('div', {
                             className:               this.props.className,
-                            dangerouslySetInnerHTML: {__html: html}
+                            dangerouslySetInnerHTML: { __html: html }
                         });
                     };
 
                     return Description;
                 })(_react2['default'].Component);
             }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-        }, {"graphql/type": 136, "marked": 178}],
+        }, { "graphql/type": 136, "marked": 178 }],
         4:   [function (require, module, exports) {
             (function (global) {
                 /**
@@ -1017,7 +1017,7 @@
                 })();
 
                 function _interopRequireDefault(obj) {
-                    return obj && obj.__esModule ? obj : {"default": obj};
+                    return obj && obj.__esModule ? obj : { "default": obj };
                 }
 
                 function _classCallCheck(instance, Constructor) {
@@ -1070,8 +1070,8 @@
                             },
                             _react2["default"].createElement(
                                 "svg",
-                                {width: "34", height: "34"},
-                                _react2["default"].createElement("path", {d: "M 11 9 L 24 16 L 11 23 z"})
+                                { width: "34", height: "34" },
+                                _react2["default"].createElement("path", { d: "M 11 9 L 24 16 L 11 23 z" })
                             )
                         );
                     };
@@ -1141,7 +1141,7 @@
                 })();
 
                 function _interopRequireDefault(obj) {
-                    return obj && obj.__esModule ? obj : {'default': obj};
+                    return obj && obj.__esModule ? obj : { 'default': obj };
                 }
 
                 function _classCallCheck(instance, Constructor) {
@@ -1346,14 +1346,14 @@
 
                             _this._fetchQuery(editedQuery, _this.state.variables, function (result) {
                                 if (queryID === _this._editorQueryID) {
-                                    _this.setState({response: JSON.stringify(result, null, 2)});
+                                    _this.setState({ response: JSON.stringify(result, null, 2) });
                                 }
                             });
                         };
 
                         this._onEditQuery = function (value) {
                             _this._storageSet('query', value);
-                            _this.setState({query: value});
+                            _this.setState({ query: value });
                             if (_this.props.onEditQuery) {
                                 return _this.props.onEditQuery(value);
                             }
@@ -1361,7 +1361,7 @@
 
                         this._onEditVariables = function (value) {
                             _this._storageSet('variables', value);
-                            _this.setState({variables: value});
+                            _this.setState({ variables: value });
                             if (_this.props.onEditVariables) {
                                 _this.props.onEditVariables(value);
                             }
@@ -1384,7 +1384,7 @@
                                 if (schema) {
                                     var type = schema.getType(typeName);
                                     if (type) {
-                                        _this.setState({docsOpen: true}, function () {
+                                        _this.setState({ docsOpen: true }, function () {
                                             _this.refs.docExplorer.showDoc(type);
                                         });
                                     }
@@ -1393,7 +1393,7 @@
                         };
 
                         this._onToggleDocs = function () {
-                            _this.setState({docsOpen: !_this.state.docsOpen});
+                            _this.setState({ docsOpen: !_this.state.docsOpen });
                         };
 
                         this._onResizeStart = function (downEvent) {
@@ -1413,7 +1413,7 @@
                                 var editorBar = _reactDom2['default'].findDOMNode(_this.refs.editorBar);
                                 var leftSize  = moveEvent.clientX - _utilityElementPosition.getLeft(editorBar) - offset;
                                 var rightSize = editorBar.clientWidth - leftSize;
-                                _this.setState({editorFlex: leftSize / rightSize});
+                                _this.setState({ editorFlex: leftSize / rightSize });
                             };
 
                             var onMouseUp = (function (_onMouseUp) {
@@ -1455,7 +1455,7 @@
                                 var docsSize  = app.clientWidth - cursorPos;
 
                                 if (docsSize < 100) {
-                                    _this.setState({docsOpen: false});
+                                    _this.setState({ docsOpen: false });
                                 } else {
                                     _this.setState({
                                         docsOpen:  true,
@@ -1478,7 +1478,7 @@
                                 if (_this.state.docsOpen) {
                                     _this._storageSet('docExplorerWidth', _this.state.docsWidth);
                                 } else {
-                                    _this.setState({docsWidth: hadWidth});
+                                    _this.setState({ docsWidth: hadWidth });
                                 }
 
                                 document.removeEventListener('mousemove', onMouseMove);
@@ -1536,7 +1536,7 @@
                                 if (didMove) {
                                     _this._storageSet('variableEditorHeight', _this.state.variableEditorHeight);
                                 } else {
-                                    _this.setState({variableEditorOpen: !wasOpen});
+                                    _this.setState({ variableEditorOpen: !wasOpen });
                                 }
 
                                 document.removeEventListener('mousemove', onMouseMove);
@@ -1609,16 +1609,16 @@
 
                             // Try the stock introspection query first, falling back on the
                             // sans-subscriptions query for services which do not yet support it.
-                            fetcher({query: _utilityIntrospectionQueries.introspectionQuery})['catch'](function () {
-                                return fetcher({query: _utilityIntrospectionQueries.introspectionQuerySansSubscriptions});
+                            fetcher({ query: _utilityIntrospectionQueries.introspectionQuery })['catch'](function () {
+                                return fetcher({ query: _utilityIntrospectionQueries.introspectionQuerySansSubscriptions });
                             }).then(function (result) {
                                 if (!result.data) {
-                                    _this2.setState({response: JSON.stringify(result, null, 2)});
+                                    _this2.setState({ response: JSON.stringify(result, null, 2) });
                                 } else {
-                                    _this2.setState({schema: _graphqlUtilities.buildClientSchema(result.data)});
+                                    _this2.setState({ schema: _graphqlUtilities.buildClientSchema(result.data) });
                                 }
                             })['catch'](function (error) {
-                                _this2.setState({response: error && error.stack || error});
+                                _this2.setState({ response: error && error.stack || error });
                             });
                         }
                     };
@@ -1665,23 +1665,23 @@
 
                         return _react2['default'].createElement(
                             'div',
-                            {id: 'graphiql-container'},
+                            { id: 'graphiql-container' },
                             _react2['default'].createElement(
                                 'div',
-                                {className: 'editorWrap'},
+                                { className: 'editorWrap' },
                                 _react2['default'].createElement(
                                     'div',
-                                    {className: 'topBarWrap'},
+                                    { className: 'topBarWrap' },
                                     _react2['default'].createElement(
                                         'div',
-                                        {className: 'topBar'},
+                                        { className: 'topBar' },
                                         logo,
-                                        _react2['default'].createElement(_ExecuteButton.ExecuteButton, {onClick: this._runEditorQuery}),
+                                        _react2['default'].createElement(_ExecuteButton.ExecuteButton, { onClick: this._runEditorQuery }),
                                         toolbar
                                     ),
                                     !this.state.docsOpen && _react2['default'].createElement(
                                         'button',
-                                        {className: 'docExplorerShow', onClick: this._onToggleDocs},
+                                        { className: 'docExplorerShow', onClick: this._onToggleDocs },
                                         'Docs'
                                     )
                                 ),
@@ -1694,7 +1694,7 @@
                                     },
                                     _react2['default'].createElement(
                                         'div',
-                                        {className: 'queryWrap', style: queryWrapStyle},
+                                        { className: 'queryWrap', style: queryWrapStyle },
                                         _react2['default'].createElement(_QueryEditor.QueryEditor, {
                                             ref:                     'queryEditor',
                                             schema:                  this.state.schema,
@@ -1704,12 +1704,12 @@
                                         }),
                                         _react2['default'].createElement(
                                             'div',
-                                            {className: 'variable-editor', style: variableStyle},
+                                            { className: 'variable-editor', style: variableStyle },
                                             _react2['default'].createElement(
                                                 'div',
                                                 {
                                                     className:   'variable-editor-title',
-                                                    style:       {cursor: variableOpen ? 'row-resize' : 'n-resize'},
+                                                    style:       { cursor: variableOpen ? 'row-resize' : 'n-resize' },
                                                     onMouseDown: this._onVariableResizeStart
                                                 },
                                                 'Query Variables'
@@ -1722,7 +1722,7 @@
                                     ),
                                     _react2['default'].createElement(
                                         'div',
-                                        {className: 'resultWrap'},
+                                        { className: 'resultWrap' },
                                         _react2['default'].createElement(_ResultViewer.ResultViewer, {
                                             ref:   'result',
                                             value: this.state.response
@@ -1733,17 +1733,17 @@
                             ),
                             _react2['default'].createElement(
                                 'div',
-                                {className: 'docExplorerWrap', style: docWrapStyle},
+                                { className: 'docExplorerWrap', style: docWrapStyle },
                                 _react2['default'].createElement('div', {
                                     className:   'docExplorerResizer',
                                     onMouseDown: this._onDocsResizeStart
                                 }),
                                 _react2['default'].createElement(
                                     _DocExplorer.DocExplorer,
-                                    {ref: 'docExplorer', schema: this.state.schema},
+                                    { ref: 'docExplorer', schema: this.state.schema },
                                     _react2['default'].createElement(
                                         'div',
-                                        {className: 'docExplorerHide', onClick: this._onToggleDocs},
+                                        { className: 'docExplorerHide', onClick: this._onToggleDocs },
                                         'X'
                                     )
                                 )
@@ -1764,8 +1764,8 @@
                     GraphiQL.prototype._fetchQuery = function _fetchQuery(query, variables, cb) {
                         var _this3 = this;
 
-                        this.props.fetcher({query: query, variables: variables}).then(cb)['catch'](function (error) {
-                            _this3.setState({response: error && error.stack || error});
+                        this.props.fetcher({ query: query, variables: variables }).then(cb)['catch'](function (error) {
+                            _this3.setState({ response: error && error.stack || error });
                         });
                     };
 
@@ -1806,7 +1806,7 @@
                     GraphiQLLogo.prototype.render = function render() {
                         return _react2['default'].createElement(
                             'div',
-                            {className: 'title'},
+                            { className: 'title' },
                             this.props.children || _react2['default'].createElement(
                                 'span',
                                 null,
@@ -1837,7 +1837,7 @@
                     GraphiQLToolbar.prototype.render = function render() {
                         return _react2['default'].createElement(
                             'div',
-                            {className: 'toolbar'},
+                            { className: 'toolbar' },
                             this.props.children
                         );
                     };
@@ -1858,7 +1858,7 @@
                     GraphiQLFooter.prototype.render = function render() {
                         return _react2['default'].createElement(
                             'div',
-                            {className: 'footer'},
+                            { className: 'footer' },
                             this.props.children
                         );
                     };
@@ -1914,7 +1914,7 @@
                 })();
 
                 function _interopRequireDefault(obj) {
-                    return obj && obj.__esModule ? obj : {'default': obj};
+                    return obj && obj.__esModule ? obj : { 'default': obj };
                 }
 
                 function _classCallCheck(instance, Constructor) {
@@ -2101,7 +2101,7 @@
                                 }
 
                                 // Now that the UI has been set up, add info to information.
-                                var description = ctx.description ? _marked2['default'](ctx.description, {smartypants: true}) : 'Self descriptive.';
+                                var description = ctx.description ? _marked2['default'](ctx.description, { smartypants: true }) : 'Self descriptive.';
                                 var type        = ctx.type ? '<span class="infoType">' + renderType(ctx.type) + '</span>' : '';
 
                                 information.innerHTML = '<div class="content">' + (description.slice(0, 3) === '<p>' ? '<p>' + type + description.slice(3) : type + description) + '</div>';
@@ -2153,10 +2153,10 @@
                             gutters:                 ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
                             extraKeys:               {
                                 'Cmd-Space':  function CmdSpace() {
-                                    return _this2.editor.showHint({completeSingle: true});
+                                    return _this2.editor.showHint({ completeSingle: true });
                                 },
                                 'Ctrl-Space': function CtrlSpace() {
-                                    return _this2.editor.showHint({completeSingle: true});
+                                    return _this2.editor.showHint({ completeSingle: true });
                                 },
 
                                 // Editor improvements
@@ -2197,7 +2197,7 @@
                     };
 
                     QueryEditor.prototype.render = function render() {
-                        return _react2['default'].createElement('div', {className: 'query-editor'});
+                        return _react2['default'].createElement('div', { className: 'query-editor' });
                     };
 
                     return QueryEditor;
@@ -2269,7 +2269,7 @@
                 })();
 
                 function _interopRequireDefault(obj) {
-                    return obj && obj.__esModule ? obj : {'default': obj};
+                    return obj && obj.__esModule ? obj : { 'default': obj };
                 }
 
                 function _classCallCheck(instance, Constructor) {
@@ -2370,7 +2370,7 @@
                     };
 
                     ResultViewer.prototype.render = function render() {
-                        return _react2['default'].createElement('div', {className: 'result-window'});
+                        return _react2['default'].createElement('div', { className: 'result-window' });
                     };
 
                     _createClass(ResultViewer, null, [{
@@ -2426,7 +2426,7 @@
                 })();
 
                 function _interopRequireDefault(obj) {
-                    return obj && obj.__esModule ? obj : {'default': obj};
+                    return obj && obj.__esModule ? obj : { 'default': obj };
                 }
 
                 function _classCallCheck(instance, Constructor) {
@@ -2602,7 +2602,7 @@
             'use strict';
 
             module.exports = require('./components/GraphiQL').GraphiQL;
-        }, {"./components/GraphiQL": 5}],
+        }, { "./components/GraphiQL": 5 }],
         10:  [function (require, module, exports) {
             /**
              *  Copyright (c) 2015, Facebook, Inc.
@@ -2677,14 +2677,14 @@
                 var insertions = [];
 
                 if (!schema) {
-                    return {insertions: insertions, result: docString};
+                    return { insertions: insertions, result: docString };
                 }
 
                 var ast = undefined;
                 try {
                     ast = _graphqlLanguage.parse(docString);
                 } catch (error) {
-                    return {insertions: insertions, result: docString};
+                    return { insertions: insertions, result: docString };
                 }
 
                 var fieldNameFn = getDefaultFieldNames || defaultGetDefaultFieldNames;
@@ -2822,7 +2822,7 @@
                 }
                 return str.substring(indentStart, indentEnd);
             }
-        }, {"graphql/language": 126, "graphql/type": 136, "graphql/utilities": 145}],
+        }, { "graphql/language": 126, "graphql/type": 136, "graphql/utilities": 145 }],
         12:  [function (require, module, exports) {
             /**
              *  Copyright (c) 2015, Facebook, Inc.
@@ -2846,40 +2846,40 @@
 // query does. This backup query removes that field.
             var introspectionQuerySansSubscriptions     = '\n  query IntrospectionQuery {\n    __schema {\n      queryType { name }\n      mutationType { name }\n      types {\n        ...FullType\n      }\n      directives {\n        name\n        description\n        args {\n          ...InputValue\n        }\n        onOperation\n        onFragment\n        onField\n      }\n    }\n  }\n\n  fragment FullType on __Type {\n    kind\n    name\n    description\n    fields(includeDeprecated: true) {\n      name\n      description\n      args {\n        ...InputValue\n      }\n      type {\n        ...TypeRef\n      }\n      isDeprecated\n      deprecationReason\n    }\n    inputFields {\n      ...InputValue\n    }\n    interfaces {\n      ...TypeRef\n    }\n    enumValues(includeDeprecated: true) {\n      name\n      description\n      isDeprecated\n      deprecationReason\n    }\n    possibleTypes {\n      ...TypeRef\n    }\n  }\n\n  fragment InputValue on __InputValue {\n    name\n    description\n    type { ...TypeRef }\n    defaultValue\n  }\n\n  fragment TypeRef on __Type {\n    kind\n    name\n    ofType {\n      kind\n      name\n      ofType {\n        kind\n        name\n        ofType {\n          kind\n          name\n        }\n      }\n    }\n  }\n';
             exports.introspectionQuerySansSubscriptions = introspectionQuerySansSubscriptions;
-        }, {"graphql/utilities": 145}],
+        }, { "graphql/utilities": 145 }],
         13:  [function (require, module, exports) {
-            module.exports = {"default": require("core-js/library/fn/get-iterator"), __esModule: true};
-        }, {"core-js/library/fn/get-iterator": 46}],
+            module.exports = { "default": require("core-js/library/fn/get-iterator"), __esModule: true };
+        }, { "core-js/library/fn/get-iterator": 46 }],
         14:  [function (require, module, exports) {
-            module.exports = {"default": require("core-js/library/fn/is-iterable"), __esModule: true};
-        }, {"core-js/library/fn/is-iterable": 47}],
+            module.exports = { "default": require("core-js/library/fn/is-iterable"), __esModule: true };
+        }, { "core-js/library/fn/is-iterable": 47 }],
         15:  [function (require, module, exports) {
-            module.exports = {"default": require("core-js/library/fn/map"), __esModule: true};
-        }, {"core-js/library/fn/map": 48}],
+            module.exports = { "default": require("core-js/library/fn/map"), __esModule: true };
+        }, { "core-js/library/fn/map": 48 }],
         16:  [function (require, module, exports) {
-            module.exports = {"default": require("core-js/library/fn/object/assign"), __esModule: true};
-        }, {"core-js/library/fn/object/assign": 49}],
+            module.exports = { "default": require("core-js/library/fn/object/assign"), __esModule: true };
+        }, { "core-js/library/fn/object/assign": 49 }],
         17:  [function (require, module, exports) {
-            module.exports = {"default": require("core-js/library/fn/object/create"), __esModule: true};
-        }, {"core-js/library/fn/object/create": 50}],
+            module.exports = { "default": require("core-js/library/fn/object/create"), __esModule: true };
+        }, { "core-js/library/fn/object/create": 50 }],
         18:  [function (require, module, exports) {
-            module.exports = {"default": require("core-js/library/fn/object/define-property"), __esModule: true};
-        }, {"core-js/library/fn/object/define-property": 51}],
+            module.exports = { "default": require("core-js/library/fn/object/define-property"), __esModule: true };
+        }, { "core-js/library/fn/object/define-property": 51 }],
         19:  [function (require, module, exports) {
             module.exports = {
                 "default":  require("core-js/library/fn/object/get-own-property-descriptor"),
                 __esModule: true
             };
-        }, {"core-js/library/fn/object/get-own-property-descriptor": 52}],
+        }, { "core-js/library/fn/object/get-own-property-descriptor": 52 }],
         20:  [function (require, module, exports) {
-            module.exports = {"default": require("core-js/library/fn/object/keys"), __esModule: true};
-        }, {"core-js/library/fn/object/keys": 53}],
+            module.exports = { "default": require("core-js/library/fn/object/keys"), __esModule: true };
+        }, { "core-js/library/fn/object/keys": 53 }],
         21:  [function (require, module, exports) {
-            module.exports = {"default": require("core-js/library/fn/object/set-prototype-of"), __esModule: true};
-        }, {"core-js/library/fn/object/set-prototype-of": 54}],
+            module.exports = { "default": require("core-js/library/fn/object/set-prototype-of"), __esModule: true };
+        }, { "core-js/library/fn/object/set-prototype-of": 54 }],
         22:  [function (require, module, exports) {
-            module.exports = {"default": require("core-js/library/fn/set"), __esModule: true};
-        }, {"core-js/library/fn/set": 55}],
+            module.exports = { "default": require("core-js/library/fn/set"), __esModule: true };
+        }, { "core-js/library/fn/set": 55 }],
         23:  [function (require, module, exports) {
             "use strict";
 
@@ -2916,7 +2916,7 @@
             })();
 
             exports.__esModule = true;
-        }, {"babel-runtime/core-js/object/define-property": 18}],
+        }, { "babel-runtime/core-js/object/define-property": 18 }],
         25:  [function (require, module, exports) {
             "use strict";
 
@@ -2937,7 +2937,7 @@
                 };
 
             exports.__esModule = true;
-        }, {"babel-runtime/core-js/object/assign": 16}],
+        }, { "babel-runtime/core-js/object/assign": 16 }],
         26:  [function (require, module, exports) {
             "use strict";
 
@@ -2983,7 +2983,7 @@
             };
 
             exports.__esModule = true;
-        }, {"babel-runtime/core-js/object/get-own-property-descriptor": 19}],
+        }, { "babel-runtime/core-js/object/get-own-property-descriptor": 19 }],
         27:  [function (require, module, exports) {
             "use strict";
 
@@ -3008,7 +3008,7 @@
             };
 
             exports.__esModule = true;
-        }, {"babel-runtime/core-js/object/create": 17, "babel-runtime/core-js/object/set-prototype-of": 21}],
+        }, { "babel-runtime/core-js/object/create": 17, "babel-runtime/core-js/object/set-prototype-of": 21 }],
         28:  [function (require, module, exports) {
             "use strict";
 
@@ -3088,7 +3088,7 @@
             })();
 
             exports.__esModule = true;
-        }, {"babel-runtime/core-js/get-iterator": 13, "babel-runtime/core-js/is-iterable": 14}],
+        }, { "babel-runtime/core-js/get-iterator": 13, "babel-runtime/core-js/is-iterable": 14 }],
         31:  [function (require, module, exports) {
             /**
              *  Copyright (c) 2015, Facebook, Inc.
@@ -3102,7 +3102,7 @@
             'use strict';
 
             function _interopRequireDefault(obj) {
-                return obj && obj.__esModule ? obj : {'default': obj};
+                return obj && obj.__esModule ? obj : { 'default': obj };
             }
 
             var _codemirror = require('codemirror');
@@ -3150,7 +3150,7 @@
 
                 // Definition kinds
                 if (kind === 'Document') {
-                    return hintList(editor, options, cur, token, [{text: 'query'}, {text: 'mutation'}, {text: 'subscription'}, {text: 'fragment'}, {text: '{'}]);
+                    return hintList(editor, options, cur, token, [{ text: 'query' }, { text: 'mutation' }, { text: 'subscription' }, { text: 'fragment' }, { text: '{' }]);
                 }
 
                 // Field names
@@ -3231,7 +3231,7 @@
                             text:        'true',
                             type:        _graphqlType.GraphQLBoolean,
                             description: 'Not false.'
-                        }, {text: 'false', type: _graphqlType.GraphQLBoolean, description: 'Not true.'}]);
+                        }, { text: 'false', type: _graphqlType.GraphQLBoolean, description: 'Not true.' }]);
                     }
                 }
 
@@ -3483,7 +3483,7 @@
 
                 return d[aLength][bLength];
             }
-        }, {"codemirror": 44, "graphql/type": 136, "graphql/type/introspection": 137}],
+        }, { "codemirror": 44, "graphql/type": 136, "graphql/type/introspection": 137 }],
         32:  [function (require, module, exports) {
             /**
              *  Copyright (c) 2015, Facebook, Inc.
@@ -3497,7 +3497,7 @@
             'use strict';
 
             function _interopRequireDefault(obj) {
-                return obj && obj.__esModule ? obj : {'default': obj};
+                return obj && obj.__esModule ? obj : { 'default': obj };
             }
 
             var _codemirror = require('codemirror');
@@ -3559,7 +3559,7 @@
             function mapCat(array, mapper) {
                 return Array.prototype.concat.apply([], array.map(mapper));
             }
-        }, {"codemirror": 44, "graphql/language": 126, "graphql/validation": 152}],
+        }, { "codemirror": 44, "graphql/language": 126, "graphql/validation": 152 }],
         33:  [function (require, module, exports) {
             /**
              *  Copyright (c) 2015, Facebook, Inc.
@@ -3573,7 +3573,7 @@
             'use strict';
 
             function _interopRequireDefault(obj) {
-                return obj && obj.__esModule ? obj : {'default': obj};
+                return obj && obj.__esModule ? obj : { 'default': obj };
             }
 
             var _codemirror = require('codemirror');
@@ -3606,7 +3606,7 @@
                     token:         getToken,
                     indent:        indent,
                     startState:    function startState() {
-                        var initialState = {level: 0};
+                        var initialState = { level: 0 };
                         pushRule(initialState, 'Document');
                         return initialState;
                     },
@@ -3795,19 +3795,19 @@
                 for (var i = 0; i < kinds.length; i++) {
                     var match = stream.match(LexRules[kinds[i]]);
                     if (match) {
-                        return {kind: kinds[i], value: match[0]};
+                        return { kind: kinds[i], value: match[0] };
                     }
                 }
             }
 
 // An optional rule.
             function opt(ofRule) {
-                return {ofRule: ofRule};
+                return { ofRule: ofRule };
             }
 
 // A list of another rule.
             function list(ofRule) {
-                return {ofRule: ofRule, isList: true};
+                return { ofRule: ofRule, isList: true };
             }
 
 // Token of a kind
@@ -3966,7 +3966,7 @@
                 NamedType:           [name('atom'), opt(p('!'))],
                 Directive:           [p('@', 'meta'), name('meta'), opt('Arguments')]
             };
-        }, {"codemirror": 44}],
+        }, { "codemirror": 44 }],
         34:  [function (require, module, exports) {
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
@@ -4166,7 +4166,7 @@
                 });
             });
 
-        }, {"../../lib/codemirror": 44}],
+        }, { "../../lib/codemirror": 44 }],
         35:  [function (require, module, exports) {
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
@@ -4205,7 +4205,7 @@
                 }
 
                 var bind   = defaults.pairs + "`";
-                var keyMap = {Backspace: handleBackspace, Enter: handleEnter};
+                var keyMap = { Backspace: handleBackspace, Enter: handleEnter };
                 for (var i = 0; i < bind.length; i++)
                     keyMap["'" + bind.charAt(i) + "'"] = handler(bind.charAt(i));
 
@@ -4368,7 +4368,7 @@
                 }
             });
 
-        }, {"../../lib/codemirror": 44}],
+        }, { "../../lib/codemirror": 44 }],
         36:  [function (require, module, exports) {
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
@@ -4386,7 +4386,7 @@
 
                 var Pos = CodeMirror.Pos;
 
-                var matching = {"(": ")>", ")": "(<", "[": "]>", "]": "[<", "{": "}>", "}": "{<"};
+                var matching = { "(": ")>", ")": "(<", "[": "]>", "]": "[<", "{": "}>", "}": "{<" };
 
                 function findMatchingBracket(cm, where, strict, config) {
                     var line  = cm.getLineHandle(where.line), pos = where.ch - 1;
@@ -4430,7 +4430,7 @@
                             if (re.test(ch) && (style === undefined || cm.getTokenTypeAt(Pos(lineNo, pos + 1)) == style)) {
                                 var match = matching[ch];
                                 if ((match.charAt(1) == ">") == (dir > 0)) stack.push(ch);
-                                else if (!stack.length) return {pos: Pos(lineNo, pos), ch: ch};
+                                else if (!stack.length) return { pos: Pos(lineNo, pos), ch: ch };
                                 else stack.pop();
                             }
                         }
@@ -4446,9 +4446,9 @@
                         var match = ranges[i].empty() && findMatchingBracket(cm, ranges[i].head, false, config);
                         if (match && cm.getLine(match.from.line).length <= maxHighlightLen) {
                             var style = match.match ? "CodeMirror-matchingbracket" : "CodeMirror-nonmatchingbracket";
-                            marks.push(cm.markText(match.from, Pos(match.from.line, match.from.ch + 1), {className: style}));
+                            marks.push(cm.markText(match.from, Pos(match.from.line, match.from.ch + 1), { className: style }));
                             if (match.to && cm.getLine(match.to.line).length <= maxHighlightLen)
-                                marks.push(cm.markText(match.to, Pos(match.to.line, match.to.ch + 1), {className: style}));
+                                marks.push(cm.markText(match.to, Pos(match.to.line, match.to.ch + 1), { className: style }));
                         }
                     }
 
@@ -4499,7 +4499,7 @@
                 });
             });
 
-        }, {"../../lib/codemirror": 44}],
+        }, { "../../lib/codemirror": 44 }],
         37:  [function (require, module, exports) {
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
@@ -4577,7 +4577,7 @@
                         // Now find closing semicolon, return its position
                         for (var i = line, e = Math.min(cm.lastLine(), line + 10); i <= e; ++i) {
                             var text = cm.getLine(i), semi = text.indexOf(";");
-                            if (semi != -1) return {startCh: start.end, end: CodeMirror.Pos(i, semi)};
+                            if (semi != -1) return { startCh: start.end, end: CodeMirror.Pos(i, semi) };
                         }
                     }
 
@@ -4589,7 +4589,7 @@
                         if (next == null) break;
                         end = next.end;
                     }
-                    return {from: cm.clipPos(CodeMirror.Pos(start, has.startCh + 1)), to: end};
+                    return { from: cm.clipPos(CodeMirror.Pos(start, has.startCh + 1)), to: end };
                 });
 
                 CodeMirror.registerHelper("fold", "include", function (cm, start) {
@@ -4615,7 +4615,7 @@
 
             });
 
-        }, {"../../lib/codemirror": 44}],
+        }, { "../../lib/codemirror": 44 }],
         38:  [function (require, module, exports) {
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
@@ -4691,7 +4691,7 @@
                 // Clumsy backwards-compatible interface
                 CodeMirror.newFoldFunction = function (rangeFinder, widget) {
                     return function (cm, pos) {
-                        doFold(cm, pos, {rangeFinder: rangeFinder, widget: widget});
+                        doFold(cm, pos, { rangeFinder: rangeFinder, widget: widget });
                     };
                 };
 
@@ -4769,7 +4769,7 @@
                 });
             });
 
-        }, {"../../lib/codemirror": 44}],
+        }, { "../../lib/codemirror": 44 }],
         39:  [function (require, module, exports) {
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
@@ -4921,7 +4921,7 @@
                 }
             });
 
-        }, {"../../lib/codemirror": 44, "./foldcode": 38}],
+        }, { "../../lib/codemirror": 44, "./foldcode": 38 }],
         40:  [function (require, module, exports) {
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
@@ -4944,7 +4944,7 @@
                 CodeMirror.showHint = function (cm, getHints, options) {
                     if (!getHints) return cm.showHint(options);
                     if (options && options.async) getHints.async = true;
-                    var newOpts = {hint: getHints};
+                    var newOpts = { hint: getHints };
                     if (options) for (var prop in options) newOpts[prop] = options[prop];
                     return cm.showHint(newOpts);
                 };
@@ -5365,7 +5365,7 @@
                         return resolved
                     } else if (words = cm.getHelper(cm.getCursor(), "hintWords")) {
                         return function (cm) {
-                            return CodeMirror.hint.fromList(cm, {words: words})
+                            return CodeMirror.hint.fromList(cm, { words: words })
                         }
                     } else if (CodeMirror.hint.anyword) {
                         return function (cm, options) {
@@ -5396,7 +5396,7 @@
                             found.push(word);
                     }
 
-                    if (found.length) return {list: found, from: from, to: to};
+                    if (found.length) return { list: found, from: from, to: to };
                 });
 
                 CodeMirror.commands.autocomplete = CodeMirror.showHint;
@@ -5416,7 +5416,7 @@
                 CodeMirror.defineOption("hintOptions", null);
             });
 
-        }, {"../../lib/codemirror": 44}],
+        }, { "../../lib/codemirror": 44 }],
         41:  [function (require, module, exports) {
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
@@ -5500,7 +5500,7 @@
                 }
 
                 function parseOptions(_cm, options) {
-                    if (options instanceof Function) return {getAnnotations: options};
+                    if (options instanceof Function) return { getAnnotations: options };
                     if (!options || options === true) options = {};
                     return options;
                 }
@@ -5634,7 +5634,7 @@
                     var target = e.target || e.srcElement;
                     if (!/\bCodeMirror-lint-mark-/.test(target.className)) return;
                     var box   = target.getBoundingClientRect(), x = (box.left + box.right) / 2, y = (box.top + box.bottom) / 2;
-                    var spans = cm.findMarksAt(cm.coordsChar({left: x, top: y}, "client"));
+                    var spans = cm.findMarksAt(cm.coordsChar({ left: x, top: y }, "client"));
                     for (var i = 0; i < spans.length; ++i) {
                         var ann = spans[i].__annotation;
                         if (ann) return popupSpanTooltip(ann, e);
@@ -5669,7 +5669,7 @@
                 });
             });
 
-        }, {"../../lib/codemirror": 44}],
+        }, { "../../lib/codemirror": 44 }],
         42:  [function (require, module, exports) {
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
@@ -5691,7 +5691,7 @@
                     if (caseFold == null && typeof query == "string") caseFold = false;
 
                     pos      = pos ? doc.clipPos(pos) : Pos(0, 0);
-                    this.pos = {from: pos, to: pos};
+                    this.pos = { from: pos, to: pos };
 
                     // The matches method is filled in based on the type of query.
                     // It takes a position and a direction, and returns an object
@@ -5788,7 +5788,7 @@
                                         if (target[i] != fold(doc.getLine(ln))) return;
                                     var line = doc.getLine(ln), cut = line.length - origTarget[0].length;
                                     if (fold(line.slice(cut)) != target[0]) return;
-                                    return {from: Pos(ln, cut), to: to};
+                                    return { from: Pos(ln, cut), to: to };
                                 } else {
                                     if (pos.line + (target.length - 1) > doc.lastLine()) return;
                                     var line = doc.getLine(pos.line), cut = line.length - origTarget[0].length;
@@ -5797,7 +5797,7 @@
                                     for (var ln = pos.line + 1, i = 1; i < last; ++i, ++ln)
                                         if (target[i] != fold(doc.getLine(ln))) return;
                                     if (fold(doc.getLine(ln).slice(0, origTarget[last].length)) != target[last]) return;
-                                    return {from: from, to: Pos(ln, origTarget[last].length)};
+                                    return { from: from, to: Pos(ln, origTarget[last].length) };
                                 }
                             };
                         }
@@ -5817,7 +5817,7 @@
 
                         function savePosAndFail(line) {
                             var pos           = Pos(line, 0);
-                            self.pos          = {from: pos, to: pos};
+                            self.pos          = { from: pos, to: pos };
                             self.atOccurrence = false;
                             return false;
                         }
@@ -5879,14 +5879,14 @@
                     var cur    = this.getSearchCursor(query, this.getCursor("from"), caseFold);
                     while (cur.findNext()) {
                         if (CodeMirror.cmpPos(cur.to(), this.getCursor("to")) > 0) break;
-                        ranges.push({anchor: cur.from(), head: cur.to()});
+                        ranges.push({ anchor: cur.from(), head: cur.to() });
                     }
                     if (ranges.length)
                         this.setSelections(ranges, 0);
                 });
             });
 
-        }, {"../../lib/codemirror": 44}],
+        }, { "../../lib/codemirror": 44 }],
         43:  [function (require, module, exports) {
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
@@ -5904,7 +5904,7 @@
             })(function (CodeMirror) {
                 "use strict";
 
-                var map = CodeMirror.keyMap.sublime = {fallthrough: "default"};
+                var map = CodeMirror.keyMap.sublime = { fallthrough: "default" };
                 var cmds = CodeMirror.commands;
                 var Pos  = CodeMirror.Pos;
                 var mac  = CodeMirror.keyMap["default"] == CodeMirror.keyMap.macDefault;
@@ -5994,7 +5994,7 @@
 
                 cmds[map["Esc"] = "singleSelectionTop"] = function (cm) {
                     var range = cm.listSelections()[0];
-                    cm.setSelection(range.anchor, range.head, {scroll: false});
+                    cm.setSelection(range.anchor, range.head, { scroll: false });
                 };
 
                 cmds[map[ctrl + "L"] = "selectLine"] = function (cm) {
@@ -6020,7 +6020,7 @@
                             var at = Pos(head.line + (above ? 0 : 1), 0);
                             cm.replaceRange("\n", at, null, "+insertLine");
                             cm.indentLine(at.line, null, true);
-                            newSelection.push({head: at, anchor: at});
+                            newSelection.push({ head: at, anchor: at });
                             last = head.line + 1;
                         }
                         cm.setSelections(newSelection);
@@ -6039,7 +6039,7 @@
                     var start = pos.ch, end = start, line = cm.getLine(pos.line);
                     while (start && CodeMirror.isWordChar(line.charAt(start - 1))) --start;
                     while (end < line.length && CodeMirror.isWordChar(line.charAt(end))) ++end;
-                    return {from: Pos(pos.line, start), to: Pos(pos.line, end), word: line.slice(start, end)};
+                    return { from: Pos(pos.line, start), to: Pos(pos.line, end), word: line.slice(start, end) };
                 }
 
                 cmds[map[ctrl + "D"] = "selectNextOccurrence"] = function (cm) {
@@ -6152,7 +6152,7 @@
                 };
 
                 map[ctrl + "/"] = function (cm) {
-                    cm.toggleComment({indent: true});
+                    cm.toggleComment({ indent: true });
                 }
 
                 cmds[map[ctrl + "J"] = "joinLines"] = function (cm) {
@@ -6162,7 +6162,7 @@
                         var start = from.line, end = range.to().line;
                         while (i < ranges.length - 1 && ranges[i + 1].from().line == end)
                             end = ranges[++i].to().line;
-                        joined.push({start: start, end: end, anchor: !range.empty() && from});
+                        joined.push({ start: start, end: end, anchor: !range.empty() && from });
                     }
                     cm.operation(function () {
                         var offset = 0, ranges = [];
@@ -6177,7 +6177,7 @@
                                     ++offset;
                                 }
                             }
-                            ranges.push({anchor: anchor || head, head: head});
+                            ranges.push({ anchor: anchor || head, head: head });
                         }
                         cm.setSelections(ranges, 0);
                     });
@@ -6230,7 +6230,7 @@
                                     return a < b ? -1 : a == b ? 0 : 1;
                                 });
                             cm.replaceRange(lines, start, end);
-                            if (selected) ranges.push({anchor: start, head: end});
+                            if (selected) ranges.push({ anchor: start, head: end });
                         }
                         if (selected) cm.setSelections(ranges, 0);
                     });
@@ -6283,7 +6283,7 @@
                             }
                         }
                         if (j == found.length)
-                            marks.push(cm.markText(from, to, {sublimeBookmark: true, clearWhenEmpty: false}));
+                            marks.push(cm.markText(from, to, { sublimeBookmark: true, clearWhenEmpty: false }));
                     }
                 };
 
@@ -6300,7 +6300,7 @@
                         if (!found)
                             marks.splice(i--, 0);
                         else
-                            ranges.push({anchor: found.from, head: found.to});
+                            ranges.push({ anchor: found.from, head: found.to });
                     }
                     if (ranges.length)
                         cm.setSelections(ranges, 0);
@@ -6338,7 +6338,7 @@
                     if (cm.somethingSelected()) return CodeMirror.Pass;
 
                     var cursor        = cm.getCursor();
-                    var toStartOfLine = cm.getRange({line: cursor.line, ch: 0}, cursor);
+                    var toStartOfLine = cm.getRange({ line: cursor.line, ch: 0 }, cursor);
                     var column        = CodeMirror.countColumn(toStartOfLine, null, cm.getOption("tabSize"));
                     var indentUnit    = cm.getOption("indentUnit");
 
@@ -6444,7 +6444,7 @@
                         from = word.from;
                         to   = word.to;
                     }
-                    return {from: from, to: to, query: cm.getRange(from, to), word: word};
+                    return { from: from, to: to, query: cm.getRange(from, to), word: word };
                 }
 
                 function findAndGoTo(cm, forward) {
@@ -6477,7 +6477,7 @@
                     var matches      = [];
                     var primaryIndex = -1;
                     while (cur.findNext()) {
-                        matches.push({anchor: cur.from(), head: cur.to()});
+                        matches.push({ anchor: cur.from(), head: cur.to() });
                         if (cur.from().line <= target.from.line && cur.from().ch <= target.from.ch)
                             primaryIndex++;
                     }
@@ -6497,7 +6497,7 @@
                 CodeMirror.normalizeKeyMap(map);
             });
 
-        }, {"../addon/edit/matchbrackets": 36, "../addon/search/searchcursor": 42, "../lib/codemirror": 44}],
+        }, { "../addon/edit/matchbrackets": 36, "../addon/search/searchcursor": 42, "../lib/codemirror": 44 }],
         44:  [function (require, module, exports) {
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
@@ -6964,7 +6964,7 @@
                             this.checkedOverlay = true;
                         }
 
-                        return {right: needsV ? sWidth : 0, bottom: needsH ? sWidth : 0};
+                        return { right: needsV ? sWidth : 0, bottom: needsH ? sWidth : 0 };
                     },
                     setScrollLeft: function (pos) {
                         if (this.horiz.scrollLeft != pos) this.horiz.scrollLeft = pos;
@@ -6995,7 +6995,7 @@
 
                 NullScrollbars.prototype = copyObj({
                     update:        function () {
-                        return {bottom: 0, right: 0};
+                        return { bottom: 0, right: 0 };
                     },
                     setScrollLeft: function () {
                     },
@@ -7005,7 +7005,7 @@
                     }
                 }, NullScrollbars.prototype);
 
-                CodeMirror.scrollbarModel = {"native": NativeScrollbars, "null": NullScrollbars};
+                CodeMirror.scrollbarModel = { "native": NativeScrollbars, "null": NullScrollbars };
 
                 function initScrollbars(cm) {
                     if (cm.display.scrollbars) {
@@ -7086,7 +7086,7 @@
                             to   = ensureTo;
                         }
                     }
-                    return {from: from, to: Math.max(to, from + 1)};
+                    return { from: from, to: Math.max(to, from + 1) };
                 }
 
                 // LINE NUMBERS
@@ -7259,7 +7259,7 @@
                         if (!first || !cm.options.lineWrapping || update.oldDisplayWidth == displayWidth(cm)) {
                             // Clip forced viewport to actual scrollable area.
                             if (viewport && viewport.top != null)
-                                viewport = {top: Math.min(cm.doc.height + paddingVert(cm.display) - displayHeight(cm), viewport.top)};
+                                viewport = { top: Math.min(cm.doc.height + paddingVert(cm.display) - displayHeight(cm), viewport.top) };
                             // Updated line heights might result in the drawn area not
                             // actually covering the viewport. Keep looping until it does.
                             update.visible = visibleLines(cm.display, cm.doc, viewport);
@@ -7721,11 +7721,11 @@
                     var text = [], ranges = [];
                     for (var i = 0; i < cm.doc.sel.ranges.length; i++) {
                         var line      = cm.doc.sel.ranges[i].head.line;
-                        var lineRange = {anchor: Pos(line, 0), head: Pos(line + 1, 0)};
+                        var lineRange = { anchor: Pos(line, 0), head: Pos(line + 1, 0) };
                         ranges.push(lineRange);
                         text.push(cm.getRange(lineRange.anchor, lineRange.head));
                     }
-                    return {text: text, ranges: ranges};
+                    return { text: text, ranges: ranges };
                 }
 
                 function disableBrowserMagic(field) {
@@ -7840,7 +7840,7 @@
                             if (input.composing) input.composing.range.clear()
                             input.composing = {
                                 start: start,
-                                range: cm.markText(start, cm.getCursor("to"), {className: "CodeMirror-composing"})
+                                range: cm.markText(start, cm.getCursor("to"), { className: "CodeMirror-composing" })
                             };
                         });
                         on(te, "compositionend", function () {
@@ -8016,7 +8016,7 @@
                             if (self.composing) {
                                 self.composing.range.clear();
                                 self.composing.range = cm.markText(self.composing.start, cm.getCursor("to"),
-                                    {className: "CodeMirror-composing"});
+                                    { className: "CodeMirror-composing" });
                             }
                         });
                         return true;
@@ -8139,7 +8139,7 @@
 
                         on(div, "compositionstart", function (e) {
                             var data        = e.data;
-                            input.composing = {sel: cm.doc.sel, data: data, startData: data};
+                            input.composing = { sel: cm.doc.sel, data: data, startData: data };
                             if (!data) return;
                             var prim  = cm.doc.sel.primary();
                             var line  = cm.getLine(prim.head.line);
@@ -8246,7 +8246,7 @@
                         var view = this.cm.display.view;
                         var old  = sel.rangeCount && sel.getRangeAt(0);
                         if (!start) {
-                            start = {node: view[0].measure.map[2], offset: 0};
+                            start = { node: view[0].measure.map[2], offset: 0 };
                         } else if (!end) {
                             var measure = view[view.length - 1].measure;
                             var map     = measure.maps ? measure.maps[measure.maps.length - 1] : measure.map;
@@ -8598,7 +8598,7 @@
                     return text;
                 }
 
-                CodeMirror.inputStyles = {"textarea": TextareaInput, "contenteditable": ContentEditableInput};
+                CodeMirror.inputStyles = { "textarea": TextareaInput, "contenteditable": ContentEditableInput };
 
                 // SELECTION / CURSOR
 
@@ -9003,7 +9003,7 @@
                             if (left < leftSide + 1) left = leftSide;
                             add(left, rightPos.top, right - left, rightPos.bottom);
                         });
-                        return {start: start, end: end};
+                        return { start: start, end: end };
                     }
 
                     var sFrom = range.from(), sTo = range.to();
@@ -9140,7 +9140,7 @@
                     if (display.cachedPaddingH) return display.cachedPaddingH;
                     var e     = removeChildrenAndAdd(display.measure, elt("pre", "x"));
                     var style = window.getComputedStyle ? window.getComputedStyle(e) : e.currentStyle;
-                    var data  = {left: parseInt(style.paddingLeft), right: parseInt(style.paddingRight)};
+                    var data  = { left: parseInt(style.paddingLeft), right: parseInt(style.paddingRight) };
                     if (!isNaN(data.left) && !isNaN(data.right)) display.cachedPaddingH = data;
                     return data;
                 }
@@ -9184,13 +9184,13 @@
                 // contain multiple lines when collapsed ranges are present.)
                 function mapFromLineView(lineView, line, lineN) {
                     if (lineView.line == line)
-                        return {map: lineView.measure.map, cache: lineView.measure.cache};
+                        return { map: lineView.measure.map, cache: lineView.measure.cache };
                     for (var i = 0; i < lineView.rest.length; i++)
                         if (lineView.rest[i] == line)
-                            return {map: lineView.measure.maps[i], cache: lineView.measure.caches[i]};
+                            return { map: lineView.measure.maps[i], cache: lineView.measure.caches[i] };
                     for (var i = 0; i < lineView.rest.length; i++)
                         if (lineNo(lineView.rest[i]) > lineN)
-                            return {map: lineView.measure.maps[i], cache: lineView.measure.caches[i], before: true};
+                            return { map: lineView.measure.maps[i], cache: lineView.measure.caches[i], before: true };
                 }
 
                 // Render a line into the hidden node display.externalMeasured. Used
@@ -9270,7 +9270,7 @@
                     };
                 }
 
-                var nullRect = {left: 0, right: 0, top: 0, bottom: 0};
+                var nullRect = { left: 0, right: 0, top: 0, bottom: 0 };
 
                 function nodeAndOffsetInLineMap(map, ch, bias) {
                     var node, start, end, collapse;
@@ -9307,7 +9307,14 @@
                             break;
                         }
                     }
-                    return {node: node, start: start, end: end, collapse: collapse, coverStart: mStart, coverEnd: mEnd};
+                    return {
+                        node:       node,
+                        start:      start,
+                        end:        end,
+                        collapse:   collapse,
+                        coverStart: mStart,
+                        coverEnd:   mEnd
+                    };
                 }
 
                 function measureCharInner(cm, prepared, ch, bias) {
@@ -9465,7 +9472,7 @@
                     }
 
                     var lineSpaceBox = cm.display.lineSpace.getBoundingClientRect();
-                    return {left: left - lineSpaceBox.left, top: top - lineSpaceBox.top};
+                    return { left: left - lineSpaceBox.left, top: top - lineSpaceBox.top };
                 }
 
                 function charCoords(cm, pos, context, lineObj, bias) {
@@ -9515,7 +9522,7 @@
                     if (!cm.options.lineWrapping) left = charWidth(cm.display) * pos.ch;
                     var lineObj = getLine(cm.doc, pos.line);
                     var top     = heightAtLine(lineObj) + paddingTop(cm.display);
-                    return {left: left, right: left, top: top, bottom: top + lineObj.height};
+                    return { left: left, right: left, top: top, bottom: top + lineObj.height };
                 }
 
                 // Positions returned by coordsChar contain some extra information.
@@ -10024,7 +10031,7 @@
                 function viewCuttingPoint(cm, oldN, newN, dir) {
                     var index = findViewIndex(cm, oldN), diff, view = cm.display.view;
                     if (!sawCollapsedSpans || newN == cm.doc.first + cm.doc.size)
-                        return {index: index, lineN: newN};
+                        return { index: index, lineN: newN };
                     for (var i = 0, n = cm.display.viewFrom; i < index; i++)
                         n += view[i].size;
                     if (n != oldN) {
@@ -10043,7 +10050,7 @@
                         newN += dir * view[index - (dir < 0 ? 1 : 0)].size;
                         index += dir;
                     }
-                    return {index: index, lineN: newN};
+                    return { index: index, lineN: newN };
                 }
 
                 // Force the view to cover a given range, adding empty view element
@@ -10106,7 +10113,7 @@
                     });
 
                     // Used to suppress mouse event handling when a touch happens
-                    var touchFinished, prevTouch = {end: 0};
+                    var touchFinished, prevTouch = { end: 0 };
 
                     function finishTouch() {
                         if (d.activeTouch) {
@@ -10338,10 +10345,10 @@
                         type = "triple";
                     } else if (lastClick && lastClick.time > now - 400 && cmp(lastClick.pos, start) == 0) {
                         type            = "double";
-                        lastDoubleClick = {time: now, pos: start};
+                        lastDoubleClick = { time: now, pos: start };
                     } else {
                         type      = "single";
-                        lastClick = {time: now, pos: start};
+                        lastClick = { time: now, pos: start };
                     }
 
                     var sel = cm.doc.sel, modifier = mac ? e.metaKey : e.ctrlKey, contained;
@@ -10431,10 +10438,10 @@
                     } else if (ourIndex == -1) {
                         ourIndex = ranges.length;
                         setSelection(doc, normalizeSelection(ranges.concat([ourRange]), ourIndex),
-                            {scroll: false, origin: "*mouse"});
+                            { scroll: false, origin: "*mouse" });
                     } else if (ranges.length > 1 && ranges[ourIndex].empty() && type == "single" && !e.shiftKey) {
                         setSelection(doc, normalizeSelection(ranges.slice(0, ourIndex).concat(ranges.slice(ourIndex + 1)), 0),
-                            {scroll: false, origin: "*mouse"});
+                            { scroll: false, origin: "*mouse" });
                         startSel = doc.sel;
                     } else {
                         replaceOneSelection(doc, ourIndex, ourRange, sel_mouse);
@@ -10461,7 +10468,7 @@
                             }
                             if (!ranges.length) ranges.push(new Range(start, start));
                             setSelection(doc, normalizeSelection(startSel.ranges.slice(0, ourIndex).concat(ranges), ourIndex),
-                                {origin: "*mouse", scroll: false});
+                                { origin: "*mouse", scroll: false });
                             cm.scrollIntoView(pos);
                         } else {
                             var oldRange = ourRange;
@@ -10686,7 +10693,7 @@
                 function setScrollTop(cm, val) {
                     if (Math.abs(cm.doc.scrollTop - val) < 2) return;
                     cm.doc.scrollTop = val;
-                    if (!gecko) updateDisplaySimple(cm, {top: val});
+                    if (!gecko) updateDisplaySimple(cm, { top: val });
                     if (cm.display.scroller.scrollTop != val) cm.display.scroller.scrollTop = val;
                     cm.display.scrollbars.setScrollTop(val);
                     if (gecko) updateDisplaySimple(cm);
@@ -10730,7 +10737,7 @@
                     if (dx == null && e.detail && e.axis == e.HORIZONTAL_AXIS) dx = e.detail;
                     if (dy == null && e.detail && e.axis == e.VERTICAL_AXIS) dy = e.detail;
                     else if (dy == null) dy = e.wheelDelta;
-                    return {x: dx, y: dy};
+                    return { x: dx, y: dy };
                 };
                 CodeMirror.wheelEventPixels = function (e) {
                     var delta = wheelEventDelta(e);
@@ -10790,7 +10797,7 @@
                         var top    = cm.doc.scrollTop, bot = top + display.wrapper.clientHeight;
                         if (pixels < 0) top = Math.max(0, top + pixels - 50);
                         else bot = Math.min(cm.doc.height, bot + pixels + 50);
-                        updateDisplaySimple(cm, {top: top, bottom: bot});
+                        updateDisplaySimple(cm, { top: top, bottom: bot });
                     }
 
                     if (wheelSamples < 20) {
@@ -11117,7 +11124,7 @@
                     if (doc.cm) signal(doc.cm, "beforeChange", doc.cm, obj);
 
                     if (obj.canceled) return null;
-                    return {from: obj.from, to: obj.to, text: obj.text, origin: obj.origin};
+                    return { from: obj.from, to: obj.to, text: obj.text, origin: obj.origin };
                 }
 
                 // Apply a change to a document, and add it to the document's
@@ -11138,7 +11145,11 @@
                     var split = sawReadOnlySpans && !ignoreReadOnly && removeReadOnlyRanges(doc, change.from, change.to);
                     if (split) {
                         for (var i = split.length - 1; i >= 0; --i)
-                            makeChangeInner(doc, {from: split[i].from, to: split[i].to, text: i ? [""] : change.text});
+                            makeChangeInner(doc, {
+                                from: split[i].from,
+                                to:   split[i].to,
+                                text: i ? [""] : change.text
+                            });
                     } else {
                         makeChangeInner(doc, change);
                     }
@@ -11183,7 +11194,7 @@
                         if (event.ranges) {
                             pushSelectionToHistory(event, dest);
                             if (allowSelectionOnly && !event.equals(doc.sel)) {
-                                setSelection(doc, event, {clearRedo: false});
+                                setSelection(doc, event, { clearRedo: false });
                                 return;
                             }
                             selAfter = event;
@@ -11195,7 +11206,7 @@
                     // stack (redo when undoing, and vice versa).
                     var antiChanges = [];
                     pushSelectionToHistory(selAfter, dest);
-                    dest.push({changes: antiChanges, generation: hist.generation});
+                    dest.push({ changes: antiChanges, generation: hist.generation });
                     hist.generation = event.generation || ++hist.maxGeneration;
 
                     var filter = hasHandler(doc, "beforeChange") || doc.cm && hasHandler(doc.cm, "beforeChange");
@@ -11212,7 +11223,7 @@
 
                         var after = i ? computeSelAfterChange(doc, change) : lst(source);
                         makeChangeSingleDoc(doc, change, after, mergeOldSpans(doc, change));
-                        if (!i && doc.cm) doc.cm.scrollIntoView({from: change.from, to: changeEnd(change)});
+                        if (!i && doc.cm) doc.cm.scrollIntoView({ from: change.from, to: changeEnd(change) });
                         var rebased = [];
 
                         // Propagate to the linked documents
@@ -11348,7 +11359,7 @@
                         from    = tmp;
                     }
                     if (typeof code == "string") code = doc.splitLines(code);
-                    makeChange(doc, {from: from, to: to, text: code, origin: origin});
+                    makeChange(doc, { from: from, to: to, text: code, origin: origin });
                 }
 
                 // SCROLLING THINGS INTO VIEW
@@ -11456,7 +11467,12 @@
                         from = cur.ch ? Pos(cur.line, cur.ch - 1) : cur;
                         to   = Pos(cur.line, cur.ch + 1);
                     }
-                    cm.curOp.scrollToPos = {from: from, to: to, margin: cm.options.cursorScrollMargin, isCursor: true};
+                    cm.curOp.scrollToPos = {
+                        from:     from,
+                        to:       to,
+                        margin:   cm.options.cursorScrollMargin,
+                        isCursor: true
+                    };
                 }
 
                 // When an operation has its scrollToPos property set, and another
@@ -11714,7 +11730,7 @@
                     addOverlay:    methodOp(function (spec, options) {
                         var mode = spec.token ? spec : CodeMirror.getMode(this.options, spec);
                         if (mode.startState) throw new Error("Overlays may not be stateful.");
-                        this.state.overlays.push({mode: mode, modeSpec: spec, opaque: options && options.opaque});
+                        this.state.overlays.push({ mode: mode, modeSpec: spec, opaque: options && options.opaque });
                         this.state.modeGen++;
                         regChange(this);
                     }),
@@ -11846,7 +11862,7 @@
                     },
 
                     lineAtHeight: function (height, mode) {
-                        height = fromCoordSystem(this, {top: height, left: 0}, mode || "page").top;
+                        height = fromCoordSystem(this, { top: height, left: 0 }, mode || "page").top;
                         return lineAtHeight(this.doc, height + this.display.viewOffset);
                     },
                     heightAtLine: function (line, mode) {
@@ -11862,7 +11878,7 @@
                         } else {
                             lineObj = line;
                         }
-                        return intoCoordSystem(this, lineObj, {top: 0, left: 0}, mode || "page").top +
+                        return intoCoordSystem(this, lineObj, { top: 0, left: 0 }, mode || "page").top +
                             (end ? this.doc.height - heightAtLine(lineObj) : 0);
                     },
 
@@ -11912,7 +11928,7 @@
                     },
 
                     getViewport: function () {
-                        return {from: this.display.viewFrom, to: this.display.viewTo};
+                        return { from: this.display.viewFrom, to: this.display.viewTo };
                     },
 
                     addWidget: function (pos, node, scroll, vert, horiz) {
@@ -11993,7 +12009,7 @@
                         else
                             deleteNearSelection(this, function (range) {
                                 var other = findPosH(doc, range.head, dir, unit, false);
-                                return dir < 0 ? {from: other, to: range.head} : {from: range.head, to: other};
+                                return dir < 0 ? { from: other, to: range.head } : { from: range.head, to: other };
                             });
                     }),
 
@@ -12085,12 +12101,12 @@
 
                     scrollIntoView: methodOp(function (range, margin) {
                         if (range == null) {
-                            range = {from: this.doc.sel.primary().head, to: null};
+                            range = { from: this.doc.sel.primary().head, to: null };
                             if (margin == null) margin = this.options.cursorScrollMargin;
                         } else if (typeof range == "number") {
-                            range = {from: Pos(range, 0), to: null};
+                            range = { from: Pos(range, 0), to: null };
                         } else if (range.from == null) {
-                            range = {from: range, to: null};
+                            range = { from: range, to: null };
                         }
                         if (!range.to) range.to = range.from;
                         range.margin = margin || 0;
@@ -12354,14 +12370,14 @@
                         spec = mimeModes[spec];
                     } else if (spec && typeof spec.name == "string" && mimeModes.hasOwnProperty(spec.name)) {
                         var found = mimeModes[spec.name];
-                        if (typeof found == "string") found = {name: found};
+                        if (typeof found == "string") found = { name: found };
                         spec      = createObj(found, spec);
                         spec.name = found.name;
                     } else if (typeof spec == "string" && /^[\w\-]+\/[\w\-]+\+xml$/.test(spec)) {
                         return CodeMirror.resolveMode("application/xml");
                     }
-                    if (typeof spec == "string") return {name: spec};
-                    else return spec || {name: "null"};
+                    if (typeof spec == "string") return { name: spec };
+                    else return spec || { name: "null" };
                 };
 
                 // Given a mode spec (anything that resolveMode accepts), find and
@@ -12422,12 +12438,12 @@
 
                 var helpers = CodeMirror.helpers = {};
                 CodeMirror.registerHelper       = function (type, name, value) {
-                    if (!helpers.hasOwnProperty(type)) helpers[type] = CodeMirror[type] = {_global: []};
+                    if (!helpers.hasOwnProperty(type)) helpers[type] = CodeMirror[type] = { _global: [] };
                     helpers[type][name] = value;
                 };
                 CodeMirror.registerGlobalHelper = function (type, name, predicate, value) {
                     CodeMirror.registerHelper(type, name, value);
-                    helpers[type]._global.push({pred: predicate, val: value});
+                    helpers[type]._global.push({ pred: predicate, val: value });
                 };
 
                 // MODE STATE HANDLING
@@ -12460,7 +12476,7 @@
                         state = info.state;
                         mode  = info.mode;
                     }
-                    return info || {mode: mode, state: state};
+                    return info || { mode: mode, state: state };
                 };
 
                 // STANDARD COMMANDS
@@ -12479,11 +12495,11 @@
                             if (range.empty()) {
                                 var len = getLine(cm.doc, range.head.line).text.length;
                                 if (range.head.ch == len && range.head.line < cm.lastLine())
-                                    return {from: range.head, to: Pos(range.head.line + 1, 0)};
+                                    return { from: range.head, to: Pos(range.head.line + 1, 0) };
                                 else
-                                    return {from: range.head, to: Pos(range.head.line, len)};
+                                    return { from: range.head, to: Pos(range.head.line, len) };
                             } else {
-                                return {from: range.from(), to: range.to()};
+                                return { from: range.from(), to: range.to() };
                             }
                         });
                     },
@@ -12497,21 +12513,24 @@
                     },
                     delLineLeft:         function (cm) {
                         deleteNearSelection(cm, function (range) {
-                            return {from: Pos(range.from().line, 0), to: range.from()};
+                            return { from: Pos(range.from().line, 0), to: range.from() };
                         });
                     },
                     delWrappedLineLeft:  function (cm) {
                         deleteNearSelection(cm, function (range) {
                             var top     = cm.charCoords(range.head, "div").top + 5;
-                            var leftPos = cm.coordsChar({left: 0, top: top}, "div");
-                            return {from: leftPos, to: range.from()};
+                            var leftPos = cm.coordsChar({ left: 0, top: top }, "div");
+                            return { from: leftPos, to: range.from() };
                         });
                     },
                     delWrappedLineRight: function (cm) {
                         deleteNearSelection(cm, function (range) {
                             var top      = cm.charCoords(range.head, "div").top + 5;
-                            var rightPos = cm.coordsChar({left: cm.display.lineDiv.offsetWidth + 100, top: top}, "div");
-                            return {from: range.from(), to: rightPos};
+                            var rightPos = cm.coordsChar({
+                                left: cm.display.lineDiv.offsetWidth + 100,
+                                top:  top
+                            }, "div");
+                            return { from: range.from(), to: rightPos };
                         });
                     },
                     undo:                function (cm) {
@@ -12536,35 +12555,35 @@
                         cm.extendSelectionsBy(function (range) {
                                 return lineStart(cm, range.head.line);
                             },
-                            {origin: "+move", bias: 1});
+                            { origin: "+move", bias: 1 });
                     },
                     goLineStartSmart:    function (cm) {
                         cm.extendSelectionsBy(function (range) {
                             return lineStartSmart(cm, range.head);
-                        }, {origin: "+move", bias: 1});
+                        }, { origin: "+move", bias: 1 });
                     },
                     goLineEnd:           function (cm) {
                         cm.extendSelectionsBy(function (range) {
                                 return lineEnd(cm, range.head.line);
                             },
-                            {origin: "+move", bias: -1});
+                            { origin: "+move", bias: -1 });
                     },
                     goLineRight:         function (cm) {
                         cm.extendSelectionsBy(function (range) {
                             var top = cm.charCoords(range.head, "div").top + 5;
-                            return cm.coordsChar({left: cm.display.lineDiv.offsetWidth + 100, top: top}, "div");
+                            return cm.coordsChar({ left: cm.display.lineDiv.offsetWidth + 100, top: top }, "div");
                         }, sel_move);
                     },
                     goLineLeft:          function (cm) {
                         cm.extendSelectionsBy(function (range) {
                             var top = cm.charCoords(range.head, "div").top + 5;
-                            return cm.coordsChar({left: 0, top: top}, "div");
+                            return cm.coordsChar({ left: 0, top: top }, "div");
                         }, sel_move);
                     },
                     goLineLeftSmart:     function (cm) {
                         cm.extendSelectionsBy(function (range) {
                             var top = cm.charCoords(range.head, "div").top + 5;
-                            var pos = cm.coordsChar({left: 0, top: top}, "div");
+                            var pos = cm.coordsChar({ left: 0, top: top }, "div");
                             if (pos.ch < cm.getLine(pos.line).search(/\S/)) return lineStartSmart(cm, range.head);
                             return pos;
                         }, sel_move);
@@ -13132,7 +13151,7 @@
                             if (side == 1) return to;
                         }
                     }
-                    return from && {from: from, to: to};
+                    return from && { from: from, to: to };
                 };
 
                 // Signals that the marker's widget changed, and surrounding layout
@@ -13208,7 +13227,7 @@
                     }
 
                     if (marker.addToHistory)
-                        addChangeToHistory(doc, {from: from, to: to, origin: "markText"}, doc.sel, NaN);
+                        addChangeToHistory(doc, { from: from, to: to, origin: "markText" }, doc.sel, NaN);
 
                     var curLine = from.line, cm = doc.cm, updateMaxLine;
                     doc.iter(curLine, to.line + 1, function (line) {
@@ -13500,7 +13519,7 @@
                         }
                     });
                     if (!markers) return null;
-                    var parts = [{from: from, to: to}];
+                    var parts = [{ from: from, to: to }];
                     for (var i = 0; i < markers.length; ++i) {
                         var mk = markers[i], m = mk.find(0);
                         for (var j = 0; j < parts.length; ++j) {
@@ -13508,9 +13527,9 @@
                             if (cmp(p.to, m.from) < 0 || cmp(p.from, m.to) > 0) continue;
                             var newParts = [j, 1], dfrom = cmp(p.from, m.from), dto = cmp(p.to, m.to);
                             if (dfrom < 0 || !mk.inclusiveLeft && !dfrom)
-                                newParts.push({from: p.from, to: m.from});
+                                newParts.push({ from: p.from, to: m.from });
                             if (dto > 0 || !mk.inclusiveRight && !dto)
-                                newParts.push({from: m.to, to: p.to});
+                                newParts.push({ from: m.to, to: p.to });
                             parts.splice.apply(parts, newParts);
                             j += newParts.length - 1;
                         }
@@ -13911,7 +13930,7 @@
                         }, lineClasses);
                     }
 
-                    return {styles: st, classes: lineClasses.bgClass || lineClasses.textClass ? lineClasses : null};
+                    return { styles: st, classes: lineClasses.bgClass || lineClasses.textClass ? lineClasses : null };
                 }
 
                 function getLineStyles(cm, line, updateFrontier) {
@@ -14439,7 +14458,7 @@
                     this.lineSep         = lineSep;
 
                     if (typeof text == "string") text = this.splitLines(text);
-                    updateDoc(this, {from: start, to: start, text: text});
+                    updateDoc(this, { from: start, to: start, text: text });
                     setSelection(this, simpleSelection(start), sel_dontScroll);
                 };
 
@@ -14631,7 +14650,7 @@
                         var hist = this.history, done = 0, undone = 0;
                         for (var i = 0; i < hist.done.length; i++) if (!hist.done[i].ranges) ++done;
                         for (var i = 0; i < hist.undone.length; i++) if (!hist.undone[i].ranges) ++undone;
-                        return {undo: done, redo: undone};
+                        return { undo: done, redo: undone };
                     },
                     clearHistory: function () {
                         this.history = new History(this.history.maxGeneration);
@@ -14793,8 +14812,8 @@
                         if (options.to != null && options.to < to) to = options.to;
                         var copy = new Doc(getLines(this, from, to), options.mode || this.modeOption, from, this.lineSep);
                         if (options.sharedHist) copy.history = this.history;
-                        (this.linked || (this.linked = [])).push({doc: copy, sharedHist: options.sharedHist});
-                        copy.linked = [{doc: this, isParent: true, sharedHist: options.sharedHist}];
+                        (this.linked || (this.linked = [])).push({ doc: copy, sharedHist: options.sharedHist });
+                        copy.linked = [{ doc: this, isParent: true, sharedHist: options.sharedHist }];
                         copySharedMarkers(copy, findSharedMarkers(this));
                         return copy;
                     },
@@ -15185,10 +15204,10 @@
                             continue;
                         }
                         var changes = event.changes, newChanges = [];
-                        copy.push({changes: newChanges});
+                        copy.push({ changes: newChanges });
                         for (var j = 0; j < changes.length; ++j) {
                             var change = changes[j], m;
-                            newChanges.push({from: change.from, to: change.to, text: change.text});
+                            newChanges.push({ from: change.from, to: change.to, text: change.text });
                             if (newGroup) for (var prop in change) if (m = prop.match(/^spans_(\d+)$/)) {
                                 if (indexOf(newGroup, Number(m[1])) > -1) {
                                     lst(newChanges)[prop] = change[prop];
@@ -15427,7 +15446,7 @@
                 };
 
                 // Reused option objects for setSelection & friends
-                var sel_dontScroll = {scroll: false}, sel_mouse = {origin: "*mouse"}, sel_move = {origin: "+move"};
+                var sel_dontScroll = { scroll: false }, sel_mouse = { origin: "*mouse" }, sel_move = { origin: "+move" };
 
                 function Delayed() {
                     this.id = null;
@@ -16214,11 +16233,11 @@
 
                     var keywords = function () {
                         function kw(type) {
-                            return {type: type, style: "keyword"};
+                            return { type: type, style: "keyword" };
                         }
 
                         var A        = kw("keyword a"), B = kw("keyword b"), C = kw("keyword c");
-                        var operator = kw("operator"), atom = {type: "atom", style: "atom"};
+                        var operator = kw("operator"), atom = { type: "atom", style: "atom" };
 
                         var jsKeywords = {
                             "if":         kw("if"),
@@ -16266,7 +16285,7 @@
 
                         // Extend the 'normal' keywords with the TypeScript language extensions
                         if (isTS) {
-                            var type       = {type: "variable", style: "variable-3"};
+                            var type       = { type: "variable", style: "variable-3" };
                             var tsKeywords = {
                                 // object-like things
                                 "interface":   kw("interface"),
@@ -16507,7 +16526,7 @@
 
                     // Combinator utils
 
-                    var cx = {state: null, column: null, marked: null, cc: null};
+                    var cx = { state: null, column: null, marked: null, cc: null };
 
                     function pass() {
                         for (var i = arguments.length - 1; i >= 0; i--) cx.cc.push(arguments[i]);
@@ -16529,20 +16548,20 @@
                         cx.marked = "def";
                         if (state.context) {
                             if (inList(state.localVars)) return;
-                            state.localVars = {name: varname, next: state.localVars};
+                            state.localVars = { name: varname, next: state.localVars };
                         } else {
                             if (inList(state.globalVars)) return;
                             if (parserConfig.globalVars)
-                                state.globalVars = {name: varname, next: state.globalVars};
+                                state.globalVars = { name: varname, next: state.globalVars };
                         }
                     }
 
                     // Combinators
 
-                    var defaultVars = {name: "this", next: {name: "arguments"}};
+                    var defaultVars = { name: "this", next: { name: "arguments" } };
 
                     function pushcontext() {
-                        cx.state.context   = {prev: cx.state.context, vars: cx.state.localVars};
+                        cx.state.context   = { prev: cx.state.context, vars: cx.state.localVars };
                         cx.state.localVars = defaultVars;
                     }
 
@@ -16990,7 +17009,7 @@
                                 cc:        [],
                                 lexical:   new JSLexical((basecolumn || 0) - indentUnit, 0, "block", false),
                                 localVars: parserConfig.localVars,
-                                context:   parserConfig.localVars && {vars: parserConfig.localVars},
+                                context:   parserConfig.localVars && { vars: parserConfig.localVars },
                                 indented:  0
                             };
                             if (parserConfig.globalVars && typeof parserConfig.globalVars == "object")
@@ -17058,15 +17077,15 @@
                 CodeMirror.defineMIME("application/javascript", "javascript");
                 CodeMirror.defineMIME("application/x-javascript", "javascript");
                 CodeMirror.defineMIME("application/ecmascript", "javascript");
-                CodeMirror.defineMIME("application/json", {name: "javascript", json: true});
-                CodeMirror.defineMIME("application/x-json", {name: "javascript", json: true});
-                CodeMirror.defineMIME("application/ld+json", {name: "javascript", jsonld: true});
-                CodeMirror.defineMIME("text/typescript", {name: "javascript", typescript: true});
-                CodeMirror.defineMIME("application/typescript", {name: "javascript", typescript: true});
+                CodeMirror.defineMIME("application/json", { name: "javascript", json: true });
+                CodeMirror.defineMIME("application/x-json", { name: "javascript", json: true });
+                CodeMirror.defineMIME("application/ld+json", { name: "javascript", jsonld: true });
+                CodeMirror.defineMIME("text/typescript", { name: "javascript", typescript: true });
+                CodeMirror.defineMIME("application/typescript", { name: "javascript", typescript: true });
 
             });
 
-        }, {"../../lib/codemirror": 44}],
+        }, { "../../lib/codemirror": 44 }],
         46:  [function (require, module, exports) {
             require('../modules/web.dom.iterable');
             require('../modules/es6.string.iterator');
@@ -17103,34 +17122,34 @@
         49:  [function (require, module, exports) {
             require('../../modules/es6.object.assign');
             module.exports = require('../../modules/$.core').Object.assign;
-        }, {"../../modules/$.core": 64, "../../modules/es6.object.assign": 106}],
+        }, { "../../modules/$.core": 64, "../../modules/es6.object.assign": 106 }],
         50:  [function (require, module, exports) {
             var $          = require('../../modules/$');
             module.exports = function create(P, D) {
                 return $.create(P, D);
             };
-        }, {"../../modules/$": 82}],
+        }, { "../../modules/$": 82 }],
         51:  [function (require, module, exports) {
             var $          = require('../../modules/$');
             module.exports = function defineProperty(it, key, desc) {
                 return $.setDesc(it, key, desc);
             };
-        }, {"../../modules/$": 82}],
+        }, { "../../modules/$": 82 }],
         52:  [function (require, module, exports) {
             var $ = require('../../modules/$');
             require('../../modules/es6.object.get-own-property-descriptor');
             module.exports = function getOwnPropertyDescriptor(it, key) {
                 return $.getDesc(it, key);
             };
-        }, {"../../modules/$": 82, "../../modules/es6.object.get-own-property-descriptor": 107}],
+        }, { "../../modules/$": 82, "../../modules/es6.object.get-own-property-descriptor": 107 }],
         53:  [function (require, module, exports) {
             require('../../modules/es6.object.keys');
             module.exports = require('../../modules/$.core').Object.keys;
-        }, {"../../modules/$.core": 64, "../../modules/es6.object.keys": 108}],
+        }, { "../../modules/$.core": 64, "../../modules/es6.object.keys": 108 }],
         54:  [function (require, module, exports) {
             require('../../modules/es6.object.set-prototype-of');
             module.exports = require('../../modules/$.core').Object.setPrototypeOf;
-        }, {"../../modules/$.core": 64, "../../modules/es6.object.set-prototype-of": 109}],
+        }, { "../../modules/$.core": 64, "../../modules/es6.object.set-prototype-of": 109 }],
         55:  [function (require, module, exports) {
             require('../modules/es6.object.to-string');
             require('../modules/es6.string.iterator');
@@ -17162,7 +17181,7 @@
                 if (!isObject(it))throw TypeError(it + ' is not an object!');
                 return it;
             };
-        }, {"./$.is-object": 76}],
+        }, { "./$.is-object": 76 }],
         59:  [function (require, module, exports) {
 // getting tag from 19.1.3.6 Object.prototype.toString()
             var cof   = require('./$.cof')
@@ -17182,7 +17201,7 @@
                     // ES3 arguments fallback
                     : (B = cof(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : B;
             };
-        }, {"./$.cof": 60, "./$.wks": 100}],
+        }, { "./$.cof": 60, "./$.wks": 100 }],
         60:  [function (require, module, exports) {
             var toString = {}.toString;
 
@@ -17381,7 +17400,7 @@
                     return arr;
                 };
             };
-        }, {"./$.classof": 59, "./$.for-of": 70}],
+        }, { "./$.classof": 59, "./$.for-of": 70 }],
         63:  [function (require, module, exports) {
             'use strict';
             var $                = require('./$')
@@ -17452,7 +17471,7 @@
             "./$.strict-new":        93
         }],
         64:  [function (require, module, exports) {
-            var core = module.exports = {version: '1.2.6'};
+            var core = module.exports = { version: '1.2.6' };
             if (typeof __e == 'number')__e = core; // eslint-disable-line no-undef
         }, {}],
         65:  [function (require, module, exports) {
@@ -17479,7 +17498,7 @@
                     return fn.apply(that, arguments);
                 };
             };
-        }, {"./$.a-function": 56}],
+        }, { "./$.a-function": 56 }],
         66:  [function (require, module, exports) {
 // 7.2.1 RequireObjectCoercible(argument)
             module.exports = function (it) {
@@ -17496,7 +17515,7 @@
                         }
                     }).a != 7;
             });
-        }, {"./$.fails": 69}],
+        }, { "./$.fails": 69 }],
         68:  [function (require, module, exports) {
             var global      = require('./$.global')
                 , core      = require('./$.core')
@@ -17544,7 +17563,7 @@
             $export.B = 16; // bind
             $export.W = 32; // wrap
             module.exports = $export;
-        }, {"./$.core": 64, "./$.ctx": 65, "./$.global": 71}],
+        }, { "./$.core": 64, "./$.ctx": 65, "./$.global": 71 }],
         69:  [function (require, module, exports) {
             module.exports = function (exec) {
                 try {
@@ -17603,14 +17622,14 @@
                 object[key] = value;
                 return object;
             };
-        }, {"./$": 82, "./$.descriptors": 67, "./$.property-desc": 86}],
+        }, { "./$": 82, "./$.descriptors": 67, "./$.property-desc": 86 }],
         74:  [function (require, module, exports) {
 // fallback for non-array-like ES3 and non-enumerable old V8 strings
             var cof        = require('./$.cof');
             module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
                 return cof(it) == 'String' ? it.split('') : Object(it);
             };
-        }, {"./$.cof": 60}],
+        }, { "./$.cof": 60 }],
         75:  [function (require, module, exports) {
 // check on default Array iterator
             var Iterators    = require('./$.iterators')
@@ -17620,7 +17639,7 @@
             module.exports = function (it) {
                 return it !== undefined && (Iterators.Array === it || ArrayProto[ITERATOR] === it);
             };
-        }, {"./$.iterators": 81, "./$.wks": 100}],
+        }, { "./$.iterators": 81, "./$.wks": 100 }],
         76:  [function (require, module, exports) {
             module.exports = function (it) {
                 return typeof it === 'object' ? it !== null : typeof it === 'function';
@@ -17639,7 +17658,7 @@
                     throw e;
                 }
             };
-        }, {"./$.an-object": 58}],
+        }, { "./$.an-object": 58 }],
         78:  [function (require, module, exports) {
             'use strict';
             var $                   = require('./$')
@@ -17653,10 +17672,10 @@
             });
 
             module.exports = function (Constructor, NAME, next) {
-                Constructor.prototype = $.create(IteratorPrototype, {next: descriptor(1, next)});
+                Constructor.prototype = $.create(IteratorPrototype, { next: descriptor(1, next) });
                 setToStringTag(Constructor, NAME + ' Iterator');
             };
-        }, {"./$": 82, "./$.hide": 73, "./$.property-desc": 86, "./$.set-to-string-tag": 91, "./$.wks": 100}],
+        }, { "./$": 82, "./$.hide": 73, "./$.property-desc": 86, "./$.set-to-string-tag": 91, "./$.wks": 100 }],
         79:  [function (require, module, exports) {
             'use strict';
             var LIBRARY          = require('./$.library')
@@ -17751,7 +17770,7 @@
         }],
         80:  [function (require, module, exports) {
             module.exports = function (done, value) {
-                return {value: value, done: !!done};
+                return { value: value, done: !!done };
             };
         }, {}],
         81:  [function (require, module, exports) {
@@ -17811,7 +17830,7 @@
                 }
                 return T;
             } : Object.assign;
-        }, {"./$": 82, "./$.fails": 69, "./$.iobject": 74, "./$.to-object": 98}],
+        }, { "./$": 82, "./$.fails": 69, "./$.iobject": 74, "./$.to-object": 98 }],
         85:  [function (require, module, exports) {
 // most Object methods by ES6 should accept primitives
             var $export    = require('./$.export')
@@ -17825,7 +17844,7 @@
                         fn(1);
                     }), 'Object', exp);
             };
-        }, {"./$.core": 64, "./$.export": 68, "./$.fails": 69}],
+        }, { "./$.core": 64, "./$.export": 68, "./$.fails": 69 }],
         86:  [function (require, module, exports) {
             module.exports = function (bitmap, value) {
                 return {
@@ -17842,10 +17861,10 @@
                 for (var key in src)redefine(target, key, src[key]);
                 return target;
             };
-        }, {"./$.redefine": 88}],
+        }, { "./$.redefine": 88 }],
         88:  [function (require, module, exports) {
             module.exports = require('./$.hide');
-        }, {"./$.hide": 73}],
+        }, { "./$.hide": 73 }],
         89:  [function (require, module, exports) {
 // Works with __proto__ only. Old v8 can't work with null proto objects.
             /* eslint-disable no-proto */
@@ -17875,7 +17894,7 @@
                     }({}, false) : undefined),
                 check: check
             };
-        }, {"./$": 82, "./$.an-object": 58, "./$.ctx": 65, "./$.is-object": 76}],
+        }, { "./$": 82, "./$.an-object": 58, "./$.ctx": 65, "./$.is-object": 76 }],
         90:  [function (require, module, exports) {
             'use strict';
             var core          = require('./$.core')
@@ -17892,16 +17911,16 @@
                     }
                 });
             };
-        }, {"./$": 82, "./$.core": 64, "./$.descriptors": 67, "./$.wks": 100}],
+        }, { "./$": 82, "./$.core": 64, "./$.descriptors": 67, "./$.wks": 100 }],
         91:  [function (require, module, exports) {
             var def   = require('./$').setDesc
                 , has = require('./$.has')
                 , TAG = require('./$.wks')('toStringTag');
 
             module.exports = function (it, tag, stat) {
-                if (it && !has(it = stat ? it : it.prototype, TAG))def(it, TAG, {configurable: true, value: tag});
+                if (it && !has(it = stat ? it : it.prototype, TAG))def(it, TAG, { configurable: true, value: tag });
             };
-        }, {"./$": 82, "./$.has": 72, "./$.wks": 100}],
+        }, { "./$": 82, "./$.has": 72, "./$.wks": 100 }],
         92:  [function (require, module, exports) {
             var global     = require('./$.global')
                 , SHARED   = '__core-js_shared__'
@@ -17909,7 +17928,7 @@
             module.exports = function (key) {
                 return store[key] || (store[key] = {});
             };
-        }, {"./$.global": 71}],
+        }, { "./$.global": 71 }],
         93:  [function (require, module, exports) {
             module.exports = function (it, Constructor, name) {
                 if (!(it instanceof Constructor))throw TypeError(name + ": use the 'new' operator!");
@@ -17934,7 +17953,7 @@
                         : TO_STRING ? s.slice(i, i + 2) : (a - 0xd800 << 10) + (b - 0xdc00) + 0x10000;
                 };
             };
-        }, {"./$.defined": 66, "./$.to-integer": 95}],
+        }, { "./$.defined": 66, "./$.to-integer": 95 }],
         95:  [function (require, module, exports) {
 // 7.1.4 ToInteger
             var ceil       = Math.ceil
@@ -17950,7 +17969,7 @@
             module.exports = function (it) {
                 return IObject(defined(it));
             };
-        }, {"./$.defined": 66, "./$.iobject": 74}],
+        }, { "./$.defined": 66, "./$.iobject": 74 }],
         97:  [function (require, module, exports) {
 // 7.1.15 ToLength
             var toInteger  = require('./$.to-integer')
@@ -17958,14 +17977,14 @@
             module.exports = function (it) {
                 return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
             };
-        }, {"./$.to-integer": 95}],
+        }, { "./$.to-integer": 95 }],
         98:  [function (require, module, exports) {
 // 7.1.13 ToObject(argument)
             var defined    = require('./$.defined');
             module.exports = function (it) {
                 return Object(defined(it));
             };
-        }, {"./$.defined": 66}],
+        }, { "./$.defined": 66 }],
         99:  [function (require, module, exports) {
             var id         = 0
                 , px       = Math.random();
@@ -17981,7 +18000,7 @@
                 return store[name] || (store[name] =
                         Symbol && Symbol[name] || (Symbol || uid)('Symbol.' + name));
             };
-        }, {"./$.global": 71, "./$.shared": 92, "./$.uid": 99}],
+        }, { "./$.global": 71, "./$.shared": 92, "./$.uid": 99 }],
         101: [function (require, module, exports) {
             var classof     = require('./$.classof')
                 , ITERATOR  = require('./$.wks')('iterator')
@@ -17991,7 +18010,7 @@
                     || it['@@iterator']
                     || Iterators[classof(it)];
             };
-        }, {"./$.classof": 59, "./$.core": 64, "./$.iterators": 81, "./$.wks": 100}],
+        }, { "./$.classof": 59, "./$.core": 64, "./$.iterators": 81, "./$.wks": 100 }],
         102: [function (require, module, exports) {
             var anObject   = require('./$.an-object')
                 , get      = require('./core.get-iterator-method');
@@ -18000,7 +18019,7 @@
                 if (typeof iterFn != 'function')throw TypeError(it + ' is not iterable!');
                 return anObject(iterFn.call(it));
             };
-        }, {"./$.an-object": 58, "./$.core": 64, "./core.get-iterator-method": 101}],
+        }, { "./$.an-object": 58, "./$.core": 64, "./core.get-iterator-method": 101 }],
         103: [function (require, module, exports) {
             var classof     = require('./$.classof')
                 , ITERATOR  = require('./$.wks')('iterator')
@@ -18011,7 +18030,7 @@
                     || '@@iterator' in O
                     || Iterators.hasOwnProperty(classof(O));
             };
-        }, {"./$.classof": 59, "./$.core": 64, "./$.iterators": 81, "./$.wks": 100}],
+        }, { "./$.classof": 59, "./$.core": 64, "./$.iterators": 81, "./$.wks": 100 }],
         104: [function (require, module, exports) {
             'use strict';
             var addToUnscopables = require('./$.add-to-unscopables')
@@ -18074,13 +18093,13 @@
                     return strong.def(this, key === 0 ? 0 : key, value);
                 }
             }, strong, true);
-        }, {"./$.collection": 63, "./$.collection-strong": 61}],
+        }, { "./$.collection": 63, "./$.collection-strong": 61 }],
         106: [function (require, module, exports) {
 // 19.1.3.1 Object.assign(target, source)
             var $export = require('./$.export');
 
-            $export($export.S + $export.F, 'Object', {assign: require('./$.object-assign')});
-        }, {"./$.export": 68, "./$.object-assign": 84}],
+            $export($export.S + $export.F, 'Object', { assign: require('./$.object-assign') });
+        }, { "./$.export": 68, "./$.object-assign": 84 }],
         107: [function (require, module, exports) {
 // 19.1.2.6 Object.getOwnPropertyDescriptor(O, P)
             var toIObject = require('./$.to-iobject');
@@ -18090,7 +18109,7 @@
                     return $getOwnPropertyDescriptor(toIObject(it), key);
                 };
             });
-        }, {"./$.object-sap": 85, "./$.to-iobject": 96}],
+        }, { "./$.object-sap": 85, "./$.to-iobject": 96 }],
         108: [function (require, module, exports) {
 // 19.1.2.14 Object.keys(O)
             var toObject = require('./$.to-object');
@@ -18100,12 +18119,12 @@
                     return $keys(toObject(it));
                 };
             });
-        }, {"./$.object-sap": 85, "./$.to-object": 98}],
+        }, { "./$.object-sap": 85, "./$.to-object": 98 }],
         109: [function (require, module, exports) {
 // 19.1.3.19 Object.setPrototypeOf(O, proto)
             var $export = require('./$.export');
-            $export($export.S, 'Object', {setPrototypeOf: require('./$.set-proto').set});
-        }, {"./$.export": 68, "./$.set-proto": 89}],
+            $export($export.S, 'Object', { setPrototypeOf: require('./$.set-proto').set });
+        }, { "./$.export": 68, "./$.set-proto": 89 }],
         110: [function (require, module, exports) {
 
         }, {}],
@@ -18124,7 +18143,7 @@
                     return strong.def(this, value = value === 0 ? 0 : value, value);
                 }
             }, strong);
-        }, {"./$.collection": 63, "./$.collection-strong": 61}],
+        }, { "./$.collection": 63, "./$.collection-strong": 61 }],
         112: [function (require, module, exports) {
             'use strict';
             var $at = require('./$.string-at')(true);
@@ -18138,29 +18157,29 @@
                 var O       = this._t
                     , index = this._i
                     , point;
-                if (index >= O.length)return {value: undefined, done: true};
+                if (index >= O.length)return { value: undefined, done: true };
                 point = $at(O, index);
                 this._i += point.length;
-                return {value: point, done: false};
+                return { value: point, done: false };
             });
-        }, {"./$.iter-define": 79, "./$.string-at": 94}],
+        }, { "./$.iter-define": 79, "./$.string-at": 94 }],
         113: [function (require, module, exports) {
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
             var $export = require('./$.export');
 
-            $export($export.P, 'Map', {toJSON: require('./$.collection-to-json')('Map')});
-        }, {"./$.collection-to-json": 62, "./$.export": 68}],
+            $export($export.P, 'Map', { toJSON: require('./$.collection-to-json')('Map') });
+        }, { "./$.collection-to-json": 62, "./$.export": 68 }],
         114: [function (require, module, exports) {
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
             var $export = require('./$.export');
 
-            $export($export.P, 'Set', {toJSON: require('./$.collection-to-json')('Set')});
-        }, {"./$.collection-to-json": 62, "./$.export": 68}],
+            $export($export.P, 'Set', { toJSON: require('./$.collection-to-json')('Set') });
+        }, { "./$.collection-to-json": 62, "./$.export": 68 }],
         115: [function (require, module, exports) {
             require('./es6.array.iterator');
             var Iterators      = require('./$.iterators');
             Iterators.NodeList = Iterators.HTMLCollection = Iterators.Array;
-        }, {"./$.iterators": 81, "./es6.array.iterator": 104}],
+        }, { "./$.iterators": 81, "./es6.array.iterator": 104 }],
         116: [function (require, module, exports) {
 
             /**
@@ -18197,8 +18216,8 @@
                     _get(Object.getPrototypeOf(GraphQLError.prototype), 'constructor', this).call(this, message);
                     this.message = message;
 
-                    Object.defineProperty(this, 'stack', {value: stack || message});
-                    Object.defineProperty(this, 'nodes', {value: nodes});
+                    Object.defineProperty(this, 'stack', { value: stack || message });
+                    Object.defineProperty(this, 'nodes', { value: nodes });
 
                     // Note: flow does not yet know about Object.defineProperty with `get`.
                     Object.defineProperty(this, 'source', {
@@ -18289,7 +18308,7 @@
                     locations: error.locations
                 };
             }
-        }, {"../jsutils/invariant": 122, "babel-runtime/helpers/interop-require-default": 28}],
+        }, { "../jsutils/invariant": 122, "babel-runtime/helpers/interop-require-default": 28 }],
         118: [function (require, module, exports) {
 
             /**
@@ -18342,7 +18361,7 @@
                     return _formatError.formatError;
                 }
             });
-        }, {"./GraphQLError": 116, "./formatError": 117, "./locatedError": 119, "./syntaxError": 120}],
+        }, { "./GraphQLError": 116, "./formatError": 117, "./locatedError": 119, "./syntaxError": 120 }],
         119: [function (require, module, exports) {
 
             /**
@@ -18374,7 +18393,7 @@
                 var stack   = error ? error.stack : null;
                 return new _GraphQLError.GraphQLError(message, nodes, stack);
             }
-        }, {"./GraphQLError": 116}],
+        }, { "./GraphQLError": 116 }],
         120: [function (require, module, exports) {
 
             /**
@@ -18425,7 +18444,7 @@
             function lpad(len, str) {
                 return Array(len - str.length + 1).join(' ') + str;
             }
-        }, {"../language/location": 129, "./GraphQLError": 116}],
+        }, { "../language/location": 129, "./GraphQLError": 116 }],
         121: [function (require, module, exports) {
 
             /**
@@ -18916,7 +18935,7 @@
              * Helper function for constructing the Token object.
              */
             function makeToken(kind, start, end, value) {
-                return {kind: kind, start: start, end: end, value: value};
+                return { kind: kind, start: start, end: end, value: value };
             }
 
             function printCharCode(code) {
@@ -19311,7 +19330,7 @@
                 }
                 return makeToken(TokenKind.NAME, position, end, slice.call(body, position, end));
             }
-        }, {"../error": 118}],
+        }, { "../error": 118 }],
         129: [function (require, module, exports) {
 
             /**
@@ -19347,7 +19366,7 @@
                     line += 1;
                     column = position + 1 - (match.index + match[0].length);
                 }
-                return {line: line, column: column};
+                return { line: line, column: column };
             }
         }, {}],
         130: [function (require, module, exports) {
@@ -20146,9 +20165,9 @@
                     return null;
                 }
                 if (parser.options.noSource) {
-                    return {start: start, end: parser.prevEnd};
+                    return { start: start, end: parser.prevEnd };
                 }
-                return {start: start, end: parser.prevEnd, source: parser.source};
+                return { start: start, end: parser.prevEnd, source: parser.source };
             }
 
             /**
@@ -20256,7 +20275,7 @@
              * to the source that they were created from. This configuration flag
              * disables that behavior for performance or testing.
              */
-        }, {"../error": 118, "./kinds": 127, "./lexer": 128, "./source": 132}],
+        }, { "../error": 118, "./kinds": 127, "./lexer": 128, "./source": 132 }],
         131: [function (require, module, exports) {
             /**
              *  Copyright (c) 2015, Facebook, Inc.
@@ -20282,7 +20301,7 @@
              */
 
             function print(ast) {
-                return (0, _visitor.visit)(ast, {leave: printDocASTReducer});
+                return (0, _visitor.visit)(ast, { leave: printDocASTReducer });
             }
 
             var printDocASTReducer = {
@@ -20513,7 +20532,7 @@
             function length(maybeArray) {
                 return maybeArray ? maybeArray.length : 0;
             }
-        }, {"./visitor": 133}],
+        }, { "./visitor": 133 }],
         132: [function (require, module, exports) {
 
             /**
@@ -20547,7 +20566,7 @@
             };
 
             exports.Source = Source;
-        }, {"babel-runtime/helpers/class-call-check": 23}],
+        }, { "babel-runtime/helpers/class-call-check": 23 }],
         133: [function (require, module, exports) {
             /**
              *  Copyright (c) 2015, Facebook, Inc.
@@ -20806,7 +20825,7 @@
                     }
 
                     if (!isLeaving) {
-                        stack   = {inArray: inArray, index: index, keys: keys, edits: edits, prev: stack};
+                        stack   = { inArray: inArray, index: index, keys: keys, edits: edits, prev: stack };
                         inArray = Array.isArray(node);
                         keys    = inArray ? node : visitorKeys[node.kind] || [];
                         index   = -1;
@@ -20856,7 +20875,7 @@
                     }
                 }
             }
-        }, {"babel-runtime/helpers/sliced-to-array": 30}],
+        }, { "babel-runtime/helpers/sliced-to-array": 30 }],
         134: [function (require, module, exports) {
 
             /**
@@ -21743,7 +21762,7 @@
                 onField:     true
             });
             exports.GraphQLSkipDirective    = GraphQLSkipDirective;
-        }, {"./definition": 134, "./scalars": 138, "babel-runtime/helpers/class-call-check": 23}],
+        }, { "./definition": 134, "./scalars": 138, "babel-runtime/helpers/class-call-check": 23 }],
         136: [function (require, module, exports) {
 
             /**
@@ -21910,7 +21929,7 @@
 // Un-modifiers
 
 // Definitions
-        }, {"./definition": 134, "./scalars": 138, "./schema": 139}],
+        }, { "./definition": 134, "./scalars": 138, "./schema": 139 }],
         137: [function (require, module, exports) {
             /*  weak */
             /**
@@ -21997,17 +22016,17 @@
                 description: 'A Directives provides a way to describe alternate runtime execution and ' + 'type validation behavior in a GraphQL document.' + '\n\nIn some cases, you need to provide options to alter GraphQL’s ' + 'execution behavior in ways field arguments will not suffice, such as ' + 'conditionally including or skipping a field. Directives provide this by ' + 'describing additional information to the executor.',
                 fields:      function fields() {
                     return {
-                        name:        {type: new _definition.GraphQLNonNull(_scalars.GraphQLString)},
-                        description: {type: _scalars.GraphQLString},
+                        name:        { type: new _definition.GraphQLNonNull(_scalars.GraphQLString) },
+                        description: { type: _scalars.GraphQLString },
                         args:        {
                             type:    new _definition.GraphQLNonNull(new _definition.GraphQLList(new _definition.GraphQLNonNull(__InputValue))),
                             resolve: function resolve(directive) {
                                 return directive.args || [];
                             }
                         },
-                        onOperation: {type: new _definition.GraphQLNonNull(_scalars.GraphQLBoolean)},
-                        onFragment:  {type: new _definition.GraphQLNonNull(_scalars.GraphQLBoolean)},
-                        onField:     {type: new _definition.GraphQLNonNull(_scalars.GraphQLBoolean)}
+                        onOperation: { type: new _definition.GraphQLNonNull(_scalars.GraphQLBoolean) },
+                        onFragment:  { type: new _definition.GraphQLNonNull(_scalars.GraphQLBoolean) },
+                        onField:     { type: new _definition.GraphQLNonNull(_scalars.GraphQLBoolean) }
                     };
                 }
             });
@@ -22040,12 +22059,12 @@
                                 throw new Error('Unknown kind of type: ' + type);
                             }
                         },
-                        name:          {type: _scalars.GraphQLString},
-                        description:   {type: _scalars.GraphQLString},
+                        name:          { type: _scalars.GraphQLString },
+                        description:   { type: _scalars.GraphQLString },
                         fields:        {
                             type:    new _definition.GraphQLList(new _definition.GraphQLNonNull(__Field)),
                             args:    {
-                                includeDeprecated: {type: _scalars.GraphQLBoolean, defaultValue: false}
+                                includeDeprecated: { type: _scalars.GraphQLBoolean, defaultValue: false }
                             },
                             resolve: function resolve(type, _ref) {
                                 var includeDeprecated = _ref.includeDeprecated;
@@ -22084,7 +22103,7 @@
                         enumValues:    {
                             type:    new _definition.GraphQLList(new _definition.GraphQLNonNull(__EnumValue)),
                             args:    {
-                                includeDeprecated: {type: _scalars.GraphQLBoolean, defaultValue: false}
+                                includeDeprecated: { type: _scalars.GraphQLBoolean, defaultValue: false }
                             },
                             resolve: function resolve(type, _ref2) {
                                 var includeDeprecated = _ref2.includeDeprecated;
@@ -22111,7 +22130,7 @@
                                 }
                             }
                         },
-                        ofType:        {type: __Type}
+                        ofType:        { type: __Type }
                     };
                 }
             });
@@ -22121,15 +22140,15 @@
                 description: 'Object and Interface types are described by a list of Fields, each of ' + 'which has a name, potentially a list of arguments, and a return type.',
                 fields:      function fields() {
                     return {
-                        name:              {type: new _definition.GraphQLNonNull(_scalars.GraphQLString)},
-                        description:       {type: _scalars.GraphQLString},
+                        name:              { type: new _definition.GraphQLNonNull(_scalars.GraphQLString) },
+                        description:       { type: _scalars.GraphQLString },
                         args:              {
                             type:    new _definition.GraphQLNonNull(new _definition.GraphQLList(new _definition.GraphQLNonNull(__InputValue))),
                             resolve: function resolve(field) {
                                 return field.args || [];
                             }
                         },
-                        type:              {type: new _definition.GraphQLNonNull(__Type)},
+                        type:              { type: new _definition.GraphQLNonNull(__Type) },
                         isDeprecated:      {
                             type:    new _definition.GraphQLNonNull(_scalars.GraphQLBoolean),
                             resolve: function resolve(field) {
@@ -22148,9 +22167,9 @@
                 description: 'Arguments provided to Fields or Directives and the input fields of an ' + 'InputObject are represented as Input Values which describe their type ' + 'and optionally a default value.',
                 fields:      function fields() {
                     return {
-                        name:         {type: new _definition.GraphQLNonNull(_scalars.GraphQLString)},
-                        description:  {type: _scalars.GraphQLString},
-                        type:         {type: new _definition.GraphQLNonNull(__Type)},
+                        name:         { type: new _definition.GraphQLNonNull(_scalars.GraphQLString) },
+                        description:  { type: _scalars.GraphQLString },
+                        type:         { type: new _definition.GraphQLNonNull(__Type) },
                         defaultValue: {
                             type:        _scalars.GraphQLString,
                             description: 'A GraphQL-formatted string representing the default value for this ' + 'input value.',
@@ -22166,8 +22185,8 @@
                 name:        '__EnumValue',
                 description: 'One possible value for a given Enum. Enum values are unique values, not ' + 'a placeholder for a string or numeric value. However an Enum value is ' + 'returned in a JSON response as a string.',
                 fields:      {
-                    name:              {type: new _definition.GraphQLNonNull(_scalars.GraphQLString)},
-                    description:       {type: _scalars.GraphQLString},
+                    name:              { type: new _definition.GraphQLNonNull(_scalars.GraphQLString) },
+                    description:       { type: _scalars.GraphQLString },
                     isDeprecated:      {
                         type:    new _definition.GraphQLNonNull(_scalars.GraphQLBoolean),
                         resolve: function resolve(enumValue) {
@@ -22252,7 +22271,7 @@
                 name:        '__type',
                 type:        __Type,
                 description: 'Request the type information of a single type.',
-                args:        [{name: 'name', type: new _definition.GraphQLNonNull(_scalars.GraphQLString)}],
+                args:        [{ name: 'name', type: new _definition.GraphQLNonNull(_scalars.GraphQLString) }],
                 resolve:     function resolve(source, _ref4, _ref5) {
                     var name   = _ref4.name;
                     var schema = _ref5.schema;
@@ -22381,7 +22400,7 @@
                 }
             });
             exports.GraphQLID      = GraphQLID;
-        }, {"../language": 126, "./definition": 134}],
+        }, { "../language": 126, "./definition": 134 }],
         139: [function (require, module, exports) {
 
             /**
@@ -22974,7 +22993,7 @@
                     }
 
                     if (typeof value === 'boolean') {
-                        return {kind: _languageKinds.BOOLEAN, value: value};
+                        return { kind: _languageKinds.BOOLEAN, value: value };
                     }
 
                     // JavaScript numbers can be Float or Int values. Use the GraphQLType to
@@ -22985,22 +23004,22 @@
                         var isIntValue = /^[0-9]+$/.test(stringNum);
                         if (isIntValue) {
                             if (type === _typeScalars.GraphQLFloat) {
-                                return {kind: _languageKinds.FLOAT, value: stringNum + '.0'};
+                                return { kind: _languageKinds.FLOAT, value: stringNum + '.0' };
                             }
-                            return {kind: _languageKinds.INT, value: stringNum};
+                            return { kind: _languageKinds.INT, value: stringNum };
                         }
-                        return {kind: _languageKinds.FLOAT, value: stringNum};
+                        return { kind: _languageKinds.FLOAT, value: stringNum };
                     }
 
                     // JavaScript strings can be Enum values or String values. Use the
                     // GraphQLType to differentiate if possible.
                     if (typeof value === 'string') {
                         if (type instanceof _typeDefinition.GraphQLEnumType && /^[_a-zA-Z][_a-zA-Z0-9]*$/.test(value)) {
-                            return {kind: _languageKinds.ENUM, value: value};
+                            return { kind: _languageKinds.ENUM, value: value };
                         }
                         // Use JSON stringify, which uses the same string encoding as GraphQL,
                         // then remove the quotes.
-                        return {kind: _languageKinds.STRING, value: JSON.stringify(value).slice(1, -1)};
+                        return { kind: _languageKinds.STRING, value: JSON.stringify(value).slice(1, -1) };
                     }
 
                     // last remaining possible typeof
@@ -23019,12 +23038,12 @@
                         if (fieldValue) {
                             fields.push({
                                 kind:  _languageKinds.OBJECT_FIELD,
-                                name:  {kind: _languageKinds.NAME, value: fieldName},
+                                name:  { kind: _languageKinds.NAME, value: fieldName },
                                 value: fieldValue
                             });
                         }
                     });
-                    return {kind: _languageKinds.OBJECT, fields: fields};
+                    return { kind: _languageKinds.OBJECT, fields: fields };
                 }
             }
         }, {
@@ -23258,7 +23277,7 @@
                         return value.name.value;
                     }, function (value) {
                         var type = produceTypeDef(value.type);
-                        return {type: type, defaultValue: (0, _valueFromAST.valueFromAST)(value.defaultValue, type)};
+                        return { type: type, defaultValue: (0, _valueFromAST.valueFromAST)(value.defaultValue, type) };
                     });
                 }
 
@@ -23591,7 +23610,7 @@
                         var description  = inputValue.description;
                         var type         = getInputType(inputValue.type);
                         var defaultValue = inputValue.defaultValue ? (0, _valueFromAST.valueFromAST)((0, _languageParser.parseValue)(inputValue.defaultValue), type) : null;
-                        return {description: description, type: type, defaultValue: defaultValue};
+                        return { description: description, type: type, defaultValue: defaultValue };
                     });
                 }
 
@@ -23672,7 +23691,7 @@
                 }
                 return operation;
             }
-        }, {"../language/kinds": 127}],
+        }, { "../language/kinds": 127 }],
         145: [function (require, module, exports) {
 
             /**
@@ -24467,7 +24486,7 @@
                     return _specifiedRules.specifiedRules;
                 }
             });
-        }, {"./specifiedRules": 176, "./validate": 177}],
+        }, { "./specifiedRules": 176, "./validate": 177 }],
         153: [function (require, module, exports) {
 
             /**
@@ -24514,7 +24533,7 @@
                     }
                 };
             }
-        }, {"../../error": 118, "../../language/printer": 131, "../../utilities/isValidLiteralValue": 148}],
+        }, { "../../error": 118, "../../language/printer": 131, "../../utilities/isValidLiteralValue": 148 }],
         154: [function (require, module, exports) {
 
             /**
@@ -24624,7 +24643,7 @@
                     }
                 };
             }
-        }, {"../../error": 118}],
+        }, { "../../error": 118 }],
         156: [function (require, module, exports) {
 
             /**
@@ -24683,7 +24702,7 @@
                     }
                 };
             }
-        }, {"../../error": 118, "../../language/printer": 131, "../../type/definition": 134}],
+        }, { "../../error": 118, "../../language/printer": 131, "../../type/definition": 134 }],
         157: [function (require, module, exports) {
 
             /**
@@ -24886,7 +24905,7 @@
                     }
                 };
             }
-        }, {"../../error": 118}],
+        }, { "../../error": 118 }],
         160: [function (require, module, exports) {
 
             /**
@@ -24930,7 +24949,7 @@
                     }
                 };
             }
-        }, {"../../error": 118}],
+        }, { "../../error": 118 }],
         161: [function (require, module, exports) {
 
             /**
@@ -24980,7 +24999,7 @@
                     }
                 };
             }
-        }, {"../../error": 118, "../../language/kinds": 127}],
+        }, { "../../error": 118, "../../language/kinds": 127 }],
         162: [function (require, module, exports) {
 
             /**
@@ -25175,7 +25194,7 @@
                     }
                 };
             }
-        }, {"../../error": 118, "../../language/kinds": 127}],
+        }, { "../../error": 118, "../../language/kinds": 127 }],
         164: [function (require, module, exports) {
 
             /**
@@ -25257,7 +25276,7 @@
                     }
                 };
             }
-        }, {"../../error": 118, "babel-runtime/core-js/object/keys": 20}],
+        }, { "../../error": 118, "babel-runtime/core-js/object/keys": 20 }],
         165: [function (require, module, exports) {
 
             /**
@@ -25333,7 +25352,7 @@
                     }
                 };
             }
-        }, {"../../error": 118}],
+        }, { "../../error": 118 }],
         166: [function (require, module, exports) {
 
             /**
@@ -25915,7 +25934,7 @@
                     }
                 };
             }
-        }, {"../../error": 118, "../../type/definition": 134}],
+        }, { "../../error": 118, "../../type/definition": 134 }],
         170: [function (require, module, exports) {
 
             /**
@@ -25968,7 +25987,7 @@
                     }
                 };
             }
-        }, {"../../error": 118, "babel-runtime/core-js/object/create": 17}],
+        }, { "../../error": 118, "babel-runtime/core-js/object/create": 17 }],
         171: [function (require, module, exports) {
 
             /**
@@ -26014,7 +26033,7 @@
                     }
                 };
             }
-        }, {"../../error": 118, "babel-runtime/core-js/object/create": 17}],
+        }, { "../../error": 118, "babel-runtime/core-js/object/create": 17 }],
         172: [function (require, module, exports) {
 
             /**
@@ -26064,7 +26083,7 @@
                     }
                 };
             }
-        }, {"../../error": 118, "babel-runtime/core-js/object/create": 17}],
+        }, { "../../error": 118, "babel-runtime/core-js/object/create": 17 }],
         173: [function (require, module, exports) {
 
             /**
@@ -26112,7 +26131,7 @@
                     }
                 };
             }
-        }, {"../../error": 118, "babel-runtime/core-js/object/create": 17}],
+        }, { "../../error": 118, "babel-runtime/core-js/object/create": 17 }],
         174: [function (require, module, exports) {
 
             /**
@@ -26278,7 +26297,7 @@
                     return varType === expectedType;
                 }
             }
-        }, {"../../error": 118, "../../type/definition": 134, "../../utilities/typeFromAST": 150}],
+        }, { "../../error": 118, "../../type/definition": 134, "../../utilities/typeFromAST": 150 }],
         176: [function (require, module, exports) {
 
             /**
@@ -27686,10 +27705,10 @@
                                 // header
                                 cell = '';
                                 for (i = 0; i < this.token.header.length; i++) {
-                                    flags = {header: true, align: this.token.align[i]};
+                                    flags = { header: true, align: this.token.align[i] };
                                     cell += this.renderer.tablecell(
                                         this.inline.output(this.token.header[i]),
-                                        {header: true, align: this.token.align[i]}
+                                        { header: true, align: this.token.align[i] }
                                     );
                                 }
                                 header += this.renderer.tablerow(cell);
@@ -27701,7 +27720,7 @@
                                     for (j = 0; j < row.length; j++) {
                                         cell += this.renderer.tablecell(
                                             this.inline.output(row[j]),
-                                            {header: false, align: this.token.align[j]}
+                                            { header: false, align: this.token.align[j] }
                                         );
                                     }
 

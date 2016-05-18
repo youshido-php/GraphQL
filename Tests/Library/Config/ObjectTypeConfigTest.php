@@ -45,5 +45,4 @@ class ObjectTypeConfigTest extends \PHPUnit_Framework_TestCase
     }
 
 
-
 }

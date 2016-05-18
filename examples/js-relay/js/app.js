@@ -23,11 +23,11 @@ import StarWarsAppHomeRoute from './routes/StarWarsAppHomeRoute';
 //);
 
 ReactDOM.render(
-  <Relay.RootContainer
-    Component={StarWarsApp}
-    route={new StarWarsAppHomeRoute({
+    <Relay.RootContainer
+        Component={StarWarsApp}
+        route={new StarWarsAppHomeRoute({
       factionNames: ['empire', 'rebels']
     })}
-  />,
-  document.getElementById('root')
+    />,
+    document.getElementById('root')
 );

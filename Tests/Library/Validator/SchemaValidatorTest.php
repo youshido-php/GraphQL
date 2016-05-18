@@ -31,11 +31,11 @@ class SchemaValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $schema = new Schema([
             'query' => new ObjectType([
-                'name' => 'RootQuery',
+                'name'   => 'RootQuery',
                 'fields' => [
                     'user' => new ObjectType([
-                        'name' => 'User',
-                        'fields' => [
+                        'name'       => 'User',
+                        'fields'     => [
                             'name' => new IntType(),
                         ],
                         'interfaces' => [new TestInterfaceType()]
@@ -56,11 +56,11 @@ class SchemaValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $schema = new Schema([
             'query' => new ObjectType([
-                'name' => 'RootQuery',
+                'name'   => 'RootQuery',
                 'fields' => [
                     'user' => new ObjectType([
-                        'name' => 'User',
-                        'fields' => [
+                        'name'       => 'User',
+                        'fields'     => [
                             'name' => new NonNullType(new StringType()),
                         ],
                         'interfaces' => [new TestInterfaceType()]
@@ -80,11 +80,11 @@ class SchemaValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $schema = new Schema([
             'query' => new ObjectType([
-                'name' => 'RootQuery',
+                'name'   => 'RootQuery',
                 'fields' => [
                     'user' => new ObjectType([
-                        'name' => 'User',
-                        'fields' => [
+                        'name'       => 'User',
+                        'fields'     => [
                             'name' => new IntType(),
                         ],
                         'interfaces' => [new TestInterfaceType()]
@@ -104,11 +104,11 @@ class SchemaValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $schema = new Schema([
             'query' => new ObjectType([
-                'name' => 'RootQuery',
+                'name'   => 'RootQuery',
                 'fields' => [
                     'user' => new ObjectType([
-                        'name' => 'User',
-                        'fields' => [
+                        'name'       => 'User',
+                        'fields'     => [
                             'name' => new StringType(),
                         ],
                         'interfaces' => [new TestInterfaceType()]

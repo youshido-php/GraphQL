@@ -67,7 +67,7 @@ class ConfigValidator implements ConfigValidatorInterface
                 if (!$this->validationRules[$ruleName]->validate($data[$fieldName], $ruleInfo)) {
                     $this->addError(
                         new ValidationException('Field \'' . $fieldName . '\' of ' . $this->getContextName()
-                            . ' expected to be ' . $ruleName . ': \'' . (string)$ruleInfo . '\', but got: ' . gettype($data[$fieldName])));
+                                                . ' expected to be ' . $ruleName . ': \'' . (string)$ruleInfo . '\', but got: ' . gettype($data[$fieldName])));
                 }
             }
         }

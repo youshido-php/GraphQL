@@ -11,7 +11,7 @@ namespace Youshido\GraphQL\Config\Traits;
 
 /**
  * Class ConfigCallTrait
- * @package Youshido\GraphQL\Config\Traits
+ * @package    Youshido\GraphQL\Config\Traits
  *
  * @deprecated This class is not used anywhere in the framework anymore.
  *             Replace it with the new traits available.

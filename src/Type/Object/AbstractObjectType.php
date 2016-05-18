@@ -33,8 +33,10 @@ abstract class AbstractObjectType extends AbstractType
             $this->isBuilt = true;
             $this->build($this->config);
         }
+
         return $this->config;
     }
+
     /**
      * ObjectType constructor.
      * @param $config

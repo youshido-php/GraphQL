@@ -17,7 +17,7 @@ class TestConfig extends AbstractConfig
     public function getRules()
     {
         return [
-            'name' => ['type' => TypeService::TYPE_ANY, 'required' => true],
+            'name'    => ['type' => TypeService::TYPE_ANY, 'required' => true],
             'resolve' => ['type' => TypeService::TYPE_CALLABLE, 'final' => true],
         ];
     }

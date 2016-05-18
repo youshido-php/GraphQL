@@ -52,7 +52,7 @@ class QueryType extends AbstractObjectType
                 'name'    => 'inputFields',
                 'type'    => new ListType(new InputValueType()),
                 'resolve' => function ($value) {
-                    if($value instanceof AbstractInputObjectType) {
+                    if ($value instanceof AbstractInputObjectType) {
                         /** @var AbstractObjectType $value */
                         return $value->getConfig()->getFields();
                     }

@@ -18,9 +18,9 @@ class FieldConfigTest extends \PHPUnit_Framework_TestCase
     public function testInvalidParams()
     {
         $fieldConfig = new FieldConfig([
-            'name' => 'FirstName',
-            'type' => new StringType(),
-            'resolve' => function($value, $args = [], $type = null) {
+            'name'    => 'FirstName',
+            'type'    => new StringType(),
+            'resolve' => function ($value, $args = [], $type = null) {
                 return 'John';
             }
         ]);

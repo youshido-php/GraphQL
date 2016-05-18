@@ -13,31 +13,31 @@
 'use strict';
 
 import {
-  GraphQLID,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLSchema,
-  GraphQLString,
+    GraphQLID,
+    GraphQLList,
+    GraphQLNonNull,
+    GraphQLObjectType,
+    GraphQLSchema,
+    GraphQLString,
 } from 'graphql';
 
 import {
-  connectionArgs,
-  connectionDefinitions,
-  connectionFromArray,
-  cursorForObjectInConnection,
-  fromGlobalId,
-  globalIdField,
-  mutationWithClientMutationId,
-  nodeDefinitions,
+    connectionArgs,
+    connectionDefinitions,
+    connectionFromArray,
+    cursorForObjectInConnection,
+    fromGlobalId,
+    globalIdField,
+    mutationWithClientMutationId,
+    nodeDefinitions,
 } from 'graphql-relay';
 
 import {
-  createShip,
-  getFaction,
-  getFactions,
-  getShip,
-  getShips,
+    createShip,
+    getFaction,
+    getFactions,
+    getShip,
+    getShips,
 } from './database';
 
 /**
@@ -122,19 +122,19 @@ import {
  * The second defines the way we resolve a node object to its GraphQL type.
  */
 const {nodeInterface, nodeField} = nodeDefinitions(
-  (globalId) => {
-    const {type, id} = fromGlobalId(globalId);
-    if (type === 'Faction') {
-      return getFaction(id);
-    } else if (type === 'Ship') {
-      return getShip(id);
-    } else {
-      return null;
+    (globalId) => {
+        const {type, id} = fromGlobalId(globalId);
+        if (type === 'Faction') {
+            return getFaction(id);
+        } else if (type === 'Ship') {
+            return getShip(id);
+        } else {
+            return null;
+        }
+    },
+    (obj) => {
+        return obj.ships ? factionType : shipType;
     }
-  },
-  (obj) => {
-    return obj.ships ? factionType : shipType;
-  }
 );
 
 /**
@@ -147,16 +147,16 @@ const {nodeInterface, nodeField} = nodeDefinitions(
  *   }
  */
 const shipType = new GraphQLObjectType({
-  name: 'Ship',
-  description: 'A ship in the Star Wars saga',
-  fields: () => ({
-    id: globalIdField('Ship'),
-    name: {
-      type: GraphQLString,
-      description: 'The name of the ship.',
-    },
-  }),
-  interfaces: [nodeInterface],
+    name:        'Ship',
+    description: 'A ship in the Star Wars saga',
+    fields:      () => ({
+        id:   globalIdField('Ship'),
+        name: {
+            type:        GraphQLString,
+            description: 'The name of the ship.',
+        },
+    }),
+    interfaces:  [nodeInterface],
 });
 
 /**
@@ -176,9 +176,9 @@ const shipType = new GraphQLObjectType({
  *   }
  */
 const {
-  connectionType: shipConnection,
-  edgeType: ShipEdge,
-} = connectionDefinitions({name: 'Ship', nodeType: shipType});
+          connectionType: shipConnection,
+          edgeType: ShipEdge,
+          } = connectionDefinitions({ name: 'Ship', nodeType: shipType });
 
 /**
  * We define our faction type, which implements the node interface.
@@ -191,30 +191,30 @@ const {
  *   }
  */
 const factionType = new GraphQLObjectType({
-  name: 'Faction',
-  description: 'A faction in the Star Wars saga',
-  fields: () => ({
-    id: globalIdField('Faction'),
-    factionId: {
-      type: GraphQLString,
-      description: 'id of faction in db',
-      resolve: (faction) => faction.id,
-    },
-    name: {
-      type: GraphQLString,
-      description: 'The name of the faction.',
-    },
-    ships: {
-      type: shipConnection,
-      description: 'The ships used by the faction.',
-      args: connectionArgs,
-      resolve: (faction, args) => connectionFromArray(
-        faction.ships.map((id) => getShip(id)),
-        args
-      ),
-    },
-  }),
-  interfaces: [nodeInterface],
+    name:        'Faction',
+    description: 'A faction in the Star Wars saga',
+    fields:      () => ({
+        id:        globalIdField('Faction'),
+        factionId: {
+            type:        GraphQLString,
+            description: 'id of faction in db',
+            resolve:     (faction) => faction.id,
+        },
+        name:      {
+            type:        GraphQLString,
+            description: 'The name of the faction.',
+        },
+        ships:     {
+            type:        shipConnection,
+            description: 'The ships used by the faction.',
+            args:        connectionArgs,
+            resolve:     (faction, args) => connectionFromArray(
+                faction.ships.map((id) => getShip(id)),
+                args
+            ),
+        },
+    }),
+    interfaces:  [nodeInterface],
 });
 
 /**
@@ -228,19 +228,19 @@ const factionType = new GraphQLObjectType({
  *   }
  */
 const queryType = new GraphQLObjectType({
-  name: 'Query',
-  fields: () => ({
-    factions: {
-      type: new GraphQLList(factionType),
-      args: {
-        names: {
-          type: new GraphQLList(GraphQLString),
+    name:   'Query',
+    fields: () => ({
+        factions: {
+            type:    new GraphQLList(factionType),
+            args:    {
+                names: {
+                    type: new GraphQLList(GraphQLString),
+                },
+            },
+            resolve: (root, {names}) => getFactions(names),
         },
-      },
-      resolve: (root, {names}) => getFactions(names),
-    },
-    node: nodeField,
-  }),
+        node:     nodeField,
+    }),
 });
 
 /**
@@ -260,41 +260,41 @@ const queryType = new GraphQLObjectType({
  *   }
  */
 const shipMutation = mutationWithClientMutationId({
-  name: 'IntroduceShip',
-  inputFields: {
-    shipName: {
-      type: new GraphQLNonNull(GraphQLString),
+    name:                'IntroduceShip',
+    inputFields:         {
+        shipName:  {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        factionId: {
+            type: new GraphQLNonNull(GraphQLID),
+        },
     },
-    factionId: {
-      type: new GraphQLNonNull(GraphQLID),
+    outputFields:        {
+        newShipEdge: {
+            type:    ShipEdge,
+            resolve: (payload) => {
+                const ship = getShip(payload.shipId);
+                return {
+                    cursor: cursorForObjectInConnection(
+                        getShips(payload.factionId),
+                        ship
+                    ),
+                    node:   ship,
+                };
+            },
+        },
+        faction:     {
+            type:    factionType,
+            resolve: (payload) => getFaction(payload.factionId),
+        },
     },
-  },
-  outputFields: {
-    newShipEdge: {
-      type: ShipEdge,
-      resolve: (payload) => {
-        const ship = getShip(payload.shipId);
+    mutateAndGetPayload: ({shipName, factionId}) => {
+        const newShip = createShip(shipName, factionId);
         return {
-          cursor: cursorForObjectInConnection(
-            getShips(payload.factionId),
-            ship
-          ),
-          node: ship,
+            shipId:    newShip.id,
+            factionId: factionId,
         };
-      },
     },
-    faction: {
-      type: factionType,
-      resolve: (payload) => getFaction(payload.factionId),
-    },
-  },
-  mutateAndGetPayload: ({shipName, factionId}) => {
-    const newShip = createShip(shipName, factionId);
-    return {
-      shipId: newShip.id,
-      factionId: factionId,
-    };
-  },
 });
 
 /**
@@ -307,10 +307,10 @@ const shipMutation = mutationWithClientMutationId({
  *   }
  */
 const mutationType = new GraphQLObjectType({
-  name: 'Mutation',
-  fields: () => ({
-    introduceShip: shipMutation,
-  }),
+    name:   'Mutation',
+    fields: () => ({
+        introduceShip: shipMutation,
+    }),
 });
 
 /**
@@ -318,6 +318,6 @@ const mutationType = new GraphQLObjectType({
  * type we defined above) and export it.
  */
 export const schema = new GraphQLSchema({
-  query: queryType,
-  mutation: mutationType,
+    query:    queryType,
+    mutation: mutationType,
 });
