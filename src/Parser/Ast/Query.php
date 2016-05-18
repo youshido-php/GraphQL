@@ -74,7 +74,7 @@ class Query
     }
 
     /**
-     * @return Field[]|Query[]
+     * @return Field[]|Query[]|FragmentInterface[]
      */
     public function getFields()
     {

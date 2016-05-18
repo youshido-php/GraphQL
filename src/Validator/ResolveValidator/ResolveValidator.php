@@ -131,7 +131,18 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
 
     public function assertTypeInUnionTypes(AbstractType $type, AbstractUnionType $unionType)
     {
-        if (!in_array($type, $unionType->getTypes())) {
+        $unionTypes = $unionType->getTypes();
+        $valid      = false;
+
+        foreach($unionTypes as $unionType) {
+            if($unionType->getName() == $type->getName()) {
+                $valid = true;
+
+                break;
+            }
+        }
+
+        if (!$valid) {
             throw new ResolveException('Type ' . $type->getName() . ' not exist in types of ' . $unionType->getName());
         }
     }
@@ -145,7 +156,6 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
      */
     public function assertValidFragmentForField(Fragment $fragment, FragmentReference $fragmentReference, AbstractType $queryType)
     {
-
         if ($fragment->getModel() !== $queryType->getName()) {
             throw new ResolveException(sprintf('Fragment reference "%s" not found on model "%s"', $fragmentReference->getName(), $queryType->getName()));
         }

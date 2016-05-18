@@ -393,10 +393,6 @@ class Processor
      */
     protected function parseArgumentsValues(AbstractField $field, Query $query)
     {
-//        if ($query instanceof AstField) {
-//            return [];
-//        }
-
         $args = [];
         foreach ($query->getArguments() as $argument) {
             if ($configArgument = $field->getConfig()->getArgument($argument->getName())) {

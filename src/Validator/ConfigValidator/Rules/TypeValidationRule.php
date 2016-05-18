@@ -55,8 +55,8 @@ class TypeValidationRule implements ValidationRuleInterface
             case TypeService::TYPE_OBJECT_TYPE:
                 return TypeService::isObjectType($data);
 
-            case TypeService::TYPE_ARRAY_OF_GRAPHQL_TYPES:
-                return $this->isArrayOfGraphQLTypes($data);
+            case TypeService::TYPE_ARRAY_OF_OBJECT_TYPES:
+                return $this->isArrayOfObjectTypes($data);
 
             case TypeService::TYPE_ARRAY_OF_FIELDS_CONFIG:
                 return $this->isArrayOfFields($data);
@@ -81,14 +81,14 @@ class TypeValidationRule implements ValidationRuleInterface
         }
     }
 
-    private function isArrayOfGraphQLTypes($data)
+    private function isArrayOfObjectTypes($data)
     {
         if (!is_array($data) || !count($data)) {
             return false;
         }
 
         foreach ($data as $item) {
-            if (!TypeService::isGraphQLType($item)) {
+            if (!TypeService::isObjectType($item)) {
                 return false;
             }
         }
