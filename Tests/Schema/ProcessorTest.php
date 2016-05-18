@@ -72,7 +72,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                                         'shorten' => new BooleanType()
                                     ],
                                     'resolve' => function ($value, $args = []) {
-                                        return empty($args['shorten']) ? $value : $value[0];
+                                        return empty($args['shorten']) ? $value['firstName'] : $value['firstName'];
                                     }
                                 ],
                                 'lastName'  => new StringType(),
@@ -362,7 +362,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->processRequest('{ union(type: "object1") { ... on Object1 { name } } }');
         $this->assertEquals([
             'data' => [
-                'union' => null
+                'union' => []
             ],
             'errors' => [
                 ['message' => 'Field "name" not found in type "Object1"']
