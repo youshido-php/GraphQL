@@ -125,7 +125,7 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $union = new UnionType([
             'name'        => 'TestUnion',
-            'types'       => [new IntType(), new StringType()],
+            'types'       => [new TestObjectType()],
             'resolveType' => function ($object) {
                 return new BooleanType();
             }
@@ -139,9 +139,9 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $union = new UnionType([
             'name'        => 'TestUnion',
-            'types'       => [new IntType(), new StringType()],
+            'types'       => [new TestObjectType()],
             'resolveType' => function ($object) {
-                return new IntType();
+                return new TestObjectType();
             }
         ]);
 

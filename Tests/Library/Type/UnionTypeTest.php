@@ -8,10 +8,12 @@
 namespace Youshido\tests\Library\Type;
 
 
+use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\Union\UnionType;
+use Youshido\Tests\DataProvider\TestObjectType;
 use Youshido\Tests\DataProvider\TestUnionType;
 
 class UnionTypeTest extends \PHPUnit_Framework_TestCase
@@ -19,12 +21,17 @@ class UnionTypeTest extends \PHPUnit_Framework_TestCase
 
     public function testInlineCreation()
     {
+        $object = new ObjectType([
+            'name' => 'TestObject',
+            'fields' => ['id' => ['type' => new IntType()]]
+        ]);
+
         $type = new UnionType([
             'name'        => 'Car',
             'description' => 'Union collect cars types',
             'types'       => [
-                new IntType(),
-                new StringType()
+                new TestObjectType(),
+                $object
             ],
             'resolveType' => function ($type) {
                 return $type;
@@ -33,7 +40,7 @@ class UnionTypeTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('Car', $type->getName());
         $this->assertEquals('Union collect cars types', $type->getDescription());
-        $this->assertEquals([new IntType(), new StringType()], $type->getTypes());
+        $this->assertEquals([new TestObjectType(), $object], $type->getTypes());
         $this->assertEquals('test', $type->resolveType('test'));
         $this->assertEquals(TypeMap::KIND_UNION, $type->getKind());
         $this->assertEquals($type, $type->getNamedType());
@@ -46,20 +53,37 @@ class UnionTypeTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('TestUnion', $type->getName());
         $this->assertEquals('Union collect cars types', $type->getDescription());
-        $this->assertEquals([new IntType(), new StringType()], $type->getTypes());
+        $this->assertEquals([new TestObjectType()], $type->getTypes());
         $this->assertEquals('test', $type->resolveType('test'));
     }
 
     /**
      * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
      */
-    public function testInvalidValues()
+    public function testInvalidTypesWithScalar()
     {
         new UnionType([
             'name'        => 'Car',
             'description' => 'Union collect cars types',
             'types'       => [
                 'test', new IntType()
+            ],
+            'resolveType' => function ($type) {
+                return $type;
+            }
+        ]);
+    }
+
+    /**
+     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     */
+    public function testInvalidTypes()
+    {
+        new UnionType([
+            'name'        => 'Car',
+            'description' => 'Union collect cars types',
+            'types'       => [
+                new IntType()
             ],
             'resolveType' => function ($type) {
                 return $type;

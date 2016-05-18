@@ -18,8 +18,7 @@ class TestUnionType extends AbstractUnionType
     public function getTypes()
     {
         return [
-            new IntType(),
-            new StringType()
+            new TestObjectType()
         ];
     }
 
