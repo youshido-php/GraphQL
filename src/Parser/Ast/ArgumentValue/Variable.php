@@ -19,10 +19,18 @@ class Variable implements ValueInterface
     /** @var string */
     private $type;
 
-    public function __construct($name, $type)
+    /** @var bool */
+    private $required = false;
+
+    /** @var bool */
+    private $isArray = false;
+
+    public function __construct($name, $type, $required = false, $isArray = false)
     {
-        $this->name = $name;
-        $this->type = $type;
+        $this->name     = $name;
+        $this->type     = $type;
+        $this->isArray  = $isArray;
+        $this->required = $required;
     }
 
     /**
@@ -79,4 +87,35 @@ class Variable implements ValueInterface
         $this->type = $type;
     }
 
+    /**
+     * @return boolean
+     */
+    public function isArray()
+    {
+        return $this->isArray;
+    }
+
+    /**
+     * @param boolean $isArray
+     */
+    public function setIsArray($isArray)
+    {
+        $this->isArray = $isArray;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isRequired()
+    {
+        return $this->required;
+    }
+
+    /**
+     * @param boolean $required
+     */
+    public function setRequired($required)
+    {
+        $this->required = $required;
+    }
 }

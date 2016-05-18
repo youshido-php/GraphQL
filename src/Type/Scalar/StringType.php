@@ -27,7 +27,11 @@ class StringType extends AbstractScalarType
             return null;
         }
 
-        return (string)$value;
+        if(is_array($value)) {
+            return '';
+        }
+
+        return (string) $value;
     }
 
     public function isValidValue($value)

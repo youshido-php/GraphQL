@@ -57,6 +57,6 @@ class GlobalIdField extends AbstractField
      */
     public function resolve($value, $args = [], $type = null)
     {
-        return Node::toGlobalId($this->name ?: $type->getName() ?: get_class($type), $value);
+        return Node::toGlobalId($this->name ?: $type->getName() ?: get_class($type), $value['id']);
     }
 }

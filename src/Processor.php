@@ -219,7 +219,6 @@ class Processor
             return null;
         }
 
-
         if ($fieldType->getKind() == TypeMap::KIND_LIST) {
             $listValue = [];
             foreach ($preResolvedValue as $resolvedValueItem) {
@@ -373,8 +372,9 @@ class Processor
         }
 
         if ($field->getConfig()->getResolveFunction()) {
-            $resolverValue = $field->resolve($resolverValue, $astField->getKeyValueArguments(), $field->getType());
+            $resolverValue = $field->resolve($contextValue, $astField->getKeyValueArguments(), $field->getType());
         }
+
         if (!$resolverValue && !$resolved) {
             throw new \Exception(sprintf('Property "%s" not found in resolve result', $astField->getName()));
         }
@@ -402,7 +402,7 @@ class Processor
     }
 
     /**
-     * @param $query         Query
+     * @param $query         Query|FragmentInterface
      * @param $queryType     AbstractObjectType|TypeInterface|Field|AbstractType
      * @param $resolvedValue mixed
      * @param $value         array
@@ -425,9 +425,11 @@ class Processor
                     continue;
                 }
 
-                foreach ($fragment->getFields() as $fragmentField) {
-                    $value = $this->collectValue($value, $this->executeQuery($fragmentField, $queryType, $resolvedValue));
-                }
+                $fragmentValue = $this->processQueryFields($fragment, $queryType, $resolvedValue, $value);
+                $value = array_merge(
+                    is_array($value) ? $value : [],
+                    is_array($fragmentValue) ? $fragmentValue : []
+                );
             } elseif ($field->getName() == self::TYPE_NAME_QUERY) {
                 $value = $this->collectValue($value, [$field->getAlias() ?: $field->getName() => $queryType->getName()]);
             } else {

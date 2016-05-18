@@ -4,11 +4,11 @@ namespace Examples\StarWars;
 
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
 use Youshido\GraphQL\Field\InputField;
-use Youshido\GraphQL\Relay\Connection\Connection;
 use Youshido\GraphQL\Relay\Fetcher\CallableFetcher;
 use Youshido\GraphQL\Relay\Field\NodeField;
 use Youshido\GraphQL\Relay\Mutation;
 use Youshido\GraphQL\Schema\AbstractSchema;
+use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
@@ -49,10 +49,14 @@ class StarWarsRelaySchema extends AbstractSchema
                    }
                ])
                ->addField('factions', [
-                   'type'    => Connection::connectionDefinition(new FactionType()),
-                   'args'    => Connection::connectionArgs(),
+                   'type'    => new ListType(new FactionType()),
+                   'args'    => [
+                       'names' => [
+                           'type' => new ListType(new StringType())
+                       ]
+                   ],
                    'resolve' => function ($value = null, $args = [], $type = null) {
-                       return Connection::connectionFromArray(TestDataProvider::getFactions(), $args);
+                       return TestDataProvider::getByNames($args['names']);
                    }
                ]);
 

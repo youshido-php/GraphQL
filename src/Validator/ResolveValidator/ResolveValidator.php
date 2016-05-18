@@ -71,10 +71,12 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
             }
 
             /** @var AbstractType $argumentType */
-            $argumentType = $field->getArgument($argument->getName())->getType();
+            $argumentType = $field->getArgument($argument->getName())->getType()->getNullableType()->getNamedType();
             if ($argument->getValue() instanceof Variable) {
                 /** @var Variable $variable */
                 $variable = $argument->getValue();
+
+                //todo: here validate argument
 
                 if ($variable->getTypeName() !== $argumentType->getName()) {
                     $this->addError(new ResolveException(sprintf('Invalid variable "%s" type, allowed type is "%s"', $variable->getName(), $argumentType->getName())));

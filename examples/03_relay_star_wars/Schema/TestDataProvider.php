@@ -38,6 +38,21 @@ class TestDataProvider
 
     private static $nextShipId = 9;
 
+    public static function getByNames($names)
+    {
+        $result = [];
+
+        foreach($names as $name) {
+            if(array_key_exists($name, self::$factions)) {
+                $result[] = self::$factions[$name];
+            } else {
+                $result[] = null;
+            }
+        }
+
+        return $result;
+    }
+
     public static function createShip($name, $factionId)
     {
         $newShip = [

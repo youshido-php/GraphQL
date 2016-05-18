@@ -10,6 +10,7 @@ namespace Youshido\Tests\Library\Field;
 
 
 use Youshido\GraphQL\Field\InputField;
+use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IdType;
 use Youshido\GraphQL\Type\Scalar\IntType;
@@ -42,7 +43,14 @@ class InputFieldTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('description', $field->getDescription());
         $this->assertEquals(new IntType(), $field->getType());
         $this->assertEquals('default', $field->getDefaultValue());
+    }
 
+    public function testListAsInputField()
+    {
+        new InputField([
+            'name' => 'test',
+            'type' => new ListType(new IntType())
+        ]);
     }
 
     /**

@@ -174,12 +174,20 @@ class AstTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('id', $variable->getName());
         $this->assertEquals('int', $variable->getTypeName());
+        $this->assertFalse($variable->isRequired());
+        $this->assertFalse($variable->isArray());
 
         $variable->setTypeName('string');
         $this->assertEquals('string', $variable->getTypeName());
 
         $variable->setName('limit');
         $this->assertEquals('limit', $variable->getName());
+
+        $variable->setIsArray(true);
+        $variable->setRequired(true);
+
+        $this->assertTrue($variable->isRequired());
+        $this->assertTrue($variable->isArray());
 
         $variable->setValue(new Literal('text'));
         $this->assertEquals(new Literal('text'), $variable->getValue());

@@ -12,7 +12,43 @@ $schema = new StarWarsRelaySchema();
 $processor = new Processor();
 
 $processor->setSchema($schema);
-$payload = '{ factions { name } }';
+//$payload = '{ factions { name } }';
 
-$processor->processRequest($payload);
+$payload = '
+            query StarWarsAppHomeRoute($names_0:[String]!) {
+              factions(names:$names_0) {
+                id,
+                ...F2
+              }
+            }
+            fragment F0 on Ship {
+              id,
+              name
+            }
+            fragment F1 on Faction {
+              id,
+              factionId
+            }
+            fragment F2 on Faction {
+              id,
+              factionId,
+              name,
+              _shipsDRnzJ:ships(first:10) {
+                edges {
+                  node {
+                    id,
+                    ...F0
+                  },
+                  cursor
+                },
+                pageInfo {
+                  hasNextPage,
+                  hasPreviousPage
+                }
+              },
+              ...F1
+            }
+        ';
+
+$processor->processRequest($payload, ['names_0' => ['rebels']]);
 echo json_encode($processor->getResponseData()) . "\n";

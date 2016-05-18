@@ -29,7 +29,7 @@ class Parser extends Tokenizer
 {
 
     /** @var array */
-    protected $variablesTypes = [];
+    protected $variablesInfo = [];
 
     /** @var array */
     protected $variableTypeUsage = [];
@@ -77,7 +77,7 @@ class Parser extends Tokenizer
             $this->eat(Token::TYPE_IDENTIFIER);
 
             if ($this->match(Token::TYPE_LPAREN)) {
-                $this->variablesTypes = $this->parseVariableTypes();
+                $this->variablesInfo = $this->parseVariableTypes();
             }
         }
 
@@ -110,7 +110,7 @@ class Parser extends Tokenizer
 
     protected function checkVariableUsage()
     {
-        if ($this->variablesTypes && count($this->variablesTypes) != count($this->variableTypeUsage)) {
+        if ($this->variablesInfo && count($this->variablesInfo) != count($this->variableTypeUsage)) {
             throw new UnusedVariableException(sprintf('Not all variables in query was used'));
         }
     }
@@ -132,13 +132,35 @@ class Parser extends Tokenizer
             $this->eat(Token::TYPE_VARIABLE);
             $name = $this->parseIdentifier();
             $this->eat(Token::TYPE_COLON);
-            $type = $this->parseIdentifier();
+
+            if ($this->match(Token::TYPE_LSQUARE_BRACE)) {
+                $isArray = true;
+
+                $this->eat(Token::TYPE_LSQUARE_BRACE);
+                $type = $this->parseIdentifier();
+                $this->eat(Token::TYPE_RSQUARE_BRACE);
+            } else {
+                $isArray = false;
+                $type    = $this->parseIdentifier();
+            }
+
+            $required = false;
+            if ($this->match(Token::TYPE_REQUIRED)) {
+                $required = true;
+                $this->eat(Token::TYPE_REQUIRED);
+            }
+
 
             if (array_key_exists($name, $types)) {
                 throw new DuplicationVariableException(sprintf('"%s" variable duplication', $name));
             }
 
-            $types[$name] = $type;
+            $types[$name] = [
+                'name'     => $name,
+                'isArray'  => $isArray,
+                'required' => $required,
+                'type'     => $type
+            ];
         }
 
         $this->expect(Token::TYPE_RPAREN);
@@ -162,13 +184,15 @@ class Parser extends Tokenizer
         if ($this->match(Token::TYPE_NUMBER) || $this->match(Token::TYPE_IDENTIFIER)) {
             $name = $this->lex()->getData();
 
-            if (!array_key_exists($name, $this->variablesTypes)) {
+            if (!array_key_exists($name, $this->variablesInfo)) {
                 throw new VariableTypeNotDefined(sprintf('Type for variable "%s" not defined', $name));
             }
 
             $this->variableTypeUsage[$name] = true;
 
-            return new Variable($name, $this->variablesTypes[$name]);
+            $variableInfo = $this->variablesInfo[$name];
+
+            return new Variable($variableInfo['name'], $variableInfo['type'], $variableInfo['required'], $variableInfo['isArray']);
         }
 
         throw $this->createUnexpectedException($this->peek());

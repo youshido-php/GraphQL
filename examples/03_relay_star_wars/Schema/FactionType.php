@@ -13,6 +13,7 @@ use Youshido\GraphQL\Relay\Connection\Connection;
 use Youshido\GraphQL\Relay\Field\GlobalIdField;
 use Youshido\GraphQL\Relay\NodeInterfaceType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\TypeMap;
 
 class FactionType extends AbstractObjectType
@@ -24,6 +25,12 @@ class FactionType extends AbstractObjectType
     {
         $config
             ->addField(new GlobalIdField(self::TYPE_KEY))
+            ->addField('factionId', [
+                'type' => new IntType(),
+                'resolve' => function($value) {
+                    return $value['id'];
+                }
+            ])
             ->addField('name', [
                 'type'        => TypeMap::TYPE_STRING,
                 'description' => 'The name of the faction.'

@@ -106,6 +106,10 @@ class Tokenizer
                 ++$this->pos;
 
                 return new Token(Token::TYPE_RSQUARE_BRACE);
+            case Token::TYPE_REQUIRED:
+                ++$this->pos;
+
+                return new Token(Token::TYPE_REQUIRED);
             case Token::TYPE_COLON:
                 ++$this->pos;
 
