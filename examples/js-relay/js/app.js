@@ -17,9 +17,10 @@ import Relay from 'react-relay';
 import StarWarsApp from './components/StarWarsApp';
 import StarWarsAppHomeRoute from './routes/StarWarsAppHomeRoute';
 
-Relay.injectNetworkLayer(
-    new Relay.DefaultNetworkLayer('http://localhost:8000/graphql')
-);
+// for PHP tests
+//Relay.injectNetworkLayer(
+//    new Relay.DefaultNetworkLayer('http://localhost:8000/graphql')
+//);
 
 ReactDOM.render(
   <Relay.RootContainer
