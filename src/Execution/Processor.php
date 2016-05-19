@@ -7,13 +7,13 @@
 * created: 11/28/15 1:05 AM
 */
 
-namespace Youshido\GraphQL;
+namespace Youshido\GraphQL\Execution;
 
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Introspection\Field\SchemaField;
 use Youshido\GraphQL\Introspection\Field\TypeDefinitionField;
-use Youshido\GraphQL\Parser\Ast\Field as AstField;
+use Youshido\GraphQL\Parser\Ast\Field as FieldAst;
 use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\FragmentInterface;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
@@ -21,6 +21,7 @@ use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
 use Youshido\GraphQL\Parser\Parser;
+use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\AbstractInterfaceTypeInterface;
 use Youshido\GraphQL\Type\AbstractType;
@@ -53,57 +54,51 @@ class Processor
     /** @var SchemaValidator */
     protected $schemaValidator;
 
-    /** @var AbstractSchema */
+    /** @var ExecutionContext */
+    protected $executionContext;
+
     protected $schema;
 
-    /** @var Request */
-    protected $request;
-
-    public function __construct()
+    public function __construct(AbstractSchema $schema)
     {
         $this->resolveValidator = new ResolveValidator();
         $this->schemaValidator  = new SchemaValidator();
-    }
 
-    public function setSchema(AbstractSchema $schema)
-    {
         if (!$this->schemaValidator->validate($schema)) {
             $this->mergeErrors($this->schemaValidator);
-
-            return;
         }
 
+        $this->introduceIntrospectionFields($schema);
+        $this->executionContext = new ExecutionContext($schema);
         $this->schema = $schema;
+    }
 
+    public function introduceIntrospectionFields(AbstractSchema $schema)
+    {
         $schemaField = new SchemaField();
         $schemaField->setSchema($schema);
 
-        $this->schema->addQueryField($schemaField);
-        $this->schema->addQueryField(new TypeDefinitionField());
+        $schema->addQueryField($schemaField);
+        $schema->addQueryField(new TypeDefinitionField());
     }
 
-    public function processRequest($payload, $variables = [])
+    public function processPayload($payload, $variables = [])
     {
-        if (!$this->getSchema()) {
-            $this->addError(new ConfigurationException('You have to set GraphQL Schema to process'));
-
-            return $this;
-        }
-        if (empty($payload)) return $this;
+        if (empty($payload) || $this->hasErrors()) return $this;
 
         $this->data = [];
 
         try {
             $this->parseAndCreateRequest($payload, $variables);
 
-            foreach ($this->request->getQueries() as $query) {
-                if ($queryResult = $this->executeQuery($query, $this->getSchema()->getQueryType())) {
+            foreach ($this->executionContext->getRequest()->getQueries() as $query) {
+                if ($queryResult = $this->executeQuery($query, $this->executionContext->getSchema()->getQueryType())) {
                     $this->data = array_merge($this->data, $queryResult);
                 };
             }
 
-            foreach ($this->request->getMutations() as $mutation) {
-                if ($mutationResult = $this->executeMutation($mutation, $this->getSchema()->getMutationType())) {
+            foreach ($this->executionContext->getRequest()->getMutations() as $mutation) {
+                if ($mutationResult = $this->executeMutation($mutation, $this->executionContext->getSchema()->getMutationType())) {
                     $this->data = array_merge($this->data, $mutationResult);
                 }
             }
@@ -122,9 +117,7 @@ class Processor
         $parser = new Parser();
 
         $data = $parser->parse($query);
-
-        $this->request = new Request($data);
-        $this->request->setVariables($variables);
+        $this->executionContext->setRequest(new Request($data, $variables));
     }
 
     /**
@@ -145,10 +138,10 @@ class Processor
         $field = $currentLevelSchema->getField($query->getName());
         $alias = $query->getAlias() ?: $query->getName();
 
-        if ($query instanceof AstField) {
-            $value = $this->processAstFieldQuery($query, $contextValue, $field);
+        if ($query instanceof FieldAst) {
+            $value = $this->processFieldAstQuery($query, $contextValue, $field);
         } else {
-            if (!$this->resolveValidator->validateArguments($field, $query, $this->request)) {
+            if (!$this->resolveValidator->validateArguments($field, $query, $this->executionContext->getRequest())) {
                 return null;
             }
 
@@ -176,7 +169,7 @@ class Processor
         $alias     = $mutation->getAlias() ?: $mutation->getName();
         $fieldType = $field->getType();
 
-        if (!$this->resolveValidator->validateArguments($field, $mutation, $this->request)) {
+        if (!$this->resolveValidator->validateArguments($field, $mutation, $this->executionContext->getRequest())) {
             return null;
         }
 
@@ -203,17 +196,17 @@ class Processor
     }
 
     /**
-     * @param AstField      $astField
+     * @param FieldAst      $FieldAst
      * @param mixed         $contextValue
      * @param AbstractField $field
      *
      * @return array|mixed|null
      */
-    protected function processAstFieldQuery(AstField $astField, $contextValue, AbstractField $field)
+    protected function processFieldAstQuery(FieldAst $FieldAst, $contextValue, AbstractField $field)
     {
         $value            = null;
         $fieldType        = $field->getType();
-        $preResolvedValue = $this->getPreResolvedValue($contextValue, $astField, $field);
+        $preResolvedValue = $this->getPreResolvedValue($contextValue, $FieldAst, $field);
 
         if ($preResolvedValue && !$this->resolveValidator->validateResolvedValueType($preResolvedValue, $field->getType())) {
             return null;
@@ -240,7 +233,7 @@ class Processor
             /** hotfix for enum $field->getType()->resolve($preResolvedValue); */ //todo: refactor here
             if ($fieldType->getKind() == TypeMap::KIND_NON_NULL) {
                 if (!$fieldType->isValidValue($preResolvedValue)) {
-                    $this->resolveValidator->addError(new ResolveException(sprintf('Cannot return null for non-nullable field %s', $astField->getName() . '.' . $field->getName())));
+                    $this->resolveValidator->addError(new ResolveException(sprintf('Cannot return null for non-nullable field %s', $FieldAst->getName() . '.' . $field->getName())));
                 } elseif (!$fieldType->getNullableType()->isValidValue($preResolvedValue)) {
                     $this->resolveValidator->addError(new ResolveException(sprintf('Not valid value for %s field %s', $fieldType->getNullableType()->getKind(), $field->getName())));
                     $value = null;
@@ -268,10 +261,9 @@ class Processor
             return $resolvedValue;
         }
 
-        /** we probably do not need this if here $type */
-//        if (!$this->resolveValidator->validateResolvedValueType($resolvedValue, $field->getType())) {
-//            return null;
-//        }
+        if (!$this->resolveValidator->validateResolvedValueType($resolvedValue, $field->getType())) {
+            return null;
+        }
 
         $type = $this->resolveTypeIfAbstract($field->getType(), $resolvedValue);
 
@@ -285,10 +277,10 @@ class Processor
      *
      * @return mixed
      */
-    protected function resolveFieldValue(AbstractField $field, $contextValue, $query)
+    protected function resolveFieldValue(AbstractField $field, $contextValue, Query $query)
     {
         $type          = $field->getType();
-        $resolvedValue = $field->resolve($contextValue, $this->parseArgumentsValues($field, $query), $type);
+        $resolvedValue = $field->resolve($contextValue, $this->parseArgumentsValues($field, $query), new ResolveInfo($field, $type, $query, $this->executionContext));
 
         return $resolvedValue;
     }
@@ -347,23 +339,23 @@ class Processor
 
     /**
      * @param               $contextValue
-     * @param AstField      $astField
+     * @param FieldAst      $fieldAst
      * @param AbstractField $field
      *
      * @throws \Exception
      *
      * @return mixed
      */
-    protected function getPreResolvedValue($contextValue, AstField $astField, AbstractField $field)
+    protected function getPreResolvedValue($contextValue, FieldAst $fieldAst, AbstractField $field)
     {
         $resolved      = false;
         $resolverValue = null;
 
-        if (is_array($contextValue) && array_key_exists($astField->getName(), $contextValue)) {
-            $resolverValue = $contextValue[$astField->getName()];
+        if (is_array($contextValue) && array_key_exists($fieldAst->getName(), $contextValue)) {
+            $resolverValue = $contextValue[$fieldAst->getName()];
             $resolved      = true;
         } elseif (is_object($contextValue)) {
-            $resolverValue = TypeService::getPropertyValue($contextValue, $astField->getName());
+            $resolverValue = TypeService::getPropertyValue($contextValue, $fieldAst->getName());
             $resolved      = true;
         }
 
@@ -372,11 +364,11 @@ class Processor
         }
 
         if ($field->getConfig()->getResolveFunction()) {
-            $resolverValue = $field->resolve($contextValue, $astField->getKeyValueArguments(), $field->getType());
+            $resolverValue = $field->resolve($contextValue, $fieldAst->getKeyValueArguments(), new ResolveInfo($field, $field->getType(), [], $this->executionContext));
         }
 
         if (!$resolverValue && !$resolved) {
-            throw new \Exception(sprintf('Property "%s" not found in resolve result', $astField->getName()));
+            throw new \Exception(sprintf('Property "%s" not found in resolve result', $fieldAst->getName()));
         }
 
         return $resolverValue;
@@ -419,7 +411,7 @@ class Processor
                 $fragment = $field;
                 if ($field instanceof FragmentReference) {
                     /** @var Fragment $fragment */
-                    $fragment = $this->request->getFragment($field->getName());
+                    $fragment = $this->executionContext->getRequest()->getFragment($field->getName());
                     $this->resolveValidator->assertValidFragmentForField($fragment, $field, $queryType);
                 } elseif ($fragment->getTypeName() !== $queryType->getName()) {
                     continue;
@@ -452,10 +444,6 @@ class Processor
         return $value;
     }
 
-    public function getSchema()
-    {
-        return $this->schema;
-    }
 
     public function getResponseData()
     {

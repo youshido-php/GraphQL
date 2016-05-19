@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] == "OPTIONS") {
     return;
 }
 
-use Youshido\GraphQL\Processor;
+use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
 
 require_once __DIR__ . '/schema-bootstrap.php';
@@ -27,10 +27,9 @@ if ((isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] === 'applicatio
 $payload   = isset($requestData['query']) ? $requestData['query'] : null;
 $variables = isset($requestData['variables']) ? $requestData['variables'] : null;
 
-$processor = new Processor();
-$processor->setSchema($schema);
+$processor = new Processor($schema);
 
-$response = $processor->processRequest($payload, $variables)->getResponseData();
+$response = $processor->processPayload($payload, $variables)->getResponseData();
 
 header('Content-Type: application/json');
 echo json_encode($response);

@@ -5,7 +5,7 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphQL;
+namespace Youshido\GraphQL\Execution;
 
 
 use Youshido\GraphQL\Parser\Ast\Fragment;
@@ -27,7 +27,7 @@ class Request
     /** @var array */
     private $variables = [];
 
-    public function __construct($data = [])
+    public function __construct($data = [], $variables = [])
     {
         if (array_key_exists('queries', $data)) {
             $this->addQueries($data['queries']);
@@ -40,6 +40,7 @@ class Request
         if (array_key_exists('fragments', $data)) {
             $this->addFragments($data['fragments']);
         }
+        $this->setVariables($variables);
     }
 
     public function addQueries($queries)

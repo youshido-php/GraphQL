@@ -10,7 +10,7 @@ namespace Youshido\Tests\Parser;
 
 
 use Youshido\GraphQL\Parser\Ast\Fragment;
-use Youshido\GraphQL\Request;
+use Youshido\GraphQL\Execution\Request;
 
 class RequestTest extends \PHPUnit_Framework_TestCase
 {

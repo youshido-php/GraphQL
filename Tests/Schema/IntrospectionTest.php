@@ -10,7 +10,7 @@ namespace Youshido\Tests\Schema;
 
 
 use Youshido\GraphQL\Field\Field;
-use Youshido\GraphQL\Processor;
+use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Type\Enum\EnumType;
 use Youshido\GraphQL\Type\InterfaceType\InterfaceType;
 use Youshido\GraphQL\Type\Object\ObjectType;
@@ -103,10 +103,9 @@ TEXT;
 
     public function testIntrospectionDirectiveRequest()
     {
-        $processor = new Processor();
-        $processor->setSchema(new TestEmptySchema());
+        $processor = new Processor(new TestEmptySchema());
 
-        $processor->processRequest($this->introspectionQuery, []);
+        $processor->processPayload($this->introspectionQuery, []);
 
         $this->assertTrue(is_array($processor->getResponseData()));
     }
@@ -143,11 +142,9 @@ TEXT;
             }
         ]));
 
-        $processor = new Processor();
+        $processor = new Processor($schema);
 
-        $processor->setSchema($schema);
-
-        $processor->processRequest($query);
+        $processor->processPayload($query);
         $responseData = $processor->getResponseData();
 
         $this->assertEquals($expectedResponse, $responseData);
@@ -359,11 +356,9 @@ TEXT;
             }
         ]));
 
-        $processor = new Processor();
+        $processor = new Processor($schema);
 
-        $processor->setSchema($schema);
-
-        $processor->processRequest($this->introspectionQuery);
+        $processor->processPayload($this->introspectionQuery);
         $responseData = $processor->getResponseData();
 
         /** strange that this test got broken after I fixed the field resolve behavior */

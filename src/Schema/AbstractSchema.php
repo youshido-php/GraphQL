@@ -10,6 +10,8 @@ namespace Youshido\GraphQL\Schema;
 
 
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Introspection\Field\SchemaField;
+use Youshido\GraphQL\Introspection\Field\TypeDefinitionField;
 
 abstract class AbstractSchema
 {

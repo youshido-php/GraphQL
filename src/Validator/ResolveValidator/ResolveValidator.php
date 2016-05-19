@@ -17,7 +17,7 @@ use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
-use Youshido\GraphQL\Request;
+use Youshido\GraphQL\Execution\Request;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;

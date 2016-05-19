@@ -9,14 +9,18 @@
 namespace Youshido\Tests\Library\Field;
 
 
+use Youshido\GraphQL\Execution\ExecutionContext;
 use Youshido\GraphQL\Field\Field;
+use Youshido\GraphQL\Parser\Ast\Field as FieldAST;
 use Youshido\GraphQL\Field\InputField;
+use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Scalar\IdType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\Tests\DataProvider\TestField;
+use Youshido\Tests\DataProvider\TestSchema;
 
 class FieldTest extends \PHPUnit_Framework_TestCase
 {
@@ -27,6 +31,7 @@ class FieldTest extends \PHPUnit_Framework_TestCase
             'name' => 'id',
             'type' => new IdType()
         ]);
+        $resolveInfo = new ResolveInfo($field, new FieldAST('id'), $field->getType(), new ExecutionContext(new TestSchema()));
         $this->assertEquals('id', $field->getName());
         $this->assertEquals(new IdType(), $field->getType());
         $this->assertEquals(null, $field->resolve('data', null, null));
@@ -34,13 +39,13 @@ class FieldTest extends \PHPUnit_Framework_TestCase
         $fieldWithResolve = new Field([
             'name'    => 'title',
             'type'    => new StringType(),
-            'resolve' => function ($value, $args, AbstractType $type) {
-                return $type->serialize($value);
+            'resolve' => function ($value, $args, ResolveInfo $info) {
+                return $info->getReturnType()->serialize($value);
             }
         ]);
 
-        $this->assertEquals('true', $fieldWithResolve->resolve(true), 'Resolve bool to string');
-        $this->assertEquals('CTO', $fieldWithResolve->resolve('CTO'));
+        $this->assertEquals('true', $fieldWithResolve->resolve(true, [], $resolveInfo), 'Resolve bool to string');
+        $this->assertEquals('CTO', $fieldWithResolve->resolve('CTO', [], $resolveInfo));
 
         $fieldWithResolve->setType(new IntType());
         $this->assertEquals(new IntType(), $fieldWithResolve->getType());

@@ -90,8 +90,7 @@ use Youshido\GraphQL\Type\Scalar\StringType;
 
 require_once 'vendor/autoload.php';
 
-$processor = new Processor();
-$processor->setSchema(new Schema([
+$processor = new Processor(new Schema([
     'query' => new ObjectType([
         'name' => 'RootQueryType',
         'fields' => [
@@ -211,8 +210,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/inline-schema.php';       // including our schema
 /** @var ObjectType $rootQueryType */
 
-$processor = new Processor();
-$processor->setSchema(new Schema([
+$processor = new Processor(new Schema([
     'query' => $rootQueryType
 ]));
 $payload = '{ latestPost { title, summary } }';
@@ -295,8 +293,7 @@ $rootQueryType = new ObjectType([
 // adding a field to our query schema
 $rootQueryType->addField('latestPost', new PostType());
 
-$processor = new Processor();
-$processor->setSchema(new Schema([
+$processor = new Processor(new Schema([
     'query' => $rootQueryType
 ]));
 $payload = '{ latestPost { title, summary } }';
@@ -398,9 +395,7 @@ $rootMutationType =  new ObjectType([
     ]
 ]);
 
-$processor = new Processor();
-
-$processor->setSchema(new Schema([
+$processor = new Processor(new Schema([
     'query'    => $rootQueryType,
     'mutation' => $rootMutationType,
 ]));
@@ -907,9 +902,7 @@ use Youshido\GraphQL\Schema;
 require_once __DIR__ . '/schema-bootstrap.php';
 $schema = new BlogSchema();
 
-$processor = new Processor();
-
-$processor->setSchema($schema);
+$processor = new Processor($schema);
 $payload  = '{ pageContentUnion { ... on Post { title } ... on Banner { title, imageLink } } }';
 
 $processor->processRequest($payload);

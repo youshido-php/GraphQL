@@ -10,7 +10,7 @@ namespace Youshido\GraphQL\Validator\ResolveValidator;
 
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Parser\Ast\Query;
-use Youshido\GraphQL\Request;
+use Youshido\GraphQL\Execution\Request;
 use Youshido\GraphQL\Type\AbstractType;
 
 interface ResolveValidatorInterface
