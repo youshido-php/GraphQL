@@ -312,6 +312,13 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             ]
         ]);
 
+        $object3 = new ObjectType([
+            'name'   => 'Object3',
+            'fields' => [
+                'name' => ['type' => 'string']
+            ]
+        ]);
+
         $union = new UnionType([
             'name'        => 'TestUnion',
             'types'       => [$object1, $object2],
@@ -321,6 +328,13 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                 }
 
                 return $object2;
+            }
+        ]);
+        $invalidUnion = new UnionType([
+            'name'        => 'TestUnion',
+            'types'       => [$object1, $object2],
+            'resolveType' => function ($object) use ($object3) {
+                return $object3;
             }
         ]);
         $processor = new Processor(new Schema([
@@ -343,7 +357,13 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                                 ];
                             }
                         }
-                    ]
+                    ],
+                    'invalidUnion' => [
+                        'type' => $invalidUnion,
+                        'resolve' => function() {
+                            return ['name' => 'name resolved'];
+                        }
+                    ],
                 ]
             ])
         ]));
@@ -369,6 +389,12 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('{ union(type: "asd") { ... on Object2 { name } } }');
         $this->assertEquals(['data' => ['union' => ['name' => 'name resolved']]], $processor->getResponseData());
         $processor->clearErrors();
+
+        $processor->processPayload('{ invalidUnion { ... on Object2 { name } } }');
+        $this->assertEquals(['errors' => [['message' => 'Type Object3 not exist in types of Object2']]], $processor->getResponseData());
+        $processor->clearErrors();
+
+
     }
 
 

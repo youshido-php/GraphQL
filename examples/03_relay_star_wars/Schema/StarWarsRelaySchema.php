@@ -8,7 +8,7 @@ use Youshido\GraphQl\Relay\Connection\ArrayConnection;
 use Youshido\GraphQL\Relay\Connection\Connection;
 use Youshido\GraphQL\Relay\Fetcher\CallableFetcher;
 use Youshido\GraphQL\Relay\Field\NodeField;
-use Youshido\GraphQL\Relay\Mutation;
+use Youshido\GraphQL\Relay\RelayMutation;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\NonNullType;
@@ -65,7 +65,7 @@ class StarWarsRelaySchema extends AbstractSchema
 
         $config->getMutation()
                ->addField(
-                   Mutation::buildMutation(
+                   RelayMutation::buildMutation(
                        'introduceShip',
                        [
                            new InputField(['name' => 'shipName', 'type' => new NonNullType(new StringType())]),
@@ -91,7 +91,7 @@ class StarWarsRelaySchema extends AbstractSchema
                                }
                            ]
                        ],
-                       function ($input) {
+                       function ($value, $input, $info) {
                            $newShip = TestDataProvider::createShip($input['shipName'], $input['factionId']);
 
                            return [

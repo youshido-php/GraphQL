@@ -301,7 +301,7 @@ class Processor
 
             if ($type instanceof AbstractInterfaceType) {
                 $this->resolveValidator->assertTypeImplementsInterface($resolvedType, $type);
-            } elseif ($type instanceof AbstractUnionType) {
+            } else {
                 $this->resolveValidator->assertTypeInUnionTypes($resolvedType, $type);
             }
 
