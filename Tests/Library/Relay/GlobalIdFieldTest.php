@@ -24,8 +24,5 @@ class GlobalIdFieldTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('id', $field->getName());
         $this->assertEquals('The ID of an object', $field->getDescription());
         $this->assertEquals(new NonNullType(new IdType()), $field->getType());
-
-//        $this->assertNull($field->resolve(null));
-//        $this->assertEquals(Node::toGlobalId($typeName, 1), $field->resolve(['id' => 1]));
     }
 }
