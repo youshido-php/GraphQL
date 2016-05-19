@@ -57,7 +57,7 @@ class StarWarsRelaySchema extends AbstractSchema
                            'type' => new ListType(new StringType())
                        ]
                    ],
-                   'resolve' => function ($value = null, $args = [], $type = null) {
+                   'resolve' => function ($value = null, $args, $info) {
                        return TestDataProvider::getByNames($args['names']);
                    }
                ]);
@@ -91,12 +91,12 @@ class StarWarsRelaySchema extends AbstractSchema
                                }
                            ]
                        ],
-                       function ($value, $input, $info) {
-                           $newShip = TestDataProvider::createShip($input['shipName'], $input['factionId']);
+                       function ($value, $args, $info) {
+                           $newShip = TestDataProvider::createShip($args['shipName'], $args['factionId']);
 
                            return [
                                'shipId'    => $newShip['id'],
-                               'factionId' => $input['factionId']
+                               'factionId' => $args['factionId']
                            ];
                        }
                    )

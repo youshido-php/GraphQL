@@ -21,7 +21,6 @@ use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
 use Youshido\GraphQL\Parser\Parser;
-use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\AbstractInterfaceTypeInterface;
 use Youshido\GraphQL\Type\AbstractType;
@@ -302,6 +301,7 @@ class Processor
             if ($type instanceof AbstractInterfaceType) {
                 $this->resolveValidator->assertTypeImplementsInterface($resolvedType, $type);
             } else {
+                /** @var AbstractUnionType $type */
                 $this->resolveValidator->assertTypeInUnionTypes($resolvedType, $type);
             }
 
@@ -364,7 +364,7 @@ class Processor
         }
 
         if ($field->getConfig()->getResolveFunction()) {
-            $resolverValue = $field->resolve($contextValue, $fieldAst->getKeyValueArguments(), new ResolveInfo($field, $field->getType(), [], $this->executionContext));
+            $resolverValue = $field->resolve($resolved ? $resolverValue : $contextValue, $fieldAst->getKeyValueArguments(), new ResolveInfo($field, $field->getType(), [], $this->executionContext));
         }
 
         if (!$resolverValue && !$resolved) {

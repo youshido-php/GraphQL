@@ -9,9 +9,9 @@
 namespace Youshido\Tests\Schema;
 
 
+use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Field\Field;
-use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\NonNullType;
@@ -66,8 +66,8 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                                     'args'    => [
                                         'shorten' => new BooleanType()
                                     ],
-                                    'resolve' => function ($value, $args = []) {
-                                        return empty($args['shorten']) ? $value['firstName'] : $value['firstName'];
+                                    'resolve' => function ($value, $args) {
+                                        return empty($args['shorten']) ? $value : $value;
                                     }
                                 ],
                                 'lastName'  => new StringType(),
