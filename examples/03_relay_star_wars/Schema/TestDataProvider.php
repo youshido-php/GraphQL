@@ -84,6 +84,11 @@ class TestDataProvider
         return null;
     }
 
+    public static function getShips()
+    {
+        return self::$ships;
+    }
+
     public static function getFaction($id)
     {
         if ($id == 'rebels') {

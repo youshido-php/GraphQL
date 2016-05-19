@@ -269,9 +269,9 @@ class Processor
         }
 
         /** we probably do not need this if here $type */
-        if (!$this->resolveValidator->validateResolvedValueType($resolvedValue, $field->getType())) {
-            return null;
-        }
+//        if (!$this->resolveValidator->validateResolvedValueType($resolvedValue, $field->getType())) {
+//            return null;
+//        }
 
         $type = $this->resolveTypeIfAbstract($field->getType(), $resolvedValue);
 

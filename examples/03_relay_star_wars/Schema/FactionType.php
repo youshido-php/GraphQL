@@ -9,6 +9,7 @@
 namespace Examples\StarWars;
 
 
+use Youshido\GraphQl\Relay\Connection\ArrayConnection;
 use Youshido\GraphQL\Relay\Connection\Connection;
 use Youshido\GraphQL\Relay\Field\GlobalIdField;
 use Youshido\GraphQL\Relay\NodeInterfaceType;
@@ -40,7 +41,7 @@ class FactionType extends AbstractObjectType
                 'description' => 'The ships used by the faction',
                 'args'        => Connection::connectionArgs(),
                 'resolve'     => function ($value = null, $args = [], $type = null) {
-                    return Connection::connectionFromArray(array_map(function ($id) {
+                    return ArrayConnection::connectionFromArray(array_map(function ($id) {
                         return TestDataProvider::getShip($id);
                     }, $value['ships']), $args);
                 }

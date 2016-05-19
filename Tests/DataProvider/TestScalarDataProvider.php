@@ -70,6 +70,7 @@ class TestScalarDataProvider
             [null, null, false],
             [true, "true", false],
             [false, "false", false],
+            [[], null, false],
         ];
     }
 
