@@ -74,9 +74,9 @@ class Processor
 
     public function processPayload($payload, $variables = [])
     {
-        if (empty($payload) || $this->executionContext->getErrors()) {
-            return $this;
-        };
+        if ($this->executionContext->hasErrors()) {
+            $this->executionContext->clearErrors();
+        }
 
         $this->data = [];
 
@@ -94,7 +94,6 @@ class Processor
                     $this->data = array_merge($this->data, $mutationResult);
                 }
             }
-
         } catch (\Exception $e) {
             $this->executionContext->addError($e);
         }
