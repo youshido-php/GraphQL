@@ -9,7 +9,7 @@
 namespace Youshido\Tests\DataProvider;
 
 
-use Youshido\GraphQL\Execution\ExecutionContext;
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\ResolveInfo;
 
 class TestResolveInfo

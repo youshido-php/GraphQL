@@ -9,6 +9,7 @@
 
 namespace Youshido\GraphQL\Execution;
 
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Introspection\Field\SchemaField;
@@ -31,7 +32,6 @@ use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
 use Youshido\GraphQL\Type\Union\AbstractUnionType;
-use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
@@ -40,7 +40,6 @@ use Youshido\GraphQL\Validator\SchemaValidator\SchemaValidator;
 
 class Processor
 {
-    use ErrorContainerTrait;
 
     const TYPE_NAME_QUERY = '__typename';
 
@@ -50,26 +49,18 @@ class Processor
     /** @var ResolveValidatorInterface */
     protected $resolveValidator;
 
-    /** @var SchemaValidator */
-    protected $schemaValidator;
-
     /** @var ExecutionContext */
     protected $executionContext;
 
-    protected $schema;
-
     public function __construct(AbstractSchema $schema)
     {
-        $this->resolveValidator = new ResolveValidator();
-        $this->schemaValidator  = new SchemaValidator();
-
-        if (!$this->schemaValidator->validate($schema)) {
-            $this->mergeErrors($this->schemaValidator);
-        }
+        (new SchemaValidator())->validate($schema);
 
         $this->introduceIntrospectionFields($schema);
-        $this->executionContext = new ExecutionContext($schema);
-        $this->schema           = $schema;
+        $this->executionContext = new ExecutionContext();
+        $this->executionContext->setSchema($schema);
+
+        $this->resolveValidator = new ResolveValidator($this->executionContext);
     }
 
     public function introduceIntrospectionFields(AbstractSchema $schema)
@@ -83,7 +74,9 @@ class Processor
 
     public function processPayload($payload, $variables = [])
     {
-        if (empty($payload) || $this->hasErrors()) return $this;
+        if (empty($payload) || $this->executionContext->getErrors()) {
+            return $this;
+        };
 
         $this->data = [];
 
@@ -103,9 +96,7 @@ class Processor
             }
 
         } catch (\Exception $e) {
-            $this->resolveValidator->clearErrors();
-
-            $this->resolveValidator->addError($e);
+            $this->executionContext->addError($e);
         }
 
         return $this;
@@ -217,7 +208,7 @@ class Processor
                 $type = $fieldType->getNamedType();
 
                 if (!$type->isValidValue($resolvedValueItem)) {
-                    $this->resolveValidator->addError(new ResolveException(sprintf('Not valid resolve value in %s field', $field->getName())));
+                    $this->executionContext->addError(new ResolveException(sprintf('Not valid resolve value in %s field', $field->getName())));
 
                     $listValue = null;
                     break;
@@ -232,9 +223,9 @@ class Processor
             /** hotfix for enum $field->getType()->resolve($preResolvedValue); */ //todo: refactor here
             if ($fieldType->getKind() == TypeMap::KIND_NON_NULL) {
                 if (!$fieldType->isValidValue($preResolvedValue)) {
-                    $this->resolveValidator->addError(new ResolveException(sprintf('Cannot return null for non-nullable field %s', $FieldAst->getName() . '.' . $field->getName())));
+                    $this->executionContext->addError(new ResolveException(sprintf('Cannot return null for non-nullable field %s', $FieldAst->getName() . '.' . $field->getName())));
                 } elseif (!$fieldType->getNullableType()->isValidValue($preResolvedValue)) {
-                    $this->resolveValidator->addError(new ResolveException(sprintf('Not valid value for %s field %s', $fieldType->getNullableType()->getKind(), $field->getName())));
+                    $this->executionContext->addError(new ResolveException(sprintf('Not valid value for %s field %s', $fieldType->getNullableType()->getKind(), $field->getName())));
                     $value = null;
                 } else {
                     $value = $preResolvedValue;
@@ -452,13 +443,11 @@ class Processor
             $result['data'] = $this->data;
         }
 
-        $this->mergeErrors($this->resolveValidator);
-        if ($this->hasErrors()) {
-            $result['errors'] = $this->getErrorsArray();
+        if ($this->executionContext->hasErrors()) {
+            $result['errors'] = $this->executionContext->getErrorsArray();
         }
-        $this->clearErrors();
-        $this->resolveValidator->clearErrors();
-        $this->schemaValidator->clearErrors();
+
+        $this->executionContext->clearErrors();
 
         return $result;
     }

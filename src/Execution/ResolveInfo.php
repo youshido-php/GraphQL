@@ -8,6 +8,7 @@
 
 namespace Youshido\GraphQL\Execution;
 
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Parser\Ast\Field;
 use Youshido\GraphQL\Type\AbstractType;

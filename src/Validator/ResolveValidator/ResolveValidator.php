@@ -7,6 +7,7 @@
 
 namespace Youshido\GraphQL\Validator\ResolveValidator;
 
+use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Parser\Ast\Argument;
@@ -23,14 +24,18 @@ use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\Union\AbstractUnionType;
-use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerInterface;
-use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 
-class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInterface
+class ResolveValidator implements ResolveValidatorInterface
 {
 
-    use ErrorContainerTrait;
+    /** @var  ExecutionContextInterface */
+    protected $executionContext;
+
+    public function __construct(ExecutionContextInterface $executionContext)
+    {
+        $this->executionContext = $executionContext;
+    }
 
     /**
      * @param AbstractObjectType      $objectType
@@ -40,7 +45,7 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
     public function objectHasField($objectType, $field)
     {
         if (!($objectType instanceof AbstractObjectType) || !$objectType->hasField($field->getName())) {
-            $this->addError(new ResolveException(sprintf('Field "%s" not found in type "%s"', $field->getName(), $objectType->getNamedType()->getName())));
+            $this->executionContext->addError(new ResolveException(sprintf('Field "%s" not found in type "%s"', $field->getName(), $objectType->getNamedType()->getName())));
 
             return false;
         }
@@ -65,7 +70,7 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
 
         foreach ($query->getArguments() as $argument) {
             if (!$field->hasArgument($argument->getName())) {
-                $this->addError(new ResolveException(sprintf('Unknown argument "%s" on field "%s"', $argument->getName(), $field->getName())));
+                $this->executionContext->addError(new ResolveException(sprintf('Unknown argument "%s" on field "%s"', $argument->getName(), $field->getName())));
 
                 return false;
             }
@@ -79,7 +84,7 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
                 //todo: here validate argument
 
                 if ($variable->getTypeName() !== $argumentType->getName()) {
-                    $this->addError(new ResolveException(sprintf('Invalid variable "%s" type, allowed type is "%s"', $variable->getName(), $argumentType->getName())));
+                    $this->executionContext->addError(new ResolveException(sprintf('Invalid variable "%s" type, allowed type is "%s"', $variable->getName(), $argumentType->getName())));
 
                     return false;
                 }
@@ -87,7 +92,7 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
                 /** @var Variable $requestVariable */
                 $requestVariable = $request->getVariable($variable->getName());
                 if (!$requestVariable) {
-                    $this->addError(new ResolveException(sprintf('Variable "%s" does not exist for query "%s"', $argument->getName(), $field->getName())));
+                    $this->executionContext->addError(new ResolveException(sprintf('Variable "%s" does not exist for query "%s"', $argument->getName(), $field->getName())));
 
                     return false;
                 }
@@ -96,7 +101,7 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
             }
 
             if (!$argumentType->isValidValue($argumentType->parseValue($argument->getValue()->getValue()))) {
-                $this->addError(new ResolveException(sprintf('Not valid type for argument "%s" in query "%s"', $argument->getName(), $field->getName())));
+                $this->executionContext->addError(new ResolveException(sprintf('Not valid type for argument "%s" in query "%s"', $argument->getName(), $field->getName())));
 
                 return false;
             }
@@ -110,7 +115,7 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
         }
 
         if (count($requiredArguments)) {
-            $this->addError(new ResolveException(sprintf('Require "%s" arguments to query "%s"', implode(', ', array_keys($requiredArguments)), $query->getName())));
+            $this->executionContext->addError(new ResolveException(sprintf('Require "%s" arguments to query "%s"', implode(', ', array_keys($requiredArguments)), $query->getName())));
 
             return false;
         }
@@ -136,8 +141,8 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
         $unionTypes = $unionType->getTypes();
         $valid      = false;
 
-        foreach($unionTypes as $unionType) {
-            if($unionType->getName() == $type->getName()) {
+        foreach ($unionTypes as $unionType) {
+            if ($unionType->getName() == $type->getName()) {
                 $valid = true;
 
                 break;
@@ -187,10 +192,26 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
         }
 
         if (!$isValid) {
-            $this->addError(new ResolveException(sprintf('Not valid resolved value for "%s" type', $type->getName() ?: $type->getKind())));
+            $this->executionContext->addError(new ResolveException(sprintf('Not valid resolved value for "%s" type', $type->getName() ?: $type->getKind())));
         }
 
         return $isValid;
+    }
+
+    /**
+     * @return ExecutionContextInterface
+     */
+    public function getExecutionContext()
+    {
+        return $this->executionContext;
+    }
+
+    /**
+     * @param ExecutionContextInterface $executionContext
+     */
+    public function setExecutionContext($executionContext)
+    {
+        $this->executionContext = $executionContext;
     }
 
 }

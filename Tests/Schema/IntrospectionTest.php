@@ -18,6 +18,7 @@ use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\Union\UnionType;
 use Youshido\Tests\DataProvider\TestEmptySchema;
+use Youshido\Tests\DataProvider\TestSchema;
 
 class IntrospectionTest extends \PHPUnit_Framework_TestCase
 {
@@ -103,7 +104,7 @@ TEXT;
 
     public function testIntrospectionDirectiveRequest()
     {
-        $processor = new Processor(new TestEmptySchema());
+        $processor = new Processor(new TestSchema());
 
         $processor->processPayload($this->introspectionQuery, []);
 

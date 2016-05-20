@@ -9,6 +9,7 @@
 namespace Youshido\Tests\Library\Validator;
 
 
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Parser\Ast\Argument;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal;
@@ -34,17 +35,17 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testValidMethods()
     {
-        $validator = new ResolveValidator();
-        $this->assertEmpty($validator->getErrors());
+        $validator = new ResolveValidator(new ExecutionContext());
+        $this->assertEmpty($validator->getExecutionContext()->getErrors());
 
         $object       = new TestObjectType();
         $fieldName    = new AstField('name');
         $fieldSummary = new AstField('summary');
         $this->assertTrue($validator->objectHasField($object, $fieldName));
-        $this->assertEmpty($validator->getErrors());
+        $this->assertEmpty($validator->getExecutionContext()->getErrors());
 
         $this->assertFalse($validator->objectHasField($object, $fieldSummary));
-        $this->assertNotEmpty($validator->getErrors());
+        $this->assertNotEmpty($validator->getExecutionContext()->getErrors());
 
         $userType = new ObjectType([
             'name'       => 'User',
@@ -63,25 +64,25 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testValidateValue()
     {
-        $validator = new ResolveValidator();
+        $validator = new ResolveValidator(new ExecutionContext());
         $validator->validateResolvedValueType('string value', new StringType());
-        $this->assertFalse($validator->hasErrors());
+        $this->assertFalse($validator->getExecutionContext()->hasErrors());
 
         $validator->validateResolvedValueType(null, new NonNullType(new StringType()));
-        $this->assertTrue($validator->hasErrors());
+        $this->assertTrue($validator->getExecutionContext()->hasErrors());
 
-        $validator->clearErrors();
+        $validator->getExecutionContext()->clearErrors();
         $validator->validateResolvedValueType('some data', new NonNullType(new StringType()));
-        $this->assertFalse($validator->hasErrors());
+        $this->assertFalse($validator->getExecutionContext()->hasErrors());
 
         $validator->validateResolvedValueType('NEW', new TestEnumType());
-        $this->assertFalse($validator->hasErrors());
+        $this->assertFalse($validator->getExecutionContext()->hasErrors());
 
         $validator->validateResolvedValueType(1, new TestEnumType());
-        $this->assertFalse($validator->hasErrors());
+        $this->assertFalse($validator->getExecutionContext()->hasErrors());
 
         $validator->validateResolvedValueType(2, new TestEnumType());
-        $this->assertTrue($validator->hasErrors());
+        $this->assertTrue($validator->getExecutionContext()->hasErrors());
     }
 
     /**
@@ -98,7 +99,7 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
         $fragmentReference = new FragmentReference('user');
         $fragment          = new Fragment('name', 'Product', []);
 
-        $validator = new ResolveValidator();
+        $validator = new ResolveValidator(new ExecutionContext());
         $validator->assertValidFragmentForField($fragment, $fragmentReference, $userType);
     }
 
@@ -114,7 +115,7 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
             ],
         ]);
 
-        $validator = new ResolveValidator();
+        $validator = new ResolveValidator(new ExecutionContext());
         $validator->assertTypeImplementsInterface($userType, new TestInterfaceType());
     }
 
@@ -126,13 +127,13 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
         $union = new UnionType([
             'name'        => 'TestUnion',
             'types'       => [new TestObjectType()],
-            'resolveType' => function ($object) {
+            'resolveType' => function () {
                 return new BooleanType();
             }
         ]);
 
-        $validator = new ResolveValidator();
-        $validator->assertTypeInUnionTypes($union->resolveType(true), $union);
+        $validator = new ResolveValidator(new ExecutionContext());
+        $validator->assertTypeInUnionTypes($union->resolveType(new \stdClass()), $union);
     }
 
     public function testValidUnionTypeResolve()
@@ -140,14 +141,14 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
         $union = new UnionType([
             'name'        => 'TestUnion',
             'types'       => [new TestObjectType()],
-            'resolveType' => function ($object) {
+            'resolveType' => function () {
                 return new TestObjectType();
             }
         ]);
 
-        $validator = new ResolveValidator();
+        $validator = new ResolveValidator(new ExecutionContext());
         try {
-            $validator->assertTypeInUnionTypes($union->resolveType(true), $union);
+            $validator->assertTypeInUnionTypes($union->resolveType(new \stdClass()), $union);
             $this->assertTrue(true);
         } catch (\Exception $e) {
             $this->assertTrue(false);
@@ -174,7 +175,7 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
                 'year'   => new IntType(),
             ]
         ]);
-        $validator = new ResolveValidator();
+        $validator = new ResolveValidator(new ExecutionContext());
         $request   = new Request([]);
 
 
@@ -195,38 +196,38 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
         ]);
 
 
-        $this->assertFalse($validator->hasErrors());
+        $this->assertFalse($validator->getExecutionContext()->hasErrors());
 
         $validator->validateArguments($field, $validQuery, $request);
-        $this->assertFalse($validator->hasErrors());
+        $this->assertFalse($validator->getExecutionContext()->hasErrors());
 
         $validator->validateArguments($field, $invalidArgumentQuery, $request);
         $this->assertEquals([
             ['message' => 'Unknown argument "planets" on field "hero"']
-        ], $validator->getErrorsArray());
-        $validator->clearErrors();
+        ], $validator->getExecutionContext()->getErrorsArray());
+        $validator->getExecutionContext()->clearErrors();
 
         $validator->validateArguments($field, $invalidArgumentTypeQuery, $request);
         $this->assertEquals([
             ['message' => 'Not valid type for argument "year" in query "hero"']
-        ], $validator->getErrorsArray());
-        $validator->clearErrors();
+        ], $validator->getExecutionContext()->getErrorsArray());
+        $validator->getExecutionContext()->clearErrors();
 
         $validator->validateArguments($field, $argumentWithVariable, $request);
         $this->assertEquals([
             ['message' => 'Variable "year" does not exist for query "hero"']
-        ], $validator->getErrorsArray());
-        $validator->clearErrors();
+        ], $validator->getExecutionContext()->getErrorsArray());
+        $validator->getExecutionContext()->clearErrors();
 
         $request->setVariables(['year' => '2016']);
         $validator->validateArguments($field, $argumentWithVariable, $request);
-        $this->assertFalse($validator->hasErrors());
+        $this->assertFalse($validator->getExecutionContext()->hasErrors());
 
         $validator->validateArguments($field, $argumentWithVariableWrongType, $request);
         $this->assertEquals([
             ['message' => 'Invalid variable "year" type, allowed type is "Int"']
-        ], $validator->getErrorsArray());
-        $validator->clearErrors();
+        ], $validator->getExecutionContext()->getErrorsArray());
+        $validator->getExecutionContext()->clearErrors();
 
 
     }
