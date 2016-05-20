@@ -104,7 +104,7 @@ $processor = new Processor(new Schema([
     ])
 ]));
 
-$processor->processRequest('{ currentTime }');
+$processor->processPayload('{ currentTime }');
 echo json_encode($processor->getResponseData()) . "\n";
 ```
 
@@ -215,7 +215,7 @@ $processor = new Processor(new Schema([
 ]));
 $payload = '{ latestPost { title, summary } }';
 
-$processor->processRequest($payload);
+$processor->processPayload($payload);
 echo json_encode($processor->getResponseData()) . "\n";
 ```
 
@@ -258,14 +258,6 @@ class PostType extends AbstractObjectType   // extending abstract Object type
                ->addField('summary', new StringType());     // adding summary field of type String
     }
 
-    public function resolve($value = null, $args = [], $type = null)  // implementing resolve function
-    {
-        return [
-            "title"   => "New approach in API has been revealed",
-            "summary" => "This post describes a new approach to create and maintain APIs",
-        ];
-    }
-
     public function getName()
     {
         return "Post";  // important to use the real name here, it will be used later in the Schema
@@ -289,16 +281,27 @@ require_once __DIR__ . '/Schema/PostType.php';       // including PostType defin
 
 $rootQueryType = new ObjectType([
     'name' => 'RootQueryType',
+    'fields' => [
+        // you can specify fields for your query as an array      
+        'latestPost' => [
+            'type'    => new PostType(),
+            'resolve' => function ($value = null, $args = [], $info = null)  // implementing resolve function
+            {
+                return [
+                    "title"   => "New approach in API has been revealed",
+                    "summary" => "This post describes a new approach to create and maintain APIs",
+                ];
+            }
+        ]
+    ]
 ]);
-// adding a field to our query schema
-$rootQueryType->addField('latestPost', new PostType());
 
 $processor = new Processor(new Schema([
     'query' => $rootQueryType
 ]));
 $payload = '{ latestPost { title, summary } }';
 
-$processor->processRequest($payload);
+$processor->processPayload($payload);
 echo json_encode($processor->getResponseData()) . "\n";
 ```
 
@@ -369,7 +372,6 @@ require_once __DIR__ . '/Schema/PostType.php';       // including PostType defin
 $rootQueryType = new ObjectType([
     'name' => 'RootQueryType',
     'fields' => [
-        // you can specify fields for your query as an array
         'latestPost' => new PostType()
     ]
 ]);
@@ -401,7 +403,7 @@ $processor = new Processor(new Schema([
 ]));
 $payload  = 'mutation { likePost(id:5) }';
 
-$processor->processRequest($payload);
+$processor->processPayload($payload);
 echo json_encode($processor->getResponseData()) . "\n";
 ```
 
@@ -905,7 +907,7 @@ $schema = new BlogSchema();
 $processor = new Processor($schema);
 $payload  = '{ pageContentUnion { ... on Post { title } ... on Banner { title, imageLink } } }';
 
-$processor->processRequest($payload);
+$processor->processPayload($payload);
 echo json_encode($processor->getResponseData()) . "\n";
 ```
 
