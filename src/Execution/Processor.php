@@ -143,11 +143,11 @@ class Processor
 
     /**
      * @param Mutation   $mutation
-     * @param ObjectType $currentLevelSchema
+     * @param AbstractObjectType $currentLevelSchema
      * @return array|null
      * @throws ConfigurationException
      */
-    protected function executeMutation(Mutation $mutation, $currentLevelSchema)
+    protected function executeMutation(Mutation $mutation, AbstractObjectType $currentLevelSchema)
     {
         if (!$this->resolveValidator->objectHasField($currentLevelSchema, $mutation)) {
             return null;

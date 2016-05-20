@@ -7,7 +7,6 @@
 
 namespace Youshido\GraphQL\Introspection;
 
-
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;

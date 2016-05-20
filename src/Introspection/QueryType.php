@@ -40,7 +40,7 @@ class QueryType extends AbstractObjectType
             ->addField('description', TypeMap::TYPE_STRING)
             ->addField('ofType', [
                 'type'    => new QueryType(),
-                'resolve' => function ($value) {
+                'resolve' => function (AbstractType $value) {
                     if ($value instanceof CompositeTypeInterface) {
                         return $value->getTypeOf();
                     }
