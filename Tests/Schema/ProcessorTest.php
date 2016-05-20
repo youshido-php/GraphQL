@@ -136,7 +136,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             ]))->addField(new Field([
                 'name'    => 'invalidResolveTypeMutation',
                 'type'    => new NonNullType(new IntType()),
-                'resolve' => function ($value, $args, $type) {
+                'resolve' => function () {
                     return null;
                 }
             ]))->addField(new Field([

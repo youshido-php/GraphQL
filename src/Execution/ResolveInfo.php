@@ -8,24 +8,29 @@
 
 namespace Youshido\GraphQL\Execution;
 
+use Youshido\GraphQL\Field\AbstractField;
+use Youshido\GraphQL\Parser\Ast\Field;
+use Youshido\GraphQL\Type\AbstractType;
+
 class ResolveInfo
 {
+    /** @var  AbstractField */
     protected $field;
 
+    /** @var Field[] */
     protected $fieldASTList;
 
+    /** @var  AbstractType */
     protected $returnType;
-
-//    protected $parentType;
 
     /** @var ExecutionContext */
     protected $executionContext;
 
-    public function __construct($field, $fieldASTList, $returnType, $executionContext)
+    public function __construct(AbstractField $field, array $fieldASTList, AbstractType $returnType, ExecutionContext $executionContext)
     {
-        $this->field = $field;
-        $this->fieldASTList = $fieldASTList;
-        $this->returnType = $returnType;
+        $this->field            = $field;
+        $this->fieldASTList     = $fieldASTList;
+        $this->returnType       = $returnType;
         $this->executionContext = $executionContext;
     }
 
@@ -38,7 +43,7 @@ class ResolveInfo
     }
 
     /**
-     * @return mixed
+     * @return AbstractField
      */
     public function getField()
     {
@@ -46,7 +51,7 @@ class ResolveInfo
     }
 
     /**
-     * @return mixed
+     * @return Field[]
      */
     public function getFieldASTList()
     {
@@ -54,7 +59,7 @@ class ResolveInfo
     }
 
     /**
-     * @return mixed
+     * @return AbstractType
      */
     public function getReturnType()
     {
@@ -63,6 +68,7 @@ class ResolveInfo
 
     /**
      * @param mixed $returnType
+     *
      * @return ResolveInfo
      */
     public function setReturnType($returnType)

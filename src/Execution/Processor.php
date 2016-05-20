@@ -69,7 +69,7 @@ class Processor
 
         $this->introduceIntrospectionFields($schema);
         $this->executionContext = new ExecutionContext($schema);
-        $this->schema = $schema;
+        $this->schema           = $schema;
     }
 
     public function introduceIntrospectionFields(AbstractSchema $schema)
@@ -278,10 +278,9 @@ class Processor
      */
     protected function resolveFieldValue(AbstractField $field, $contextValue, Query $query)
     {
-        $type          = $field->getType();
-        $resolvedValue = $field->resolve($contextValue, $this->parseArgumentsValues($field, $query), new ResolveInfo($field, $type, $query, $this->executionContext));
+        $resolveInfo = new ResolveInfo($field, $query->getFields(), $field->getType(), $this->executionContext);
 
-        return $resolvedValue;
+        return $field->resolve($contextValue, $this->parseArgumentsValues($field, $query), $resolveInfo);
     }
 
     /**
@@ -364,7 +363,8 @@ class Processor
         }
 
         if ($field->getConfig()->getResolveFunction()) {
-            $resolverValue = $field->resolve($resolved ? $resolverValue : $contextValue, $fieldAst->getKeyValueArguments(), new ResolveInfo($field, $field->getType(), [], $this->executionContext));
+            $resolveInfo   = new ResolveInfo($field, [$fieldAst], $field->getType(), $this->executionContext);
+            $resolverValue = $field->resolve($resolved ? $resolverValue : $contextValue, $fieldAst->getKeyValueArguments(), $resolveInfo);
         }
 
         if (!$resolverValue && !$resolved) {
@@ -372,7 +372,6 @@ class Processor
         }
 
         return $resolverValue;
-
     }
 
     /**
@@ -418,7 +417,7 @@ class Processor
                 }
 
                 $fragmentValue = $this->processQueryFields($fragment, $queryType, $resolvedValue, $value);
-                $value = array_merge(
+                $value         = array_merge(
                     is_array($value) ? $value : [],
                     is_array($fragmentValue) ? $fragmentValue : []
                 );

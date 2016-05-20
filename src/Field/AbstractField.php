@@ -61,6 +61,7 @@ abstract class AbstractField implements FieldInterface
     {
         if ($resolveFunc = $this->getConfig()->getResolveFunction()) {
             $info->setReturnType($this->getType());
+
             return $resolveFunc($value, $args, $info);
         } elseif ($propertyValue = TypeService::getPropertyValue($value, $this->getName())) {
             return $propertyValue;
