@@ -8,7 +8,6 @@
 namespace Youshido\Tests\StarWars\Schema;
 
 
-use Youshido\GraphQL\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;

@@ -9,6 +9,7 @@
 namespace Youshido\Tests\Library\Validator;
 
 
+use Youshido\GraphQL\Execution\Request;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Parser\Ast\Argument;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal;
@@ -17,7 +18,6 @@ use Youshido\GraphQL\Parser\Ast\Field as AstField;
 use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Query;
-use Youshido\GraphQL\Execution\Request;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\BooleanType;

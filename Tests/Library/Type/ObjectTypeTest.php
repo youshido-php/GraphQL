@@ -10,7 +10,6 @@ namespace Youshido\Tests\Library\Type;
 
 
 use Youshido\GraphQL\Field\Field;
-use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;

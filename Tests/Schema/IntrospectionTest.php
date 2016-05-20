@@ -9,8 +9,8 @@
 namespace Youshido\Tests\Schema;
 
 
-use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Execution\Processor;
+use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Type\Enum\EnumType;
 use Youshido\GraphQL\Type\InterfaceType\InterfaceType;
 use Youshido\GraphQL\Type\Object\ObjectType;

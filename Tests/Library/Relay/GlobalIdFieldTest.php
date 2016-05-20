@@ -10,7 +10,6 @@ namespace Youshido\Tests\Library\Relay;
 
 
 use Youshido\GraphQL\Relay\Field\GlobalIdField;
-use Youshido\GraphQL\Relay\Node;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Scalar\IdType;
 
