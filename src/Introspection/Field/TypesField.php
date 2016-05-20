@@ -8,6 +8,7 @@
 namespace Youshido\GraphQL\Introspection\Field;
 
 
+use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Introspection\QueryType;
 use Youshido\GraphQL\Introspection\Traits\TypeCollectorTrait;

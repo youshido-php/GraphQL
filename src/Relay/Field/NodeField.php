@@ -10,6 +10,7 @@ namespace Youshido\GraphQL\Relay\Field;
 
 
 use Youshido\GraphQL\Config\Field\FieldConfig;
+use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Relay\Fetcher\FetcherInterface;

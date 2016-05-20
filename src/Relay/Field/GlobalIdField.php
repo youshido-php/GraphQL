@@ -9,6 +9,7 @@
 namespace Youshido\GraphQL\Relay\Field;
 
 
+use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Relay\Node;
 use Youshido\GraphQL\Type\NonNullType;
