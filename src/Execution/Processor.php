@@ -128,13 +128,13 @@ class Processor
         $alias = $query->getAlias() ?: $query->getName();
 
         if ($query instanceof FieldAst) {
-            $value = $this->processFieldAstQuery($query, $contextValue, $field);
+            $value = $this->processFieldAstQuery($query, $field, $contextValue);
         } else {
             if (!$this->resolveValidator->validateArguments($field, $query, $this->executionContext->getRequest())) {
                 return null;
             }
 
-            $value = $this->processFieldTypeQuery($query, $contextValue, $field);
+            $value = $this->processFieldTypeQuery($query, $field, $contextValue);
 
         }
 
@@ -142,7 +142,7 @@ class Processor
     }
 
     /**
-     * @param Mutation   $mutation
+     * @param Mutation           $mutation
      * @param AbstractObjectType $currentLevelSchema
      * @return array|null
      * @throws ConfigurationException
@@ -186,12 +186,14 @@ class Processor
 
     /**
      * @param FieldAst      $FieldAst
-     * @param mixed         $contextValue
      * @param AbstractField $field
      *
+     * @param mixed         $contextValue
      * @return array|mixed|null
+     * @throws ResolveException
+     * @throws \Exception
      */
-    protected function processFieldAstQuery(FieldAst $FieldAst, $contextValue, AbstractField $field)
+    protected function processFieldAstQuery(FieldAst $FieldAst, AbstractField $field, $contextValue)
     {
         $value            = null;
         $fieldType        = $field->getType();
@@ -239,12 +241,12 @@ class Processor
 
     /**
      * @param               $query
-     * @param mixed         $contextValue
      * @param AbstractField $field
      *
+     * @param mixed         $contextValue
      * @return null
      */
-    protected function processFieldTypeQuery($query, $contextValue, AbstractField $field)
+    protected function processFieldTypeQuery($query, AbstractField $field, $contextValue)
     {
         if (!($resolvedValue = $this->resolveFieldValue($field, $contextValue, $query))) {
             return $resolvedValue;
@@ -394,29 +396,44 @@ class Processor
      */
     protected function processQueryFields($query, AbstractType $queryType, $resolvedValue, $value)
     {
-        foreach ($query->getFields() as $field) {
-            if ($field instanceof FragmentInterface) {
+        foreach ($query->getFields() as $fieldAst) {
+            $fieldResolvedValue = null;
+
+            if ($fieldAst instanceof FragmentInterface) {
                 /** @var TypedFragmentReference $fragment */
-                $fragment = $field;
-                if ($field instanceof FragmentReference) {
+                $fragment = $fieldAst;
+                if ($fieldAst instanceof FragmentReference) {
                     /** @var Fragment $fragment */
-                    $fragment = $this->executionContext->getRequest()->getFragment($field->getName());
-                    $this->resolveValidator->assertValidFragmentForField($fragment, $field, $queryType);
+                    $fragment = $this->executionContext->getRequest()->getFragment($fieldAst->getName());
+                    $this->resolveValidator->assertValidFragmentForField($fragment, $fieldAst, $queryType);
                 } elseif ($fragment->getTypeName() !== $queryType->getName()) {
                     continue;
                 }
 
-                $fragmentValue = $this->processQueryFields($fragment, $queryType, $resolvedValue, $value);
-                $value         = array_merge(
-                    is_array($value) ? $value : [],
-                    is_array($fragmentValue) ? $fragmentValue : []
-                );
-            } elseif ($field->getName() == self::TYPE_NAME_QUERY) {
-                $value = $this->collectValue($value, [$field->getAlias() ?: $field->getName() => $queryType->getName()]);
+                $fragmentValue      = $this->processQueryFields($fragment, $queryType, $resolvedValue, $value);
+                $fieldResolvedValue = is_array($fragmentValue) ? $fragmentValue : [];
             } else {
-                /** need to add check if $queryType is not an objecttype $value */
-                $value = $this->collectValue($value, $this->executeQuery($field, $queryType, $resolvedValue));
+                $alias       = $fieldAst->getAlias() ?: $fieldAst->getName();
+                $currentType = $queryType->getNullableType();
+
+                if ($fieldAst->getName() == self::TYPE_NAME_QUERY) {
+                    $fieldResolvedValue = [$alias => $queryType->getName()];
+                } elseif ($fieldAst instanceof Query) {
+                    $fieldValue         = $this->processFieldTypeQuery($fieldAst, $currentType->getField($fieldAst->getName()), $resolvedValue);
+                    $fieldResolvedValue = [$alias => $fieldValue];
+                } elseif ($fieldAst instanceof FieldAst) {
+
+                    if (!$this->resolveValidator->objectHasField($currentType, $fieldAst)) {
+                        $fieldResolvedValue = null;
+                    } else {
+                        $fieldResolvedValue = [
+                            $alias => $this->processFieldAstQuery($fieldAst, $currentType->getField($fieldAst->getName()), $resolvedValue)
+                        ];
+                    }
+                }
             }
+
+            $value = $this->collectValue($value, $fieldResolvedValue);
         }
 
         return $value;
