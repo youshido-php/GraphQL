@@ -10,7 +10,6 @@ require_once __DIR__ . '/schema-bootstrap.php';
 $schema = new StarWarsRelaySchema();
 
 $processor = new Processor($schema);
-//$payload = '{ factions { name } }';
 
 $payload = '
             query StarWarsAppHomeRoute($names_0:[String]!) {
