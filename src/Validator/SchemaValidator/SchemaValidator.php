@@ -8,42 +8,42 @@
 
 namespace Youshido\GraphQL\Validator\SchemaValidator;
 
-
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
-use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerInterface;
-use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
-class SchemaValidator implements ErrorContainerInterface
+class SchemaValidator
 {
-    use ErrorContainerTrait;
 
+    /**
+     * @param AbstractSchema $schema
+     *
+     * @throws ConfigurationException
+     */
     public function validate(AbstractSchema $schema)
     {
-        try {
-            if (!$schema->getQueryType()->hasFields()) {
-                throw new ConfigurationException('Schema has to have fields');
-            }
-            foreach ($schema->getQueryType()->getConfig()->getFields() as $field) {
-                if ($field->getType() instanceof AbstractObjectType) {
-                    $this->assertInterfaceImplementationCorrect($field->getType());
-                }
-            }
-        } catch (ConfigurationException $e) {
-            $this->addError($e);
-
-            return false;
+        if (!$schema->getQueryType()->hasFields()) {
+            throw new ConfigurationException('Schema has to have fields');
         }
-
-        return true;
+        foreach ($schema->getQueryType()->getConfig()->getFields() as $field) {
+            if ($field->getType() instanceof AbstractObjectType) {
+                $this->assertInterfaceImplementationCorrect($field->getType());
+            }
+        }
     }
 
+    /**
+     * @param AbstractObjectType $type
+     *
+     * @throws ConfigurationException
+     */
     protected function assertInterfaceImplementationCorrect(AbstractObjectType $type)
     {
-        if (!$type->getInterfaces()) return true;
+        if (!$type->getInterfaces()) {
+            return;
+        }
 
         foreach ($type->getInterfaces() as $interface) {
             foreach ($interface->getConfig()->getFields() as $intField) {
@@ -56,12 +56,13 @@ class SchemaValidator implements ErrorContainerInterface
      * @param Field                 $intField
      * @param Field                 $objField
      * @param AbstractInterfaceType $interface
+     *
      * @return bool
+     *
      * @throws ConfigurationException
      */
     protected function assertFieldsIdentical($intField, $objField, AbstractInterfaceType $interface)
     {
-
         $isValid = true;
         if ($intField->getType()->isCompositeType() !== $objField->getType()->isCompositeType()) {
             $isValid = false;

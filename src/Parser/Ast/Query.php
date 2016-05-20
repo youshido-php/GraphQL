@@ -102,4 +102,21 @@ class Query
         return $this->alias;
     }
 
+    public function hasField($name, $deep = false)
+    {
+        foreach ($this->getFields() as $field) {
+            if ($field->getName() == $name) {
+                return true;
+            }
+
+            if ($deep && $field instanceof Query) {
+                if ($field->hasField($name)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
 }

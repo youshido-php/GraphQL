@@ -9,15 +9,17 @@
 namespace Youshido\Tests\DataProvider;
 
 
-use Youshido\GraphQL\Execution\ExecutionContext;
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\ResolveInfo;
 
 class TestResolveInfo
 {
     public static function createTestResolveInfo($field = null)
     {
-        $executionContext = new ExecutionContext(new TestSchema());
-        if (empty($field)) $field = new TestField();
-        return new ResolveInfo($field, [], $field->getType(), $executionContext);
+        if (empty($field)) {
+            $field = new TestField();
+        }
+
+        return new ResolveInfo($field, [], $field->getType(), new ExecutionContext(new TestSchema()));
     }
 }
