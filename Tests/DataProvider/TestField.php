@@ -22,7 +22,7 @@ class TestField extends AbstractField
         return new IntType();
     }
 
-    public function resolve($value, $args = [], $type = null)
+    public function resolve($value, array $args, ResolveInfo $info)
     {
         return $value;
     }

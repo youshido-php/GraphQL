@@ -33,7 +33,7 @@ class TypesField extends AbstractField
         return 'types';
     }
 
-    public function resolve($value, $args = [], $type = null)
+    public function resolve($value, array $args, ResolveInfo $info)
     {
         /** @var $value AbstractSchema $a */
         $this->types = [];

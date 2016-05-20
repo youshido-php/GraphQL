@@ -59,7 +59,7 @@ class NodeField extends AbstractField
         return $this->type;
     }
 
-    public function resolve($value, $args, $info)
+    public function resolve($value, array $args, ResolveInfo $info)
     {
         list($type, $id) = Node::fromGlobalId($args['id']);
 

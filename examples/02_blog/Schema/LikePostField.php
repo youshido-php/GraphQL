@@ -21,7 +21,7 @@ class LikePostField extends AbstractField
      * @param ResolveInfo $info
      * @return mixed
      */
-    public function resolve($value = null, $args, $info)
+    public function resolve($value, array $args, ResolveInfo $info)
     {
         return $info->getReturnType()->getOne($args['id']);
     }

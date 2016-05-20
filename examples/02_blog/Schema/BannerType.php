@@ -20,11 +20,6 @@ class BannerType extends AbstractObjectType
             ->addField('imageLink', new StringType());
     }
 
-    public function getItem($id)
-    {
-
-    }
-
     public function getInterfaces()
     {
         return [new ContentBlockInterface()];
