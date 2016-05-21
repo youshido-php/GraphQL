@@ -316,7 +316,7 @@ class LatestPostField extends AbstractField
         return new PostType();
     }
 
-    public function resolve()
+    public function resolve($value, array $args, ResolveInfo $info)
     {
         return [
             "title"   => "New approach in API has been revealed",
