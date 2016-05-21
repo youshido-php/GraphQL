@@ -30,6 +30,11 @@ class TestObjectType extends AbstractObjectType
             ]));
     }
 
+    public function getInterfaces()
+    {
+        return [new TestInterfaceType()];
+    }
+
     public function getData()
     {
         return [

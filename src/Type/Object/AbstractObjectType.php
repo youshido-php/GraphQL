@@ -89,7 +89,7 @@ abstract class AbstractObjectType extends AbstractType
 
     public function isValidValue($value)
     {
-        return (get_class($value) == get_class($this));
+        return is_null($value) || is_array($value) || is_object($value);
     }
 
 }

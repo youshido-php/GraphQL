@@ -23,6 +23,7 @@ use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeService;
 use Youshido\GraphQL\Type\Union\AbstractUnionType;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 
@@ -140,6 +141,7 @@ class ResolveValidator implements ResolveValidatorInterface
     {
         $unionTypes = $unionType->getTypes();
         $valid      = false;
+        if (empty($unionTypes)) return false;
 
         foreach ($unionTypes as $unionType) {
             if ($unionType->getName() == $type->getName()) {
@@ -198,6 +200,45 @@ class ResolveValidator implements ResolveValidatorInterface
         return $isValid;
     }
 
+    public function isValidValueForField(AbstractField $field, $value)
+    {
+        $fieldType = $field->getType();
+        if ($fieldType->getKind() == TypeMap::KIND_NON_NULL && is_null($value)) {
+            $this->executionContext->addError(new ResolveException(sprintf('Cannot return null for non-nullable field %s', $field->getName())));
+            return null;
+        } else {
+            $fieldType = $this->resolveTypeIfAbstract($fieldType->getNullableType(), $value);
+        }
+
+        if (!is_null($value) && !$fieldType->isValidValue($value)) {
+            $this->executionContext->addError(new ResolveException(sprintf('Not valid value for %s field %s', $fieldType->getNullableType()->getKind(), $field->getName())));
+            return null;
+        }
+        return true;
+    }
+
+    public function resolveTypeIfAbstract(AbstractType $type, $resolvedValue)
+    {
+        if (TypeService::isAbstractType($type)) {
+            /** @var AbstractInterfaceType $type */
+            $resolvedType = $type->resolveType($resolvedValue);
+
+            if (!$resolvedType) {
+                $this->executionContext->addError(new \Exception('Cannot resolve type'));
+                return $type;
+            }
+            if ($type instanceof AbstractInterfaceType) {
+                $this->assertTypeImplementsInterface($resolvedType, $type);
+            } else {
+                /** @var AbstractUnionType $type */
+                $this->assertTypeInUnionTypes($resolvedType, $type);
+            }
+
+            return $resolvedType;
+        }
+
+        return $type;
+    }
     /**
      * @return ExecutionContextInterface
      */

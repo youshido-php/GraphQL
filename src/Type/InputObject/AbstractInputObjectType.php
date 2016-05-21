@@ -14,12 +14,13 @@ use Youshido\GraphQL\Config\Traits\ConfigAwareTrait;
 use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
+use Youshido\GraphQL\Type\Traits\FieldsAwareObjectTrait;
 use Youshido\GraphQL\Type\TypeMap;
 
 abstract class AbstractInputObjectType extends AbstractType
 {
 
-    use AutoNameTrait, ConfigAwareTrait;
+    use AutoNameTrait, FieldsAwareObjectTrait;
 
     public function __construct($config = [])
     {

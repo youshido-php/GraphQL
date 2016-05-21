@@ -64,6 +64,11 @@ class Request
         }
     }
 
+    public function getOperationsInOrder()
+    {
+        return array_merge($this->mutations, $this->queries);
+    }
+
     /**
      * @return Query[]
      */

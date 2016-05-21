@@ -169,7 +169,7 @@ TEXT;
                 ]
             ],
             [
-                '{ __type (name: "NoExist") { name } }',
+                '{ __type (name: "InvalidName") { name } }',
                 [
                     'data' => [
                         '__type' => null

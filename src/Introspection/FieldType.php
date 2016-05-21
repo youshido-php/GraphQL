@@ -40,6 +40,11 @@ class FieldType extends AbstractObjectType
             ]);
     }
 
+    public function isValidValue($value)
+    {
+        return $value instanceof AbstractField;
+    }
+
     /**
      * @return String type name
      */

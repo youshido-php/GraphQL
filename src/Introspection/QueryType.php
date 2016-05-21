@@ -156,4 +156,11 @@ class QueryType extends AbstractObjectType
                 }
             ]);
     }
+
+    public function isValidValue($value)
+    {
+        return $value instanceof AbstractType;
+    }
+
+
 }

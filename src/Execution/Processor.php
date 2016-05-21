@@ -63,14 +63,6 @@ class Processor
         $this->resolveValidator = new ResolveValidator($this->executionContext);
     }
 
-    public function introduceIntrospectionFields(AbstractSchema $schema)
-    {
-        $schemaField = new SchemaField();
-        $schemaField->setSchema($schema);
-
-        $schema->addQueryField($schemaField);
-        $schema->addQueryField(new TypeDefinitionField());
-    }
 
     public function processPayload($payload, $variables = [])
     {
@@ -83,17 +75,14 @@ class Processor
         try {
             $this->parseAndCreateRequest($payload, $variables);
 
-            foreach ($this->executionContext->getRequest()->getQueries() as $query) {
-                if ($queryResult = $this->executeQuery($query, $this->executionContext->getSchema()->getQueryType())) {
-                    $this->data = array_merge($this->data, $queryResult);
+            $queryType    = $this->executionContext->getSchema()->getQueryType();
+            $mutationType = $this->executionContext->getSchema()->getMutationType();
+            foreach ($this->executionContext->getRequest()->getOperationsInOrder() as $operation) {
+                if ($operationResult = $this->executeOperation($operation, $operation instanceof Mutation ? $mutationType : $queryType)) {
+                    $this->data = array_merge($this->data, $operationResult);
                 };
             }
 
-            foreach ($this->executionContext->getRequest()->getMutations() as $mutation) {
-                if ($mutationResult = $this->executeMutation($mutation, $this->executionContext->getSchema()->getMutationType())) {
-                    $this->data = array_merge($this->data, $mutationResult);
-                }
-            }
         } catch (\Exception $e) {
             $this->executionContext->addError($e);
         }
@@ -101,91 +90,97 @@ class Processor
         return $this;
     }
 
-    protected function parseAndCreateRequest($query, $variables = [])
+    protected function parseAndCreateRequest($payload, $variables = [])
     {
+        if (empty($payload)) {
+            throw new \Exception('Must provide an operation.');
+        }
         $parser = new Parser();
 
-        $data = $parser->parse($query);
+        $data = $parser->parse($payload);
         $this->executionContext->setRequest(new Request($data, $variables));
     }
 
     /**
      * @param Query|Field        $query
      * @param AbstractObjectType $currentLevelSchema
-     * @param null               $contextValue
      * @return array|bool|mixed
      */
-    protected function executeQuery($query, $currentLevelSchema, $contextValue = null)
+    protected function executeOperation(Query $query, $currentLevelSchema)
     {
-        $currentLevelSchema = $currentLevelSchema->getNullableType(); //todo: somehow we need to validate for not null
-
         if (!$this->resolveValidator->objectHasField($currentLevelSchema, $query)) {
             return null;
         }
 
         /** @var AbstractField $field */
-        $field = $currentLevelSchema->getField($query->getName());
-        $alias = $query->getAlias() ?: $query->getName();
+        $operationField = $currentLevelSchema->getField($query->getName());
+        $alias          = $query->getAlias() ?: $query->getName();
 
-        if ($query instanceof FieldAst) {
-            $value = $this->processFieldAstQuery($query, $field, $contextValue);
-        } else {
-            if (!$this->resolveValidator->validateArguments($field, $query, $this->executionContext->getRequest())) {
-                return null;
-            }
-
-            $value = $this->processFieldTypeQuery($query, $field, $contextValue);
-
+        if (!$this->resolveValidator->validateArguments($operationField, $query, $this->executionContext->getRequest())) {
+            return null;
         }
 
-        return [$alias => $value];
+        return [$alias => $this->processQueryAST($query, $operationField)];
     }
 
     /**
-     * @param Mutation           $mutation
-     * @param AbstractObjectType $currentLevelSchema
-     * @return array|null
-     * @throws ConfigurationException
+     * @param Query         $query
+     * @param AbstractField $field
+     * @param               $contextValue
+     * @return array|mixed|null
      */
-    protected function executeMutation(Mutation $mutation, AbstractObjectType $currentLevelSchema)
+    protected function processQueryAST(Query $query, AbstractField $field, $contextValue = null)
     {
-        if (!$this->resolveValidator->objectHasField($currentLevelSchema, $mutation)) {
+        $resolvedValue = $this->resolveFieldValue($field, $contextValue, $query);
+
+        if (!$this->resolveValidator->isValidValueForField($field, $resolvedValue)) {
             return null;
         }
 
-        /** @var AbstractField $field */
-        $field     = $currentLevelSchema->getConfig()->getField($mutation->getName());
-        $alias     = $mutation->getAlias() ?: $mutation->getName();
-        $fieldType = $field->getType();
-
-        if (!$this->resolveValidator->validateArguments($field, $mutation, $this->executionContext->getRequest())) {
-            return null;
-        }
-
-        $resolvedValue = $this->resolveFieldValue($field, null, $mutation);
-
-        if (!$this->resolveValidator->validateResolvedValueType($resolvedValue, $fieldType)) {
-            return [$alias => null];
-        }
-
-        $value = $resolvedValue;
-        if ($mutation->hasFields()) {
-            if (TypeService::isAbstractType($fieldType)) {
-                /** @var AbstractInterfaceTypeInterface $fieldType */
-                $outputType = $fieldType->resolveType($resolvedValue);
-            } else {
-                /** @var AbstractType $outputType */
-                $outputType = $fieldType;
-            }
-
-            $value = $this->collectTypeResolvedValue($outputType, $resolvedValue, $mutation);
-        }
-
-        return [$alias => $value];
+        return $this->collectValueForQueryWithType($query, $field->getType(), $resolvedValue);
     }
 
     /**
-     * @param FieldAst      $FieldAst
+     * @param Query|Mutation $query
+     * @param AbstractType   $fieldType
+     * @param mixed          $resolvedValue
+     * @return array|mixed
+     */
+    protected function collectValueForQueryWithType(Query $query, AbstractType $fieldType, $resolvedValue)
+    {
+        $fieldType = $this->resolveValidator->resolveTypeIfAbstract($fieldType, $resolvedValue);
+        if (is_null($resolvedValue)) return null;
+
+        $value = [];
+        if ($fieldType->getKind() == TypeMap::KIND_LIST) {
+            foreach ((array)$resolvedValue as $resolvedValueItem) {
+                $value[] = [];
+                $index   = count($value) - 1;
+
+
+                $namedType = $fieldType->getNamedType();
+                $namedType = $this->resolveValidator->resolveTypeIfAbstract($namedType, $resolvedValueItem);
+                if (!$namedType->isValidValue($resolvedValueItem)) {
+                    $this->executionContext->addError(new ResolveException(sprintf('Not valid resolve value in %s field', $query->getName())));
+                    $value[$index] = null;
+                    continue;
+                }
+
+                $value[$index] = $this->processQueryFields($query, $namedType, $resolvedValueItem, $value[$index]);
+            }
+        } else {
+            if (!$query->hasFields()) {
+                return $this->getOutputValue($fieldType, $resolvedValue);
+            }
+
+            $value = $this->processQueryFields($query, $fieldType, $resolvedValue, $value);
+        }
+
+        return $value;
+    }
+
+    /**
+     * @param FieldAst      $fieldAst
      * @param AbstractField $field
      *
      * @param mixed         $contextValue
@@ -193,15 +188,11 @@ class Processor
      * @throws ResolveException
      * @throws \Exception
      */
-    protected function processFieldAstQuery(FieldAst $FieldAst, AbstractField $field, $contextValue)
+    protected function processFieldAST(FieldAst $fieldAst, AbstractField $field, $contextValue)
     {
         $value            = null;
         $fieldType        = $field->getType();
-        $preResolvedValue = $this->getPreResolvedValue($contextValue, $FieldAst, $field);
-
-        if ($preResolvedValue && !$this->resolveValidator->validateResolvedValueType($preResolvedValue, $field->getType())) {
-            return null;
-        }
+        $preResolvedValue = $this->getPreResolvedValue($contextValue, $fieldAst, $field);
 
         if ($fieldType->getKind() == TypeMap::KIND_LIST) {
             $listValue = [];
@@ -214,51 +205,15 @@ class Processor
                     $listValue = null;
                     break;
                 }
-                $listValue[] = $type->getKind() != TypeMap::KIND_OBJECT ? $type->serialize($resolvedValueItem) : $resolvedValueItem;
+                $listValue[] = $this->getOutputValue($type, $resolvedValueItem);
             }
 
             $value = $listValue;
         } else {
-            $value = $preResolvedValue;
-
-            /** hotfix for enum $field->getType()->resolve($preResolvedValue); */ //todo: refactor here
-            if ($fieldType->getKind() == TypeMap::KIND_NON_NULL) {
-                if (!$fieldType->isValidValue($preResolvedValue)) {
-                    $this->executionContext->addError(new ResolveException(sprintf('Cannot return null for non-nullable field %s', $FieldAst->getName() . '.' . $field->getName())));
-                } elseif (!$fieldType->getNullableType()->isValidValue($preResolvedValue)) {
-                    $this->executionContext->addError(new ResolveException(sprintf('Not valid value for %s field %s', $fieldType->getNullableType()->getKind(), $field->getName())));
-                    $value = null;
-                } else {
-                    $value = $preResolvedValue;
-                }
-            } elseif ($fieldType->getKind() != TypeMap::KIND_OBJECT) {
-                $value = $fieldType->serialize($preResolvedValue);
-            }
+            $value = $this->getFieldValidatedValue($field, $preResolvedValue);
         }
 
         return $value;
-    }
-
-    /**
-     * @param               $query
-     * @param AbstractField $field
-     *
-     * @param mixed         $contextValue
-     * @return null
-     */
-    protected function processFieldTypeQuery($query, AbstractField $field, $contextValue)
-    {
-        if (!($resolvedValue = $this->resolveFieldValue($field, $contextValue, $query))) {
-            return $resolvedValue;
-        }
-
-        if (!$this->resolveValidator->validateResolvedValueType($resolvedValue, $field->getType())) {
-            return null;
-        }
-
-        $type = $this->resolveTypeIfAbstract($field->getType(), $resolvedValue);
-
-        return $this->collectTypeResolvedValue($type, $resolvedValue, $query);
     }
 
     /**
@@ -273,59 +228,6 @@ class Processor
         $resolveInfo = new ResolveInfo($field, $query->getFields(), $field->getType(), $this->executionContext);
 
         return $field->resolve($contextValue, $this->parseArgumentsValues($field, $query), $resolveInfo);
-    }
-
-    /**
-     * @param AbstractType $type
-     * @param              $resolvedValue
-     *
-     * @return AbstractType|AbstractInterfaceType
-     *
-     * @throws ResolveException
-     */
-    protected function resolveTypeIfAbstract(AbstractType $type, $resolvedValue)
-    {
-        if (TypeService::isAbstractType($type)) {
-            /** @var AbstractInterfaceType $type */
-            $resolvedType = $type->resolveType($resolvedValue);
-
-            if ($type instanceof AbstractInterfaceType) {
-                $this->resolveValidator->assertTypeImplementsInterface($resolvedType, $type);
-            } else {
-                /** @var AbstractUnionType $type */
-                $this->resolveValidator->assertTypeInUnionTypes($resolvedType, $type);
-            }
-
-            return $resolvedType;
-        }
-
-        return $type;
-    }
-
-    /**
-     * @param AbstractType   $fieldType
-     * @param mixed          $resolvedValue
-     * @param Query|Mutation $query
-     * @return array|mixed
-     * @throws \Exception
-     */
-    protected function collectTypeResolvedValue(AbstractType $fieldType, $resolvedValue, $query)
-    {
-        $value = [];
-        if ($fieldType->getKind() == TypeMap::KIND_LIST) {
-            foreach ($resolvedValue as $resolvedValueItem) {
-                $value[]   = [];
-                $index     = count($value) - 1;
-                $namedType = $fieldType->getNamedType();
-                $namedType = $this->resolveTypeIfAbstract($namedType, $resolvedValueItem);
-
-                $value[$index] = $this->processQueryFields($query, $namedType, $resolvedValueItem, $value[$index]);
-            }
-        } else {
-            $value = $this->processQueryFields($query, $fieldType, $resolvedValue, $value);
-        }
-
-        return $value;
     }
 
     /**
@@ -350,7 +252,7 @@ class Processor
             $resolved      = true;
         }
 
-        if ($field->getType()->getNamedType()->getKind() == TypeMap::KIND_SCALAR) {
+        if (!$resolved && $field->getType()->getNamedType()->getKind() == TypeMap::KIND_SCALAR) {
             $resolved = true;
         }
 
@@ -419,7 +321,7 @@ class Processor
                 if ($fieldAst->getName() == self::TYPE_NAME_QUERY) {
                     $fieldResolvedValue = [$alias => $queryType->getName()];
                 } elseif ($fieldAst instanceof Query) {
-                    $fieldValue         = $this->processFieldTypeQuery($fieldAst, $currentType->getField($fieldAst->getName()), $resolvedValue);
+                    $fieldValue         = $this->processQueryAST($fieldAst, $currentType->getField($fieldAst->getName()), $resolvedValue);
                     $fieldResolvedValue = [$alias => $fieldValue];
                 } elseif ($fieldAst instanceof FieldAst) {
 
@@ -427,7 +329,7 @@ class Processor
                         $fieldResolvedValue = null;
                     } else {
                         $fieldResolvedValue = [
-                            $alias => $this->processFieldAstQuery($fieldAst, $currentType->getField($fieldAst->getName()), $resolvedValue)
+                            $alias => $this->processFieldAST($fieldAst, $currentType->getField($fieldAst->getName()), $resolvedValue)
                         ];
                     }
                 }
@@ -437,6 +339,16 @@ class Processor
         }
 
         return $value;
+    }
+
+    protected function getFieldValidatedValue(AbstractField $field, $value)
+    {
+        return ($this->resolveValidator->isValidValueForField($field, $value)) ? $this->getOutputValue($field->getType(), $value) : null;
+    }
+
+    protected function getOutputValue(AbstractType $type, $value)
+    {
+        return in_array($type->getKind(), [TypeMap::KIND_OBJECT, TypeMap::KIND_NON_NULL]) ? $value : $type->serialize($value);
     }
 
     protected function collectValue($value, $queryValue)
@@ -450,6 +362,14 @@ class Processor
         return $value;
     }
 
+    protected function introduceIntrospectionFields(AbstractSchema $schema)
+    {
+        $schemaField = new SchemaField();
+        $schemaField->setSchema($schema);
+
+        $schema->addQueryField($schemaField);
+        $schema->addQueryField(new TypeDefinitionField());
+    }
 
     public function getResponseData()
     {
@@ -462,8 +382,6 @@ class Processor
         if ($this->executionContext->hasErrors()) {
             $result['errors'] = $this->executionContext->getErrorsArray();
         }
-
-        $this->executionContext->clearErrors();
 
         return $result;
     }

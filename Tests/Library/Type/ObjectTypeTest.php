@@ -81,7 +81,7 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEmpty($objectType->getInterfaces());
         $this->assertTrue($objectType->isValidValue($objectType));
-        $this->assertFalse($objectType->isValidValue(null));
+        $this->assertTrue($objectType->isValidValue(null));
 
         $this->assertEquals('Post type description', $objectType->getDescription());
     }

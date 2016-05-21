@@ -32,7 +32,7 @@ abstract class AbstractListType extends AbstractObjectType implements CompositeT
 
     public function isValidValue($value)
     {
-        return is_array($value);
+        return is_null($value) || is_array($value) || (is_object($value) && in_array('IteratorAggregate', class_implements($value)));
     }
 
     /**
