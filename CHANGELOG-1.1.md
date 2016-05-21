@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.2 – Relay support and Schema structure
+### v1.1 – Relay support and Schema structure
 
 #### General changes
 - Relay support added
