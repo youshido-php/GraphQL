@@ -449,7 +449,7 @@ Now, let's make our GraphQL Schema a little more complex by adding a `likeCount`
 // add it after the last ->addField in your build function
   ->addField('likeCount', new IntType())
 // update the resolve function:
-public function resolve($value = null, $args = [], $type = null)
+public function resolve($value, $args, $info)
 {
   $id = !empty($args['id']) ? $args['id'] : null;
   return [
@@ -566,7 +566,7 @@ $postType = new ObjectType([
           'args'              => [
               'truncated' => new BooleanType()                        // add an optional argument
           ],
-          'resolve'           => function ($value, $args) {
+          'resolve'           => function ($value, $args, $info) {
               // using argument defined above to modify a field value
               return (!empty($args['truncated'])) ? explode(' ', $value)[0] . '...' : $value;
           }
@@ -580,7 +580,7 @@ $postType = new ObjectType([
       'id' => new IntType()
   ],
   // resolve function for the query
-  'resolve' => function ($value, $args, $type) {
+  'resolve' => function ($value, $args, $info) {
       return [
           'title'   => 'Title for the latest Post',
           'summary' => 'Post summary',
@@ -621,7 +621,7 @@ class PostType extends AbstractObjectType
         $config->addArgument('id', new IntType());
     }
 
-    public function resolve($value = null, $args = [])
+    public function resolve($value, $args, $info)
     {
         return [
             "title"     => "Title for the latest Post",
@@ -702,7 +702,7 @@ class PostType extends AbstractObjectType
         return [new ContentBlockInterface()];
     }
 
-    public function resolve($value = null, $args = [], $type = null)
+    public function resolve($value, $args, $info)
     {
         return [
             "title"     => "Post title from the PostType class",
