@@ -8,6 +8,7 @@
 namespace Youshido\GraphQL\Validator\ResolveValidator;
 
 use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
+use Youshido\GraphQL\Execution\Request;
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Parser\Ast\Argument;
@@ -18,7 +19,6 @@ use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
-use Youshido\GraphQL\Execution\Request;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
@@ -168,36 +168,6 @@ class ResolveValidator implements ResolveValidatorInterface
         if ($fragment->getModel() !== $queryType->getName()) {
             throw new ResolveException(sprintf('Fragment reference "%s" not found on model "%s"', $fragmentReference->getName(), $queryType->getName()));
         }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function validateResolvedValueType($value, $type)
-    {
-        switch ($type->getKind()) {
-            case TypeMap::KIND_OBJECT:
-            case TypeMap::KIND_INPUT_OBJECT:
-            case TypeMap::KIND_INTERFACE:
-                $isValid = is_object($value) || is_null($value) || is_array($value);
-                break;
-            case TypeMap::KIND_LIST:
-                $isValid = is_null($value) || is_array($value) || (is_object($value) && in_array('IteratorAggregate', class_implements($value)));
-                break;
-            case TypeMap::KIND_SCALAR:
-                $isValid = is_scalar($value);
-                break;
-            case TypeMap::KIND_NON_NULL:
-            case TypeMap::KIND_ENUM:
-            default:
-                $isValid = $type->isValidValue($value);
-        }
-
-        if (!$isValid) {
-            $this->executionContext->addError(new ResolveException(sprintf('Not valid resolved value for "%s" type', $type->getName() ?: $type->getKind())));
-        }
-
-        return $isValid;
     }
 
     public function isValidValueForField(AbstractField $field, $value)

@@ -62,29 +62,6 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
         $validator->assertValidFragmentForField($fragment, $fragmentReference, $userType);
     }
 
-    public function testValidateValue()
-    {
-        $validator = new ResolveValidator(new ExecutionContext());
-        $validator->validateResolvedValueType('string value', new StringType());
-        $this->assertFalse($validator->getExecutionContext()->hasErrors());
-
-        $validator->validateResolvedValueType(null, new NonNullType(new StringType()));
-        $this->assertTrue($validator->getExecutionContext()->hasErrors());
-
-        $validator->getExecutionContext()->clearErrors();
-        $validator->validateResolvedValueType('some data', new NonNullType(new StringType()));
-        $this->assertFalse($validator->getExecutionContext()->hasErrors());
-
-        $validator->validateResolvedValueType('NEW', new TestEnumType());
-        $this->assertFalse($validator->getExecutionContext()->hasErrors());
-
-        $validator->validateResolvedValueType(1, new TestEnumType());
-        $this->assertFalse($validator->getExecutionContext()->hasErrors());
-
-        $validator->validateResolvedValueType(2, new TestEnumType());
-        $this->assertTrue($validator->getExecutionContext()->hasErrors());
-    }
-
     /**
      * @expectedException \Youshido\GraphQL\Validator\Exception\ResolveException
      */

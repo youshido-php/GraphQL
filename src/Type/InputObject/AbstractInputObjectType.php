@@ -10,7 +10,6 @@ namespace Youshido\GraphQL\Type\InputObject;
 
 
 use Youshido\GraphQL\Config\Object\InputObjectTypeConfig;
-use Youshido\GraphQL\Config\Traits\ConfigAwareTrait;
 use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
