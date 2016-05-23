@@ -10,7 +10,6 @@ namespace Youshido\GraphQL\Config;
 
 
 use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
-use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidatorInterface;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 use Youshido\GraphQL\Validator\Exception\ValidationException;
 
@@ -32,9 +31,6 @@ abstract class AbstractConfig
 
     protected $extraFieldsAllowed = null;
 
-    /** @var ConfigValidatorInterface */
-    protected $validator;
-
     /**
      * TypeConfig constructor.
      * @param array $configData
@@ -53,10 +49,11 @@ abstract class AbstractConfig
         $this->contextObject = $contextObject;
         $this->data          = $configData;
         $this->finalClass    = $finalClass;
-        $this->validator     = new ConfigValidator($contextObject);
 
-        if (!$this->validator->validate($this->data, $this->getContextRules(), $this->extraFieldsAllowed)) {
-            throw new ConfigurationException('Config is not valid for ' . ($contextObject ? get_class($contextObject) : null) . "\n" . implode("\n", $this->validator->getErrorsArray(false)));
+        $validator = ConfigValidator::getInstance();
+
+        if (!$validator->validate($this->data, $this->getContextRules(), $this->extraFieldsAllowed)) {
+            throw new ConfigurationException('Config is not valid for ' . ($contextObject ? get_class($contextObject) : null) . "\n" . implode("\n", $validator->getErrorsArray(false)));
         }
 
         $this->build();

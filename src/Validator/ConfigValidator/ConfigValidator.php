@@ -21,17 +21,31 @@ class ConfigValidator implements ConfigValidatorInterface
 
     protected $rules = [];
 
-    protected $contextObject;
-
     protected $extraFieldsAllowed = false;
 
     /** @var ValidationRuleInterface[] */
     protected $validationRules = [];
 
-    public function __construct($contextObject = null)
+    /** @var  ConfigValidator */
+    protected static $instance;
+
+    private function __construct()
     {
-        $this->contextObject = $contextObject;
         $this->initializeRules();
+    }
+
+    /**
+     * @return ConfigValidator
+     */
+    public static function getInstance()
+    {
+        if (empty(self::$instance)) {
+            self::$instance = new self();
+        }
+
+        self::$instance->clearErrors();
+
+        return self::$instance;
     }
 
     public function validate($data, $rules = [], $extraFieldsAllowed = null)
@@ -47,7 +61,7 @@ class ConfigValidator implements ConfigValidatorInterface
                 unset($fieldRules['required']);
 
                 if (!array_key_exists($fieldName, $data)) {
-                    $this->addError(new ValidationException('Field \'' . $fieldName . '\' of ' . $this->getContextName() . ' is required'));
+                    $this->addError(new ValidationException(sprintf('Field "%s" is required', $fieldName)));
 
                     continue;
                 }
@@ -59,15 +73,13 @@ class ConfigValidator implements ConfigValidatorInterface
             /** Validation of all other rules*/
             foreach ($fieldRules as $ruleName => $ruleInfo) {
                 if (!array_key_exists($ruleName, $this->validationRules)) {
-                    $this->addError(new ValidationException('Field \'' . $fieldName . '\' has invalid rule \'' . $ruleInfo . '\''));
+                    $this->addError(new ValidationException(sprintf('Field "%s" has invalid rule "%s"', $fieldName, $ruleInfo)));
 
                     continue;
                 }
 
                 if (!$this->validationRules[$ruleName]->validate($data[$fieldName], $ruleInfo)) {
-                    $this->addError(
-                        new ValidationException('Field \'' . $fieldName . '\' of ' . $this->getContextName()
-                                                . ' expected to be ' . $ruleName . ': \'' . (string)$ruleInfo . '\', but got: ' . gettype($data[$fieldName])));
+                    $this->addError(new ValidationException(sprintf('Field "%s" expected to be "%s" but got "%s"', $fieldName, $ruleName, gettype($data[$fieldName]))));
                 }
             }
         }
@@ -75,9 +87,7 @@ class ConfigValidator implements ConfigValidatorInterface
         if (!$this->isExtraFieldsAllowed()) {
             foreach (array_keys($data) as $fieldName) {
                 if (!in_array($fieldName, $processedFields)) {
-                    $this->addError(
-                        new ValidationException('Field \'' . $fieldName . '\' is not expected in ' . $this->getContextName()));
-
+                    $this->addError(new ValidationException(sprintf('Field "%s" is not expected', $fieldName)));
                 }
             }
         }
@@ -90,19 +100,9 @@ class ConfigValidator implements ConfigValidatorInterface
         $this->validationRules['type'] = new TypeValidationRule($this);
     }
 
-    /**
-     * @return string
-     */
-    protected function getContextName()
+    public function addRule($name, ValidationRuleInterface $rule)
     {
-        if (is_object($this->contextObject)) {
-            $class = get_class($this->contextObject);
-            $class = substr($class, strrpos($class, '\\') + 1);
-
-            return $class;
-        } else {
-            return $this->contextObject ? $this->contextObject : '(context)';
-        }
+        $this->validationRules[$name] = $rule;
     }
 
     public function isValid()
