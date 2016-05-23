@@ -10,7 +10,6 @@ namespace Youshido\Tests\Library\Type;
 
 
 use Youshido\GraphQL\Field\Field;
-use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
@@ -82,7 +81,7 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEmpty($objectType->getInterfaces());
         $this->assertTrue($objectType->isValidValue($objectType));
-        $this->assertFalse($objectType->isValidValue(null));
+        $this->assertTrue($objectType->isValidValue(null));
 
         $this->assertEquals('Post type description', $objectType->getDescription());
     }

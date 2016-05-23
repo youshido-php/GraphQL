@@ -5,7 +5,6 @@
 
 namespace Examples\Blog\Schema;
 
-use Youshido\GraphQL\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\StringType;
@@ -18,11 +17,6 @@ class BannerType extends AbstractObjectType
             ->addField('title', new NonNullType(new StringType()))
             ->addField('summary', new StringType())
             ->addField('imageLink', new StringType());
-    }
-
-    public function getItem($id)
-    {
-
     }
 
     public function getInterfaces()

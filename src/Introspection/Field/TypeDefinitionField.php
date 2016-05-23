@@ -8,6 +8,7 @@
 namespace Youshido\GraphQL\Introspection\Field;
 
 use Youshido\GraphQL\Config\Field\FieldConfig;
+use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Introspection\QueryType;
@@ -21,14 +22,14 @@ class TypeDefinitionField extends AbstractField
 
     use TypeCollectorTrait;
 
-    public function resolve($value = null, $args = [], $type = null)
+    public function resolve($value = null, array $args, ResolveInfo $info)
     {
         $this->collectTypes(SchemaField::$schema->getQueryType());
         $this->collectTypes(SchemaField::$schema->getMutationType());
 
-        foreach ($this->types as $name => $type) {
+        foreach ($this->types as $name => $info) {
             if ($name == $args['name']) {
-                return $type;
+                return $info;
             }
         }
 

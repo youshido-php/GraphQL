@@ -240,6 +240,8 @@ class Parser extends Tokenizer
         } else {
             if ($highLevel && $type == Token::TYPE_MUTATION) {
                 return new Mutation($name, $alias, $arguments);
+            } elseif ($highLevel && $type == Token::TYPE_QUERY) {
+                return new Query($name, $alias, $arguments, []);
             }
 
             return new Field($name, $alias, $arguments);
@@ -377,7 +379,7 @@ class Parser extends Tokenizer
         $this->eat(Token::TYPE_ON);
 
         $model  = $this->parseIdentifier();
-        $fields = $this->parseBody();
+        $fields = $this->parseBody(Token::TYPE_QUERY, false);
 
         return new Fragment($name, $model, $fields);
     }

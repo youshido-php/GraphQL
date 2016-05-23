@@ -10,7 +10,6 @@ namespace Youshido\tests\Library\Type;
 
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
-use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\Union\UnionType;
 use Youshido\Tests\DataProvider\TestObjectType;

@@ -7,6 +7,8 @@
 
 namespace Youshido\GraphQL\Validator\ResolveValidator;
 
+use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
+use Youshido\GraphQL\Execution\Request;
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Parser\Ast\Argument;
@@ -17,20 +19,24 @@ use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
-use Youshido\GraphQL\Request;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeService;
 use Youshido\GraphQL\Type\Union\AbstractUnionType;
-use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerInterface;
-use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 
-class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInterface
+class ResolveValidator implements ResolveValidatorInterface
 {
 
-    use ErrorContainerTrait;
+    /** @var  ExecutionContextInterface */
+    protected $executionContext;
+
+    public function __construct(ExecutionContextInterface $executionContext)
+    {
+        $this->executionContext = $executionContext;
+    }
 
     /**
      * @param AbstractObjectType      $objectType
@@ -40,7 +46,7 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
     public function objectHasField($objectType, $field)
     {
         if (!($objectType instanceof AbstractObjectType) || !$objectType->hasField($field->getName())) {
-            $this->addError(new ResolveException(sprintf('Field "%s" not found in type "%s"', $field->getName(), $objectType->getNamedType()->getName())));
+            $this->executionContext->addError(new ResolveException(sprintf('Field "%s" not found in type "%s"', $field->getName(), $objectType->getNamedType()->getName())));
 
             return false;
         }
@@ -65,7 +71,7 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
 
         foreach ($query->getArguments() as $argument) {
             if (!$field->hasArgument($argument->getName())) {
-                $this->addError(new ResolveException(sprintf('Unknown argument "%s" on field "%s"', $argument->getName(), $field->getName())));
+                $this->executionContext->addError(new ResolveException(sprintf('Unknown argument "%s" on field "%s"', $argument->getName(), $field->getName())));
 
                 return false;
             }
@@ -79,7 +85,7 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
                 //todo: here validate argument
 
                 if ($variable->getTypeName() !== $argumentType->getName()) {
-                    $this->addError(new ResolveException(sprintf('Invalid variable "%s" type, allowed type is "%s"', $variable->getName(), $argumentType->getName())));
+                    $this->executionContext->addError(new ResolveException(sprintf('Invalid variable "%s" type, allowed type is "%s"', $variable->getName(), $argumentType->getName())));
 
                     return false;
                 }
@@ -87,7 +93,7 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
                 /** @var Variable $requestVariable */
                 $requestVariable = $request->getVariable($variable->getName());
                 if (!$requestVariable) {
-                    $this->addError(new ResolveException(sprintf('Variable "%s" does not exist for query "%s"', $argument->getName(), $field->getName())));
+                    $this->executionContext->addError(new ResolveException(sprintf('Variable "%s" does not exist for query "%s"', $argument->getName(), $field->getName())));
 
                     return false;
                 }
@@ -96,7 +102,7 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
             }
 
             if (!$argumentType->isValidValue($argumentType->parseValue($argument->getValue()->getValue()))) {
-                $this->addError(new ResolveException(sprintf('Not valid type for argument "%s" in query "%s"', $argument->getName(), $field->getName())));
+                $this->executionContext->addError(new ResolveException(sprintf('Not valid type for argument "%s" in query "%s"', $argument->getName(), $field->getName())));
 
                 return false;
             }
@@ -110,7 +116,7 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
         }
 
         if (count($requiredArguments)) {
-            $this->addError(new ResolveException(sprintf('Require "%s" arguments to query "%s"', implode(', ', array_keys($requiredArguments)), $query->getName())));
+            $this->executionContext->addError(new ResolveException(sprintf('Require "%s" arguments to query "%s"', implode(', ', array_keys($requiredArguments)), $query->getName())));
 
             return false;
         }
@@ -135,9 +141,10 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
     {
         $unionTypes = $unionType->getTypes();
         $valid      = false;
+        if (empty($unionTypes)) return false;
 
-        foreach($unionTypes as $unionType) {
-            if($unionType->getName() == $type->getName()) {
+        foreach ($unionTypes as $unionType) {
+            if ($unionType->getName() == $type->getName()) {
                 $valid = true;
 
                 break;
@@ -163,34 +170,59 @@ class ResolveValidator implements ResolveValidatorInterface, ErrorContainerInter
         }
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function validateResolvedValueType($value, $type)
+    public function isValidValueForField(AbstractField $field, $value)
     {
-        switch ($type->getKind()) {
-            case TypeMap::KIND_OBJECT:
-            case TypeMap::KIND_INPUT_OBJECT:
-            case TypeMap::KIND_INTERFACE:
-                $isValid = is_object($value) || is_null($value) || is_array($value);
-                break;
-            case TypeMap::KIND_LIST:
-                $isValid = is_null($value) || is_array($value) || (is_object($value) && in_array('IteratorAggregate', class_implements($value)));
-                break;
-            case TypeMap::KIND_SCALAR:
-                $isValid = is_scalar($value);
-                break;
-            case TypeMap::KIND_NON_NULL:
-            case TypeMap::KIND_ENUM:
-            default:
-                $isValid = $type->isValidValue($value);
+        $fieldType = $field->getType();
+        if ($fieldType->getKind() == TypeMap::KIND_NON_NULL && is_null($value)) {
+            $this->executionContext->addError(new ResolveException(sprintf('Cannot return null for non-nullable field %s', $field->getName())));
+            return null;
+        } else {
+            $fieldType = $this->resolveTypeIfAbstract($fieldType->getNullableType(), $value);
         }
 
-        if (!$isValid) {
-            $this->addError(new ResolveException(sprintf('Not valid resolved value for "%s" type', $type->getName() ?: $type->getKind())));
+        if (!is_null($value) && !$fieldType->isValidValue($value)) {
+            $this->executionContext->addError(new ResolveException(sprintf('Not valid value for %s field %s', $fieldType->getNullableType()->getKind(), $field->getName())));
+            return null;
+        }
+        return true;
+    }
+
+    public function resolveTypeIfAbstract(AbstractType $type, $resolvedValue)
+    {
+        if (TypeService::isAbstractType($type)) {
+            /** @var AbstractInterfaceType $type */
+            $resolvedType = $type->resolveType($resolvedValue);
+
+            if (!$resolvedType) {
+                $this->executionContext->addError(new \Exception('Cannot resolve type'));
+                return $type;
+            }
+            if ($type instanceof AbstractInterfaceType) {
+                $this->assertTypeImplementsInterface($resolvedType, $type);
+            } else {
+                /** @var AbstractUnionType $type */
+                $this->assertTypeInUnionTypes($resolvedType, $type);
+            }
+
+            return $resolvedType;
         }
 
-        return $isValid;
+        return $type;
+    }
+    /**
+     * @return ExecutionContextInterface
+     */
+    public function getExecutionContext()
+    {
+        return $this->executionContext;
+    }
+
+    /**
+     * @param ExecutionContextInterface $executionContext
+     */
+    public function setExecutionContext($executionContext)
+    {
+        $this->executionContext = $executionContext;
     }
 
 }

@@ -2,17 +2,14 @@
 
 namespace Examples\StarWars;
 
-use Youshido\GraphQL\Processor;
+use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema;
 
 require_once __DIR__ . '/schema-bootstrap.php';
 /** @var Schema\AbstractSchema $schema */
 $schema = new StarWarsRelaySchema();
 
-$processor = new Processor();
-
-$processor->setSchema($schema);
-//$payload = '{ factions { name } }';
+$processor = new Processor($schema);
 
 $payload = '
             query StarWarsAppHomeRoute($names_0:[String]!) {
@@ -50,5 +47,5 @@ $payload = '
             }
         ';
 
-$processor->processRequest($payload, ['names_0' => ['rebels']]);
+$processor->processPayload($payload, ['names_0' => ['rebels']]);
 echo json_encode($processor->getResponseData()) . "\n";

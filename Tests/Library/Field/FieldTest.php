@@ -9,14 +9,15 @@
 namespace Youshido\Tests\Library\Field;
 
 
+use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\InputField;
-use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Scalar\IdType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\Tests\DataProvider\TestField;
+use Youshido\Tests\DataProvider\TestResolveInfo;
 
 class FieldTest extends \PHPUnit_Framework_TestCase
 {
@@ -27,20 +28,21 @@ class FieldTest extends \PHPUnit_Framework_TestCase
             'name' => 'id',
             'type' => new IdType()
         ]);
+        $resolveInfo = TestResolveInfo::createTestResolveInfo($field);
         $this->assertEquals('id', $field->getName());
         $this->assertEquals(new IdType(), $field->getType());
-        $this->assertEquals(null, $field->resolve('data', null, null));
+        $this->assertEquals(null, $field->resolve('data', [], $resolveInfo));
 
         $fieldWithResolve = new Field([
             'name'    => 'title',
             'type'    => new StringType(),
-            'resolve' => function ($value, $args, AbstractType $type) {
-                return $type->serialize($value);
+            'resolve' => function ($value, array $args, ResolveInfo $info) {
+                return $info->getReturnType()->serialize($value);
             }
         ]);
 
-        $this->assertEquals('true', $fieldWithResolve->resolve(true), 'Resolve bool to string');
-        $this->assertEquals('CTO', $fieldWithResolve->resolve('CTO'));
+        $this->assertEquals('true', $fieldWithResolve->resolve(true, [], $resolveInfo), 'Resolve bool to string');
+        $this->assertEquals('CTO', $fieldWithResolve->resolve('CTO', [], $resolveInfo));
 
         $fieldWithResolve->setType(new IntType());
         $this->assertEquals(new IntType(), $fieldWithResolve->getType());
@@ -50,11 +52,12 @@ class FieldTest extends \PHPUnit_Framework_TestCase
     public function testObjectFieldCreation()
     {
         $field = new TestField();
+        $resolveInfo = TestResolveInfo::createTestResolveInfo($field);
 
         $this->assertEquals('test', $field->getName());
         $this->assertEquals('description', $field->getDescription());
         $this->assertEquals(new IntType(), $field->getType());
-        $this->assertEquals('test', $field->resolve('test'));
+        $this->assertEquals('test', $field->resolve('test', [], $resolveInfo));
     }
 
     public function testArgumentsTrait()

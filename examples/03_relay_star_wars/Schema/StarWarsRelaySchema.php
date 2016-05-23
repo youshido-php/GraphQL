@@ -8,7 +8,7 @@ use Youshido\GraphQl\Relay\Connection\ArrayConnection;
 use Youshido\GraphQL\Relay\Connection\Connection;
 use Youshido\GraphQL\Relay\Fetcher\CallableFetcher;
 use Youshido\GraphQL\Relay\Field\NodeField;
-use Youshido\GraphQL\Relay\Mutation;
+use Youshido\GraphQL\Relay\RelayMutation;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\NonNullType;
@@ -57,7 +57,7 @@ class StarWarsRelaySchema extends AbstractSchema
                            'type' => new ListType(new StringType())
                        ]
                    ],
-                   'resolve' => function ($value = null, $args = [], $type = null) {
+                   'resolve' => function ($value = null, $args, $info) {
                        return TestDataProvider::getByNames($args['names']);
                    }
                ]);
@@ -65,7 +65,7 @@ class StarWarsRelaySchema extends AbstractSchema
 
         $config->getMutation()
                ->addField(
-                   Mutation::buildMutation(
+                   RelayMutation::buildMutation(
                        'introduceShip',
                        [
                            new InputField(['name' => 'shipName', 'type' => new NonNullType(new StringType())]),
@@ -91,12 +91,12 @@ class StarWarsRelaySchema extends AbstractSchema
                                }
                            ]
                        ],
-                       function ($input) {
-                           $newShip = TestDataProvider::createShip($input['shipName'], $input['factionId']);
+                       function ($value, $args, $info) {
+                           $newShip = TestDataProvider::createShip($args['shipName'], $args['factionId']);
 
                            return [
                                'shipId'    => $newShip['id'],
-                               'factionId' => $input['factionId']
+                               'factionId' => $args['factionId']
                            ];
                        }
                    )

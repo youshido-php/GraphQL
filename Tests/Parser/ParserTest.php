@@ -121,6 +121,59 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->parse($query);
     }
 
+    public function testQueryWithNoFields()
+    {
+        $parser = new Parser();
+        $data   = $parser->parse('{ name }');
+        $this->assertEquals([
+            'queries'   => [
+                new Query('name')
+            ],
+            'mutations' => [],
+            'fragments' => [],
+        ], $data);
+    }
+
+    public function testQueryWithFields()
+    {
+        $parser = new Parser();
+        $data   = $parser->parse('{ post, user { name } }');
+        $this->assertEquals([
+            'queries'   => [
+                new Query('post'),
+                new Query('user', null, [], [
+                    new Field('name')
+                ])
+            ],
+            'mutations' => [],
+            'fragments' => [],
+        ], $data);
+    }
+
+    public function testFragmentWithFields()
+    {
+        $parser = new Parser();
+        $data   = $parser->parse('
+            fragment FullType on __Type {
+                kind
+                fields {
+                    name
+                }
+            }');
+        $this->assertEquals([
+            'queries'   => [],
+            'mutations' => [],
+            'fragments' => [
+                new Fragment('FullType', '__Type', [
+                    new Field('kind'),
+                    new Query('fields', null, [], [
+                        new Field('name')
+                    ])
+                ])
+            ],
+        ], $data);
+    }
+
     public function testInspectionQuery()
     {
         $parser = new Parser();
@@ -204,7 +257,91 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             }
         ');
 
-        $this->assertTrue(is_array($data));
+        $this->assertEquals([
+            'queries'   => [
+                new Query('__schema', null, [], [
+                    new Query('queryType', null, [], [
+                        new Field('name')
+                    ]),
+                    new Query('mutationType', null, [], [
+                        new Field('name')
+                    ]),
+                    new Query('types', null, [], [
+                        new FragmentReference('FullType')
+                    ]),
+                    new Query('directives', null, [], [
+                        new Field('name'),
+                        new Field('description'),
+                        new Query('args', null, [], [
+                            new FragmentReference('InputValue'),
+                        ]),
+                        new Field('onOperation'),
+                        new Field('onFragment'),
+                        new Field('onField'),
+                    ]),
+                ])
+            ],
+            'mutations' => [],
+            'fragments' => [
+                new Fragment('FullType', '__Type', [
+                    new Field('kind'),
+                    new Field('name'),
+                    new Field('description'),
+                    new Query('fields', null, [], [
+                        new Field('name'),
+                        new Field('description'),
+                        new Query('args', null, [], [
+                            new FragmentReference('InputValue'),
+                        ]),
+                        new Query('type', null, [], [
+                            new FragmentReference('TypeRef'),
+                        ]),
+                        new Field('isDeprecated'),
+                        new Field('deprecationReason'),
+                    ]),
+                    new Query('inputFields', null, [], [
+                        new FragmentReference('InputValue'),
+                    ]),
+                    new Query('interfaces', null, [], [
+                        new FragmentReference('TypeRef'),
+                    ]),
+                    new Query('enumValues', null, [], [
+                        new Field('name'),
+                        new Field('description'),
+
+                        new Field('isDeprecated'),
+                        new Field('deprecationReason'),
+                    ]),
+                    new Query('possibleTypes', null, [], [
+                        new FragmentReference('TypeRef'),
+                    ]),
+                ]),
+                new Fragment('InputValue', '__InputValue', [
+                    new Field('name'),
+                    new Field('description'),
+                    new Query('type', null, [], [
+                        new FragmentReference('TypeRef'),
+                    ]),
+                    new Field('defaultValue'),
+                ]),
+                new Fragment('TypeRef', '__Type', [
+                    new Field('kind'),
+                    new Field('name'),
+                    new Query('ofType', null, [], [
+                        new Field('kind'),
+                        new Field('name'),
+                        new Query('ofType', null, [], [
+                            new Field('kind'),
+                            new Field('name'),
+                            new Query('ofType', null, [], [
+                                new Field('kind'),
+                                new Field('name'),
+                            ]),
+                        ]),
+                    ]),
+                ]),
+            ]
+        ], $data);
     }
 
     public function wrongQueriesProvider()
@@ -343,7 +480,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser          = new Parser();
         $parsedStructure = $parser->parse($query);
 
-        $this->assertEquals($parsedStructure, $structure);
+        $this->assertEquals($structure, $parsedStructure);
     }
 
 

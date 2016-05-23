@@ -9,8 +9,9 @@
 namespace Youshido\Tests\Schema;
 
 
+use Youshido\GraphQL\Execution\Processor;
+use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Field\Field;
-use Youshido\GraphQL\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\NonNullType;
@@ -19,46 +20,83 @@ use Youshido\GraphQL\Type\Scalar\BooleanType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\Union\UnionType;
+use Youshido\Tests\DataProvider\TestEmptySchema;
 use Youshido\Tests\DataProvider\TestEnumType;
 use Youshido\Tests\DataProvider\TestInterfaceType;
 use Youshido\Tests\DataProvider\TestObjectType;
+use Youshido\Tests\DataProvider\TestSchema;
 
 class ProcessorTest extends \PHPUnit_Framework_TestCase
 {
 
     private $_counter = 0;
 
+    /**
+     * @expectedException \Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedExceptionMessage Schema has to have fields
+     */
     public function testInit()
     {
-        $processor = new Processor();
-
-        $this->assertFalse($processor->hasErrors());
-        $this->assertNull($processor->getSchema());
-        $this->assertEmpty($processor->getResponseData());
+        new Processor(new TestEmptySchema());
     }
 
     public function testEmptyQueries()
     {
-        $processor = new Processor();
-
-        $error = new \Exception('Invalid request');
-        $processor->addError($error);
-        $this->assertEquals([$error], $processor->getErrors());
+        $processor = new Processor(new TestSchema());
+        $processor->processPayload('');
         $this->assertEquals(['errors' => [
-            ['message' => 'Invalid request']]
-        ], $processor->getResponseData());
+            ['message' => 'Must provide an operation.']
+        ]], $processor->getResponseData());
 
-        $processor->processRequest('request with no schema');
-        $this->assertEquals(['errors' => [
-            ['message' => 'You have to set GraphQL Schema to process']]
-        ], $processor->getResponseData());
+        $processor->processPayload('{ me { name } }');
+        $this->assertEquals(['data' => [
+            'me' => ['name' => 'John']
+        ]], $processor->getResponseData());
+
+    }
+
+    public function testListNullResponse()
+    {
+        $processor = new Processor(new Schema([
+            'query' => new ObjectType([
+                'name' => 'RootQuery',
+                'fields' => [
+                    'list' => [
+                        'type' => new ListType(new StringType()),
+                        'resolve' => function() {
+                            return null;
+                        }
+                    ]
+                ]
+            ])
+        ]));
+        $data = $processor->processPayload(' { list }')->getResponseData();
+        $this->assertEquals(['data' => ['list' => null]], $data);
+    }
+
+
+    public function testSubscriptionNullResponse()
+    {
+        $processor = new Processor(new Schema([
+            'query' => new ObjectType([
+                'name' => 'RootQuery',
+                'fields' => [
+                    'list' => [
+                        'type' => new ListType(new StringType()),
+                        'resolve' => function() {
+                            return null;
+                        }
+                    ]
+                ]
+            ])
+        ]));
+        $data = $processor->processPayload(' { __schema { subscriptionType { name } } }')->getResponseData();
+        $this->assertEquals(['data' => ['__schema' => ['subscriptionType' => null]]], $data);
     }
 
     public function testSchemaOperations()
     {
-        $processor = new Processor();
-
-        $schema = new Schema([
+        $schema    = new Schema([
             'query' => new ObjectType([
                 'name'   => 'RootQuery',
                 'fields' => [
@@ -71,12 +109,12 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                                     'args'    => [
                                         'shorten' => new BooleanType()
                                     ],
-                                    'resolve' => function ($value, $args = []) {
-                                        return empty($args['shorten']) ? $value['firstName'] : $value['firstName'];
+                                    'resolve' => function ($value, $args) {
+                                        return empty($args['shorten']) ? $value : $value;
                                     }
                                 ],
                                 'lastName'  => new StringType(),
-                                'code'      => new IntType(),
+                                'code'      => new StringType(),
                             ]
                         ]),
                         'resolve' => function ($value, $args) {
@@ -111,37 +149,37 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                 ],
             ])
         ]);
-        $processor->setSchema($schema);
+        $processor = new Processor($schema);
 
-        $processor->processRequest('{ me { firstName } }');
+        $processor->processPayload('{ me { firstName } }');
         $this->assertEquals(['data' => ['me' => ['firstName' => 'John']]], $processor->getResponseData());
 
-        $processor->processRequest('{ me { firstName, lastName } }');
+        $processor->processPayload('{ me { firstName, lastName } }');
         $this->assertEquals(['data' => ['me' => ['firstName' => 'John', 'lastName' => null]]], $processor->getResponseData());
 
-        $processor->processRequest('{ me { code } }');
+        $processor->processPayload('{ me { code } }');
         $this->assertEquals(['data' => ['me' => ['code' => 7]]], $processor->getResponseData());
 
-        $processor->processRequest('{ me(upper:true) { firstName } }');
+        $processor->processPayload('{ me(upper:true) { firstName } }');
         $this->assertEquals(['data' => ['me' => ['firstName' => 'JOHN']]], $processor->getResponseData());
 
         $schema->getMutationType()
-            ->addField(new Field([
-                'name'    => 'increaseCounter',
-                'type'    => new IntType(),
-                'resolve' => function ($value, $args, IntType $type) {
-                    return $this->_counter += $args['amount'];
-                },
-                'args'    => [
-                    'amount' => [
-                        'type'    => new IntType(),
-                        'default' => 1
-                    ]
-                ]
-            ]))->addField(new Field([
+               ->addField(new Field([
+                   'name'    => 'increaseCounter',
+                   'type'    => new IntType(),
+                   'resolve' => function ($value, $args, ResolveInfo $info) {
+                       return $this->_counter += $args['amount'];
+                   },
+                   'args'    => [
+                       'amount' => [
+                           'type'    => new IntType(),
+                           'default' => 1
+                       ]
+                   ]
+               ]))->addField(new Field([
                 'name'    => 'invalidResolveTypeMutation',
                 'type'    => new NonNullType(new IntType()),
-                'resolve' => function ($value, $args, $type) {
+                'resolve' => function () {
                     return null;
                 }
             ]))->addField(new Field([
@@ -151,53 +189,43 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                     return ['name' => 'John'];
                 }
             ]));
-        $processor->processRequest('mutation { increaseCounter }');
+        $processor->processPayload('mutation { increaseCounter }');
         $this->assertEquals(['data' => ['increaseCounter' => 1]], $processor->getResponseData());
 
-        $processor->processRequest('mutation { invalidMutation }');
+        $processor->processPayload('mutation { invalidMutation }');
         $this->assertEquals(['errors' => [['message' => 'Field "invalidMutation" not found in type "RootSchemaMutation"']]], $processor->getResponseData());
-        $processor->clearErrors();
 
-        $processor->processRequest('mutation { increaseCounter(noArg: 2) }');
+        $processor->processPayload('mutation { increaseCounter(noArg: 2) }');
         $this->assertEquals(['errors' => [['message' => 'Unknown argument "noArg" on field "increaseCounter"']]], $processor->getResponseData());
-        $processor->clearErrors();
 
-        $processor->processRequest('mutation { increaseCounter(amount: 2) { invalidProp } }');
+        $processor->processPayload('mutation { increaseCounter(amount: 2) { invalidProp } }');
         $this->assertEquals(['errors' => [['message' => 'Field "invalidProp" not found in type "Int"']], 'data' => ['increaseCounter' => null]], $processor->getResponseData());
-        $processor->clearErrors();
 
-        $processor->processRequest('mutation { increaseCounter(amount: 2) }');
+        $processor->processPayload('mutation { increaseCounter(amount: 2) }');
         $this->assertEquals(['data' => ['increaseCounter' => 5]], $processor->getResponseData());
-        $processor->clearErrors();
 
-        $processor->processRequest('{ invalidQuery }');
+        $processor->processPayload('{ invalidQuery }');
         $this->assertEquals(['errors' => [['message' => 'Field "invalidQuery" not found in type "RootQuery"']]], $processor->getResponseData());
-        $processor->clearErrors();
 
-        $processor->processRequest('{ invalidValueQuery }');
-        $this->assertEquals(['errors' => [['message' => 'Not valid resolved value for "TestObject" type']], 'data' => ['invalidValueQuery' => null]], $processor->getResponseData());
-        $processor->clearErrors();
+        $processor->processPayload('{ invalidValueQuery { id } }');
+        $this->assertEquals(['errors' => [['message' => 'Not valid value for OBJECT field invalidValueQuery']], 'data' => ['invalidValueQuery' => null]], $processor->getResponseData());
 
-        $processor->processRequest('{ me { firstName(shorten: true), middle }}');
+        $processor->processPayload('{ me { firstName(shorten: true), middle }}');
         $this->assertEquals(['errors' => [['message' => 'Field "middle" not found in type "User"']], 'data' => ['me' => null]], $processor->getResponseData());
-        $processor->clearErrors();
 
-        $processor->processRequest('{ randomUser { region }}');
+        $processor->processPayload('{ randomUser { region }}');
         $this->assertEquals(['errors' => [['message' => 'Property "region" not found in resolve result']]], $processor->getResponseData());
-        $processor->clearErrors();
 
-        $processor->processRequest('mutation { invalidResolveTypeMutation }');
-        $this->assertEquals(['errors' => [['message' => 'Not valid resolved value for "NON_NULL" type']], 'data' => ['invalidResolveTypeMutation' => null]], $processor->getResponseData());
-        $processor->clearErrors();
+        $processor->processPayload('mutation { invalidResolveTypeMutation }');
+        $this->assertEquals(['errors' => [['message' => 'Cannot return null for non-nullable field invalidResolveTypeMutation']], 'data' => ['invalidResolveTypeMutation' => null]], $processor->getResponseData());
 
-        $processor->processRequest('mutation { user:interfacedMutation { name }  }');
+        $processor->processPayload('mutation { user:interfacedMutation { name }  }');
         $this->assertEquals(['data' => ['user' => ['name' => 'John']]], $processor->getResponseData());
     }
 
     public function testListEnumsSchemaOperations()
     {
-        $processor = new Processor();
-        $processor->setSchema(new Schema([
+        $processor = new Processor(new Schema([
             'query' => new ObjectType([
                 'name'   => 'RootQuery',
                 'fields' => [
@@ -264,47 +292,42 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             ])
         ]));
 
-        $processor->processRequest('{ listQuery }');
+        $processor->processPayload('{ listQuery }');
         $this->assertEquals(['errors' => [
-            ['message' => 'Not valid resolved value for "LIST" type']
+            ['message' => 'Not valid value for LIST field listQuery']
         ], 'data'                     => ['listQuery' => null]], $processor->getResponseData());
-        $processor->clearErrors();
 
-        $processor->processRequest('{ listEnumQuery }');
+        $processor->processPayload('{ listEnumQuery }');
         $this->assertEquals(['errors' => [
             ['message' => 'Not valid resolve value in listEnumQuery field']
-        ], 'data'                     => ['listEnumQuery' => null]], $processor->getResponseData());
-        $processor->clearErrors();
+        ], 'data'                     => ['listEnumQuery' => [null]]], $processor->getResponseData());
 
-        $processor->processRequest('{ invalidEnumQuery }');
+        $processor->processPayload('{ invalidEnumQuery }');
         $this->assertEquals(['errors' => [
-            ['message' => 'Not valid resolved value for "TestEnum" type']
+            ['message' => 'Not valid value for ENUM field invalidEnumQuery']
         ], 'data'                     => ['invalidEnumQuery' => null]], $processor->getResponseData());
-        $processor->clearErrors();
 
-        $processor->processRequest('{ enumQuery }');
+        $processor->processPayload('{ enumQuery }');
         $this->assertEquals(['data' => ['enumQuery' => 'FINISHED']], $processor->getResponseData());
 
-        $processor->processRequest('{ invalidNonNullQuery }');
+        $processor->processPayload('{ invalidNonNullQuery }');
         $this->assertEquals(['errors' => [
-            ['message' => 'Cannot return null for non-nullable field invalidNonNullQuery.invalidNonNullQuery']
+            ['message' => 'Cannot return null for non-nullable field invalidNonNullQuery']
         ], 'data'                     => ['invalidNonNullQuery' => null]], $processor->getResponseData());
-        $processor->clearErrors();
 
-        $processor->processRequest('{ invalidNonNullInsideQuery }');
+        $processor->processPayload('{ invalidNonNullInsideQuery }');
         $this->assertEquals(['errors' => [
             ['message' => 'Not valid value for SCALAR field invalidNonNullInsideQuery']
         ], 'data'                     => ['invalidNonNullInsideQuery' => null]], $processor->getResponseData());
-        $processor->clearErrors();
 
-        $processor->processRequest('{ test:deepObjectQuery { object { name } } }');
+        $processor->processPayload('{ test:deepObjectQuery { object { name } } }');
         $this->assertEquals(['data' => ['test' => ['object' => ['name' => 'John']]]], $processor->getResponseData());
     }
 
     public function testTypedFragment()
     {
-        $processor = new Processor();
-        $object1   = new ObjectType([
+
+        $object1 = new ObjectType([
             'name'   => 'Object1',
             'fields' => [
                 'id' => ['type' => 'int']
@@ -318,7 +341,14 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             ]
         ]);
 
-        $union = new UnionType([
+        $object3 = new ObjectType([
+            'name'   => 'Object3',
+            'fields' => [
+                'name' => ['type' => 'string']
+            ]
+        ]);
+
+        $union        = new UnionType([
             'name'        => 'TestUnion',
             'types'       => [$object1, $object2],
             'resolveType' => function ($object) use ($object1, $object2) {
@@ -329,12 +359,18 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                 return $object2;
             }
         ]);
-
-        $processor->setSchema(new Schema([
+        $invalidUnion = new UnionType([
+            'name'        => 'TestUnion',
+            'types'       => [$object1, $object2],
+            'resolveType' => function ($object) use ($object3) {
+                return $object3;
+            }
+        ]);
+        $processor    = new Processor(new Schema([
             'query' => new ObjectType([
                 'name'   => 'RootQuery',
                 'fields' => [
-                    'union' => [
+                    'union'        => [
                         'type'    => $union,
                         'args'    => [
                             'type' => ['type' => 'string']
@@ -350,33 +386,38 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                                 ];
                             }
                         }
-                    ]
+                    ],
+                    'invalidUnion' => [
+                        'type'    => $invalidUnion,
+                        'resolve' => function () {
+                            return ['name' => 'name resolved'];
+                        }
+                    ],
                 ]
             ])
         ]));
-
-        $processor->processRequest('{ union(type: "object1") { ... on Object2 { id } } }');
+        $processor->processPayload('{ union(type: "object1") { ... on Object2 { id } } }');
         $this->assertEquals(['data' => ['union' => []]], $processor->getResponseData());
-        $processor->clearErrors();
 
-        $processor->processRequest('{ union(type: "object1") { ... on Object1 { name } } }');
+        $processor->processPayload('{ union(type: "object1") { ... on Object1 { name } } }');
         $this->assertEquals([
-            'data' => [
+            'data'   => [
                 'union' => []
             ],
             'errors' => [
                 ['message' => 'Field "name" not found in type "Object1"']
             ]
         ], $processor->getResponseData());
-        $processor->clearErrors();
 
-        $processor->processRequest('{ union(type: "object1") { ... on Object1 { id } } }');
+        $processor->processPayload('{ union(type: "object1") { ... on Object1 { id } } }');
         $this->assertEquals(['data' => ['union' => ['id' => 43]]], $processor->getResponseData());
-        $processor->clearErrors();
 
-        $processor->processRequest('{ union(type: "asd") { ... on Object2 { name } } }');
+        $processor->processPayload('{ union(type: "asd") { ... on Object2 { name } } }');
         $this->assertEquals(['data' => ['union' => ['name' => 'name resolved']]], $processor->getResponseData());
-        $processor->clearErrors();
+
+        $processor->processPayload('{ invalidUnion { ... on Object2 { name } } }');
+        $this->assertEquals(['errors' => [['message' => 'Type Object3 not exist in types of Object2']]], $processor->getResponseData());
+
     }
 
 

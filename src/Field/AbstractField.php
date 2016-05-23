@@ -8,8 +8,8 @@
 namespace Youshido\GraphQL\Field;
 
 use Youshido\GraphQL\Config\Field\FieldConfig;
+use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
-use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\Traits\FieldsArgumentsAwareObjectTrait;
 use Youshido\GraphQL\Type\TypeFactory;
@@ -52,16 +52,17 @@ abstract class AbstractField implements FieldInterface
     }
 
     /**
-     * @param            $value
-     * @param array      $args
-     * @param ObjectType $type
-     *
+     * @param             $value
+     * @param array       $args
+     * @param ResolveInfo $info
      * @return mixed
      */
-    public function resolve($value, $args = [], $type = null)
+    public function resolve($value, array $args, ResolveInfo $info)
     {
         if ($resolveFunc = $this->getConfig()->getResolveFunction()) {
-            return $resolveFunc($value, $args, $this->getType());
+            $info->setReturnType($this->getType());
+
+            return $resolveFunc($value, $args, $info);
         } elseif ($propertyValue = TypeService::getPropertyValue($value, $this->getName())) {
             return $propertyValue;
         }

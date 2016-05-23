@@ -10,7 +10,6 @@ namespace Youshido\Tests\DataProvider;
 
 
 use Youshido\GraphQL\Type\ListType\AbstractListType;
-use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
 class TestListType extends AbstractListType

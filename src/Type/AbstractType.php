@@ -9,6 +9,8 @@
 namespace Youshido\GraphQL\Type;
 
 
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
+
 abstract class AbstractType implements TypeInterface
 {
 
@@ -33,6 +35,9 @@ abstract class AbstractType implements TypeInterface
         return $this->getType();
     }
 
+    /**
+     * @return AbstractType|AbstractObjectType
+     */
     public function getNullableType()
     {
         return $this;

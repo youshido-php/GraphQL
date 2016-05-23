@@ -20,13 +20,19 @@ use Youshido\Tests\DataProvider\TestInterfaceType;
 
 class SchemaValidatorTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @expectedException \Youshido\GraphQL\Validator\Exception\ConfigurationException
+     */
     public function testInvalidSchema()
     {
         $validator = new SchemaValidator();
         $validator->validate(new TestEmptySchema());
-        $this->assertTrue($validator->hasErrors());
     }
 
+    /**
+     * @expectedException \Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedExceptionMessage Implementation of TestInterface is invalid for the field name
+     */
     public function testInvalidInterfacesSimpleType()
     {
         $schema = new Schema([
@@ -46,12 +52,12 @@ class SchemaValidatorTest extends \PHPUnit_Framework_TestCase
 
         $validator = new SchemaValidator();
         $validator->validate($schema);
-        $this->assertEquals([
-            ['message' => 'Implementation of TestInterface is invalid for the field name']
-        ], $validator->getErrorsArray());
     }
 
-
+    /**
+     * @expectedException \Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedExceptionMessage Implementation of TestInterface is invalid for the field name
+     */
     public function testInvalidInterfacesCompositeType()
     {
         $schema = new Schema([
@@ -71,11 +77,12 @@ class SchemaValidatorTest extends \PHPUnit_Framework_TestCase
 
         $validator = new SchemaValidator();
         $validator->validate($schema);
-        $this->assertEquals([
-            ['message' => 'Implementation of TestInterface is invalid for the field name']
-        ], $validator->getErrorsArray());
     }
 
+    /**
+     * @expectedException \Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedExceptionMessage Implementation of TestInterface is invalid for the field name
+     */
     public function testInvalidInterfaces()
     {
         $schema = new Schema([
@@ -95,9 +102,6 @@ class SchemaValidatorTest extends \PHPUnit_Framework_TestCase
 
         $validator = new SchemaValidator();
         $validator->validate($schema);
-        $this->assertEquals([
-            ['message' => 'Implementation of TestInterface is invalid for the field name']
-        ], $validator->getErrorsArray());
     }
 
     public function testValidSchema()
@@ -118,7 +122,12 @@ class SchemaValidatorTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $validator = new SchemaValidator();
-        $validator->validate($schema);
-        $this->assertFalse($validator->hasErrors());
+
+        try {
+            $validator->validate($schema);
+            $this->assertTrue(true);
+        } catch (\Exception $e) {
+            $this->assertTrue(false);
+        }
     }
 }

@@ -39,7 +39,7 @@ $rootQueryType = new ObjectType([
                 'id' => new IntType()
             ],
             // resolve function for the query
-            'resolve' => function ($value, $args, $type) {
+            'resolve' => function () {
                 return [
                     'title'   => 'Title for the latest Post',
                     'summary' => 'Post summary',

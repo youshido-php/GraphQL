@@ -8,8 +8,6 @@
 namespace Youshido\Tests\DataProvider;
 
 
-use Youshido\GraphQL\Type\Scalar\IntType;
-use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\Union\AbstractUnionType;
 
 class TestUnionType extends AbstractUnionType

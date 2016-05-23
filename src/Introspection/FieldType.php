@@ -8,7 +8,6 @@
 namespace Youshido\GraphQL\Introspection;
 
 use Youshido\GraphQL\Field\AbstractField;
-use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
@@ -31,8 +30,7 @@ class FieldType extends AbstractObjectType
             ])
             ->addField('args', [
                 'type'    => new ListType(new InputValueType()),
-                'resolve' => function ($value) {
-                    /** @var $value Field */
+                'resolve' => function (AbstractField $value) {
                     if ($value->getConfig()->hasArguments()) {
                         return $value->getConfig()->getArguments();
                     }
@@ -40,6 +38,11 @@ class FieldType extends AbstractObjectType
                     return [];
                 }
             ]);
+    }
+
+    public function isValidValue($value)
+    {
+        return $value instanceof AbstractField;
     }
 
     /**
