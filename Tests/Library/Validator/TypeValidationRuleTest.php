@@ -29,7 +29,7 @@ class TypeValidationRuleTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->rule = new TypeValidationRule(new ConfigValidator());
+        $this->rule = new TypeValidationRule(ConfigValidator::getInstance());
     }
 
 

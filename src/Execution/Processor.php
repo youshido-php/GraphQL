@@ -222,7 +222,13 @@ class Processor
     {
         $resolveInfo = new ResolveInfo($field, $query->getFields(), $field->getType(), $this->executionContext);
 
-        return $field->resolve($contextValue, $this->parseArgumentsValues($field, $query), $resolveInfo);
+        if ($resolveFunc = $field->getConfig()->getResolveFunction()) {
+            return $resolveFunc($contextValue, $this->parseArgumentsValues($field, $query), $resolveInfo);
+        } elseif ($propertyValue = TypeService::getPropertyValue($contextValue, $field->getName())) {
+            return $propertyValue;
+        } else {
+            return $field->resolve($contextValue, $this->parseArgumentsValues($field, $query), $resolveInfo);
+        }
     }
 
     /**
@@ -251,9 +257,10 @@ class Processor
             $resolved = true;
         }
 
-        if ($field->getConfig()->getResolveFunction()) {
+        if ($resolveFunction = $field->getConfig()->getResolveFunction()) {
             $resolveInfo   = new ResolveInfo($field, [$fieldAst], $field->getType(), $this->executionContext);
-            $resolverValue = $field->resolve($resolved ? $resolverValue : $contextValue, $fieldAst->getKeyValueArguments(), $resolveInfo);
+
+            $resolverValue = $resolveFunction($resolved ? $resolverValue : $contextValue, $fieldAst->getKeyValueArguments(), $resolveInfo);
         }
 
         if (!$resolverValue && !$resolved) {
