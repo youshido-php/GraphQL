@@ -58,7 +58,7 @@ class Parser extends Tokenizer
                     break;
 
                 default:
-                    throw new SyntaxErrorException();
+                    throw new SyntaxErrorException('Incorrect request syntax');
             }
         }
 

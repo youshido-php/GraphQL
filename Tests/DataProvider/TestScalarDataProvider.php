@@ -65,11 +65,11 @@ class TestScalarDataProvider
     {
         return [
             ["string", "string", true],
-            [1, "1", false],
-            [1.1, "1.1", false],
+            [1, "1", true],
+            [1.1, "1.1", true],
             [null, null, false],
-            [true, "true", false],
-            [false, "false", false],
+            [true, "true", true],
+            [false, "false", true],
             [[], null, false],
         ];
     }
