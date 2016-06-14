@@ -21,6 +21,7 @@ use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
+use Youshido\GraphQL\Type\ListType\AbstractListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
@@ -77,7 +78,8 @@ class ResolveValidator implements ResolveValidatorInterface
             }
 
             /** @var AbstractType $argumentType */
-            $argumentType = $field->getArgument($argument->getName())->getType()->getNullableType()->getNamedType();
+            $originalArgumentType = $field->getArgument($argument->getName())->getType();
+            $argumentType         = $field->getArgument($argument->getName())->getType()->getNullableType()->getNamedType();
             if ($argument->getValue() instanceof Variable) {
                 /** @var Variable $variable */
                 $variable = $argument->getValue();
@@ -101,10 +103,16 @@ class ResolveValidator implements ResolveValidatorInterface
 
             }
 
-            if (!$argumentType->isValidValue($argumentType->parseValue($argument->getValue()->getValue()))) {
-                $this->executionContext->addError(new ResolveException(sprintf('Not valid type for argument "%s" in query "%s"', $argument->getName(), $field->getName())));
+            $values = $argument->getValue()->getValue();
+            if (!$originalArgumentType instanceof AbstractListType) {
+                $values = [$values];
+            }
+            foreach($values as $value) {
+                if (!$argumentType->isValidValue($argumentType->parseValue($value))) {
+                    $this->executionContext->addError(new ResolveException(sprintf('Not valid type for argument "%s" in query "%s"', $argument->getName(), $field->getName())));
 
-                return false;
+                    return false;
+                }
             }
 
             if (array_key_exists($argument->getName(), $requiredArguments)) {
