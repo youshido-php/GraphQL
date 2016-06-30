@@ -12,8 +12,8 @@ use Youshido\GraphQL\Parser\Exception\SyntaxErrorException;
 class Tokenizer
 {
     protected $source;
-    protected $pos       = 0;
-    protected $line      = 1;
+    protected $pos = 0;
+    protected $line = 1;
     protected $lineStart = 0;
 
     /** @var  Token */
@@ -33,7 +33,7 @@ class Tokenizer
         $lineStart = $this->lineStart;
 
         /** @var Token $token */
-        $token     = $this->scan();
+        $token = $this->scan();
 
         $token->setLine($line);
         $token->setColumn($this->pos - $lineStart);
@@ -47,7 +47,7 @@ class Tokenizer
             $ch = $this->source[$this->pos];
             if ($ch === ' ' || $ch === "\t") {
                 $this->pos++;
-            } elseif($ch === '#') {
+            } elseif ($ch === '#') {
                 $this->pos++;
                 while (
                     $this->pos < strlen($this->source) &&
@@ -240,10 +240,10 @@ class Tokenizer
 
         $value = substr($this->source, $start, $this->pos - $start);
 
-        if(strpos($value, '.') === false){
-            $value = (int) $value;
+        if (strpos($value, '.') === false) {
+            $value = (int)$value;
         } else {
-            $value = (float) $value;
+            $value = (float)$value;
         }
 
         return new Token(Token::TYPE_NUMBER, $value);
@@ -288,13 +288,26 @@ class Tokenizer
     {
         $this->pos++;
 
-        $value = '';
+        $value         = '';
+        $encodedSymbol = false;
+
         while ($this->pos < strlen($this->source)) {
-            $ch = $this->source[$this->pos];
-            if ($ch === '"' && $this->source[$this->pos - 1] != '\\') {
+            $ch                = $this->source[$this->pos];
+            $encodedWasChanged = false;
+
+            if (!$encodedSymbol && $ch == '\\') {
+                $encodedSymbol     = true;
+                $encodedWasChanged = true;
+            }
+
+            if ($ch === '"' && !$encodedSymbol) {
                 $this->pos++;
 
-                return new Token(Token::TYPE_STRING, $value);
+                return new Token(Token::TYPE_STRING, $this->prepareStringValue($value));
+            }
+
+            if (!$encodedWasChanged && $encodedSymbol) {
+                $encodedSymbol = false;
             }
 
             $value .= $ch;
@@ -302,6 +315,11 @@ class Tokenizer
         }
 
         throw $this->createIllegal();
+    }
+
+    private function prepareStringValue($value)
+    {
+        return str_replace(['\"', '\\\\', '\n'], ['"', '\\', "\n"], $value);
     }
 
     protected function end()

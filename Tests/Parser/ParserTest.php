@@ -12,12 +12,12 @@ use Youshido\GraphQL\Parser\Ast\Field;
 use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Mutation;
+use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
+use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Parser\Value\InputList;
 use Youshido\GraphQL\Parser\Value\InputObject;
 use Youshido\GraphQL\Parser\Value\Literal;
-use Youshido\GraphQL\Parser\Ast\Query;
-use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Parser\Value\Variable;
 
 class ParserTest extends \PHPUnit_Framework_TestCase
@@ -72,6 +72,23 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 }');
 
         $parser->parse();
+    }
+
+    public function testEncodedArguments()
+    {
+        $parser = new Parser();
+
+        $parser->setSource('
+            query {
+              authors (category: "test \" \"") { #asda asd
+                _id
+              }
+            }
+        ');
+
+        $data = $parser->parse();
+
+        $this->assertEquals('test " "', $data['queries'][0]->getArguments()[0]->getValue()->getValue());
     }
 
     public function testComments()

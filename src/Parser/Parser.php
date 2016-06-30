@@ -273,8 +273,12 @@ class Parser extends Tokenizer
             case Token::TYPE_VARIABLE:
                 return $this->parseReference();
 
-            case Token::TYPE_NUMBER:
             case Token::TYPE_STRING:
+                $data = $this->lex()->getData();
+
+                return new Literal($data);
+
+            case Token::TYPE_NUMBER:
             case Token::TYPE_IDENTIFIER:
                 return new Literal($this->lex()->getData());
 
