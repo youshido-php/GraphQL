@@ -9,7 +9,7 @@
 namespace Examples\StarWars;
 
 
-use Youshido\GraphQl\Relay\Connection\ArrayConnection;
+use Youshido\GraphQL\Relay\Connection\ArrayConnection;
 use Youshido\GraphQL\Relay\Connection\Connection;
 use Youshido\GraphQL\Relay\Field\GlobalIdField;
 use Youshido\GraphQL\Relay\NodeInterfaceType;
