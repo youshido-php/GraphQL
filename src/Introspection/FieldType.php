@@ -25,7 +25,7 @@ class FieldType extends AbstractObjectType
             ->addField('type', [
                 'type'    => new QueryType(),
                 'resolve' => function (AbstractField $value) {
-                    return $value->getType()->getNamedType();
+                    return $value->getType();
                 }
             ])
             ->addField('args', [
