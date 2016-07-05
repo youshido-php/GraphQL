@@ -288,26 +288,46 @@ class Tokenizer
     {
         $this->pos++;
 
-        $value         = '';
-        $encodedSymbol = false;
+        $value = '';
 
         while ($this->pos < strlen($this->source)) {
-            $ch                = $this->source[$this->pos];
-            $encodedWasChanged = false;
+            $ch   = $this->source[$this->pos];
+            $code = ord($ch);
 
-            if (!$encodedSymbol && $ch == '\\') {
-                $encodedSymbol     = true;
-                $encodedWasChanged = true;
+            if($code === 92) {
+                $nextCh   = $this->source[$this->pos + 1];
+                $nextCode = ord($nextCh);
+
+                switch ($nextCode) {
+                    case 34: $value .= '"'; break;
+                    case 47: $value .= '\/'; break;
+                    case 92: $value .= '\\'; break;
+                    case 98: $value .= "\b"; break;
+                    case 102: $value .= "\f"; break;
+                    case 110: $value .= "\n"; break;
+                    case 114: $value .= "\r"; break;
+                    case 116: $value .= "\t"; break;
+                    case 117:
+                        $hex = mb_substr($this->source, $this->pos + 1, 4);
+                        if (!preg_match('/[0-9a-fA-F]{4}/', $hex)) {
+                            throw $this->createError('Bad character escape sequence');
+                        }
+
+                        $value .= chr(hexdec($hex));
+                        $this->pos += 4;
+                        break;
+                    default:
+                        throw $this->createError('Bad character escape sequence');
+                }
+
+                $this->pos += 2;
+                $ch   = $this->source[$this->pos];
             }
 
-            if ($ch === '"' && !$encodedSymbol) {
+            if ($ch === '"') {
                 $this->pos++;
 
-                return new Token(Token::TYPE_STRING, $this->prepareStringValue($value));
-            }
-
-            if (!$encodedWasChanged && $encodedSymbol) {
-                $encodedSymbol = false;
+                return new Token(Token::TYPE_STRING, $value);
             }
 
             $value .= $ch;
@@ -315,11 +335,6 @@ class Tokenizer
         }
 
         throw $this->createIllegal();
-    }
-
-    private function prepareStringValue($value)
-    {
-        return str_replace(['\"', '\\\\', '\n'], ['"', '\\', "\n"], $value);
     }
 
     protected function end()
