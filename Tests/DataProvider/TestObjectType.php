@@ -12,6 +12,7 @@ use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
+use Youshido\GraphQL\Type\NonNullType;
 
 class TestObjectType extends AbstractObjectType
 {
@@ -27,7 +28,18 @@ class TestObjectType extends AbstractObjectType
                     'country' => new StringType(),
                     'city'    => new StringType()
                 ],
-            ]));
+            ]))
+            ->addField(
+                'echo', [
+                    'type'    => new StringType(),
+                    'args'    => [
+                        'value' => new NonNullType(new StringType())
+                    ],
+                    'resolve' => function ($value, $args, $info) {
+                        return $args['value'];
+                    }
+                ]
+            );
     }
 
     public function getInterfaces()

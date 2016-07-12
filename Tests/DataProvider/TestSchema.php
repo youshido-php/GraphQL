@@ -12,6 +12,8 @@ namespace Youshido\Tests\DataProvider;
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
 use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Schema\AbstractSchema;
+use Youshido\GraphQL\Type\NonNullType;
+use Youshido\GraphQL\Type\Scalar\StringType;
 
 class TestSchema extends AbstractSchema
 {

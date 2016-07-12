@@ -55,6 +55,23 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
     }
 
+  public function testNestedVariables() {
+    $processor = new Processor(new TestSchema());
+    $no_args_query = '{ me { echo(value:"foo") } }';
+    $expected_data = ['data' => ['me' => ['echo' => 'foo']]];
+    $processor->processPayload($no_args_query, ['value' => 'foo']);
+    $this->assertEquals($expected_data, $processor->getResponseData());
+
+    $parameterized_query =
+        'query nestedQuery($value:String!){
+          me {
+            echo(value:$value)
+          }
+        }';
+    $processor->processPayload($parameterized_query, ['value' => 'foo']);
+    $this->assertEquals($expected_data, $processor->getResponseData());
+  }
+
     public function testListNullResponse()
     {
         $processor = new Processor(new Schema([
