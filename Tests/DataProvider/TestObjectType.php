@@ -8,6 +8,7 @@
 
 namespace Youshido\Tests\DataProvider;
 
+use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
@@ -29,6 +30,23 @@ class TestObjectType extends AbstractObjectType
                     'city'    => new StringType()
                 ],
             ]))
+            ->addField('location', [
+                 'type'    => new ObjectType(
+                     [
+                         'name'   => 'Location',
+                         'fields' => [
+                             'address'    => new StringType()
+                         ]
+                     ]
+                 ),
+                 'args'    => [
+                     'noop' => new IntType()
+                 ],
+                 'resolve' => function ($value, $args, $info) {
+                   return ['address' => '1234 Street'];
+                 }
+             ]
+            )
             ->addField(
                 'echo', [
                     'type'    => new StringType(),

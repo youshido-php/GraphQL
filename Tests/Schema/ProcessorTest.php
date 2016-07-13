@@ -57,19 +57,30 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
   public function testNestedVariables() {
     $processor = new Processor(new TestSchema());
-    $no_args_query = '{ me { echo(value:"foo") } }';
-    $expected_data = ['data' => ['me' => ['echo' => 'foo']]];
-    $processor->processPayload($no_args_query, ['value' => 'foo']);
-    $this->assertEquals($expected_data, $processor->getResponseData());
+    $noArgsQuery = '{ me { echo(value:"foo") } }';
+    $expectedData = ['data' => ['me' => ['echo' => 'foo']]];
+    $processor->processPayload($noArgsQuery, ['value' => 'foo']);
+    $this->assertEquals($expectedData, $processor->getResponseData());
 
-    $parameterized_query =
-        'query nestedQuery($value:String!){
+    $parameterizedFieldQuery =
+        'query nestedFieldQuery($value:String!){
           me {
             echo(value:$value)
           }
         }';
-    $processor->processPayload($parameterized_query, ['value' => 'foo']);
-    $this->assertEquals($expected_data, $processor->getResponseData());
+    $processor->processPayload($parameterizedFieldQuery, ['value' => 'foo']);
+    $this->assertEquals($expectedData, $processor->getResponseData());
+
+    $parameterizedQueryQuery =
+        'query nestedQueryQuery($value:Int){
+          me {
+            location(noop:$value) {
+              address
+            }
+          }
+        }';
+    $processor->processPayload($parameterizedQueryQuery, ['value' => 1]);
+    $this->assertArrayNotHasKey('errors', $processor->getResponseData());
   }
 
     public function testListNullResponse()
