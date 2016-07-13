@@ -258,7 +258,7 @@ class Processor
         }
 
         if ($resolveFunction = $field->getConfig()->getResolveFunction()) {
-            $resolveInfo   = new ResolveInfo($field, [$fieldAst], $field->getType(), $this->executionContext);
+            $resolveInfo = new ResolveInfo($field, [$fieldAst], $field->getType(), $this->executionContext);
 
             $resolverValue = $resolveFunction($resolved ? $resolverValue : $contextValue, $fieldAst->getKeyValueArguments(), $resolveInfo);
         }
@@ -322,18 +322,22 @@ class Processor
 
                 if ($fieldAst->getName() == self::TYPE_NAME_QUERY) {
                     $fieldResolvedValue = [$alias => $queryType->getName()];
-                } elseif ($fieldAst instanceof Query) {
-                    $fieldValue         = $this->processQueryAST($fieldAst, $currentType->getField($fieldAst->getName()), $resolvedValue);
-                    $fieldResolvedValue = [$alias => $fieldValue];
-                } elseif ($fieldAst instanceof FieldAst) {
-
+                } else {
                     if (!$this->resolveValidator->objectHasField($currentType, $fieldAst)) {
                         $fieldResolvedValue = null;
                     } else {
-                        $fieldResolvedValue = [
-                            $alias => $this->processFieldAST($fieldAst, $currentType->getField($fieldAst->getName()), $resolvedValue)
-                        ];
+                        if ($fieldAst instanceof Query) {
+                            $queryAst           = $currentType->getField($fieldAst->getName());
+                            $fieldValue         = $queryAst ? $this->processQueryAST($fieldAst, $queryAst, $resolvedValue) : null;
+                            $fieldResolvedValue = [$alias => $fieldValue];
+                        } elseif ($fieldAst instanceof FieldAst) {
+                            $fieldResolvedValue = [
+                                $alias => $this->processFieldAST($fieldAst, $currentType->getField($fieldAst->getName()), $resolvedValue)
+                            ];
+                        }
                     }
+
+
                 }
             }
 
