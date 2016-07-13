@@ -126,6 +126,10 @@ class Processor
      */
     protected function processQueryAST(Query $query, AbstractField $field, $contextValue = null)
     {
+        if (!$this->resolveValidator->validateArguments($field, $query, $this->executionContext->getRequest())) {
+            return null;
+        }
+
         $resolvedValue = $this->resolveFieldValue($field, $contextValue, $query);
 
         if (!$this->resolveValidator->isValidValueForField($field, $resolvedValue)) {
