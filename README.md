@@ -589,7 +589,7 @@ $postType = new ObjectType([
           'likeCount' => 2,
       ];
   },
-])
+]);
 ```
 
 And in comparison take a look at the Object oriented version with all the same fields:
@@ -607,7 +607,8 @@ class PostType extends AbstractObjectType
     public function build(TypeConfigInterface $config)
     {
         $config
-            ->addField('title', new NonNullType(new StringType()), [
+            ->addField('title', [
+                'type'              => new NonNullType(new StringType()),
                 'description'       => 'This field contains a post title',
                 'isDeprecated'      => true,
                 'deprecationReason' => 'field title is now deprecated',
