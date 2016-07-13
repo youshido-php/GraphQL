@@ -10,6 +10,7 @@ namespace Youshido\GraphQL\Validator\ResolveValidator;
 
 use Youshido\GraphQL\Execution\Request;
 use Youshido\GraphQL\Field\AbstractField;
+use Youshido\GraphQL\Parser\Ast\Field;
 use Youshido\GraphQL\Parser\Ast\Query;
 
 interface ResolveValidatorInterface
@@ -17,7 +18,7 @@ interface ResolveValidatorInterface
 
     /**
      * @param $field     AbstractField
-     * @param $query     Query
+     * @param $query     Query|Field
      * @param $request   Request
      *
      * @return bool

@@ -260,7 +260,13 @@ class Processor
         if ($resolveFunction = $field->getConfig()->getResolveFunction()) {
             $resolveInfo = new ResolveInfo($field, [$fieldAst], $field->getType(), $this->executionContext);
 
-            $resolverValue = $resolveFunction($resolved ? $resolverValue : $contextValue, $fieldAst->getKeyValueArguments(), $resolveInfo);
+            if (!$this->resolveValidator->validateArguments($field, $fieldAst, $this->executionContext->getRequest())) {
+                throw new \Exception(sprintf('Not valid arguments for the field "%s"', $fieldAst->getName()));
+
+            } else {
+                $resolverValue = $resolveFunction($resolved ? $resolverValue : $contextValue, $fieldAst->getKeyValueArguments(), $resolveInfo);
+            }
+
         }
 
         if (!$resolverValue && !$resolved) {
