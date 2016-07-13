@@ -175,19 +175,21 @@ $rootQueryType = new ObjectType([
     // name for the root query type doesn't matter, by the convention it's RootQueryType
     'name'   => 'RootQueryType',
     'fields' => [
-        'latestPost' => new ObjectType([ // the Post type will be extended from the generic ObjectType
-            'name'    => 'Post', // name of our type – "Post"
-            'fields'  => [
-                'title'   => new StringType(),  // defining the "title" field, type - String
-                'summary' => new StringType(),  // defining the "summary" field, also a String type
-            ],
+        'latestPost' => [
+            'type'    => new ObjectType([ // the Post type will be extended from the generic ObjectType
+                'name'    => 'Post', // name of our type – "Post"
+                'fields'  => [
+                    'title'   => new StringType(),  // defining the "title" field, type - String
+                    'summary' => new StringType(),  // defining the "summary" field, also a String type
+                ],
+            ]),
             'resolve' => function () {          // this is a resolve function
                 return [                        // for now it returns a static array with data
                     "title"   => "New approach in API has been revealed",
                     "summary" => "This post describes a new approach to create and maintain APIs",
                 ];
             }
-        ])
+        ]
     ]
 ]);
 ```
@@ -587,7 +589,7 @@ $postType = new ObjectType([
           'likeCount' => 2,
       ];
   },
-])
+]);
 ```
 
 And in comparison take a look at the Object oriented version with all the same fields:
@@ -605,7 +607,8 @@ class PostType extends AbstractObjectType
     public function build(TypeConfigInterface $config)
     {
         $config
-            ->addField('title', new NonNullType(new StringType()), [
+            ->addField('title', [
+                'type'              => new NonNullType(new StringType()),
                 'description'       => 'This field contains a post title',
                 'isDeprecated'      => true,
                 'deprecationReason' => 'field title is now deprecated',
