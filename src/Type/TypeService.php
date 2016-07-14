@@ -122,15 +122,12 @@ class TypeService
     public static function getPropertyValue($data, $path)
     {
         if (is_object($data)) {
-            if (isset($data->$path)) {
-                return $data->$path;
-            }
             $getter = $path;
             if (substr($path, 0, 2) != 'is') {
                 $getter = 'get' . self::classify($path);
             }
 
-            return is_callable([$data, $getter]) ? $data->$getter() : null;
+            return is_callable([$data, $getter]) ? $data->$getter() : (isset($data->$path) ? $data->$path : null);
         } elseif (is_array($data)) {
             return array_key_exists($path, $data) ? $data[$path] : null;
         }
