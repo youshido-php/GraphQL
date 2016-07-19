@@ -93,6 +93,14 @@ abstract class AbstractConfig
         return $this->get('resolve', null);
     }
 
+  /**
+   * @return string|null
+   */
+    public function getResolveString()
+    {
+        return $this->get('resolveString', null);
+    }
+
     protected function build()
     {
     }

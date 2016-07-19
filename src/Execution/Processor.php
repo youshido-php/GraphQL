@@ -47,7 +47,10 @@ class Processor
     /** @var ExecutionContext */
     protected $executionContext;
 
-    public function __construct(AbstractSchema $schema)
+    /** @var ResolveStringResolverInterface */
+    protected $resolverStringResolver;
+
+    public function __construct(AbstractSchema $schema, ResolveStringResolverInterface $resolveStringResolver = null)
     {
         (new SchemaValidator())->validate($schema);
 
@@ -56,6 +59,7 @@ class Processor
         $this->executionContext->setSchema($schema);
 
         $this->resolveValidator = new ResolveValidator($this->executionContext);
+        $this->resolverStringResolver = $resolveStringResolver;
     }
 
 
@@ -226,9 +230,12 @@ class Processor
     {
         $resolveInfo = new ResolveInfo($field, $query->getFields(), $field->getType(), $this->executionContext);
 
-        if ($resolveFunc = $field->getConfig()->getResolveFunction()) {
+        if (($resolveFunc = $field->getConfig()->getResolveFunction()) || (
+            $this->resolverStringResolver && ($resolveString = $field->getConfig()->getResolveString()) && ($resolveFunc = $this->resolverStringResolver->resolve($resolveString))
+            )) {
             return $resolveFunc($contextValue, $this->parseArgumentsValues($field, $query), $resolveInfo);
-        } elseif ($propertyValue = TypeService::getPropertyValue($contextValue, $field->getName())) {
+        }
+        elseif ($propertyValue = TypeService::getPropertyValue($contextValue, $field->getName())) {
             return $propertyValue;
         } else {
             return $field->resolve($contextValue, $this->parseArgumentsValues($field, $query), $resolveInfo);
@@ -261,7 +268,9 @@ class Processor
             $resolved = true;
         }
 
-        if ($resolveFunction = $field->getConfig()->getResolveFunction()) {
+        if (($resolveFunction = $field->getConfig()->getResolveFunction()) || (
+                $this->resolverStringResolver && ($resolveString = $field->getConfig()->getResolveString()) && ($resolveFunction = $this->resolverStringResolver->resolve($resolveString))
+            )) {
             $resolveInfo = new ResolveInfo($field, [$fieldAst], $field->getType(), $this->executionContext);
 
             if (!$this->resolveValidator->validateArguments($field, $fieldAst, $this->executionContext->getRequest())) {
