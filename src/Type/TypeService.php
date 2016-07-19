@@ -27,6 +27,7 @@ class TypeService
     const TYPE_LIST                   = 'list';
     const TYPE_BOOLEAN                = TypeMap::TYPE_BOOLEAN;
     const TYPE_STRING                 = TypeMap::TYPE_STRING;
+    const TYPE_INT                    = TypeMap::TYPE_INT;
     const TYPE_ARRAY                  = 'array';
     const TYPE_ARRAY_OF_FIELDS_CONFIG = 'array_of_fields';
     const TYPE_ARRAY_OF_INPUT_FIELDS  = 'array_of_inputs';

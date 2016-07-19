@@ -10,6 +10,7 @@
 namespace Youshido\GraphQL\Execution;
 
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
+use Youshido\GraphQL\Execution\Visitor\AbstractQueryVisitor;
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Introspection\Field\SchemaField;
@@ -28,6 +29,7 @@ use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
+use Youshido\GraphQL\Type\Union\AbstractUnionType;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidatorInterface;
@@ -47,6 +49,9 @@ class Processor
     /** @var ExecutionContext */
     protected $executionContext;
 
+    /** @var #maxComplexity */
+    protected $maxComplexity;
+
     public function __construct(AbstractSchema $schema)
     {
         (new SchemaValidator())->validate($schema);
@@ -59,7 +64,7 @@ class Processor
     }
 
 
-    public function processPayload($payload, $variables = [])
+    public function processPayload($payload, $variables = [], $reducers = [])
     {
         if ($this->executionContext->hasErrors()) {
             $this->executionContext->clearErrors();
@@ -72,6 +77,13 @@ class Processor
 
             $queryType    = $this->executionContext->getSchema()->getQueryType();
             $mutationType = $this->executionContext->getSchema()->getMutationType();
+
+            if ($this->maxComplexity) {
+                $reducers[] = new \Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor($this->maxComplexity);
+            }
+
+            $this->reduceQuery($queryType, $mutationType, $reducers);
+
             foreach ($this->executionContext->getRequest()->getOperationsInOrder() as $operation) {
                 if ($operationResult = $this->executeOperation($operation, $operation instanceof Mutation ? $mutationType : $queryType)) {
                     $this->data = array_merge($this->data, $operationResult);
@@ -400,5 +412,77 @@ class Processor
         }
 
         return $result;
+    }
+
+    public function setMaxComplexity($max) {
+        $this->maxComplexity = $max;
+    }
+
+    /**
+     * @param AbstractType $queryType
+     * @param AbstractType $mutationType
+     * @param array        $reducers
+     */
+    protected function reduceQuery($queryType, $mutationType, array $reducers) {
+        foreach ($reducers as $reducer) {
+            foreach ($this->executionContext->getRequest()->getOperationsInOrder() as $operation) {
+                $this->doVisit($operation, $operation instanceof Mutation ? $mutationType : $queryType, $reducer);
+            }
+        }
+    }
+
+    /**
+     * @param Query|Field          $query
+     * @param AbstractObjectType   $currentLevelSchema
+     * @param AbstractQueryVisitor $reducer
+     */
+    protected function doVisit(Query $query, $currentLevelSchema, $reducer)
+    {
+        if (!($currentLevelSchema instanceof AbstractObjectType) || !$currentLevelSchema->hasField($query->getName())) {
+            return;
+        }
+
+        if ($operationField = $currentLevelSchema->getField($query->getName())) {
+
+            $reducer->visit($operationField);
+
+            foreach ($this->walkQuery($query, $operationField) as $field) {
+                $reducer->visit($field);
+            }
+        }
+    }
+
+    /**
+     * @param Query         $query
+     * @param AbstractField $currentLevelAST
+     *
+     * @return \Generator
+     */
+    protected function walkQuery($query, AbstractField $currentLevelAST) {
+        foreach ($query->getFields() as $queryField) {
+            if ($queryField instanceof FragmentInterface) {
+                if ($queryField instanceof FragmentReference) {
+                    $queryField = $this->executionContext->getRequest()->getFragment($queryField->getName());
+                }
+
+                foreach (self::walkQuery($queryField, $currentLevelAST) as $yieldResult) {
+                    yield $yieldResult;
+                }
+            } else {
+                $fieldType = $currentLevelAST->getType()->getNamedType();
+                if ($fieldType instanceof AbstractUnionType) {
+                    // TODO
+                } elseif ($fieldType instanceof AbstractObjectType && $fieldAst = $fieldType->getField($queryField->getName())) {
+
+                    yield $fieldAst;
+
+                    if ($queryField instanceof Query) {
+                        foreach (self::walkQuery($queryField, $fieldAst) as $yieldResult) {
+                            yield $yieldResult;
+                        }
+                    }
+                }
+            }
+        }
     }
 }

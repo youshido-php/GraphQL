@@ -60,6 +60,9 @@ class TypeValidationRuleTest extends \PHPUnit_Framework_TestCase
             [TypeService::TYPE_BOOLEAN, false],
             [TypeService::TYPE_BOOLEAN, null, false],
 
+            [TypeService::TYPE_INT, 42],
+            [TypeService::TYPE_INT, new StringType(), false],
+
             [TypeService::TYPE_ARRAY, []],
             [TypeService::TYPE_ARRAY, null, false],
 

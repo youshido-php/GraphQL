@@ -448,5 +448,69 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
     }
 
+    public function testComplexityReducer() {
+      $schema = new Schema(
+          [
+              'query' => new ObjectType(
+                  [
+                      'name'   => 'RootQuery',
+                      'fields' => [
+                          'me' => [
+                              'type'    => new ObjectType(
+                                  [
+                                      'name'   => 'User',
+                                      'fields' => [
+                                          'firstName' => [
+                                              'type'    => new StringType(),
+                                              'args'    => [
+                                                  'shorten' => new BooleanType()
+                                              ],
+                                              'resolve' => function ($value, $args) {
+                                                return empty($args['shorten']) ? $value : $value;
+                                              }
+                                          ],
+                                          'lastName'  => new StringType(),
+                                          'code'      => new StringType(),
+                                          'likes'     => [
+                                              'type'    => new IntType(),
+                                              'cost'    => 10,
+                                              'resolve' => function () {
+                                                return 42;
+                                              }
+                                          ]
+                                      ]
+                                  ]
+                              ),
+                              'resolve' => function ($value, $args) {
+                                $data = ['firstName' => 'John', 'code' => '007'];
+                                if (!empty($args['upper'])) {
+                                  foreach ($data as $key => $value) {
+                                    $data[$key] = strtoupper($value);
+                                  }
+                                }
 
+                                return $data;
+                              },
+                              'args'    => [
+                                  'upper' => [
+                                      'type'    => new BooleanType(),
+                                      'default' => false
+                                  ]
+                              ]
+                          ]
+                      ]
+                  ]
+              )
+          ]
+      );
+      $processor = new Processor($schema);
+
+      $processor->setMaxComplexity(10);
+
+      $processor->processPayload('{ me { firstName, lastName } }');
+      $this->assertArrayNotHasKey('error', $processor->getResponseData());
+
+      $processor->processPayload('{ me { firstname likes { count } } }');
+      $this->assertEquals(['errors' => [['message' => 'query exceeded max allowed complexity of 10']]], $processor->getResponseData());
+    }
 }
