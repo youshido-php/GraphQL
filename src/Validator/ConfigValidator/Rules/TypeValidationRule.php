@@ -46,9 +46,6 @@ class TypeValidationRule implements ValidationRuleInterface
             case TypeService::TYPE_ARRAY:
                 return is_array($data);
 
-            case TypeService::TYPE_INT:
-                return is_int($data);
-
             case TypeService::TYPE_STRING:
                 return TypeFactory::getScalarType($ruleInfo)->isValidValue($data);
 
@@ -200,7 +197,7 @@ class TypeValidationRule implements ValidationRuleInterface
             'resolve'           => ['type' => TypeService::TYPE_CALLABLE],
             'isDeprecated'      => ['type' => TypeService::TYPE_BOOLEAN],
             'deprecationReason' => ['type' => TypeService::TYPE_STRING],
-            'cost'              => ['type' => TypeService::TYPE_INT]
+            'cost'              => ['type' => TypeService::TYPE_ANY]
         ];
     }
 
