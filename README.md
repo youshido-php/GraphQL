@@ -115,10 +115,10 @@ Now you can run `php index.php` and if everything was set up correctly you shou
  }
  ```
 
-If you're having any troubles here are steps to troubleshoot them:
+If you're having any troubles – here are some ideas to troubleshoot them:
 * check that you have the latest composer version (`composer self-update`)
-* your `index.php` file is created in the same directory you have `vendor` folder in (presumably in`graphql-test`)
-* last but not least, you have php-cli installed and running and it's version >= 5.3 (`php -v`)
+* make sure your `index.php` file has been created in the same directory that you have `vendor` folder in (presumably it's `graphql-test` folder)
+* last but not least, check that you have php-cli installed and running and it's version >= 5.5 (`php -v`)
 
 Also, you can always run a script from `examples` folder. Simply run `php vendor/youshido/GraphQL/examples/01_sandbox/index.php`.
 
