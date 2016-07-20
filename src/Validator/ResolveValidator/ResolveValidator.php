@@ -7,6 +7,7 @@
 
 namespace Youshido\GraphQL\Validator\ResolveValidator;
 
+use MongoDB\BSON\Serializable;
 use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Execution\Request;
 use Youshido\GraphQL\Field\AbstractField;
@@ -107,7 +108,7 @@ class ResolveValidator implements ResolveValidatorInterface
             if (!$originalArgumentType instanceof AbstractListType) {
                 $values = [$values];
             }
-            foreach($values as $value) {
+            foreach ($values as $value) {
                 if (!$argumentType->isValidValue($argumentType->parseValue($value))) {
                     $this->executionContext->addError(new ResolveException(sprintf('Not valid type for argument "%s" in query "%s"', $argument->getName(), $field->getName())));
 
@@ -178,11 +179,21 @@ class ResolveValidator implements ResolveValidatorInterface
         }
     }
 
+    public function hasArrayAccess($data)
+    {
+        return is_array($data) ||
+               ($data instanceof \ArrayAccess &&
+                $data instanceof \Traversable &&
+                $data instanceof Serializable &&
+                $data instanceof \Countable);
+    }
+
     public function isValidValueForField(AbstractField $field, $value)
     {
         $fieldType = $field->getType();
         if ($fieldType->getKind() == TypeMap::KIND_NON_NULL && is_null($value)) {
             $this->executionContext->addError(new ResolveException(sprintf('Cannot return null for non-nullable field %s', $field->getName())));
+
             return null;
         } else {
             $fieldType = $this->resolveTypeIfAbstract($fieldType->getNullableType(), $value);
@@ -190,8 +201,10 @@ class ResolveValidator implements ResolveValidatorInterface
 
         if (!is_null($value) && !$fieldType->isValidValue($value)) {
             $this->executionContext->addError(new ResolveException(sprintf('Not valid value for %s field %s', $fieldType->getNullableType()->getKind(), $field->getName())));
+
             return null;
         }
+
         return true;
     }
 
@@ -203,6 +216,7 @@ class ResolveValidator implements ResolveValidatorInterface
 
             if (!$resolvedType) {
                 $this->executionContext->addError(new \Exception('Cannot resolve type'));
+
                 return $type;
             }
             if ($type instanceof AbstractInterfaceType) {
@@ -217,6 +231,7 @@ class ResolveValidator implements ResolveValidatorInterface
 
         return $type;
     }
+
     /**
      * @return ExecutionContextInterface
      */
