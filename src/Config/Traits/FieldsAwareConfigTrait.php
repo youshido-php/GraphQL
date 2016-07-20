@@ -78,21 +78,6 @@ trait FieldsAwareConfigTrait
     }
 
     /**
-     * public function addFieldOld($name, $type, $config = [])
-     * {
-     * if (
-     * isset($this->contextObject)
-     * && method_exists($this->contextObject, 'getKind')
-     * && $this->contextObject->getKind() == TypeMap::KIND_INPUT_OBJECT
-     * ) {
-     * $field = new InputField($config);
-     * } else {
-     * $field = new Field($config);
-     * }
-     * }
-     */
-
-    /**
      * @param $name
      *
      * @return Field
