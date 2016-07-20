@@ -152,7 +152,8 @@ class Processor
 
         $value = [];
         if ($fieldType->getKind() == TypeMap::KIND_LIST) {
-            foreach ((array)$resolvedValue as $resolvedValueItem) {
+            if (!$this->resolveValidator->hasArrayAccess($resolvedValue)) return null;
+            foreach ($resolvedValue as $resolvedValueItem) {
                 $value[] = [];
                 $index   = count($value) - 1;
 
