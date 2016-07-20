@@ -444,11 +444,16 @@ class Processor
 
         if ($operationField = $currentLevelSchema->getField($query->getName())) {
 
-            $reducer->visit($operationField);
+            $coroutine = $this->walkQuery($query, $operationField);
 
-            foreach ($this->walkQuery($query, $operationField) as $field) {
-                $reducer->visit($field);
-            }
+            do {
+                list($queryField, $astField, $childCost) = isset($results) ? $results : $coroutine->current();
+
+                $cost = $reducer->visit($queryField->getKeyValueArguments(), $astField->getConfig(), $childCost);
+
+            } while ($results = $coroutine->send($cost));
+
+            $reducer->visit($query->getKeyValueArguments(), $operationField->getConfig(), $cost);
         }
     }
 
@@ -465,22 +470,25 @@ class Processor
                     $queryField = $this->executionContext->getRequest()->getFragment($queryField->getName());
                 }
 
-                foreach (self::walkQuery($queryField, $currentLevelAST) as $yieldResult) {
-                    yield $yieldResult;
+                foreach ($this->walkQuery($queryField, $currentLevelAST) as $childResults) {
+                    yield $childResults;
                 }
             } else {
                 $fieldType = $currentLevelAST->getType()->getNamedType();
                 if ($fieldType instanceof AbstractUnionType) {
                     // TODO
                 } elseif ($fieldType instanceof AbstractObjectType && $fieldAst = $fieldType->getField($queryField->getName())) {
-
-                    yield $fieldAst;
-
+                    $childScore = 0;
                     if ($queryField instanceof Query) {
-                        foreach (self::walkQuery($queryField, $fieldAst) as $yieldResult) {
-                            yield $yieldResult;
+                        foreach ($this->walkQuery($queryField, $fieldAst) as $childResults) {
+                            // add child score to this node's score
+                            $childResults[2] += $childScore;
+                            // pass control to visitor to generate scores
+                            $childScore += (yield $childResults);
                         }
                     }
+
+                    yield [$queryField, $fieldAst, $childScore];
                 }
             }
         }

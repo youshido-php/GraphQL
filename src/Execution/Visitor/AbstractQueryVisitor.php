@@ -3,7 +3,7 @@
 namespace Youshido\GraphQL\Execution\Visitor;
 
 
-use Youshido\GraphQL\Field\AbstractField;
+use Youshido\GraphQL\Config\Field\FieldConfig;
 
 abstract class AbstractQueryVisitor {
 
@@ -19,5 +19,12 @@ abstract class AbstractQueryVisitor {
     return $this->memo;
   }
 
-  abstract public function visit(AbstractField $field);
+  /**
+   * @param array       $args
+   * @param FieldConfig $fieldConfig
+   * @param int         $childScore
+   *
+   * @return mixed
+   */
+  abstract public function visit(array $args, FieldConfig $fieldConfig, $childScore = 0);
 }

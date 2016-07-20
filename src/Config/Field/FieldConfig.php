@@ -29,6 +29,7 @@ class FieldConfig extends AbstractConfig
             'resolve'           => ['type' => TypeService::TYPE_CALLABLE],
             'isDeprecated'      => ['type' => TypeService::TYPE_BOOLEAN],
             'deprecationReason' => ['type' => TypeService::TYPE_STRING],
+            'cost'              => ['type' => TypeService::TYPE_ANY]
         ];
     }
 

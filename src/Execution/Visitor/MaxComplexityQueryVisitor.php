@@ -3,7 +3,7 @@
 namespace Youshido\GraphQL\Execution\Visitor;
 
 
-use Youshido\GraphQL\Field\AbstractField;
+use Youshido\GraphQL\Config\Field\FieldConfig;
 
 class MaxComplexityQueryVisitor extends AbstractQueryVisitor {
 
@@ -17,15 +17,24 @@ class MaxComplexityQueryVisitor extends AbstractQueryVisitor {
     $this->maxScore = $max;
   }
 
-  public function visit(AbstractField $field) {
-    $cost = $field->getConfig()->get('cost');
+  /**
+   * @param array       $args
+   * @param FieldConfig $fieldConfig
+   * @param int         $childScore
+   *
+   * @return mixed
+   * @throws \Exception
+   */
+  public function visit(array $args, FieldConfig $fieldConfig, $childScore = 0) {
+    $cost = $fieldConfig->get('cost');
     if (is_callable($cost)) {
-      $cost = $cost();
+      $cost = $cost($args, $fieldConfig, $childScore);
     }
-    $this->memo += $cost ?: $this->defaultScore;
+    $cost = $cost ?: $this->defaultScore;
+    $this->memo += $cost;
     if ($this->memo > $this->maxScore) {
       throw new \Exception('query exceeded max allowed complexity of ' . $this->maxScore);
     }
-    return $this->memo;
+    return $cost;
   }
 }
