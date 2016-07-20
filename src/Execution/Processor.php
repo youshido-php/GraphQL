@@ -152,7 +152,7 @@ class Processor
 
         $value = [];
         if ($fieldType->getKind() == TypeMap::KIND_LIST) {
-            foreach ((array)$resolvedValue as $resolvedValueItem) {
+            foreach ($resolvedValue as $resolvedValueItem) {
                 $value[] = [];
                 $index   = count($value) - 1;
 
