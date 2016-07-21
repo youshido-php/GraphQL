@@ -434,7 +434,7 @@ class Processor
 
     /**
      * @param Query|Field          $query
-     * @param AbstractObjectType   $currentLevelSchema
+     * @param AbstractType         $currentLevelSchema
      * @param AbstractQueryVisitor $reducer
      */
     protected function doVisit(Query $query, $currentLevelSchema, $reducer)
@@ -447,18 +447,32 @@ class Processor
 
             $coroutine = $this->walkQuery($query, $operationField);
 
-            do {
-                list($queryField, $astField, $childCost) = isset($results) ? $results : $coroutine->current();
+            if ($results = $coroutine->current()) {
+                $queryCost = 0;
+                while ($results) {
+                    // initial values come from advancing the generator via ->current, subsequent values come from ->send()
+                    list($queryField, $astField, $childCost) = $results;
 
-                $cost = $reducer->visit($queryField->getKeyValueArguments(), $astField->getConfig(), $childCost);
+                    /**
+                     * @var Query|Field $queryField
+                     * @var Field       $astField
+                     */
+                    $cost = $reducer->visit($queryField->getKeyValueArguments(), $astField->getConfig(), $childCost);
+                    $queryCost += $cost;
+                    $results = $coroutine->send($cost);
+                }
 
-            } while ($results = $coroutine->send($cost));
-
-            $reducer->visit($query->getKeyValueArguments(), $operationField->getConfig(), $cost);
+                // whole query ast has been walked, visit top level node and we're done
+                $reducer->visit($this->parseArgumentsValues($operationField, $query), $operationField->getConfig(), $queryCost);
+            }
         }
     }
 
     /**
+     * Coroutine to walk the query and schema in DFS manner and yield a tuple of (queryNode, schemaNode, childScore)
+     *
+     * childScore costs are accumulated via values sent into the coroutine.
+     *
      * @param Query         $query
      * @param AbstractField $currentLevelAST
      *
@@ -479,17 +493,20 @@ class Processor
                 if ($fieldType instanceof AbstractUnionType) {
                     // TODO
                 } elseif ($fieldType instanceof AbstractObjectType && $fieldAst = $fieldType->getField($queryField->getName())) {
-                    $childScore = 0;
+                    $childrenScore = 0;
                     if ($queryField instanceof Query) {
-                        foreach ($this->walkQuery($queryField, $fieldAst) as $childResults) {
-                            // add child score to this node's score
-                            $childResults[2] += $childScore;
+                        $childResults = [];
+                        foreach ($this->walkQuery($queryField, $fieldAst) as $childResult) {
+                            // accumulate results
+                            $childResults[] = $childResult;
+                            $childrenScore += (int) $childResults[2];
+                        }
+                        foreach ($childResults as $childResult) {
                             // pass control to visitor to generate scores
-                            $childScore += (yield $childResults);
+                            $childrenScore += (int) (yield $childResult);
                         }
                     }
-
-                    yield [$queryField, $fieldAst, $childScore];
+                    yield [$queryField, $fieldAst, $childrenScore];
                 }
             }
         }

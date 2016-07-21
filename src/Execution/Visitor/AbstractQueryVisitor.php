@@ -1,4 +1,10 @@
 <?php
+/*
+* Abstract query visitor.
+*
+* @author Ben Roberts <bjr.roberts@gmail.com>
+* created: 7/11/16 11:03 AM
+*/
 
 namespace Youshido\GraphQL\Execution\Visitor;
 
@@ -24,7 +30,7 @@ abstract class AbstractQueryVisitor {
    * @param FieldConfig $fieldConfig
    * @param int         $childScore
    *
-   * @return mixed
+   * @return int|null
    */
   abstract public function visit(array $args, FieldConfig $fieldConfig, $childScore = 0);
 }

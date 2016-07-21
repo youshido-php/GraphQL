@@ -1,4 +1,13 @@
 <?php
+/*
+* Concrete implementation of query visitor.
+*
+* Enforces maximum complexity on a query, computed from "cost" functions on
+* the fields touched by that query.
+*
+* @author Ben Roberts <bjr.roberts@gmail.com>
+* created: 7/11/16 11:05 AM
+*/
 
 namespace Youshido\GraphQL\Execution\Visitor;
 
@@ -22,7 +31,7 @@ class MaxComplexityQueryVisitor extends AbstractQueryVisitor {
    * @param FieldConfig $fieldConfig
    * @param int         $childScore
    *
-   * @return mixed
+   * @return int|null
    * @throws \Exception
    */
   public function visit(array $args, FieldConfig $fieldConfig, $childScore = 0) {
