@@ -481,20 +481,18 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                                       ]
                                   ]
                               ),
+                              'cost' => function ($args, $context, $childCost) {
+                                return 1 + $args['cost'] * $childCost;
+                              },
                               'resolve' => function ($value, $args) {
                                 $data = ['firstName' => 'John', 'code' => '007'];
-                                if (!empty($args['upper'])) {
-                                  foreach ($data as $key => $value) {
-                                    $data[$key] = strtoupper($value);
-                                  }
-                                }
 
                                 return $data;
                               },
                               'args'    => [
-                                  'upper' => [
-                                      'type'    => new BooleanType(),
-                                      'default' => false
+                                  'cost' => [
+                                      'type'    => new IntType(),
+                                      'default' => 1
                                   ]
                               ]
                           ]
@@ -510,7 +508,27 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
       $processor->processPayload('{ me { firstName, lastName } }');
       $this->assertArrayNotHasKey('error', $processor->getResponseData());
 
-      $processor->processPayload('{ me { firstname likes { count } } }');
+      $processor->processPayload('{ me { firstName, likes } }');
       $this->assertEquals(['errors' => [['message' => 'query exceeded max allowed complexity of 10']]], $processor->getResponseData());
+
+      // don't let complexity reducer affect query errors
+      $processor->processPayload('{ me { badfield } }');
+      $this->assertArraySubset(['errors' => [['message' => 'Field "badfield" not found in type "User"']]], $processor->getResponseData());
+
+      foreach (range(1,5) as $cost_multiplier) {
+        $visitor = new \Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor(1000); // arbitrarily high cost
+        $processor->processPayload("{ me (cost: $cost_multiplier) { firstName, lastName, code, likes } }", ['cost' => $cost_multiplier], [$visitor]);
+        $expected = 1 + 13 * (1 + $cost_multiplier);
+        $this->assertEquals($expected, $visitor->getMemo());
+      }
+
+      // TODO
+      /*$query = 'query costQuery ($cost: Int) { me (cost: $cost) { firstName, lastName, code, likes } }';
+      foreach (range(1,5) as $cost_multiplier) {
+        $visitor = new \Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor(1000); // arbitrarily high cost
+        $processor->processPayload($query, ['cost' => $cost_multiplier], [$visitor]);
+        $expected = 1 + 13 * (1 + $cost_multiplier);
+        $this->assertEquals($expected, $visitor->getMemo());
+      }*/
     }
 }
