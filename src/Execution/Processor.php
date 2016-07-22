@@ -484,9 +484,15 @@ class Processor
                 if ($queryField instanceof FragmentReference) {
                     $queryField = $this->executionContext->getRequest()->getFragment($queryField->getName());
                 }
-
-                foreach ($this->walkQuery($queryField, $currentLevelAST) as $childResults) {
-                    yield $childResults;
+                // the next 6 lines are equivalent to `yield from $this->walkQuery(...)` in PHP7.
+                // for backwards compatibility this is equivalent.
+                // This pattern is repeated multiple times in this function, and unfortunately cannot be extracted or
+                // made less verbose.
+                $gen  = $this->walkQuery($queryField, $currentLevelAST);
+                $next = $gen->current();
+                while ($next) {
+                    $received = (yield $next);
+                    $next     = $gen->send($received);
                 }
             } else {
                 $fieldType = $currentLevelAST->getType()->getNamedType();
@@ -496,11 +502,12 @@ class Processor
                         if ($fieldAst = $unionFieldType->getField($queryField->getName())) {
                             $childrenScore = 0;
                             if ($queryField instanceof Query) {
-                                $childResults = [];
-                                foreach ($this->walkQuery($queryField, $fieldAst) as $childResult) {
-                                    // accumulate results
-                                    $childResults[] = $childResult;
-                                    $childrenScore += (int) $childResults[2];
+                                $gen = $this->walkQuery($queryField, $fieldAst);
+                                $next = $gen->current();
+                                while ($next) {
+                                    $received = (yield $next);
+                                    $childrenScore += (int) $received;
+                                    $next = $gen->send($received);
                                 }
                             }
                             yield [$queryField, $fieldAst, $childrenScore];
