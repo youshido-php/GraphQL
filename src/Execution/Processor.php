@@ -491,19 +491,30 @@ class Processor
             } else {
                 $fieldType = $currentLevelAST->getType()->getNamedType();
                 if ($fieldType instanceof AbstractUnionType) {
-                    // TODO
+                    /** @var AbstractUnionType $fieldType */
+                    foreach ($fieldType->getTypes() as $unionFieldType) {
+                        if ($fieldAst = $unionFieldType->getField($queryField->getName())) {
+                            $childrenScore = 0;
+                            if ($queryField instanceof Query) {
+                                $childResults = [];
+                                foreach ($this->walkQuery($queryField, $fieldAst) as $childResult) {
+                                    // accumulate results
+                                    $childResults[] = $childResult;
+                                    $childrenScore += (int) $childResults[2];
+                                }
+                            }
+                            yield [$queryField, $fieldAst, $childrenScore];
+                        }
+                    }
                 } elseif ($fieldType instanceof AbstractObjectType && $fieldAst = $fieldType->getField($queryField->getName())) {
                     $childrenScore = 0;
                     if ($queryField instanceof Query) {
-                        $childResults = [];
-                        foreach ($this->walkQuery($queryField, $fieldAst) as $childResult) {
-                            // accumulate results
-                            $childResults[] = $childResult;
-                            $childrenScore += (int) $childResult[2];
-                        }
-                        foreach ($childResults as $childResult) {
-                            // pass control to visitor to generate scores
-                            $childrenScore += (int) (yield $childResult);
+                        $gen = $this->walkQuery($queryField, $fieldAst);
+                        $next = $gen->current();
+                        while ($next) {
+                            $received = (yield $next);
+                            $childrenScore += (int) $received;
+                            $next = $gen->send($received);
                         }
                     }
                     yield [$queryField, $fieldAst, $childrenScore];
