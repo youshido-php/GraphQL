@@ -499,7 +499,7 @@ class Processor
                         foreach ($this->walkQuery($queryField, $fieldAst) as $childResult) {
                             // accumulate results
                             $childResults[] = $childResult;
-                            $childrenScore += (int) $childResults[2];
+                            $childrenScore += (int) $childResult[2];
                         }
                         foreach ($childResults as $childResult) {
                             // pass control to visitor to generate scores
