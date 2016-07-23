@@ -470,15 +470,15 @@ class Processor
      *
      * childScore costs are accumulated via values sent into the coroutine.
      *
-     * @param Query|Field|FragmentInterface $field
+     * @param Query|Field|FragmentInterface $queryNode
      * @param AbstractField                 $currentLevelAST
      *
      * @return \Generator
      */
-    protected function walkQuery($field, AbstractField $currentLevelAST) {
+    protected function walkQuery($queryNode, AbstractField $currentLevelAST) {
         $childrenScore = 0;
-        if (!($field instanceof FieldAst)) {
-            foreach ($field->getFields() as $queryField) {
+        if (!($queryNode instanceof FieldAst)) {
+            foreach ($queryNode->getFields() as $queryField) {
                 if ($queryField instanceof FragmentInterface) {
                     if ($queryField instanceof FragmentReference) {
                         $queryField = $this->executionContext->getRequest()->getFragment($queryField->getName());
@@ -521,8 +521,8 @@ class Processor
             }
         }
         // sanity check.  don't yield fragments; they don't contribute to cost
-        if ($field instanceof Query || $field instanceof FieldAst) {
-            yield [$field, $currentLevelAST, $childrenScore];
+        if ($queryNode instanceof Query || $queryNode instanceof FieldAst) {
+            yield [$queryNode, $currentLevelAST, $childrenScore];
         }
     }
 }
