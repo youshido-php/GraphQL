@@ -433,7 +433,7 @@ class Processor
     }
 
     /**
-     * @param Query|Field          $query
+     * @param Query                $query
      * @param AbstractType         $currentLevelSchema
      * @param AbstractQueryVisitor $reducer
      */
@@ -454,8 +454,8 @@ class Processor
                     list($queryField, $astField, $childCost) = $results;
 
                     /**
-                     * @var Query|Field $queryField
-                     * @var Field       $astField
+                     * @var Query|FieldAst $queryField
+                     * @var Field          $astField
                      */
                     $cost = $reducer->visit($queryField->getKeyValueArguments(), $astField->getConfig(), $childCost);
                     $queryCost += $cost;
@@ -470,14 +470,14 @@ class Processor
      *
      * childScore costs are accumulated via values sent into the coroutine.
      *
-     * @param Query|Field   $field
-     * @param AbstractField $currentLevelAST
+     * @param Query|Field|FragmentInterface $field
+     * @param AbstractField                 $currentLevelAST
      *
      * @return \Generator
      */
     protected function walkQuery($field, AbstractField $currentLevelAST) {
         $childrenScore = 0;
-        if ($field instanceof Query) {
+        if (!($field instanceof FieldAst)) {
             foreach ($field->getFields() as $queryField) {
                 if ($queryField instanceof FragmentInterface) {
                     if ($queryField instanceof FragmentReference) {
@@ -497,7 +497,6 @@ class Processor
                 } else {
                     $fieldType = $currentLevelAST->getType()->getNamedType();
                     if ($fieldType instanceof AbstractUnionType) {
-                        /** @var AbstractUnionType $fieldType */
                         foreach ($fieldType->getTypes() as $unionFieldType) {
                             if ($fieldAst = $unionFieldType->getField($queryField->getName())) {
                                 $gen  = $this->walkQuery($queryField, $fieldAst);
@@ -507,7 +506,6 @@ class Processor
                                     $childrenScore += (int)$received;
                                     $next = $gen->send($received);
                                 }
-
                             }
                         }
                     } elseif ($fieldType instanceof AbstractObjectType && $fieldAst = $fieldType->getField($queryField->getName())) {
@@ -522,6 +520,9 @@ class Processor
                 }
             }
         }
-        yield [$field, $currentLevelAST, $childrenScore];
+        // sanity check.  don't yield fragments; they don't contribute to cost
+        if ($field instanceof Query || $field instanceof FieldAst) {
+            yield [$field, $currentLevelAST, $childrenScore];
+        }
     }
 }

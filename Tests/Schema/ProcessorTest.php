@@ -358,7 +358,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $object1 = new ObjectType([
             'name'   => 'Object1',
             'fields' => [
-                'id' => ['type' => 'int']
+                'id' => ['type' => 'int', 'cost' => 13]
             ]
         ]);
 
@@ -403,6 +403,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                         'args'    => [
                             'type' => ['type' => 'string']
                         ],
+                        'cost' => 10,
                         'resolve' => function ($value, $args) {
                             if ($args['type'] == 'object1') {
                                 return [
@@ -446,6 +447,18 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('{ invalidUnion { ... on Object2 { name } } }');
         $this->assertEquals(['errors' => [['message' => 'Type Object3 not exist in types of Object2']]], $processor->getResponseData());
 
+        $visitor = new \Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor(1000); // arbitrarily high cost
+        $processor->processPayload('{ union(type: "object1") { ... on Object1 { id } } }', [], [$visitor]);
+        $this->assertEquals(10 + 13, $visitor->getMemo());
+
+        $visitor = new \Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor(1000); // arbitrarily high cost
+        $processor->processPayload('{ union(type: "object1") { ... on Object1 { id }, ... on Object2 { name } } }', [], [$visitor]);
+        $this->assertEquals(10 + 13 + 1, $visitor->getMemo());
+
+        // planning phase currently has no knowledge of what types the union will resolve to, this will have the same score as above
+        $visitor = new \Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor(1000); // arbitrarily high cost
+        $processor->processPayload('{ union(type: "object2") { ... on Object1 { id }, ... on Object2 { name } } }', [], [$visitor]);
+        $this->assertEquals(10 + 13 + 1, $visitor->getMemo());
     }
 
     public function testComplexityReducer() {
@@ -523,7 +536,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $visitor->getMemo());
       }
 
-      // TODO
+      // TODO, variables not yet supported
       /*$query = 'query costQuery ($cost: Int) { me (cost: $cost) { firstName, lastName, code, likes } }';
       foreach (range(1,5) as $cost_multiplier) {
         $visitor = new \Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor(1000); // arbitrarily high cost
