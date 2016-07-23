@@ -49,7 +49,7 @@ class Processor
     /** @var ExecutionContext */
     protected $executionContext;
 
-    /** @var #maxComplexity */
+    /** @var int */
     protected $maxComplexity;
 
     public function __construct(AbstractSchema $schema)
