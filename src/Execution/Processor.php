@@ -461,9 +461,6 @@ class Processor
                     $queryCost += $cost;
                     $results = $coroutine->send($cost);
                 }
-
-                // whole query ast has been walked, visit top level node and we're done
-                $reducer->visit($this->parseArgumentsValues($operationField, $query), $operationField->getConfig(), $queryCost);
             }
         }
     }
@@ -473,60 +470,58 @@ class Processor
      *
      * childScore costs are accumulated via values sent into the coroutine.
      *
-     * @param Query         $query
+     * @param Query|Field   $field
      * @param AbstractField $currentLevelAST
      *
      * @return \Generator
      */
-    protected function walkQuery($query, AbstractField $currentLevelAST) {
-        foreach ($query->getFields() as $queryField) {
-            if ($queryField instanceof FragmentInterface) {
-                if ($queryField instanceof FragmentReference) {
-                    $queryField = $this->executionContext->getRequest()->getFragment($queryField->getName());
-                }
-                // the next 6 lines are equivalent to `yield from $this->walkQuery(...)` in PHP7.
-                // for backwards compatibility this is equivalent.
-                // This pattern is repeated multiple times in this function, and unfortunately cannot be extracted or
-                // made less verbose.
-                $gen  = $this->walkQuery($queryField, $currentLevelAST);
-                $next = $gen->current();
-                while ($next) {
-                    $received = (yield $next);
-                    $next     = $gen->send($received);
-                }
-            } else {
-                $fieldType = $currentLevelAST->getType()->getNamedType();
-                if ($fieldType instanceof AbstractUnionType) {
-                    /** @var AbstractUnionType $fieldType */
-                    foreach ($fieldType->getTypes() as $unionFieldType) {
-                        if ($fieldAst = $unionFieldType->getField($queryField->getName())) {
-                            $childrenScore = 0;
-                            if ($queryField instanceof Query) {
-                                $gen = $this->walkQuery($queryField, $fieldAst);
+    protected function walkQuery($field, AbstractField $currentLevelAST) {
+        $childrenScore = 0;
+        if ($field instanceof Query) {
+            foreach ($field->getFields() as $queryField) {
+                if ($queryField instanceof FragmentInterface) {
+                    if ($queryField instanceof FragmentReference) {
+                        $queryField = $this->executionContext->getRequest()->getFragment($queryField->getName());
+                    }
+                    // the next 7 lines are essentially equivalent to `yield from $this->walkQuery(...)` in PHP7.
+                    // for backwards compatibility this is equivalent.
+                    // This pattern is repeated multiple times in this function, and unfortunately cannot be extracted or
+                    // made less verbose.
+                    $gen  = $this->walkQuery($queryField, $currentLevelAST);
+                    $next = $gen->current();
+                    while ($next) {
+                        $received = (yield $next);
+                        $childrenScore += (int)$received;
+                        $next     = $gen->send($received);
+                    }
+                } else {
+                    $fieldType = $currentLevelAST->getType()->getNamedType();
+                    if ($fieldType instanceof AbstractUnionType) {
+                        /** @var AbstractUnionType $fieldType */
+                        foreach ($fieldType->getTypes() as $unionFieldType) {
+                            if ($fieldAst = $unionFieldType->getField($queryField->getName())) {
+                                $gen  = $this->walkQuery($queryField, $fieldAst);
                                 $next = $gen->current();
                                 while ($next) {
                                     $received = (yield $next);
-                                    $childrenScore += (int) $received;
+                                    $childrenScore += (int)$received;
                                     $next = $gen->send($received);
                                 }
+
                             }
-                            yield [$queryField, $fieldAst, $childrenScore];
                         }
-                    }
-                } elseif ($fieldType instanceof AbstractObjectType && $fieldAst = $fieldType->getField($queryField->getName())) {
-                    $childrenScore = 0;
-                    if ($queryField instanceof Query) {
-                        $gen = $this->walkQuery($queryField, $fieldAst);
+                    } elseif ($fieldType instanceof AbstractObjectType && $fieldAst = $fieldType->getField($queryField->getName())) {
+                        $gen  = $this->walkQuery($queryField, $fieldAst);
                         $next = $gen->current();
                         while ($next) {
                             $received = (yield $next);
-                            $childrenScore += (int) $received;
+                            $childrenScore += (int)$received;
                             $next = $gen->send($received);
                         }
                     }
-                    yield [$queryField, $fieldAst, $childrenScore];
                 }
             }
         }
+        yield [$field, $currentLevelAST, $childrenScore];
     }
 }

@@ -482,7 +482,8 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                                   ]
                               ),
                               'cost' => function ($args, $context, $childCost) {
-                                return 1 + $args['cost'] * $childCost;
+                                $argsCost = isset($args['cost']) ? $args['cost'] : 1;
+                                return 1 + $argsCost * $childCost;
                               },
                               'resolve' => function ($value, $args) {
                                 $data = ['firstName' => 'John', 'code' => '007'];
