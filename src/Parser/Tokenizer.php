@@ -321,7 +321,8 @@ class Tokenizer
                 }
 
                 $this->pos += 2;
-                $ch   = $this->source[$this->pos];
+
+                continue;
             }
 
             if ($ch === '"') {
