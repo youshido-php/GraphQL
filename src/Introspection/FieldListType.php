@@ -23,8 +23,7 @@ class FieldListType extends AbstractListType
     {
         if(!$value || in_array($value->getKind(), [
             TypeMap::KIND_SCALAR,
-            TypeMap::KIND_UNION,
-            TypeMap::KIND_INPUT_OBJECT
+            TypeMap::KIND_UNION
         ])) {
             return null;
         }

@@ -10,6 +10,7 @@ namespace Youshido\GraphQL\Type\Config\Object;
 
 
 use Youshido\GraphQL\Type\Field\Field;
+use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 use Youshido\GraphQL\Type\TypeMap;
 
 class ListTypeConfig extends ObjectTypeConfig
@@ -39,6 +40,10 @@ class ListTypeConfig extends ObjectTypeConfig
 
     public function getFields()
     {
+        if($this->getItem() instanceof AbstractScalarType) {
+            return [];
+        }
+
         return $this->getItemConfig()->getFields();
     }
 
