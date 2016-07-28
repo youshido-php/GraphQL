@@ -180,10 +180,7 @@ class ResolveValidator implements ResolveValidatorInterface
 
     public function hasArrayAccess($data)
     {
-        return is_array($data) ||
-               ($data instanceof \ArrayAccess &&
-                $data instanceof \Traversable &&
-                $data instanceof \Countable);
+        return is_array($data) || $data instanceof \Traversable;
     }
 
     public function isValidValueForField(AbstractField $field, $value)
