@@ -174,6 +174,12 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                             return 'stringValue';
                         }
                     ],
+                    'labels' => [
+                        'type' => new ListType(new StringType()),
+                        'resolve' => function() {
+                            return ['one', 'two'];
+                        }
+                    ]
                 ],
             ])
         ]);
@@ -190,6 +196,9 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $processor->processPayload('{ me(upper:true) { firstName } }');
         $this->assertEquals(['data' => ['me' => ['firstName' => 'JOHN']]], $processor->getResponseData());
+
+        $processor->processPayload('{ labels }');
+        $this->assertEquals(['data' => ['labels' => ['one', 'two']]], $processor->getResponseData());
 
         $schema->getMutationType()
                ->addField(new Field([
