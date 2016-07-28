@@ -7,7 +7,6 @@
 
 namespace Youshido\GraphQL\Validator\ResolveValidator;
 
-use MongoDB\BSON\Serializable;
 use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Execution\Request;
 use Youshido\GraphQL\Field\AbstractField;
@@ -184,7 +183,6 @@ class ResolveValidator implements ResolveValidatorInterface
         return is_array($data) ||
                ($data instanceof \ArrayAccess &&
                 $data instanceof \Traversable &&
-                $data instanceof Serializable &&
                 $data instanceof \Countable);
     }
 
