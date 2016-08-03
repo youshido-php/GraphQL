@@ -827,7 +827,7 @@ Each `UnionType` needs to define a list of types it unites by implementing the `
 
 namespace Examples\Blog\Schema;
 
-use Youshido\GraphQL\Type\Object\AbstractUnionType;
+use Youshido\GraphQL\Type\Union\AbstractUnionType;
 
 class ContentBlockUnion extends AbstractUnionType
 {
