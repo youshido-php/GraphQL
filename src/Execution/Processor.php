@@ -25,6 +25,7 @@ use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
@@ -151,6 +152,7 @@ class Processor
         if (is_null($resolvedValue)) return null;
 
         $value = [];
+
         if ($fieldType->getKind() == TypeMap::KIND_LIST) {
             if (!$this->resolveValidator->hasArrayAccess($resolvedValue)) return null;
             foreach ($resolvedValue as $resolvedValueItem) {
@@ -311,6 +313,10 @@ class Processor
      */
     protected function processQueryFields($query, AbstractType $queryType, $resolvedValue, $value)
     {
+        if ($queryType instanceof AbstractScalarType && !$query->hasFields()) {
+            return $this->getOutputValue($queryType, $resolvedValue);
+        }
+
         foreach ($query->getFields() as $fieldAst) {
             $fieldResolvedValue = null;
 

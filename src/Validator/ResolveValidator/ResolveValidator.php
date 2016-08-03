@@ -7,7 +7,6 @@
 
 namespace Youshido\GraphQL\Validator\ResolveValidator;
 
-use MongoDB\BSON\Serializable;
 use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Execution\Request;
 use Youshido\GraphQL\Field\AbstractField;
@@ -21,6 +20,7 @@ use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Type\AbstractType;
+use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\ListType\AbstractListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
@@ -47,7 +47,7 @@ class ResolveValidator implements ResolveValidatorInterface
      */
     public function objectHasField($objectType, $field)
     {
-        if (!($objectType instanceof AbstractObjectType) || !$objectType->hasField($field->getName())) {
+        if (!(($objectType instanceof AbstractObjectType || $objectType instanceof AbstractInputObjectType)) || !$objectType->hasField($field->getName())) {
             $this->executionContext->addError(new ResolveException(sprintf('Field "%s" not found in type "%s"', $field->getName(), $objectType->getNamedType()->getName())));
 
             return false;
@@ -181,11 +181,7 @@ class ResolveValidator implements ResolveValidatorInterface
 
     public function hasArrayAccess($data)
     {
-        return is_array($data) ||
-               ($data instanceof \ArrayAccess &&
-                $data instanceof \Traversable &&
-                $data instanceof Serializable &&
-                $data instanceof \Countable);
+        return is_array($data) || $data instanceof \Traversable;
     }
 
     public function isValidValueForField(AbstractField $field, $value)
