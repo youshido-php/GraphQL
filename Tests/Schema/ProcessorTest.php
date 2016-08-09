@@ -10,6 +10,7 @@ namespace Youshido\Tests\Schema;
 
 
 use Youshido\GraphQL\Execution\Processor;
+use Youshido\GraphQL\Execution\ResolveStringResolverInterface;
 use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Schema\Schema;
@@ -455,6 +456,30 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('{ invalidUnion { ... on Object2 { name } } }');
         $this->assertEquals(['errors' => [['message' => 'Type Object3 not exist in types of Object2']]], $processor->getResponseData());
 
+    }
+
+    public function testSchemaWithResolveString()
+    {
+        $resolveFactory = $this->prophesize(ResolveStringResolverInterface::class);
+        $resolveFactory->resolve('service_name:get')
+            ->shouldBeCalled()
+            ->willReturn(function () {
+                return 'hello';
+            });
+
+        $processor = new Processor(new Schema([
+            'query' => new ObjectType([
+                'name' => 'RootQuery',
+                'fields' => [
+                    'string' => [
+                        'type' => new StringType(),
+                        'resolveString' => 'service_name:get',
+                    ]
+                ]
+            ])
+        ]), $resolveFactory->reveal());
+        $data = $processor->processPayload(' { string }')->getResponseData();
+        $this->assertEquals(['data' => ['string' => 'hello']], $data);
     }
 
 

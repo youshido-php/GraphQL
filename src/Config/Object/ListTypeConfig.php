@@ -18,6 +18,7 @@ class ListTypeConfig extends ObjectTypeConfig
         return [
             'itemType' => ['type' => TypeService::TYPE_GRAPHQL_TYPE, 'final' => true],
             'resolve'  => ['type' => TypeService::TYPE_CALLABLE],
+            'resolveString'  => ['type' => TypeService::TYPE_STRING],
             'args'     => ['type' => TypeService::TYPE_ARRAY_OF_INPUT_FIELDS],
         ];
     }

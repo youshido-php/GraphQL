@@ -195,6 +195,7 @@ class TypeValidationRule implements ValidationRuleInterface
             'args'              => ['type' => TypeService::TYPE_ARRAY],
             'description'       => ['type' => TypeService::TYPE_STRING],
             'resolve'           => ['type' => TypeService::TYPE_CALLABLE],
+            'resolveString'    => ['type' => TypeService::TYPE_STRING],
             'isDeprecated'      => ['type' => TypeService::TYPE_BOOLEAN],
             'deprecationReason' => ['type' => TypeService::TYPE_STRING],
         ];
