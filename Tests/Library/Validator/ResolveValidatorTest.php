@@ -62,6 +62,22 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
         $validator->assertValidFragmentForField($fragment, $fragmentReference, $userType);
     }
 
+    public function testValidFragmentTypeWithComposite()
+    {
+      $validator = new ResolveValidator(new ExecutionContext());
+      $userType = new ObjectType([
+        'name'       => 'User',
+        'fields'     => [
+          'name' => new StringType(),
+        ],
+        'interfaces' => [new TestInterfaceType()]
+      ]);
+
+      $fragment          = new Fragment('name', 'User', []);
+      $fragmentReference = new FragmentReference('name');
+      $validator->assertValidFragmentForField($fragment, $fragmentReference, new NonNullType($userType));
+    }
+
     /**
      * @expectedException \Youshido\GraphQL\Validator\Exception\ResolveException
      */
