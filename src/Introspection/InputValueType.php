@@ -16,6 +16,12 @@ use Youshido\GraphQL\Type\TypeMap;
 class InputValueType extends AbstractObjectType
 {
 
+    public static function resolveType($value)
+    {
+        /** @var AbstractSchema|Field $value */
+        return $value->getConfig()->getType();
+    }
+
     public function build($config)
     {
         $config
@@ -24,10 +30,7 @@ class InputValueType extends AbstractObjectType
             ->addField(new Field([
                 'name'    => 'type',
                 'type'    => new QueryType(),
-                'resolve' => function ($value) {
-                    /** @var AbstractSchema|Field $value */
-                    return $value->getConfig()->getType();
-                }
+                'resolve' => [get_class($this), 'resolveType']
             ]))
             ->addField('defaultValue', TypeMap::TYPE_STRING);
     }

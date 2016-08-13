@@ -9,6 +9,8 @@
 namespace Youshido\Tests\Schema;
 
 
+use Youshido\GraphQL\Schema\Schema;
+use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
@@ -58,6 +60,23 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
         $schema->addMutationField('changeUser', ['type' => new TestObjectType(), 'resolve' => function () { }]);
         $this->assertEquals(2, count($schema->getMutationType()->getFields()));
 
+    }
+
+    public function testSchemaWithoutClosuresSerializable()
+    {
+        $schema = new TestEmptySchema();
+        $schema->getQueryType()->addField('randomInt', [
+            'type' => new NonNullType(new IntType()),
+            'resolve' => 'rand',
+        ]);
+
+        $serialized = serialize($schema);
+        /** @var Schema $unserialized */
+        $unserialized = unserialize($serialized);
+
+        $this->assertTrue($unserialized->getQueryType()->hasFields());
+        $this->assertFalse($unserialized->getMutationType()->hasFields());
+        $this->assertEquals(1, count($unserialized->getQueryType()->getFields()));
     }
 
 }
