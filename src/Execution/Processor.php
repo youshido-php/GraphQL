@@ -160,9 +160,11 @@ class Processor
      */
     protected function collectValueForQueryWithType(Query $query, AbstractType $fieldType, $resolvedValue)
     {
-        $fieldType = $this->resolveValidator->resolveTypeIfAbstract($fieldType, $resolvedValue);
-        if (is_null($resolvedValue)) return null;
+        if (is_null($resolvedValue)) {
+            return null;
+        }
 
+        $fieldType = $this->resolveValidator->resolveTypeIfAbstract($fieldType, $resolvedValue);
         $value = [];
 
         if ($fieldType->getKind() == TypeMap::KIND_LIST) {
@@ -422,7 +424,8 @@ class Processor
         return $result;
     }
 
-    public function setMaxComplexity($max) {
+    public function setMaxComplexity($max)
+    {
         $this->maxComplexity = $max;
     }
 
@@ -431,7 +434,8 @@ class Processor
      * @param AbstractType $mutationType
      * @param array        $reducers
      */
-    protected function reduceQuery($queryType, $mutationType, array $reducers) {
+    protected function reduceQuery($queryType, $mutationType, array $reducers)
+    {
         foreach ($reducers as $reducer) {
             foreach ($this->executionContext->getRequest()->getOperationsInOrder() as $operation) {
                 $this->doVisit($operation, $operation instanceof Mutation ? $mutationType : $queryType, $reducer);
@@ -482,7 +486,8 @@ class Processor
      *
      * @return \Generator
      */
-    protected function walkQuery($queryNode, AbstractField $currentLevelAST) {
+    protected function walkQuery($queryNode, AbstractField $currentLevelAST)
+    {
         $childrenScore = 0;
         if (!($queryNode instanceof FieldAst)) {
             foreach ($queryNode->getFields() as $queryField) {
@@ -499,7 +504,7 @@ class Processor
                     while ($next) {
                         $received = (yield $next);
                         $childrenScore += (int)$received;
-                        $next     = $gen->send($received);
+                        $next = $gen->send($received);
                     }
                 } else {
                     $fieldType = $currentLevelAST->getType()->getNamedType();
