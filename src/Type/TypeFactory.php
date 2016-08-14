@@ -17,31 +17,31 @@ class TypeFactory
     private static $objectsHash = [];
 
     /**
-     * @param string $typeName
+     * @param string $type
      *
      * @throws ConfigurationException
      * @return AbstractScalarType
      */
-    public static function getScalarType($typeName)
+    public static function getScalarType($type)
     {
-        if (is_object($typeName)) {
-            /** freeing memory */
-            if (!($typeName instanceof AbstractScalarType)) throw new ConfigurationException('Configuration problem with type ' . $typeName);
-            $typeName = $typeName->getName();
-        }
-        if (TypeService::isScalarType($typeName)) {
-            if (empty(self::$objectsHash[$typeName])) {
-                $name = ucfirst($typeName);
-                $name = $name == 'Datetime' ? 'DateTime' : $name;
-                $name = $name == 'Datetimetz' ? 'DateTimeTz' : $name;
+        if (TypeService::isScalarType($type)) {
+            if (is_object($type)) {
+                $typeName = $type->getName();
+                if (empty(self::$objectsHash[$typeName])) {
+                    self::$objectsHash[$typeName] = $type;
+                }
+                return self::$objectsHash[$typeName];
+            }
+            if (empty(self::$objectsHash[$type])) {
+                $name = ucfirst($type);
 
-                $className                    = 'Youshido\GraphQL\Type\Scalar\\' . $name . 'Type';
-                self::$objectsHash[$typeName] = new $className();
+                $className                = 'Youshido\GraphQL\Type\Scalar\\' . $name . 'Type';
+                self::$objectsHash[$type] = new $className();
             }
 
-            return self::$objectsHash[$typeName];
+            return self::$objectsHash[$type];
         } else {
-            return null;
+            throw new ConfigurationException('Configuration problem with type ' . $type);
         }
     }
 
