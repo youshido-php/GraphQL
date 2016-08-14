@@ -35,6 +35,9 @@ class TypeFactory
             if (empty(self::$objectsHash[$type])) {
                 $name = ucfirst($type);
 
+                $name = $name == 'Datetime' ? 'DateTime' : $name;
+                $name = $name == 'Datetimetz' ? 'DateTimeTz' : $name;
+
                 $className                = 'Youshido\GraphQL\Type\Scalar\\' . $name . 'Type';
                 self::$objectsHash[$type] = new $className();
             }
