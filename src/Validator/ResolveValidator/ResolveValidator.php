@@ -20,6 +20,7 @@ use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Type\AbstractType;
+use Youshido\GraphQL\Type\CompositeTypeInterface;
 use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\ListType\AbstractListType;
@@ -174,7 +175,12 @@ class ResolveValidator implements ResolveValidatorInterface
      */
     public function assertValidFragmentForField(Fragment $fragment, FragmentReference $fragmentReference, AbstractType $queryType)
     {
-        if ($fragment->getModel() !== $queryType->getName()) {
+        $innerType = $queryType;
+        while ($innerType->isCompositeType()) {
+          $innerType = $innerType->getTypeOf();
+        }
+
+        if ($fragment->getModel() !== $innerType->getName()) {
             throw new ResolveException(sprintf('Fragment reference "%s" not found on model "%s"', $fragmentReference->getName(), $queryType->getName()));
         }
     }
