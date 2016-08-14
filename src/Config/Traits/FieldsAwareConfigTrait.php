@@ -12,6 +12,7 @@ namespace Youshido\GraphQL\Config\Traits;
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\FieldInterface;
+use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 
 /**
  * Class FieldsAwareTrait
@@ -26,6 +27,18 @@ trait FieldsAwareConfigTrait
         if (!empty($this->data['fields'])) {
             $this->addFields($this->data['fields']);
         }
+    }
+
+    /**
+     * Add fields from passed interface
+     * @param AbstractInterfaceType $interfaceType
+     * @return $this
+     */
+    public function applyInterface(AbstractInterfaceType $interfaceType)
+    {
+        $this->addFields($interfaceType->getFields());
+
+        return $this;
     }
 
     /**
