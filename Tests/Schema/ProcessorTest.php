@@ -17,6 +17,7 @@ use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\BooleanType;
+use Youshido\GraphQL\Type\Scalar\IdType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\Union\UnionType;
@@ -55,50 +56,51 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
     }
 
-  public function testNestedVariables() {
-    $processor = new Processor(new TestSchema());
-    $noArgsQuery = '{ me { echo(value:"foo") } }';
-    $expectedData = ['data' => ['me' => ['echo' => 'foo']]];
-    $processor->processPayload($noArgsQuery, ['value' => 'foo']);
-    $this->assertEquals($expectedData, $processor->getResponseData());
+    public function testNestedVariables()
+    {
+        $processor    = new Processor(new TestSchema());
+        $noArgsQuery  = '{ me { echo(value:"foo") } }';
+        $expectedData = ['data' => ['me' => ['echo' => 'foo']]];
+        $processor->processPayload($noArgsQuery, ['value' => 'foo']);
+        $this->assertEquals($expectedData, $processor->getResponseData());
 
-    $parameterizedFieldQuery =
-        'query nestedFieldQuery($value:String!){
+        $parameterizedFieldQuery =
+            'query nestedFieldQuery($value:String!){
           me {
             echo(value:$value)
           }
         }';
-    $processor->processPayload($parameterizedFieldQuery, ['value' => 'foo']);
-    $this->assertEquals($expectedData, $processor->getResponseData());
+        $processor->processPayload($parameterizedFieldQuery, ['value' => 'foo']);
+        $this->assertEquals($expectedData, $processor->getResponseData());
 
-    $parameterizedQueryQuery =
-        'query nestedQueryQuery($value:Int){
+        $parameterizedQueryQuery =
+            'query nestedQueryQuery($value:Int){
           me {
             location(noop:$value) {
               address
             }
           }
         }';
-    $processor->processPayload($parameterizedQueryQuery, ['value' => 1]);
-    $this->assertArrayNotHasKey('errors', $processor->getResponseData());
-  }
+        $processor->processPayload($parameterizedQueryQuery, ['value' => 1]);
+        $this->assertArrayNotHasKey('errors', $processor->getResponseData());
+    }
 
     public function testListNullResponse()
     {
         $processor = new Processor(new Schema([
             'query' => new ObjectType([
-                'name' => 'RootQuery',
+                'name'   => 'RootQuery',
                 'fields' => [
                     'list' => [
-                        'type' => new ListType(new StringType()),
-                        'resolve' => function() {
+                        'type'    => new ListType(new StringType()),
+                        'resolve' => function () {
                             return null;
                         }
                     ]
                 ]
             ])
         ]));
-        $data = $processor->processPayload(' { list }')->getResponseData();
+        $data      = $processor->processPayload(' { list }')->getResponseData();
         $this->assertEquals(['data' => ['list' => null]], $data);
     }
 
@@ -107,18 +109,18 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     {
         $processor = new Processor(new Schema([
             'query' => new ObjectType([
-                'name' => 'RootQuery',
+                'name'   => 'RootQuery',
                 'fields' => [
                     'list' => [
-                        'type' => new ListType(new StringType()),
-                        'resolve' => function() {
+                        'type'    => new ListType(new StringType()),
+                        'resolve' => function () {
                             return null;
                         }
                     ]
                 ]
             ])
         ]));
-        $data = $processor->processPayload(' { __schema { subscriptionType { name } } }')->getResponseData();
+        $data      = $processor->processPayload(' { __schema { subscriptionType { name } } }')->getResponseData();
         $this->assertEquals(['data' => ['__schema' => ['subscriptionType' => null]]], $data);
     }
 
@@ -141,12 +143,18 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                                         return empty($args['shorten']) ? $value : $value;
                                     }
                                 ],
+                                'id_alias'  => [
+                                    'type'    => new IdType(),
+                                    'resolve' => function ($value) {
+                                        return $value['id'];
+                                    }
+                                ],
                                 'lastName'  => new StringType(),
                                 'code'      => new StringType(),
                             ]
                         ]),
                         'resolve' => function ($value, $args) {
-                            $data = ['firstName' => 'John', 'code' => '007'];
+                            $data = ['id' => '123', 'firstName' => 'John', 'code' => '007'];
                             if (!empty($args['upper'])) {
                                 foreach ($data as $key => $value) {
                                     $data[$key] = strtoupper($value);
@@ -174,9 +182,9 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                             return 'stringValue';
                         }
                     ],
-                    'labels' => [
-                        'type' => new ListType(new StringType()),
-                        'resolve' => function() {
+                    'labels'            => [
+                        'type'    => new ListType(new StringType()),
+                        'resolve' => function () {
                             return ['one', 'two'];
                         }
                     ]
@@ -187,6 +195,9 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $processor->processPayload('{ me { firstName } }');
         $this->assertEquals(['data' => ['me' => ['firstName' => 'John']]], $processor->getResponseData());
+
+        $processor->processPayload('{ me { id_alias } }');
+        $this->assertEquals(['data' => ['me' => ['id_alias' => '123']]], $processor->getResponseData());
 
         $processor->processPayload('{ me { firstName, lastName } }');
         $this->assertEquals(['data' => ['me' => ['firstName' => 'John', 'lastName' => null]]], $processor->getResponseData());
