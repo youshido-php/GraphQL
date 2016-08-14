@@ -252,6 +252,19 @@ class Processor
         $resolved      = false;
         $resolverValue = null;
 
+        if ($resolveFunction = $field->getConfig()->getResolveFunction()) {
+            $resolveInfo = new ResolveInfo($field, [$fieldAst], $field->getType(), $this->executionContext);
+
+            if (!$this->resolveValidator->validateArguments($field, $fieldAst, $this->executionContext->getRequest())) {
+                throw new \Exception(sprintf('Not valid arguments for the field "%s"', $fieldAst->getName()));
+
+            } else {
+                $resolverValue = $resolveFunction($resolved ? $resolverValue : $contextValue, $fieldAst->getKeyValueArguments(), $resolveInfo);
+                $resolved      = true;
+            }
+
+        }
+
         if (is_array($contextValue) && array_key_exists($fieldAst->getName(), $contextValue)) {
             $resolverValue = $contextValue[$fieldAst->getName()];
             $resolved      = true;
@@ -262,18 +275,6 @@ class Processor
 
         if (!$resolved && $field->getType()->getNamedType()->getKind() == TypeMap::KIND_SCALAR) {
             $resolved = true;
-        }
-
-        if ($resolveFunction = $field->getConfig()->getResolveFunction()) {
-            $resolveInfo = new ResolveInfo($field, [$fieldAst], $field->getType(), $this->executionContext);
-
-            if (!$this->resolveValidator->validateArguments($field, $fieldAst, $this->executionContext->getRequest())) {
-                throw new \Exception(sprintf('Not valid arguments for the field "%s"', $fieldAst->getName()));
-
-            } else {
-                $resolverValue = $resolveFunction($resolved ? $resolverValue : $contextValue, $fieldAst->getKeyValueArguments(), $resolveInfo);
-            }
-
         }
 
         if (!$resolverValue && !$resolved) {
