@@ -378,7 +378,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $object1 = new ObjectType([
             'name'   => 'Object1',
             'fields' => [
-                'id' => ['type' => 'int']
+                'id' => ['type' => 'int', 'cost' => 13]
             ]
         ]);
 
@@ -423,6 +423,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                         'args'    => [
                             'type' => ['type' => 'string']
                         ],
+                        'cost' => 10,
                         'resolve' => function ($value, $args) {
                             if ($args['type'] == 'object1') {
                                 return [
@@ -466,7 +467,102 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('{ invalidUnion { ... on Object2 { name } } }');
         $this->assertEquals(['errors' => [['message' => 'Type Object3 not exist in types of Object2']]], $processor->getResponseData());
 
+        $visitor = new \Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor(1000); // arbitrarily high cost
+        $processor->processPayload('{ union(type: "object1") { ... on Object1 { id } } }', [], [$visitor]);
+        $this->assertEquals(10 + 13, $visitor->getMemo());
+
+        $visitor = new \Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor(1000); // arbitrarily high cost
+        $processor->processPayload('{ union(type: "object1") { ... on Object1 { id }, ... on Object2 { name } } }', [], [$visitor]);
+        $this->assertEquals(10 + 13 + 1, $visitor->getMemo());
+
+        // planning phase currently has no knowledge of what types the union will resolve to, this will have the same score as above
+        $visitor = new \Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor(1000); // arbitrarily high cost
+        $processor->processPayload('{ union(type: "object2") { ... on Object1 { id }, ... on Object2 { name } } }', [], [$visitor]);
+        $this->assertEquals(10 + 13 + 1, $visitor->getMemo());
     }
 
+    public function testComplexityReducer() {
+      $schema = new Schema(
+          [
+              'query' => new ObjectType(
+                  [
+                      'name'   => 'RootQuery',
+                      'fields' => [
+                          'me' => [
+                              'type'    => new ObjectType(
+                                  [
+                                      'name'   => 'User',
+                                      'fields' => [
+                                          'firstName' => [
+                                              'type'    => new StringType(),
+                                              'args'    => [
+                                                  'shorten' => new BooleanType()
+                                              ],
+                                              'resolve' => function ($value, $args) {
+                                                return empty($args['shorten']) ? $value : $value;
+                                              }
+                                          ],
+                                          'lastName'  => new StringType(),
+                                          'code'      => new StringType(),
+                                          'likes'     => [
+                                              'type'    => new IntType(),
+                                              'cost'    => 10,
+                                              'resolve' => function () {
+                                                return 42;
+                                              }
+                                          ]
+                                      ]
+                                  ]
+                              ),
+                              'cost' => function ($args, $context, $childCost) {
+                                $argsCost = isset($args['cost']) ? $args['cost'] : 1;
+                                return 1 + $argsCost * $childCost;
+                              },
+                              'resolve' => function ($value, $args) {
+                                $data = ['firstName' => 'John', 'code' => '007'];
 
+                                return $data;
+                              },
+                              'args'    => [
+                                  'cost' => [
+                                      'type'    => new IntType(),
+                                      'default' => 1
+                                  ]
+                              ]
+                          ]
+                      ]
+                  ]
+              )
+          ]
+      );
+      $processor = new Processor($schema);
+
+      $processor->setMaxComplexity(10);
+
+      $processor->processPayload('{ me { firstName, lastName } }');
+      $this->assertArrayNotHasKey('error', $processor->getResponseData());
+
+      $processor->processPayload('{ me { firstName, likes } }');
+      $this->assertEquals(['errors' => [['message' => 'query exceeded max allowed complexity of 10']]], $processor->getResponseData());
+
+      // don't let complexity reducer affect query errors
+      $processor->processPayload('{ me { badfield } }');
+      $this->assertArraySubset(['errors' => [['message' => 'Field "badfield" not found in type "User"']]], $processor->getResponseData());
+
+      foreach (range(1,5) as $cost_multiplier) {
+        $visitor = new \Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor(1000); // arbitrarily high cost
+        $processor->processPayload("{ me (cost: $cost_multiplier) { firstName, lastName, code, likes } }", ['cost' => $cost_multiplier], [$visitor]);
+        $expected = 1 + 13 * (1 + $cost_multiplier);
+        $this->assertEquals($expected, $visitor->getMemo());
+      }
+
+      // TODO, variables not yet supported
+      /*$query = 'query costQuery ($cost: Int) { me (cost: $cost) { firstName, lastName, code, likes } }';
+      foreach (range(1,5) as $cost_multiplier) {
+        $visitor = new \Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor(1000); // arbitrarily high cost
+        $processor->processPayload($query, ['cost' => $cost_multiplier], [$visitor]);
+        $expected = 1 + 13 * (1 + $cost_multiplier);
+        $this->assertEquals($expected, $visitor->getMemo());
+      }*/
+    }
 }
