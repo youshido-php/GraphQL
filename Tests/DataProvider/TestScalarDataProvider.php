@@ -40,7 +40,7 @@ class TestScalarDataProvider
             [-1e100, null, false],
             ['-1.1', -1, false],
             ['one', null, false],
-            [null, null, false],
+            [null, null, true],
             [false, 0, false],
             [true, 1, false],
         ];
@@ -57,6 +57,7 @@ class TestScalarDataProvider
             ['-1.1', -1.1, false],
             ['one', null, false],
             [false, 0.0, false],
+            [null, null, true],
             [true, 1.0, false],
         ];
     }
@@ -84,6 +85,7 @@ class TestScalarDataProvider
             [null, false, false],
             [true, true, true],
             [false, false, true],
+            [null, null, true],
             ["true", true, false],
             ["false", false, false],
         ];
