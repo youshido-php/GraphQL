@@ -22,6 +22,8 @@ class TestSchema extends AbstractSchema
 
     public function build(SchemaConfig $config)
     {
+        parent::build($config);
+
         $config->getQuery()->addFields([
             'me'     => [
                 'type'    => new TestObjectType(),

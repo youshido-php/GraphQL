@@ -25,8 +25,15 @@ class SchemaValidatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidSchema()
     {
+        $schema = new TestEmptySchema();
+
+        // Remove the introspection fields.
+        $schema->getQueryType()->getConfig()
+            ->removeField('__type')
+            ->removeField('__schema');
+
         $validator = new SchemaValidator();
-        $validator->validate(new TestEmptySchema());
+        $validator->validate($schema);
     }
 
     /**

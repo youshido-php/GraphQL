@@ -46,7 +46,8 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
     public function testStandaloneEmptySchema()
     {
         $schema = new TestEmptySchema();
-        $this->assertFalse($schema->getQueryType()->hasFields());
+        $this->assertTrue($schema->getQueryType()->hasFields());
+        $this->assertEquals(2, count($schema->getQueryType()->getFields()));
     }
 
     public function testStandaloneSchema()
@@ -76,7 +77,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($unserialized->getQueryType()->hasFields());
         $this->assertFalse($unserialized->getMutationType()->hasFields());
-        $this->assertEquals(1, count($unserialized->getQueryType()->getFields()));
+        $this->assertEquals(3, count($unserialized->getQueryType()->getFields()));
     }
 
 }

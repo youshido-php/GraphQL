@@ -4,10 +4,13 @@ namespace Examples\StarWars;
 
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema;
+use Youshido\GraphQL\Validator\SchemaValidator\SchemaValidator;
 
 require_once __DIR__ . '/schema-bootstrap.php';
 /** @var Schema\AbstractSchema $schema */
 $schema = new StarWarsRelaySchema();
+
+(new SchemaValidator())->validate($schema);
 
 $processor = new Processor($schema);
 
