@@ -5,10 +5,13 @@ namespace BlogTest;
 use Examples\Blog\Schema\BlogSchema;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
+use Youshido\GraphQL\Validator\SchemaValidator\SchemaValidator;
 
 require_once __DIR__ . '/schema-bootstrap.php';
 /** @var Schema $schema */
 $schema = new BlogSchema();
+
+(new SchemaValidator())->validate($schema);
 
 $processor = new Processor($schema);
 $payload = 'mutation { likePost(id:5) { title(truncated: false), status, likeCount } }';
