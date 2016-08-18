@@ -39,8 +39,6 @@ class MaxComplexityQueryVisitor extends AbstractQueryVisitor {
 
   /**
    * {@inheritdoc}
-   *
-   * @return int the computed cost for this individual node
    */
   public function visit(array $args, FieldConfig $fieldConfig, $childScore = 0) {
     $cost = $fieldConfig->get('cost');
