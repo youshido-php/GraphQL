@@ -12,6 +12,13 @@ namespace Youshido\GraphQL\Type\Scalar;
 class DateTimeType extends AbstractScalarType
 {
 
+    private $format;
+
+    public function __construct($format = 'Y-m-d H:i:s')
+    {
+        $this->format = $format;
+    }
+
     public function getName()
     {
         return 'DateTime';
@@ -27,7 +34,7 @@ class DateTimeType extends AbstractScalarType
             return null;
         }
 
-        return $value->format('Y-m-d H:i:s');
+        return $value->format($this->format);
     }
 
     public function isValidValue($value)
@@ -36,9 +43,9 @@ class DateTimeType extends AbstractScalarType
             return true;
         }
 
-        $d = \DateTime::createFromFormat('Y-m-d H:i:s', $value);
+        $d = \DateTime::createFromFormat($this->format, $value);
 
-        return $d && $d->format('Y-m-d H:i:s') == $value;
+        return $d && $d->format($this->format) == $value;
     }
 
     public function getDescription()

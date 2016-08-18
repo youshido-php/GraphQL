@@ -10,6 +10,7 @@
 namespace Youshido\GraphQL\Execution;
 
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
+use Youshido\GraphQL\Execution\Visitor\AbstractQueryVisitor;
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Introspection\Field\SchemaField;
@@ -25,9 +26,11 @@ use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
+use Youshido\GraphQL\Type\Union\AbstractUnionType;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidatorInterface;
@@ -47,6 +50,9 @@ class Processor
     /** @var ExecutionContext */
     protected $executionContext;
 
+    /** @var int */
+    protected $maxComplexity;
+
     public function __construct(AbstractSchema $schema)
     {
         (new SchemaValidator())->validate($schema);
@@ -59,7 +65,7 @@ class Processor
     }
 
 
-    public function processPayload($payload, $variables = [])
+    public function processPayload($payload, $variables = [], $reducers = [])
     {
         if ($this->executionContext->hasErrors()) {
             $this->executionContext->clearErrors();
@@ -72,6 +78,13 @@ class Processor
 
             $queryType    = $this->executionContext->getSchema()->getQueryType();
             $mutationType = $this->executionContext->getSchema()->getMutationType();
+
+            if ($this->maxComplexity) {
+                $reducers[] = new \Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor($this->maxComplexity);
+            }
+
+            $this->reduceQuery($queryType, $mutationType, $reducers);
+
             foreach ($this->executionContext->getRequest()->getOperationsInOrder() as $operation) {
                 if ($operationResult = $this->executeOperation($operation, $operation instanceof Mutation ? $mutationType : $queryType)) {
                     $this->data = array_merge($this->data, $operationResult);
@@ -147,10 +160,13 @@ class Processor
      */
     protected function collectValueForQueryWithType(Query $query, AbstractType $fieldType, $resolvedValue)
     {
-        $fieldType = $this->resolveValidator->resolveTypeIfAbstract($fieldType, $resolvedValue);
-        if (is_null($resolvedValue)) return null;
+        if (is_null($resolvedValue)) {
+            return null;
+        }
 
+        $fieldType = $this->resolveValidator->resolveTypeIfAbstract($fieldType, $resolvedValue);
         $value = [];
+
         if ($fieldType->getKind() == TypeMap::KIND_LIST) {
             if (!$this->resolveValidator->hasArrayAccess($resolvedValue)) return null;
             foreach ($resolvedValue as $resolvedValueItem) {
@@ -250,6 +266,19 @@ class Processor
         $resolved      = false;
         $resolverValue = null;
 
+        if ($resolveFunction = $field->getConfig()->getResolveFunction()) {
+            $resolveInfo = new ResolveInfo($field, [$fieldAst], $field->getType(), $this->executionContext);
+
+            if (!$this->resolveValidator->validateArguments($field, $fieldAst, $this->executionContext->getRequest())) {
+                throw new \Exception(sprintf('Not valid arguments for the field "%s"', $fieldAst->getName()));
+
+            } else {
+                $resolverValue = $resolveFunction($resolved ? $resolverValue : $contextValue, $fieldAst->getKeyValueArguments(), $resolveInfo);
+                $resolved      = true;
+            }
+
+        }
+
         if (is_array($contextValue) && array_key_exists($fieldAst->getName(), $contextValue)) {
             $resolverValue = $contextValue[$fieldAst->getName()];
             $resolved      = true;
@@ -260,18 +289,6 @@ class Processor
 
         if (!$resolved && $field->getType()->getNamedType()->getKind() == TypeMap::KIND_SCALAR) {
             $resolved = true;
-        }
-
-        if ($resolveFunction = $field->getConfig()->getResolveFunction()) {
-            $resolveInfo = new ResolveInfo($field, [$fieldAst], $field->getType(), $this->executionContext);
-
-            if (!$this->resolveValidator->validateArguments($field, $fieldAst, $this->executionContext->getRequest())) {
-                throw new \Exception(sprintf('Not valid arguments for the field "%s"', $fieldAst->getName()));
-
-            } else {
-                $resolverValue = $resolveFunction($resolved ? $resolverValue : $contextValue, $fieldAst->getKeyValueArguments(), $resolveInfo);
-            }
-
         }
 
         if (!$resolverValue && !$resolved) {
@@ -311,6 +328,10 @@ class Processor
      */
     protected function processQueryFields($query, AbstractType $queryType, $resolvedValue, $value)
     {
+        if ($queryType instanceof AbstractScalarType && !$query->hasFields()) {
+            return $this->getOutputValue($queryType, $resolvedValue);
+        }
+
         foreach ($query->getFields() as $fieldAst) {
             $fieldResolvedValue = null;
 
@@ -401,5 +422,137 @@ class Processor
         }
 
         return $result;
+    }
+
+    /**
+     * Convenience function for attaching a MaxComplexityQueryVisitor($max) to the next processor run
+     *
+     * @param int $max
+     */
+    public function setMaxComplexity($max)
+    {
+        $this->maxComplexity = $max;
+    }
+
+    /**
+     * Apply all of $reducers to this query.  Example reducer operations: checking for maximum query complexity,
+     * performing look-ahead query planning, etc.
+     *
+     * @param AbstractType           $queryType
+     * @param AbstractType           $mutationType
+     * @param AbstractQueryVisitor[] $reducers
+     */
+    protected function reduceQuery($queryType, $mutationType, array $reducers)
+    {
+        foreach ($reducers as $reducer) {
+            foreach ($this->executionContext->getRequest()->getOperationsInOrder() as $operation) {
+                $this->doVisit($operation, $operation instanceof Mutation ? $mutationType : $queryType, $reducer);
+            }
+        }
+    }
+
+    /**
+     * Entry point for the `walkQuery` routine.  Execution bounces between here, where the reducer's ->visit() method
+     * is invoked, and `walkQuery` where we send in the scores from the `visit` call.
+     *
+     * @param Query                $query
+     * @param AbstractType         $currentLevelSchema
+     * @param AbstractQueryVisitor $reducer
+     */
+    protected function doVisit(Query $query, $currentLevelSchema, $reducer)
+    {
+        if (!($currentLevelSchema instanceof AbstractObjectType) || !$currentLevelSchema->hasField($query->getName())) {
+            return;
+        }
+
+        if ($operationField = $currentLevelSchema->getField($query->getName())) {
+
+            $coroutine = $this->walkQuery($query, $operationField);
+
+            if ($results = $coroutine->current()) {
+                $queryCost = 0;
+                while ($results) {
+                    // initial values come from advancing the generator via ->current, subsequent values come from ->send()
+                    list($queryField, $astField, $childCost) = $results;
+
+                    /**
+                     * @var Query|FieldAst $queryField
+                     * @var Field          $astField
+                     */
+                    $cost = $reducer->visit($queryField->getKeyValueArguments(), $astField->getConfig(), $childCost);
+                    $queryCost += $cost;
+                    $results = $coroutine->send($cost);
+                }
+            }
+        }
+    }
+
+    /**
+     * Coroutine to walk the query and schema in DFS manner (see AbstractQueryVisitor docs for more info) and yield a
+     * tuple of (queryNode, schemaNode, childScore)
+     *
+     * childScore costs are accumulated via values sent into the coroutine.
+     *
+     * Most of the branching in this function is just to handle the different types in a query: Queries, Unions,
+     * Fragments (anonymous and named), and Fields.  The core of the function is simple: recurse until we hit the base
+     * case of a Field and yield that back up to the visitor up in `doVisit`.
+     *
+     * @param Query|Field|FragmentInterface $queryNode
+     * @param AbstractField                 $currentLevelAST
+     *
+     * @return \Generator
+     */
+    protected function walkQuery($queryNode, AbstractField $currentLevelAST)
+    {
+        $childrenScore = 0;
+        if (!($queryNode instanceof FieldAst)) {
+            foreach ($queryNode->getFields() as $queryField) {
+                if ($queryField instanceof FragmentInterface) {
+                    if ($queryField instanceof FragmentReference) {
+                        $queryField = $this->executionContext->getRequest()->getFragment($queryField->getName());
+                    }
+                    // the next 7 lines are essentially equivalent to `yield from $this->walkQuery(...)` in PHP7.
+                    // for backwards compatibility this is equivalent.
+                    // This pattern is repeated multiple times in this function, and unfortunately cannot be extracted or
+                    // made less verbose.
+                    $gen  = $this->walkQuery($queryField, $currentLevelAST);
+                    $next = $gen->current();
+                    while ($next) {
+                        $received = (yield $next);
+                        $childrenScore += (int)$received;
+                        $next = $gen->send($received);
+                    }
+                } else {
+                    $fieldType = $currentLevelAST->getType()->getNamedType();
+                    if ($fieldType instanceof AbstractUnionType) {
+                        foreach ($fieldType->getTypes() as $unionFieldType) {
+                            if ($fieldAst = $unionFieldType->getField($queryField->getName())) {
+                                $gen  = $this->walkQuery($queryField, $fieldAst);
+                                $next = $gen->current();
+                                while ($next) {
+                                    $received = (yield $next);
+                                    $childrenScore += (int)$received;
+                                    $next = $gen->send($received);
+                                }
+                            }
+                        }
+                    } elseif ($fieldType instanceof AbstractObjectType && $fieldAst = $fieldType->getField($queryField->getName())) {
+                        $gen  = $this->walkQuery($queryField, $fieldAst);
+                        $next = $gen->current();
+                        while ($next) {
+                            $received = (yield $next);
+                            $childrenScore += (int)$received;
+                            $next = $gen->send($received);
+                        }
+                    }
+                }
+            }
+        }
+        // sanity check.  don't yield fragments; they don't contribute to cost
+        if ($queryNode instanceof Query || $queryNode instanceof FieldAst) {
+            // BASE CASE.  If we're here we're done recursing -
+            // this node is either a field, or a query that we've finished recursing into.
+            yield [$queryNode, $currentLevelAST, $childrenScore];
+        }
     }
 }
