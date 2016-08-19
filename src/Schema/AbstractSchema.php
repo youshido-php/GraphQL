@@ -10,6 +10,8 @@ namespace Youshido\GraphQL\Schema;
 
 
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Introspection\Field\SchemaField;
+use Youshido\GraphQL\Introspection\Field\TypeDefinitionField;
 
 abstract class AbstractSchema
 {
@@ -31,7 +33,11 @@ abstract class AbstractSchema
         $this->build($this->config);
     }
 
-    abstract public function build(SchemaConfig $config);
+    public function build(SchemaConfig $config)
+    {
+        $this->addQueryField(new SchemaField());
+        $this->addQueryField(new TypeDefinitionField());
+    }
 
     public function addQueryField($field, $fieldInfo = null)
     {

@@ -32,15 +32,6 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
     private $_counter = 0;
 
-    /**
-     * @expectedException \Youshido\GraphQL\Validator\Exception\ConfigurationException
-     * @expectedExceptionMessage Schema has to have fields
-     */
-    public function testInit()
-    {
-        new Processor(new TestEmptySchema());
-    }
-
     public function testEmptyQueries()
     {
         $processor = new Processor(new TestSchema());

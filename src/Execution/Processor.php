@@ -55,9 +55,6 @@ class Processor
 
     public function __construct(AbstractSchema $schema)
     {
-        (new SchemaValidator())->validate($schema);
-
-        $this->introduceIntrospectionFields($schema);
         $this->executionContext = new ExecutionContext();
         $this->executionContext->setSchema($schema);
 
@@ -398,15 +395,6 @@ class Processor
         }
 
         return $value;
-    }
-
-    protected function introduceIntrospectionFields(AbstractSchema $schema)
-    {
-        $schemaField = new SchemaField();
-        $schemaField->setSchema($schema);
-
-        $schema->addQueryField($schemaField);
-        $schema->addQueryField(new TypeDefinitionField());
     }
 
     public function getResponseData()

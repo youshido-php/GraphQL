@@ -192,17 +192,17 @@ TEXT;
                         '__schema' => [
                             'types' => [
                                 ['name' => 'TestSchemaQuery', 'fields' => [['name' => 'latest']]],
-                                ['name' => 'Int', 'fields' => null],
-                                ['name' => 'LatestType', 'fields' => [['name' => 'id'], ['name' => 'name']]],
-                                ['name' => 'String', 'fields' => null],
                                 ['name' => '__Schema', 'fields' => [['name' => 'queryType'], ['name' => 'mutationType'], ['name' => 'subscriptionType'], ['name' => 'types'], ['name' => 'directives']]],
                                 ['name' => '__Type', 'fields' => [['name' => 'name'], ['name' => 'kind'], ['name' => 'description'], ['name' => 'ofType'], ['name' => 'inputFields'], ['name' => 'enumValues'], ['name' => 'fields'], ['name' => 'interfaces'], ['name' => 'possibleTypes']]],
+                                ['name' => 'String', 'fields' => null],
                                 ['name' => '__InputValue', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'type'], ['name' => 'defaultValue'],]],
                                 ['name' => '__EnumValue', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'deprecationReason'], ['name' => 'isDeprecated'],]],
                                 ['name' => 'Boolean', 'fields' => null],
                                 ['name' => '__Field', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'isDeprecated'], ['name' => 'deprecationReason'], ['name' => 'type'], ['name' => 'args']]],
                                 ['name' => '__Subscription', 'fields' => [['name' => 'name']]],
                                 ['name' => '__Directive', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'args'], ['name' => 'onOperation'], ['name' => 'onFragment'], ['name' => 'onField']]],
+                                ['name' => 'Int', 'fields' => null],
+                                ['name' => 'LatestType', 'fields' => [['name' => 'id'], ['name' => 'name']]],
                             ]
                         ]
                     ]
