@@ -88,22 +88,25 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
 
     public function testFieldsTrait()
     {
+        $idField = new Field(['name' => 'id', 'type' => new IntType()]);
+        $nameField = new Field(['name' => 'name', 'type' => new StringType()]);
+
         $objectType = new ObjectType([
             'name'        => 'Post',
             'fields'      => [
-                'id' => new IntType()
+                $idField
             ],
             'description' => 'Post type description'
         ]);
         $this->assertTrue($objectType->hasFields());
         $this->assertEquals([
-            'id' => new Field(['name' => 'id', 'type' => new IntType()])
+            'id' => $idField
         ], $objectType->getFields());
 
-        $objectType->addField('name', new StringType());
+        $objectType->addField($nameField);
         $this->assertEquals([
-            'id'   => new Field(['name' => 'id', 'type' => new IntType()]),
-            'name' => new Field(['name' => 'name', 'type' => new StringType()]),
+            'id'   => $idField,
+            'name' => $nameField,
         ], $objectType->getFields());
     }
 

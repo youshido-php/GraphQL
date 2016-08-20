@@ -236,7 +236,10 @@ class Processor
 
             $value = $listValue;
         } else {
-            $value = $this->getOutputValue($field->getType(), $preResolvedValue);//$this->getFieldValidatedValue($field, $preResolvedValue);
+            /**
+             * $this->getOutputValue($field->getType(), $preResolvedValue); decrease performance
+             */
+            $value = $preResolvedValue;
         }
 
         return $value;
@@ -343,6 +346,7 @@ class Processor
                 return $this->getOutputValue($currentType, $resolvedValue);
             } else {
                 $this->executionContext->addError(new ResolveException(sprintf('Fields are not found in query "%s"', $query->getName())));
+
                 return null;
             }
         }
@@ -354,7 +358,8 @@ class Processor
                 $fragment = $fieldAst;
                 if ($fieldAst instanceof FragmentReference) {
                     /** @var Fragment $fragment */
-                    $fragment = $this->executionContext->getRequest()->getFragment($fieldAst->getName());
+                    $fieldAstName = $fieldAst->getName();
+                    $fragment     = $this->executionContext->getRequest()->getFragment($fieldAstName);
                     $this->resolveValidator->assertValidFragmentForField($fragment, $fieldAst, $queryType);
                 } elseif ($fragment->getTypeName() !== $queryType->getName()) {
                     continue;
@@ -363,22 +368,23 @@ class Processor
                 $fragmentValue = $this->processQueryFields($fragment, $queryType, $resolvedValue, $value);
                 $value         = is_array($fragmentValue) ? $fragmentValue : [];
             } else {
-                $alias = $fieldAst->getAlias() ?: $fieldAst->getName();
+                $fieldAstName = $fieldAst->getName();
+                $alias        = $fieldAst->getAlias() ?: $fieldAstName;
 
-                if ($fieldAst->getName() == self::TYPE_NAME_QUERY) {
+                if ($fieldAstName == self::TYPE_NAME_QUERY) {
                     $value[$alias] = $queryType->getName();
                 } else {
-                    $queryAst = $currentType->getField($fieldAst->getName());
-                    if (!$queryAst) {
-                        $this->executionContext->addError(new ResolveException(sprintf('Field "%s" is not found in type "%s"', $fieldAst->getName(), $currentType->getName())));
+                    $field = $currentType->getField($fieldAstName);
+                    if (!$field) {
+                        $this->executionContext->addError(new ResolveException(sprintf('Field "%s" is not found in type "%s"', $fieldAstName, $currentType->getName())));
 
                         return null;
                     }
 
                     if ($fieldAst instanceof Query) {
-                        $value[$alias] = $this->processQueryAST($fieldAst, $queryAst, $resolvedValue);
+                        $value[$alias] = $this->processQueryAST($fieldAst, $field, $resolvedValue);
                     } elseif ($fieldAst instanceof FieldAst) {
-                        $value[$alias] = $this->processFieldAST($fieldAst, $queryAst, $resolvedValue);
+                        $value[$alias] = $this->processFieldAST($fieldAst, $field, $resolvedValue);
                     } else {
                         return $value;
                     }
