@@ -247,7 +247,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['errors' => [['message' => 'Unknown argument "noArg" on field "increaseCounter"']]], $processor->getResponseData());
 
         $processor->processPayload('mutation { increaseCounter(amount: 2) { invalidProp } }');
-        $this->assertEquals(['errors' => [['message' => 'Field "invalidProp" not found in type "Int"']], 'data' => ['increaseCounter' => null]], $processor->getResponseData());
+        $this->assertEquals(['errors' => [['message' => 'Fields are not found in query "increaseCounter"']], 'data' => ['increaseCounter' => null]], $processor->getResponseData());
 
         $processor->processPayload('mutation { increaseCounter(amount: 2) }');
         $this->assertEquals(['data' => ['increaseCounter' => 5]], $processor->getResponseData());
@@ -259,7 +259,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['errors' => [['message' => 'Not valid value for OBJECT field invalidValueQuery']], 'data' => ['invalidValueQuery' => null]], $processor->getResponseData());
 
         $processor->processPayload('{ me { firstName(shorten: true), middle }}');
-        $this->assertEquals(['errors' => [['message' => 'Field "middle" not found in type "User"']], 'data' => ['me' => null]], $processor->getResponseData());
+        $this->assertEquals(['errors' => [['message' => 'Field "middle" is not found in type "User"']], 'data' => ['me' => null]], $processor->getResponseData());
 
         $processor->processPayload('{ randomUser { region }}');
         $this->assertEquals(['errors' => [['message' => 'Property "region" not found in resolve result']]], $processor->getResponseData());
@@ -454,7 +454,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                 'union' => []
             ],
             'errors' => [
-                ['message' => 'Field "name" not found in type "Object1"']
+                ['message' => 'Field "name" is not found in type "Object1"']
             ]
         ], $processor->getResponseData());
 
@@ -547,7 +547,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
       // don't let complexity reducer affect query errors
       $processor->processPayload('{ me { badfield } }');
-      $this->assertArraySubset(['errors' => [['message' => 'Field "badfield" not found in type "User"']]], $processor->getResponseData());
+      $this->assertArraySubset(['errors' => [['message' => 'Field "badfield" is not found in type "User"']]], $processor->getResponseData());
 
       foreach (range(1,5) as $cost_multiplier) {
         $visitor = new \Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor(1000); // arbitrarily high cost

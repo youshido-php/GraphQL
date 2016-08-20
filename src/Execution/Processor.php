@@ -11,6 +11,7 @@ namespace Youshido\GraphQL\Execution;
 
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Visitor\AbstractQueryVisitor;
+use Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor;
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Introspection\Field\SchemaField;
@@ -80,7 +81,7 @@ class Processor
             $mutationType = $this->executionContext->getSchema()->getMutationType();
 
             if ($this->maxComplexity) {
-                $reducers[] = new \Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor($this->maxComplexity);
+                $reducers[] = new MaxComplexityQueryVisitor($this->maxComplexity);
             }
 
             $this->reduceQuery($queryType, $mutationType, $reducers);
@@ -165,21 +166,30 @@ class Processor
         }
 
         $fieldType = $this->resolveValidator->resolveTypeIfAbstract($fieldType, $resolvedValue);
-        $value = [];
+        $value     = [];
 
         if ($fieldType->getKind() == TypeMap::KIND_LIST) {
             if (!$this->resolveValidator->hasArrayAccess($resolvedValue)) return null;
+
+            $namedType          = $fieldType->getNamedType();
+            $isAbstract         = TypeService::isAbstractType($namedType);
+            $validItemStructure = false;
+
             foreach ($resolvedValue as $resolvedValueItem) {
                 $value[] = [];
                 $index   = count($value) - 1;
 
+                if ($isAbstract) {
+                    $namedType = $this->resolveValidator->resolveAbstractType($fieldType->getNamedType(), $resolvedValueItem);
+                }
 
-                $namedType = $fieldType->getNamedType();
-                $namedType = $this->resolveValidator->resolveTypeIfAbstract($namedType, $resolvedValueItem);
-                if (!$namedType->isValidValue($resolvedValueItem)) {
-                    $this->executionContext->addError(new ResolveException(sprintf('Not valid resolve value in %s field', $query->getName())));
-                    $value[$index] = null;
-                    continue;
+                if (!$validItemStructure) {
+                    if (!$namedType->isValidValue($resolvedValueItem)) {
+                        $this->executionContext->addError(new ResolveException(sprintf('Not valid resolve value in %s field', $query->getName())));
+                        $value[$index] = null;
+                        continue;
+                    }
+                    $validItemStructure = true;
                 }
 
                 $value[$index] = $this->processQueryFields($query, $namedType, $resolvedValueItem, $value[$index]);
@@ -212,9 +222,9 @@ class Processor
 
         if ($fieldType->getKind() == TypeMap::KIND_LIST) {
             $listValue = [];
-            foreach ($preResolvedValue as $resolvedValueItem) {
-                $type = $fieldType->getNamedType();
+            $type      = $fieldType->getNamedType();
 
+            foreach ($preResolvedValue as $resolvedValueItem) {
                 if (!$type->isValidValue($resolvedValueItem)) {
                     $this->executionContext->addError(new ResolveException(sprintf('Not valid resolve value in %s field', $field->getName())));
 
@@ -226,7 +236,7 @@ class Processor
 
             $value = $listValue;
         } else {
-            $value = $this->getFieldValidatedValue($field, $preResolvedValue);
+            $value = $this->getOutputValue($field->getType(), $preResolvedValue);//$this->getFieldValidatedValue($field, $preResolvedValue);
         }
 
         return $value;
@@ -285,9 +295,7 @@ class Processor
         } elseif (is_object($contextValue)) {
             $resolverValue = TypeService::getPropertyValue($contextValue, $fieldAst->getName());
             $resolved      = true;
-        }
-
-        if (!$resolved && $field->getType()->getNamedType()->getKind() == TypeMap::KIND_SCALAR) {
+        } elseif (!$resolved && $field->getType()->getNamedType()->getKind() == TypeMap::KIND_SCALAR) {
             $resolved = true;
         }
 
@@ -328,12 +336,18 @@ class Processor
      */
     protected function processQueryFields($query, AbstractType $queryType, $resolvedValue, $value)
     {
-        if ($queryType instanceof AbstractScalarType && !$query->hasFields()) {
-            return $this->getOutputValue($queryType, $resolvedValue);
+        $currentType = $queryType->getNullableType();
+
+        if ($currentType->getKind() == TypeMap::KIND_SCALAR) {
+            if (!$query->hasFields()) {
+                return $this->getOutputValue($currentType, $resolvedValue);
+            } else {
+                $this->executionContext->addError(new ResolveException(sprintf('Fields are not found in query "%s"', $query->getName())));
+                return null;
+            }
         }
 
         foreach ($query->getFields() as $fieldAst) {
-            $fieldResolvedValue = null;
 
             if ($fieldAst instanceof FragmentInterface) {
                 /** @var TypedFragmentReference $fragment */
@@ -346,34 +360,31 @@ class Processor
                     continue;
                 }
 
-                $fragmentValue      = $this->processQueryFields($fragment, $queryType, $resolvedValue, $value);
-                $fieldResolvedValue = is_array($fragmentValue) ? $fragmentValue : [];
+                $fragmentValue = $this->processQueryFields($fragment, $queryType, $resolvedValue, $value);
+                $value         = is_array($fragmentValue) ? $fragmentValue : [];
             } else {
-                $alias       = $fieldAst->getAlias() ?: $fieldAst->getName();
-                $currentType = $queryType->getNullableType();
+                $alias = $fieldAst->getAlias() ?: $fieldAst->getName();
 
                 if ($fieldAst->getName() == self::TYPE_NAME_QUERY) {
-                    $fieldResolvedValue = [$alias => $queryType->getName()];
+                    $value[$alias] = $queryType->getName();
                 } else {
-                    if (!$this->resolveValidator->objectHasField($currentType, $fieldAst)) {
-                        $fieldResolvedValue = null;
-                    } else {
-                        if ($fieldAst instanceof Query) {
-                            $queryAst           = $currentType->getField($fieldAst->getName());
-                            $fieldValue         = $queryAst ? $this->processQueryAST($fieldAst, $queryAst, $resolvedValue) : null;
-                            $fieldResolvedValue = [$alias => $fieldValue];
-                        } elseif ($fieldAst instanceof FieldAst) {
-                            $fieldResolvedValue = [
-                                $alias => $this->processFieldAST($fieldAst, $currentType->getField($fieldAst->getName()), $resolvedValue)
-                            ];
-                        }
+                    $queryAst = $currentType->getField($fieldAst->getName());
+                    if (!$queryAst) {
+                        $this->executionContext->addError(new ResolveException(sprintf('Field "%s" is not found in type "%s"', $fieldAst->getName(), $currentType->getName())));
+
+                        return null;
                     }
 
-
+                    if ($fieldAst instanceof Query) {
+                        $value[$alias] = $this->processQueryAST($fieldAst, $queryAst, $resolvedValue);
+                    } elseif ($fieldAst instanceof FieldAst) {
+                        $value[$alias] = $this->processFieldAST($fieldAst, $queryAst, $resolvedValue);
+                    } else {
+                        return $value;
+                    }
                 }
             }
 
-            $value = $this->collectValue($value, $fieldResolvedValue);
         }
 
         return $value;
@@ -387,17 +398,6 @@ class Processor
     protected function getOutputValue(AbstractType $type, $value)
     {
         return in_array($type->getKind(), [TypeMap::KIND_OBJECT, TypeMap::KIND_NON_NULL]) ? $value : $type->serialize($value);
-    }
-
-    protected function collectValue($value, $queryValue)
-    {
-        if ($queryValue && is_array($queryValue)) {
-            $value = array_merge(is_array($value) ? $value : [], $queryValue);
-        } else {
-            $value = $queryValue;
-        }
-
-        return $value;
     }
 
     protected function introduceIntrospectionFields(AbstractSchema $schema)

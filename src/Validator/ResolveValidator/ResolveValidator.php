@@ -212,26 +212,32 @@ class ResolveValidator implements ResolveValidatorInterface
 
     public function resolveTypeIfAbstract(AbstractType $type, $resolvedValue)
     {
-        if (TypeService::isAbstractType($type)) {
-            /** @var AbstractInterfaceType $type */
-            $resolvedType = $type->resolveType($resolvedValue);
+        return TypeService::isAbstractType($type) ? $this->resolveAbstractType($type, $resolvedValue) : $type;
+    }
 
-            if (!$resolvedType) {
-                $this->executionContext->addError(new \Exception('Cannot resolve type'));
+    /**
+     * @param AbstractType $type
+     * @param              $resolvedValue
+     * @return AbstractObjectType
+     * @throws ResolveException
+     */
+    public function resolveAbstractType(AbstractType $type, $resolvedValue)
+    {
+        /** @var AbstractInterfaceType $type */
+        $resolvedType = $type->resolveType($resolvedValue);
 
-                return $type;
-            }
-            if ($type instanceof AbstractInterfaceType) {
-                $this->assertTypeImplementsInterface($resolvedType, $type);
-            } else {
-                /** @var AbstractUnionType $type */
-                $this->assertTypeInUnionTypes($resolvedType, $type);
-            }
+        if (!$resolvedType) {
+            $this->executionContext->addError(new \Exception('Cannot resolve type'));
 
-            return $resolvedType;
+            return $type;
         }
-
-        return $type;
+        if ($type instanceof AbstractInterfaceType) {
+            $this->assertTypeImplementsInterface($resolvedType, $type);
+        } else {
+            /** @var AbstractUnionType $type */
+            $this->assertTypeInUnionTypes($resolvedType, $type);
+        }
+        return $resolvedType;
     }
 
     /**
