@@ -193,6 +193,9 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         ]);
         $processor = new Processor($schema);
 
+        $processor->processPayload('{ me }');
+        $this->assertArrayHasKey('errors', $processor->getResponseData());
+
         $processor->processPayload('{ me { firstName } }');
         $this->assertEquals(['data' => ['me' => ['firstName' => 'John']]], $processor->getResponseData());
 
