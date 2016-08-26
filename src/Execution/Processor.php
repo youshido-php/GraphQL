@@ -430,15 +430,23 @@ class Processor
         return $result;
     }
 
+    /**
+     * Convenience function for attaching a MaxComplexityQueryVisitor($max) to the next processor run
+     *
+     * @param int $max
+     */
     public function setMaxComplexity($max)
     {
         $this->maxComplexity = $max;
     }
 
     /**
-     * @param AbstractType $queryType
-     * @param AbstractType $mutationType
-     * @param array        $reducers
+     * Apply all of $reducers to this query.  Example reducer operations: checking for maximum query complexity,
+     * performing look-ahead query planning, etc.
+     *
+     * @param AbstractType           $queryType
+     * @param AbstractType           $mutationType
+     * @param AbstractQueryVisitor[] $reducers
      */
     protected function reduceQuery($queryType, $mutationType, array $reducers)
     {
@@ -450,6 +458,9 @@ class Processor
     }
 
     /**
+     * Entry point for the `walkQuery` routine.  Execution bounces between here, where the reducer's ->visit() method
+     * is invoked, and `walkQuery` where we send in the scores from the `visit` call.
+     *
      * @param Query                $query
      * @param AbstractType         $currentLevelSchema
      * @param AbstractQueryVisitor $reducer
@@ -483,9 +494,14 @@ class Processor
     }
 
     /**
-     * Coroutine to walk the query and schema in DFS manner and yield a tuple of (queryNode, schemaNode, childScore)
+     * Coroutine to walk the query and schema in DFS manner (see AbstractQueryVisitor docs for more info) and yield a
+     * tuple of (queryNode, schemaNode, childScore)
      *
      * childScore costs are accumulated via values sent into the coroutine.
+     *
+     * Most of the branching in this function is just to handle the different types in a query: Queries, Unions,
+     * Fragments (anonymous and named), and Fields.  The core of the function is simple: recurse until we hit the base
+     * case of a Field and yield that back up to the visitor up in `doVisit`.
      *
      * @param Query|Field|FragmentInterface $queryNode
      * @param AbstractField                 $currentLevelAST
@@ -540,6 +556,8 @@ class Processor
         }
         // sanity check.  don't yield fragments; they don't contribute to cost
         if ($queryNode instanceof Query || $queryNode instanceof FieldAst) {
+            // BASE CASE.  If we're here we're done recursing -
+            // this node is either a field, or a query that we've finished recursing into.
             yield [$queryNode, $currentLevelAST, $childrenScore];
         }
     }
