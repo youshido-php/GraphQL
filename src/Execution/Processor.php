@@ -409,8 +409,6 @@ class Processor
     protected function introduceIntrospectionFields(AbstractSchema $schema)
     {
         $schemaField = new SchemaField();
-        $schemaField->setSchema($schema);
-
         $schema->addQueryField($schemaField);
         $schema->addQueryField(new TypeDefinitionField());
     }

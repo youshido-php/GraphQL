@@ -24,8 +24,9 @@ class TypeDefinitionField extends AbstractField
 
     public function resolve($value = null, array $args, ResolveInfo $info)
     {
-        $this->collectTypes(SchemaField::$schema->getQueryType());
-        $this->collectTypes(SchemaField::$schema->getMutationType());
+        $schema = $info->getExecutionContext()->getSchema();
+        $this->collectTypes($schema->getQueryType());
+        $this->collectTypes($schema->getMutationType());
 
         foreach ($this->types as $name => $info) {
             if ($name == $args['name']) {

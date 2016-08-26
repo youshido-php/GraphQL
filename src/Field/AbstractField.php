@@ -22,7 +22,7 @@ abstract class AbstractField implements FieldInterface
 
     protected $isFinal = false;
 
-    public function __construct(array $config = [])
+    public function   __construct(array $config = [])
     {
         if (empty($config['type'])) {
             $config['type'] = $this->getType();
