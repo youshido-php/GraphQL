@@ -7,6 +7,7 @@
 
 namespace Youshido\GraphQL\Introspection;
 
+use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\ListType\AbstractListType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
@@ -17,6 +18,11 @@ class FieldListType extends AbstractListType
     public function getItem()
     {
         return new FieldType();
+    }
+
+    public function build(TypeConfigInterface $config)
+    {
+        $config->addArgument('includeDeprecated', 'boolean', ['default' => false]);
     }
 
     public function resolve($value = null, $args = [])

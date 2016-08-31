@@ -8,6 +8,7 @@
 namespace Youshido\GraphQL\Introspection;
 
 
+use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\ListType\AbstractListType;
 use Youshido\GraphQL\Type\TypeMap;
 
@@ -17,6 +18,11 @@ class EnumValueListType extends AbstractListType
     public function getItem()
     {
         return new EnumValueType();
+    }
+
+    public function build(TypeConfigInterface $config)
+    {
+        $config->addArgument('includeDeprecated', 'boolean', ['default' => false]);
     }
 
     public function resolve($value = null, $args = [])
