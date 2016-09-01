@@ -292,10 +292,10 @@ class Processor
 
         }
 
-        if (is_array($contextValue) && array_key_exists($fieldAst->getName(), $contextValue)) {
+        if (!$resolved && is_array($contextValue) && array_key_exists($fieldAst->getName(), $contextValue)) {
             $resolverValue = $contextValue[$fieldAst->getName()];
             $resolved      = true;
-        } elseif (is_object($contextValue)) {
+        } elseif (!$resolved && is_object($contextValue)) {
             $resolverValue = TypeService::getPropertyValue($contextValue, $fieldAst->getName());
             $resolved      = true;
         } elseif (!$resolved && $field->getType()->getNamedType()->getKind() == TypeMap::KIND_SCALAR) {
