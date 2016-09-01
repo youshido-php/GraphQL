@@ -22,7 +22,7 @@ abstract class AbstractField implements FieldInterface
 
     protected $isFinal = false;
 
-    protected $_resolve_cache = null;
+    private $resolveCache = null;
 
     public function   __construct(array $config = [])
     {
@@ -66,13 +66,15 @@ abstract class AbstractField implements FieldInterface
 
     public function getResolveFunction()
     {
-        if ($this->_resolve_cache === null) {
-            $this->_resolve_cache = $this->getConfig()->getResolveFunction();
-            if (!$this->_resolve_cache) {
-                $this->_resolve_cache = false;
+        if ($this->resolveCache === null) {
+            $this->resolveCache = $this->getConfig()->getResolveFunction();
+
+            if (!$this->resolveCache) {
+                $this->resolveCache = false;
             }
         }
-        return $this->_resolve_cache;
+
+        return $this->resolveCache;
     }
 
     public function isDeprecated()

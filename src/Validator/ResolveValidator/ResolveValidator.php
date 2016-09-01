@@ -62,8 +62,6 @@ class ResolveValidator implements ResolveValidatorInterface
      */
     public function validateArguments(AbstractField $field, $query, Request $request)
     {
-        if (!count($field->getArguments())) return true;
-
         $requiredArguments = array_filter($field->getArguments(), function (InputField $argument) {
             return $argument->getType()->getKind() == TypeMap::KIND_NON_NULL;
         });
