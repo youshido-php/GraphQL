@@ -13,6 +13,7 @@ use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\Tests\DataProvider\TestListType;
 
+
 class ListTypeTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -30,6 +31,11 @@ class ListTypeTest extends \PHPUnit_Framework_TestCase
     {
         $listType = new TestListType();
         $this->assertEquals(new StringType(), $listType->getNamedType());
+    }
+
+    public function testListOfInputsWithArguments()
+    {
+
     }
 
 }

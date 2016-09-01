@@ -67,4 +67,10 @@ abstract class AbstractInputObjectType extends AbstractType
         return TypeMap::KIND_INPUT_OBJECT;
     }
 
+    public function isInputType()
+    {
+        return true;
+    }
+
+
 }

@@ -81,7 +81,7 @@ class ResolveValidator implements ResolveValidatorInterface
 
             /** @var AbstractType $argumentType */
             $originalArgumentType = $field->getArgument($argument->getName())->getType();
-            $argumentType         = $field->getArgument($argument->getName())->getType()->getNullableType()->getNamedType();
+            $argumentType         = $originalArgumentType->getNullableType()->getNamedType();
             if ($argument->getValue() instanceof Variable) {
                 /** @var Variable $variable */
                 $variable = $argument->getValue();
@@ -177,7 +177,7 @@ class ResolveValidator implements ResolveValidatorInterface
     {
         $innerType = $queryType;
         while ($innerType->isCompositeType()) {
-          $innerType = $innerType->getTypeOf();
+            $innerType = $innerType->getTypeOf();
         }
 
         if ($fragment->getModel() !== $innerType->getName()) {
@@ -237,6 +237,7 @@ class ResolveValidator implements ResolveValidatorInterface
             /** @var AbstractUnionType $type */
             $this->assertTypeInUnionTypes($resolvedType, $type);
         }
+
         return $resolvedType;
     }
 

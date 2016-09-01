@@ -58,6 +58,11 @@ abstract class AbstractType implements TypeInterface
         return $value;
     }
 
+    public function isInputType()
+    {
+        return false;
+    }
+
     public function __toString()
     {
         return $this->getName();
