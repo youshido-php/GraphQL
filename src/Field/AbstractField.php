@@ -22,6 +22,8 @@ abstract class AbstractField implements FieldInterface
 
     protected $isFinal = false;
 
+    protected $_resolve_cache = null;
+
     public function   __construct(array $config = [])
     {
         if (empty($config['type'])) {
@@ -60,6 +62,17 @@ abstract class AbstractField implements FieldInterface
     public function resolve($value, array $args, ResolveInfo $info)
     {
         return null;
+    }
+
+    public function getResolveFunction()
+    {
+        if ($this->_resolve_cache === null) {
+            $this->_resolve_cache = $this->getConfig()->getResolveFunction();
+            if (!$this->_resolve_cache) {
+                $this->_resolve_cache = false;
+            }
+        }
+        return $this->_resolve_cache;
     }
 
     public function isDeprecated()

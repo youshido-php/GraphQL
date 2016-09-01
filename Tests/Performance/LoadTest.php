@@ -70,6 +70,7 @@ class LoadTest extends \PHPUnit_Framework_TestCase
         $p->processPayload('{ posts { id, title, authors { name } } }');
         $res = $p->getResponseData();
         echo "Count: " . count($res['data']['posts']) . "\n";
+        var_dump($res['data']['posts'][0]);
         printf("Test Time: %04f\n", microtime(true) - $time);
     }
 

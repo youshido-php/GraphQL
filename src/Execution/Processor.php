@@ -236,9 +236,6 @@ class Processor
 
             $value = $listValue;
         } else {
-            /**
-             * $this->getOutputValue($field->getType(), $preResolvedValue); decrease performance
-             */
             $value = $preResolvedValue;
         }
 
@@ -279,25 +276,22 @@ class Processor
         $resolved      = false;
         $resolverValue = null;
 
-        if ($resolveFunction = $field->getConfig()->getResolveFunction()) {
+        if ($resolveFunction = $field->getResolveFunction()) {
             $resolveInfo = new ResolveInfo($field, [$fieldAst], $field->getType(), $this->executionContext);
 
             if (!$this->resolveValidator->validateArguments($field, $fieldAst, $this->executionContext->getRequest())) {
                 throw new \Exception(sprintf('Not valid arguments for the field "%s"', $fieldAst->getName()));
 
             } else {
-                $resolverValue = $resolveFunction($resolved ? $resolverValue : $contextValue, $fieldAst->getKeyValueArguments(), $resolveInfo);
-                return $resolverValue;
+                return $resolveFunction($resolved ? $resolverValue : $contextValue, $fieldAst->getKeyValueArguments(), $resolveInfo);
             }
 
         }
 
         if (is_array($contextValue) && array_key_exists($fieldAst->getName(), $contextValue)) {
-            $resolverValue = $contextValue[$fieldAst->getName()];
-            $resolved      = true;
+            return $contextValue[$fieldAst->getName()];
         } elseif (is_object($contextValue)) {
-            $resolverValue = TypeService::getPropertyValue($contextValue, $fieldAst->getName());
-            $resolved      = true;
+            return TypeService::getPropertyValue($contextValue, $fieldAst->getName());
         } elseif (!$resolved && $field->getType()->getNamedType()->getKind() == TypeMap::KIND_SCALAR) {
             $resolved = true;
         }
@@ -380,7 +374,6 @@ class Processor
 
                         return null;
                     }
-
                     if ($fieldAst instanceof Query) {
                         $value[$alias] = $this->processQueryAST($fieldAst, $field, $resolvedValue);
                     } elseif ($fieldAst instanceof FieldAst) {
