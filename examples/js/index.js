@@ -88,7 +88,13 @@ const bannerType = new GraphQLObjectType({
     name:       'Banner',
     fields:     {
         id:        { type: new GraphQLNonNull(GraphQLString) },
-        title:     { type: new GraphQLNonNull(GraphQLString) },
+        title:     {
+            type: new GraphQLNonNull(GraphQLString),
+            resolve: function(context, value, info) {
+                return context['title'];
+
+            }
+        },
         summary:   { type: GraphQLString },
         imageLink: { type: GraphQLString }
     },
@@ -192,10 +198,11 @@ const blogSchema = new GraphQLSchema({
     })
 });
 
-//var query = '{ latestPost {title, status} }';
-//graphql(blogSchema, query).then(result => {
-//    console.log(result);
-//});
+var query = '{ randomBanner { title} }';
+graphql(blogSchema, query).then(result => {
+   console.log(result);
+});
+
 
 
 var app = express();

@@ -140,7 +140,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                                         'shorten' => new BooleanType()
                                     ],
                                     'resolve' => function ($value, $args) {
-                                        return empty($args['shorten']) ? $value : $value;
+                                        return empty($args['shorten']) ? $value['firstName'] : $value['firstName'];
                                     }
                                 ],
                                 'id_alias'  => [

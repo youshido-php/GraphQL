@@ -287,7 +287,7 @@ class Processor
 
             } else {
                 $resolverValue = $resolveFunction($resolved ? $resolverValue : $contextValue, $fieldAst->getKeyValueArguments(), $resolveInfo);
-                $resolved      = true;
+                return $resolverValue;
             }
 
         }
