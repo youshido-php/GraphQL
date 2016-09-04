@@ -15,12 +15,12 @@ use Youshido\GraphQL\Type\TypeMap;
 class FieldType extends AbstractObjectType
 {
 
-    public static function resolveType(AbstractField $value)
+    public function resolveType(AbstractField $value)
     {
         return $value->getType();
     }
 
-    public static function resolveArgs(AbstractField $value)
+    public function resolveArgs(AbstractField $value)
     {
         if ($value->getConfig()->hasArguments()) {
             return $value->getConfig()->getArguments();
@@ -38,11 +38,11 @@ class FieldType extends AbstractObjectType
             ->addField('deprecationReason', TypeMap::TYPE_STRING)
             ->addField('type', [
                 'type'    => new QueryType(),
-                'resolve' => [get_class($this), 'resolveType'],
+                'resolve' => [$this, 'resolveType'],
             ])
             ->addField('args', [
                 'type'    => new ListType(new InputValueType()),
-                'resolve' => [get_class($this), 'resolveArgs'],
+                'resolve' => [$this, 'resolveArgs'],
             ]);
     }
 

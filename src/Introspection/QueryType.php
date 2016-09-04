@@ -9,7 +9,6 @@ namespace Youshido\GraphQL\Introspection;
 
 use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Field\Field;
-use Youshido\GraphQL\Introspection\Field\SchemaField;
 use Youshido\GraphQL\Introspection\Traits\TypeCollectorTrait;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\CompositeTypeInterface;
@@ -17,6 +16,7 @@ use Youshido\GraphQL\Type\Enum\AbstractEnumType;
 use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\Scalar\BooleanType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\Union\AbstractUnionType;
 
@@ -33,16 +33,16 @@ class QueryType extends AbstractObjectType
         return '__Type';
     }
 
-    public static function resolveOfType(AbstractType $value)
+    public function resolveOfType(AbstractType $value)
     {
         if ($value instanceof CompositeTypeInterface) {
-           return $value->getTypeOf();
+            return $value->getTypeOf();
         }
 
         return null;
     }
 
-    public static function resolveInputFields($value)
+    public function resolveInputFields($value)
     {
         if ($value instanceof AbstractInputObjectType) {
             /** @var AbstractObjectType $value */
@@ -52,12 +52,16 @@ class QueryType extends AbstractObjectType
         return null;
     }
 
-    public static function resolveEnumValues($value)
+    public function resolveEnumValues($value, $args)
     {
         /** @var $value AbstractType|AbstractEnumType */
         if ($value && $value->getKind() == TypeMap::KIND_ENUM) {
             $data = [];
             foreach ($value->getValues() as $enumValue) {
+                if(!$args['includeDeprecated'] && (isset($enumValue['isDeprecated']) && $enumValue['isDeprecated'])) {
+                    continue;
+                }
+
                 if (!array_key_exists('description', $enumValue)) {
                     $enumValue['description'] = '';
                 }
@@ -77,7 +81,7 @@ class QueryType extends AbstractObjectType
         return null;
     }
 
-    public static function resolveFields($value)
+    public function resolveFields($value, $args)
     {
         /** @var AbstractType $value */
         if (!$value ||
@@ -87,18 +91,17 @@ class QueryType extends AbstractObjectType
         }
 
         /** @var AbstractObjectType $value */
-        $fields = $value->getConfig()->getFields();
-
-        foreach ($fields as $key => $field) {
-            if (in_array($field->getName(), ['__type', '__schema'])) {
-                unset($fields[$key]);
+        return array_filter($value->getConfig()->getFields(), function ($field) use ($args) {
+            /** @var $field Field */
+            if (in_array($field->getName(), ['__type', '__schema']) || (!$args['includeDeprecated'] && $field->isDeprecated())) {
+                return false;
             }
-        }
 
-        return $fields;
+            return true;
+        });
     }
 
-    public static function resolveInterfaces($value)
+    public function resolveInterfaces($value)
     {
         /** @var $value AbstractType */
         if ($value->getKind() == TypeMap::KIND_OBJECT) {
@@ -148,27 +151,39 @@ class QueryType extends AbstractObjectType
             ->addField('description', TypeMap::TYPE_STRING)
             ->addField('ofType', [
                 'type'    => new QueryType(),
-                'resolve' => [get_class($this), 'resolveOfType']
+                'resolve' => [$this, 'resolveOfType']
             ])
             ->addField(new Field([
                 'name'    => 'inputFields',
                 'type'    => new ListType(new InputValueType()),
-                'resolve' => [get_class($this), 'resolveInputFields']
+                'resolve' => [$this, 'resolveInputFields']
             ]))
             ->addField(new Field([
                 'name'    => 'enumValues',
+                'args'    => [
+                    'includeDeprecated' => [
+                        'type'    => new BooleanType(),
+                        'default' => false
+                    ]
+                ],
                 'type'    => new ListType(new EnumValueType()),
-                'resolve' => [get_class($this), 'resolveEnumValues']
+                'resolve' => [$this, 'resolveEnumValues']
             ]))
             ->addField(new Field([
                 'name'    => 'fields',
+                'args'    => [
+                    'includeDeprecated' => [
+                        'type'    => new BooleanType(),
+                        'default' => false
+                    ]
+                ],
                 'type'    => new ListType(new FieldType()),
-                'resolve' => [get_class($this), 'resolveFields']
+                'resolve' => [$this, 'resolveFields']
             ]))
             ->addField(new Field([
                 'name'    => 'interfaces',
                 'type'    => new ListType(new QueryType()),
-                'resolve' => [get_class($this), 'resolveInterfaces']
+                'resolve' => [$this, 'resolveInterfaces']
             ]))
             ->addField('possibleTypes', [
                 'type'    => new ListType(new QueryType()),
