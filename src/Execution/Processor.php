@@ -251,15 +251,17 @@ class Processor
      */
     protected function resolveFieldValue(AbstractField $field, $contextValue, Query $query)
     {
-        $resolveInfo = new ResolveInfo($field, $query->getFields(), $field->getType(), $this->executionContext);
-
         if ($resolveFunc = $field->getConfig()->getResolveFunction()) {
-            return $resolveFunc($contextValue, $this->parseArgumentsValues($field, $query), $resolveInfo);
+            return $resolveFunc($contextValue, $this->parseArgumentsValues($field, $query), $this->createResolveInfo($field, $query->getFields()));
         } elseif ($propertyValue = TypeService::getPropertyValue($contextValue, $field->getName())) {
             return $propertyValue;
         } else {
-            return $field->resolve($contextValue, $this->parseArgumentsValues($field, $query), $resolveInfo);
+            return $field->resolve($contextValue, $this->parseArgumentsValues($field, $query), $this->createResolveInfo($field, $query->getFields()));
         }
+    }
+
+    protected function createResolveInfo($field, $fields) {
+        return new ResolveInfo($field, $fields, $this->executionContext);
     }
 
     /**
@@ -277,13 +279,11 @@ class Processor
         $resolverValue = null;
 
         if ($resolveFunction = $field->getResolveFunction()) {
-            $resolveInfo = new ResolveInfo($field, [$fieldAst], $field->getType(), $this->executionContext);
-
             if (!$this->resolveValidator->validateArguments($field, $fieldAst, $this->executionContext->getRequest())) {
                 throw new \Exception(sprintf('Not valid arguments for the field "%s"', $fieldAst->getName()));
 
             } else {
-                return $resolveFunction($resolved ? $resolverValue : $contextValue, $fieldAst->getKeyValueArguments(), $resolveInfo);
+                return $resolveFunction($resolved ? $resolverValue : $contextValue, $fieldAst->getKeyValueArguments(), $this->createResolveInfo($field, [$fieldAst]));
             }
 
         }

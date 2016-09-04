@@ -21,17 +21,13 @@ class ResolveInfo
     /** @var Field[] */
     protected $fieldASTList;
 
-    /** @var  AbstractType */
-    protected $returnType;
-
     /** @var ExecutionContextInterface */
     protected $executionContext;
 
-    public function __construct(AbstractField $field, array $fieldASTList, AbstractType $returnType, ExecutionContextInterface $executionContext)
+    public function __construct(AbstractField $field, array $fieldASTList, ExecutionContextInterface $executionContext)
     {
         $this->field            = $field;
         $this->fieldASTList     = $fieldASTList;
-        $this->returnType       = $returnType;
         $this->executionContext = $executionContext;
     }
 
@@ -64,19 +60,7 @@ class ResolveInfo
      */
     public function getReturnType()
     {
-        return $this->returnType;
-    }
-
-    /**
-     * @param mixed $returnType
-     *
-     * @return ResolveInfo
-     */
-    public function setReturnType($returnType)
-    {
-        $this->returnType = $returnType;
-
-        return $this;
+        return $this->field->getType();
     }
 
 

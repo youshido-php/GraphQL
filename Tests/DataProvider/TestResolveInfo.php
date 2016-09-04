@@ -20,6 +20,6 @@ class TestResolveInfo
             $field = new TestField();
         }
 
-        return new ResolveInfo($field, [], $field->getType(), new ExecutionContext(new TestSchema()));
+        return new ResolveInfo($field, [], new ExecutionContext(new TestSchema()));
     }
 }
