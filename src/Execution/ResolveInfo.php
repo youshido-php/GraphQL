@@ -24,6 +24,15 @@ class ResolveInfo
     /** @var ExecutionContextInterface */
     protected $executionContext;
 
+    /**
+     * This property is to be used for DI in various scenario
+     * Added to original class to keep backward compatibility
+     * because of the way AbstractField::resolve has been declared
+     *
+     * @var mixed $container
+     */
+    protected $container;
+
     public function __construct(AbstractField $field, array $fieldASTList, ExecutionContextInterface $executionContext)
     {
         $this->field            = $field;
@@ -61,6 +70,16 @@ class ResolveInfo
     public function getReturnType()
     {
         return $this->field->getType();
+    }
+
+    public function setContainer($container)
+    {
+        $this->container = $container;
+    }
+
+    public function getContainer()
+    {
+        return $this->container;
     }
 
 

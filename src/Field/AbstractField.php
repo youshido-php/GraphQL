@@ -24,7 +24,7 @@ abstract class AbstractField implements FieldInterface
 
     private $resolveCache = null;
 
-    public function   __construct(array $config = [])
+    public function __construct(array $config = [])
     {
         if (empty($config['type'])) {
             $config['type'] = $this->getType();
