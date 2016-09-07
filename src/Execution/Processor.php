@@ -236,7 +236,7 @@ class Processor
 
             $value = $listValue;
         } else {
-            $value = $preResolvedValue;
+            $value = $this->getOutputValue($fieldType, $preResolvedValue);
         }
 
         return $value;
