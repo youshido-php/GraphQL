@@ -126,7 +126,7 @@ class QueryType extends AbstractObjectType
 
                     if ($interfaces) {
                         foreach ($interfaces as $interface) {
-                            if (get_class($interface) == get_class($value)) {
+                            if ($interface->getName() == $value->getName()) {
                                 $possibleTypes[] = $type;
                             }
                         }
@@ -134,7 +134,7 @@ class QueryType extends AbstractObjectType
                 }
             }
 
-            return $possibleTypes ?: [];
+            return $possibleTypes;
         } elseif ($value->getKind() == TypeMap::KIND_UNION) {
             /** @var $value AbstractUnionType */
             return $value->getTypes();
