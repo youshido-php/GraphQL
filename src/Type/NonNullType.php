@@ -75,5 +75,10 @@ final class NonNullType extends AbstractType implements CompositeTypeInterface
         return $this->_typeOf;
     }
 
+    public function parseValue($value)
+    {
+        return $this->getNullableType()->parseValue($value);
+    }
+
 
 }

@@ -43,7 +43,7 @@ class NonNullTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(TypeService::isAbstractType($nonNullType), false);
         $this->assertFalse($nonNullType->isValidValue(null));
         $this->assertTrue($nonNullType->isValidValue($stringType));
-        $this->assertEquals($nonNullType->parseValue($testArray), $testArray);
+        $this->assertEquals($nonNullType->parseValue($testArray), '');
         $this->assertEquals($nonNullType->resolve($testArray), $testArray);
     }
 
