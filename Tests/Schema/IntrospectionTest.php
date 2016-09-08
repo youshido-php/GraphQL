@@ -130,7 +130,8 @@ TEXT;
                 ],
             ]),
             'args'              => [
-                'id' => ['type' => TypeMap::TYPE_INT]
+                'id' => ['type' => TypeMap::TYPE_INT, 'default' => 'test'],
+                'id2' => ['type' => TypeMap::TYPE_INT]
             ],
             'description'       => 'latest description',
             'deprecationReason' => 'for test',
@@ -183,6 +184,9 @@ TEXT;
                             name,
                             fields (includeDeprecated: true) {
                                 name
+                                args {
+                                    defaultValue
+                                }
                             }
                         }
                     }
@@ -191,18 +195,18 @@ TEXT;
                     'data' => [
                         '__schema' => [
                             'types' => [
-                                ['name' => 'TestSchemaQuery', 'fields' => [['name' => 'latest']]],
+                                ['name' => 'TestSchemaQuery', 'fields' => [['name' => 'latest', 'args' => [['defaultValue' => '"test"'], ['defaultValue' => null]]]]],
                                 ['name' => 'Int', 'fields' => null],
-                                ['name' => 'LatestType', 'fields' => [['name' => 'id'], ['name' => 'name']]],
+                                ['name' => 'LatestType', 'fields' => [['name' => 'id', 'args' => []], ['name' => 'name', 'args' => []]]],
                                 ['name' => 'String', 'fields' => null],
-                                ['name' => '__Schema', 'fields' => [['name' => 'queryType'], ['name' => 'mutationType'], ['name' => 'subscriptionType'], ['name' => 'types'], ['name' => 'directives']]],
-                                ['name' => '__Type', 'fields' => [['name' => 'name'], ['name' => 'kind'], ['name' => 'description'], ['name' => 'ofType'], ['name' => 'inputFields'], ['name' => 'enumValues'], ['name' => 'fields'], ['name' => 'interfaces'], ['name' => 'possibleTypes']]],
-                                ['name' => '__InputValue', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'type'], ['name' => 'defaultValue'],]],
+                                ['name' => '__Schema', 'fields' => [['name' => 'queryType', 'args' => []], ['name' => 'mutationType', 'args' => []], ['name' => 'subscriptionType', 'args' => []], ['name' => 'types', 'args' => []], ['name' => 'directives', 'args' => []]]],
+                                ['name' => '__Type', 'fields' => [['name' => 'name', 'args' => []], ['name' => 'kind', 'args' => []], ['name' => 'description', 'args' => []], ['name' => 'ofType', 'args' => []], ['name' => 'inputFields', 'args' => []], ['name' => 'enumValues', 'args' => [['defaultValue' => 'false']]], ['name' => 'fields', 'args' => [['defaultValue' => 'false']]], ['name' => 'interfaces', 'args' => []], ['name' => 'possibleTypes', 'args' => []]]],
+                                ['name' => '__InputValue', 'fields' => [['name' => 'name', 'args' => []], ['name' => 'description', 'args' => []], ['name' => 'type', 'args' => []], ['name' => 'defaultValue', 'args' => []],]],
                                 ['name' => 'Boolean', 'fields' => null],
-                                ['name' => '__EnumValue', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'deprecationReason'], ['name' => 'isDeprecated'],]],
-                                ['name' => '__Field', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'isDeprecated'], ['name' => 'deprecationReason'], ['name' => 'type'], ['name' => 'args']]],
-                                ['name' => '__Subscription', 'fields' => [['name' => 'name']]],
-                                ['name' => '__Directive', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'args'], ['name' => 'onOperation'], ['name' => 'onFragment'], ['name' => 'onField']]],
+                                ['name' => '__EnumValue', 'fields' => [['name' => 'name', 'args' => []], ['name' => 'description', 'args' => []], ['name' => 'deprecationReason', 'args' => []], ['name' => 'isDeprecated', 'args' => []],]],
+                                ['name' => '__Field', 'fields' => [['name' => 'name', 'args' => []], ['name' => 'description', 'args' => []], ['name' => 'isDeprecated', 'args' => []], ['name' => 'deprecationReason', 'args' => []], ['name' => 'type', 'args' => []], ['name' => 'args', 'args' => []]]],
+                                ['name' => '__Subscription', 'fields' => [['name' => 'name', 'args' => []]]],
+                                ['name' => '__Directive', 'fields' => [['name' => 'name', 'args' => []], ['name' => 'description', 'args' => []], ['name' => 'args', 'args' => []], ['name' => 'onOperation', 'args' => []], ['name' => 'onFragment', 'args' => []], ['name' => 'onField', 'args' => []]]],
                             ]
                         ]
                     ]
