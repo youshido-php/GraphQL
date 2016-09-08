@@ -23,6 +23,8 @@ It could be hard to believe but give it a try and you'll be rewarded with much b
 
 > Symfony bundle is available by the link – [http://github.com/Youshido/GraphqlBundle](http://github.com/Youshido/GraphqlBundle)
 
+> If you have any questions or suggestions – let's talk on [GraphQL Gitter channel](https://gitter.im/Youshido/GraphQL)
+
 ## Table of Contents
 
 * [Getting Started](#getting-started)
