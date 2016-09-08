@@ -166,8 +166,13 @@ class Processor
 
         $fieldType = $this->resolveValidator->resolveTypeIfAbstract($fieldType, $resolvedValue);
         $value     = [];
+        $kind      = $fieldType->getKind();
 
-        if ($fieldType->getKind() == TypeMap::KIND_LIST) {
+        if (
+            $kind === TypeMap::KIND_LIST ||
+            ($kind === TypeMap::KIND_NON_NULL && $fieldType->getNamedType()->getKind() === TypeMap::KIND_LIST)
+        ) {
+            if ($kind === TypeMap::KIND_NON_NULL) $fieldType = $fieldType->getNamedType();
             if (!$this->resolveValidator->hasArrayAccess($resolvedValue)) return null;
 
             $namedType          = $fieldType->getNamedType();

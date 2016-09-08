@@ -143,6 +143,14 @@ TEXT;
             }
         ]));
 
+        $schema->addQueryField(new Field([
+            'name'              => 'new',
+            'type'              => TypeMap::TYPE_BOOLEAN,
+            'resolve'           => function () {
+                return true;
+            }
+        ]));
+
         $processor = new Processor($schema);
 
         $processor->processPayload($query);
@@ -191,14 +199,14 @@ TEXT;
                     'data' => [
                         '__schema' => [
                             'types' => [
-                                ['name' => 'TestSchemaQuery', 'fields' => [['name' => 'latest']]],
+                                ['name' => 'TestSchemaQuery', 'fields' => [['name' => 'latest'], ['name' => 'new']]],
                                 ['name' => 'Int', 'fields' => null],
                                 ['name' => 'LatestType', 'fields' => [['name' => 'id'], ['name' => 'name']]],
                                 ['name' => 'String', 'fields' => null],
+                                ['name' => 'Boolean', 'fields' => null],
                                 ['name' => '__Schema', 'fields' => [['name' => 'queryType'], ['name' => 'mutationType'], ['name' => 'subscriptionType'], ['name' => 'types'], ['name' => 'directives']]],
                                 ['name' => '__Type', 'fields' => [['name' => 'name'], ['name' => 'kind'], ['name' => 'description'], ['name' => 'ofType'], ['name' => 'inputFields'], ['name' => 'enumValues'], ['name' => 'fields'], ['name' => 'interfaces'], ['name' => 'possibleTypes']]],
                                 ['name' => '__InputValue', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'type'], ['name' => 'defaultValue'],]],
-                                ['name' => 'Boolean', 'fields' => null],
                                 ['name' => '__EnumValue', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'deprecationReason'], ['name' => 'isDeprecated'],]],
                                 ['name' => '__Field', 'fields' => [['name' => 'name'], ['name' => 'description'], ['name' => 'isDeprecated'], ['name' => 'deprecationReason'], ['name' => 'type'], ['name' => 'args']]],
                                 ['name' => '__Subscription', 'fields' => [['name' => 'name']]],
@@ -232,7 +240,8 @@ TEXT;
                             'name'   => 'TestSchemaQuery',
                             'kind'   => 'OBJECT',
                             'fields' => [
-                                ['name' => 'latest', 'isDeprecated' => true, 'deprecationReason' => 'for test', 'description' => 'latest description', 'type' => ['name' => 'LatestType']]
+                                ['name' => 'latest', 'isDeprecated' => true, 'deprecationReason' => 'for test', 'description' => 'latest description', 'type' => ['name' => 'LatestType']],
+                                ['name' => 'new', 'isDeprecated' => false, 'deprecationReason' => null, 'description' => null, 'type' => ['name' => 'Boolean']]
                             ]
                         ]
                     ]
