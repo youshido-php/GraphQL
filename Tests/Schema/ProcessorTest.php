@@ -594,6 +594,10 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('{ me { firstName, lastName } }');
         $this->assertArrayNotHasKey('error', $processor->getResponseData());
 
+        $processor->processPayload('{ me { } }');
+        $this->assertEquals(['errors' => [['message' => 'You have to specify fields for "me"']]], $processor->getResponseData());
+
+
         $processor->processPayload('{ me { firstName, likes } }');
         $this->assertEquals(['errors' => [['message' => 'query exceeded max allowed complexity of 10']]], $processor->getResponseData());
 

@@ -196,6 +196,9 @@ class Processor
             }
         } else {
             if (!$query->hasFields()) {
+                if (TypeService::isObjectType($fieldType)) {
+                    throw new ResolveException(sprintf('You have to specify fields for "%s"', $query->getName()));
+                }
                 return $this->getOutputValue($fieldType, $resolvedValue);
             }
 
