@@ -108,7 +108,7 @@ class ResolveValidator implements ResolveValidatorInterface
                 $values = [$values];
             }
             foreach ($values as $value) {
-                if (!$argumentType->isValidValue($argumentType->parseValue($value))) {
+                if (!$argumentType->isValidValue($value)) {
                     $this->executionContext->addError(new ResolveException(sprintf('Not valid type for argument "%s" in query "%s"', $argument->getName(), $field->getName())));
 
                     return false;

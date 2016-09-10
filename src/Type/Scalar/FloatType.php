@@ -18,12 +18,16 @@ class FloatType extends AbstractScalarType
 
     public function serialize($value)
     {
-        return floatval($value);
+        if ($value === null) {
+            return null;
+        } else {
+            return floatval($value);
+        }
     }
 
     public function isValidValue($value)
     {
-        return is_float($value) || is_int($value);
+        return is_null($value) || is_float($value) || is_int($value);
     }
 
     public function getDescription()
