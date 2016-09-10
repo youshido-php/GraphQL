@@ -36,7 +36,7 @@ class StringType extends AbstractScalarType
 
     public function isValidValue($value)
     {
-        return is_scalar($value);
+        return is_null($value) || is_scalar($value);
     }
 
     public function getDescription()

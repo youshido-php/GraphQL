@@ -228,12 +228,6 @@ class Processor
             $type      = $fieldType->getNamedType();
 
             foreach ($preResolvedValue as $resolvedValueItem) {
-                if (!$type->isValidValue($resolvedValueItem)) {
-                    $this->executionContext->addError(new ResolveException(sprintf('Not valid resolve value in %s field', $field->getName())));
-
-                    $listValue = null;
-                    break;
-                }
                 $listValue[] = $this->getOutputValue($type, $resolvedValueItem);
             }
 

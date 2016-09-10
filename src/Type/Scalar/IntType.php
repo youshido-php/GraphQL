@@ -34,7 +34,7 @@ class IntType extends AbstractScalarType
 
     public function isValidValue($value)
     {
-        return is_int($value);
+        return is_null($value) || is_int($value);
     }
 
     public function getDescription()

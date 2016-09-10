@@ -212,7 +212,7 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
         ], $validator->getExecutionContext()->getErrorsArray());
         $validator->getExecutionContext()->clearErrors();
 
-        $request->setVariables(['year' => '2016']);
+        $request->setVariables(['year' => 2016]);
         $validator->validateArguments($field, $argumentWithVariable, $request);
         $this->assertFalse($validator->getExecutionContext()->hasErrors());
 

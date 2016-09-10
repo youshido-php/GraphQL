@@ -32,6 +32,7 @@ class TestScalarDataProvider
             [-1, -1, true],
             [0.1, 0, false],
             [1.1, 1, false],
+            [[1], 1, false],
             [1e5, 100000, false],
             ["1", 1, false],
             [PHP_INT_MAX - 1, PHP_INT_MAX - 1, true],
@@ -40,7 +41,7 @@ class TestScalarDataProvider
             [-1e100, null, false],
             ['-1.1', -1, false],
             ['one', null, false],
-            [null, null, false],
+            [null, null, true],
             [false, 0, false],
             [true, 1, false],
         ];
@@ -57,6 +58,7 @@ class TestScalarDataProvider
             ['-1.1', -1.1, false],
             ['one', null, false],
             [false, 0.0, false],
+            [null, null, true],
             [true, 1.0, false],
         ];
     }
@@ -67,7 +69,7 @@ class TestScalarDataProvider
             ["string", "string", true],
             [1, "1", true],
             [1.1, "1.1", true],
-            [null, null, false],
+            [null, null, true],
             [true, "true", true],
             [false, "false", true],
             [[], null, false],
@@ -81,9 +83,10 @@ class TestScalarDataProvider
             ["", false, false],
             [1, true, false],
             [0, false, false],
-            [null, false, false],
+            [null, false, true],
             [true, true, true],
             [false, false, true],
+            [null, null, true],
             ["true", true, false],
             ["false", false, false],
         ];
