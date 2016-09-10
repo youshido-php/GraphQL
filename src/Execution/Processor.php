@@ -199,6 +199,7 @@ class Processor
                 if (TypeService::isObjectType($fieldType)) {
                     throw new ResolveException(sprintf('You have to specify fields for "%s"', $query->getName()));
                 }
+
                 return $this->getOutputValue($fieldType, $resolvedValue);
             }
 
@@ -257,7 +258,8 @@ class Processor
         }
     }
 
-    protected function createResolveInfo($field, $fields) {
+    protected function createResolveInfo($field, $fields)
+    {
         return new ResolveInfo($field, $fields, $this->executionContext);
     }
 
@@ -272,32 +274,12 @@ class Processor
      */
     protected function getPreResolvedValue($contextValue, FieldAst $fieldAst, AbstractField $field)
     {
-        $resolved      = false;
-        $resolverValue = null;
-
-        if ($resolveFunction = $field->getResolveFunction()) {
-            if (!$this->resolveValidator->validateArguments($field, $fieldAst, $this->executionContext->getRequest())) {
-                throw new \Exception(sprintf('Not valid arguments for the field "%s"', $fieldAst->getName()));
-
-            } else {
-                return $resolveFunction($resolved ? $resolverValue : $contextValue, $fieldAst->getKeyValueArguments(), $this->createResolveInfo($field, [$fieldAst]));
-            }
-
+        /** has to be split in validate arguments and set variables */
+        if (!$this->resolveValidator->validateArguments($field, $fieldAst, $this->executionContext->getRequest())) {
+            throw new \Exception(sprintf('Not valid arguments for the field "%s"', $fieldAst->getName()));
         }
 
-        if (is_array($contextValue) && array_key_exists($fieldAst->getName(), $contextValue)) {
-            return $contextValue[$fieldAst->getName()];
-        } elseif (is_object($contextValue)) {
-            return TypeService::getPropertyValue($contextValue, $fieldAst->getName());
-        } elseif (!$resolved && $field->getType()->getNamedType()->getKind() == TypeMap::KIND_SCALAR) {
-            $resolved = true;
-        }
-
-        if (!$resolverValue && !$resolved) {
-            throw new \Exception(sprintf('Property "%s" not found in resolve result', $fieldAst->getName()));
-        }
-
-        return $resolverValue;
+        return $field->resolve($contextValue, $fieldAst->getKeyValueArguments(), $this->createResolveInfo($field, [$fieldAst]));
     }
 
     /**

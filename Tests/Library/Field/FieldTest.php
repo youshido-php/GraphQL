@@ -40,11 +40,11 @@ class FieldTest extends \PHPUnit_Framework_TestCase
                 return $info->getReturnType()->serialize($value);
             }
         ]);
-
-        $this->assertEquals(null, $fieldWithResolve->resolve(true, [], $resolveInfo), 'Resolve bool to string');
+        $resolveInfo = TestResolveInfo::createTestResolveInfo($fieldWithResolve);
+        $this->assertEquals('true', $fieldWithResolve->resolve(true, [], $resolveInfo), 'Resolve bool to string');
 
         $fieldWithResolve->setType(new IntType());
-        $this->assertEquals(new IntType(), $fieldWithResolve->getType());
+        $this->assertEquals(new StringType(), $fieldWithResolve->getType()->getName());
 
     }
 

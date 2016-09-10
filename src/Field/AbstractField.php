@@ -13,6 +13,7 @@ use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\Traits\FieldsArgumentsAwareObjectTrait;
 use Youshido\GraphQL\Type\TypeFactory;
+use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
 
 abstract class AbstractField implements FieldInterface
@@ -53,18 +54,7 @@ abstract class AbstractField implements FieldInterface
         $this->getConfig()->set('type', $type);
     }
 
-    /**
-     * @param             $value
-     * @param array       $args
-     * @param ResolveInfo $info
-     * @return mixed
-     */
     public function resolve($value, array $args, ResolveInfo $info)
-    {
-        return null;
-    }
-
-    public function getResolveFunction()
     {
         if ($this->resolveCache === null) {
             $this->resolveCache = $this->getConfig()->getResolveFunction();
@@ -73,9 +63,21 @@ abstract class AbstractField implements FieldInterface
                 $this->resolveCache = false;
             }
         }
-
-        return $this->resolveCache;
+        if ($this->resolveCache) {
+            return ($this->resolveCache)($value, $args, $info);
+        } else {
+            if (is_array($value) && array_key_exists($this->getName(), $value)) {
+                return $value[$this->getName()];
+            } elseif (is_object($value)) {
+                return TypeService::getPropertyValue($value, $this->getName());
+            } elseif ($this->getType()->getNamedType()->getKind() == TypeMap::KIND_SCALAR) {
+                return null;
+            } else {
+                throw new \Exception(sprintf('Property "%s" not found in resolve result', $this->getName()));
+            }
+        }
     }
+
 
     public function isDeprecated()
     {
