@@ -144,7 +144,7 @@ class Processor
             return null;
         }
 
-        $resolvedValue = $this->resolveFieldValue($field, $contextValue, $query);
+        $resolvedValue = $field->resolve($contextValue, $this->parseArgumentsValues($field, $query), $this->createResolveInfo($field, $query->getFields()));
 
         if (!$this->resolveValidator->isValidValueForField($field, $resolvedValue)) {
             return null;
@@ -199,7 +199,6 @@ class Processor
                 if (TypeService::isObjectType($fieldType)) {
                     throw new ResolveException(sprintf('You have to specify fields for "%s"', $query->getName()));
                 }
-
                 return $this->getOutputValue($fieldType, $resolvedValue);
             }
 
@@ -240,26 +239,7 @@ class Processor
         return $value;
     }
 
-    /**
-     * @param AbstractField $field
-     * @param mixed         $contextValue
-     * @param Query         $query
-     *
-     * @return mixed
-     */
-    protected function resolveFieldValue(AbstractField $field, $contextValue, Query $query)
-    {
-        if ($resolveFunc = $field->getConfig()->getResolveFunction()) {
-            return $resolveFunc($contextValue, $this->parseArgumentsValues($field, $query), $this->createResolveInfo($field, $query->getFields()));
-        } elseif ($propertyValue = TypeService::getPropertyValue($contextValue, $field->getName())) {
-            return $propertyValue;
-        } else {
-            return $field->resolve($contextValue, $this->parseArgumentsValues($field, $query), $this->createResolveInfo($field, $query->getFields()));
-        }
-    }
-
-    protected function createResolveInfo($field, $fields)
-    {
+    protected function createResolveInfo($field, $fields) {
         return new ResolveInfo($field, $fields, $this->executionContext);
     }
 
@@ -274,12 +254,12 @@ class Processor
      */
     protected function getPreResolvedValue($contextValue, FieldAst $fieldAst, AbstractField $field)
     {
-        /** has to be split in validate arguments and set variables */
-        if (!$this->resolveValidator->validateArguments($field, $fieldAst, $this->executionContext->getRequest())) {
+        if ($field->hasArguments() && !$this->resolveValidator->validateArguments($field, $fieldAst, $this->executionContext->getRequest())) {
             throw new \Exception(sprintf('Not valid arguments for the field "%s"', $fieldAst->getName()));
-        }
 
+        }
         return $field->resolve($contextValue, $fieldAst->getKeyValueArguments(), $this->createResolveInfo($field, [$fieldAst]));
+
     }
 
     /**

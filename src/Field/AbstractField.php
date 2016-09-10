@@ -64,7 +64,8 @@ abstract class AbstractField implements FieldInterface
             }
         }
         if ($this->resolveCache) {
-            return ($this->resolveCache)($value, $args, $info);
+            $resolveFunction = $this->resolveCache;
+            return $resolveFunction($value, $args, $info);
         } else {
             if (is_array($value) && array_key_exists($this->getName(), $value)) {
                 return $value[$this->getName()];
