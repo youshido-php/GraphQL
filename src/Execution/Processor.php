@@ -27,7 +27,6 @@ use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
-use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
@@ -199,6 +198,7 @@ class Processor
                 if (TypeService::isObjectType($fieldType)) {
                     throw new ResolveException(sprintf('You have to specify fields for "%s"', $query->getName()));
                 }
+
                 return $this->getOutputValue($fieldType, $resolvedValue);
             }
 
@@ -239,7 +239,8 @@ class Processor
         return $value;
     }
 
-    protected function createResolveInfo($field, $fields) {
+    protected function createResolveInfo($field, $fields)
+    {
         return new ResolveInfo($field, $fields, $this->executionContext);
     }
 
@@ -258,6 +259,7 @@ class Processor
             throw new \Exception(sprintf('Not valid arguments for the field "%s"', $fieldAst->getName()));
 
         }
+
         return $field->resolve($contextValue, $fieldAst->getKeyValueArguments(), $this->createResolveInfo($field, [$fieldAst]));
 
     }
