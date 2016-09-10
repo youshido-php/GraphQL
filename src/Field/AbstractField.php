@@ -19,22 +19,29 @@ use Youshido\GraphQL\Type\TypeService;
 abstract class AbstractField implements FieldInterface
 {
 
-    use FieldsArgumentsAwareObjectTrait, AutoNameTrait;
-
+    use FieldsArgumentsAwareObjectTrait;
+    use AutoNameTrait {
+        getName as getAutoName;
+    }
     protected $isFinal = false;
 
-    private $resolveCache = null;
+    private $resolveFunctionCache = null;
+    private $nameCache            = null;
 
     public function __construct(array $config = [])
     {
         if (empty($config['type'])) {
             $config['type'] = $this->getType();
             $config['name'] = $this->getName();
+            if (empty($config['name'])) {
+                $config['name'] =$this->getAutoName();
+            }
         }
 
         if (TypeService::isScalarType($config['type'])) {
             $config['type'] = TypeFactory::getScalarType($config['type']);
         }
+        $this->nameCache = isset($config['name']) ? $config['name'] : $this->getAutoName();
 
         $this->config = new FieldConfig($config, $this, $this->isFinal);
         $this->build($this->config);
@@ -56,15 +63,16 @@ abstract class AbstractField implements FieldInterface
 
     public function resolve($value, array $args, ResolveInfo $info)
     {
-        if ($this->resolveCache === null) {
-            $this->resolveCache = $this->getConfig()->getResolveFunction();
+        if ($this->resolveFunctionCache === null) {
+            $this->resolveFunctionCache = $this->getConfig()->getResolveFunction();
 
-            if (!$this->resolveCache) {
-                $this->resolveCache = false;
+            if (!$this->resolveFunctionCache) {
+                $this->resolveFunctionCache = false;
             }
         }
-        if ($this->resolveCache) {
-            $resolveFunction = $this->resolveCache;
+        if ($this->resolveFunctionCache) {
+            $resolveFunction = $this->resolveFunctionCache;
+
             return $resolveFunction($value, $args, $info);
         } else {
             if (is_array($value) && array_key_exists($this->getName(), $value)) {
@@ -79,6 +87,10 @@ abstract class AbstractField implements FieldInterface
         }
     }
 
+    public function getName()
+    {
+        return $this->nameCache;
+    }
 
     public function isDeprecated()
     {
