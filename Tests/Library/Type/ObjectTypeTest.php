@@ -14,6 +14,7 @@ use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
 use Youshido\Tests\DataProvider\TestMutationObjectType;
 use Youshido\Tests\DataProvider\TestObjectType;
 
@@ -33,9 +34,10 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidNameParam()
     {
-        new ObjectType([
+        $type = new ObjectType([
             'name' => null
         ]);
+        ConfigValidator::getInstance()->assertValidateConfig($type->getConfig());
     }
 
     /**
@@ -43,10 +45,11 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidFieldsParam()
     {
-        new ObjectType([
+        $type = new ObjectType([
             'name'   => 'SomeName',
             'fields' => []
         ]);
+        ConfigValidator::getInstance()->assertValidateConfig($type->getConfig());
     }
 
     /**

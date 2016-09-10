@@ -10,6 +10,7 @@ namespace Youshido\Tests\Library\Type;
 
 use Youshido\GraphQL\Type\Enum\EnumType;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
 use Youshido\Tests\DataProvider\TestEnumType;
 
 class EnumTypeTest extends \PHPUnit_Framework_TestCase
@@ -28,9 +29,11 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidEmptyParams()
     {
-        new EnumType([
+        $enumField = new EnumType([
             'values' => []
         ]);
+        ConfigValidator::getInstance()->assertValidateConfig($enumField->getConfig());
+
     }
 
     /**
@@ -38,12 +41,13 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidValueParams()
     {
-        new EnumType([
+        $enumField = new EnumType([
             'values' => [
                 'test'  => 'asd',
                 'value' => 'asdasd'
             ]
         ]);
+        ConfigValidator::getInstance()->assertValidateConfig($enumField->getConfig());
     }
 
     /**
@@ -51,7 +55,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function testExistingNameParams()
     {
-        new EnumType([
+        $enumField = new EnumType([
             'values' => [
                 [
                     'test'  => 'asd',
@@ -59,6 +63,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
                 ]
             ]
         ]);
+        ConfigValidator::getInstance()->assertValidateConfig($enumField->getConfig());
     }
 
     /**
@@ -66,7 +71,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidNameParams()
     {
-        new EnumType([
+        $enumField = new EnumType([
             'values' => [
                 [
                     'name'  => false,
@@ -74,6 +79,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
                 ]
             ]
         ]);
+        ConfigValidator::getInstance()->assertValidateConfig($enumField->getConfig());
     }
 
     /**
@@ -81,13 +87,14 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function testWithoutValueParams()
     {
-        new EnumType([
+        $enumField = new EnumType([
             'values' => [
                 [
-                    'name'  => 'TEST_ENUM',
+                    'name' => 'TEST_ENUM',
                 ]
             ]
         ]);
+        ConfigValidator::getInstance()->assertValidateConfig($enumField->getConfig());
     }
 
     public function testNormalCreatingParams()

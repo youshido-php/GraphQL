@@ -11,6 +11,7 @@ namespace Youshido\Tests\Library\Config;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\TypeService;
+use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
 use Youshido\Tests\DataProvider\TestConfig;
 use Youshido\Tests\DataProvider\TestConfigExtraFields;
 use Youshido\Tests\DataProvider\TestConfigInvalidRule;
@@ -31,7 +32,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidParams()
     {
-        new TestConfig(['id' => 1]);
+        ConfigValidator::getInstance()->assertValidateConfig(new TestConfig(['id' => 1]));
     }
 
     /**
@@ -97,7 +98,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
      */
     public function testFinalRule()
     {
-        new TestConfig(['name' => 'Test' . 'final'], null, true);
+        ConfigValidator::getInstance()->assertValidateConfig(new TestConfig(['name' => 'Test' . 'final'], null, true));
     }
 
     /**
@@ -105,7 +106,9 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidRule()
     {
-        new TestConfigInvalidRule(['name' => 'Test', 'invalidRuleField' => 'test'], null, null);
+        ConfigValidator::getInstance()->assertValidateConfig(
+            new TestConfigInvalidRule(['name' => 'Test', 'invalidRuleField' => 'test'], null, null)
+        );
     }
 
 }

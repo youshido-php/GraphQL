@@ -8,15 +8,19 @@
 
 namespace Youshido\GraphQL\Validator\SchemaValidator;
 
+use Youshido\GraphQL\Config\AbstractConfig;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 class SchemaValidator
 {
 
+    /** @var ConfigValidator */
+    private $configValidator = null;
     /**
      * @param AbstractSchema $schema
      *
@@ -27,7 +31,12 @@ class SchemaValidator
         if (!$schema->getQueryType()->hasFields()) {
             throw new ConfigurationException('Schema has to have fields');
         }
+
+        $this->configValidator = ConfigValidator::getInstance();
+
         foreach ($schema->getQueryType()->getConfig()->getFields() as $field) {
+            $this->configValidator->assertValidateConfig($field->getConfig());
+
             if ($field->getType() instanceof AbstractObjectType) {
                 $this->assertInterfaceImplementationCorrect($field->getType());
             }

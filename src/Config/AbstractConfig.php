@@ -50,13 +50,17 @@ abstract class AbstractConfig
         $this->data          = $configData;
         $this->finalClass    = $finalClass;
 
+//        $this->validate();
+        $this->build();
+    }
+
+    public function validate()
+    {
         $validator = ConfigValidator::getInstance();
 
         if (!$validator->validate($this->data, $this->getContextRules(), $this->extraFieldsAllowed)) {
-            throw new ConfigurationException('Config is not valid for ' . ($contextObject ? get_class($contextObject) : null) . "\n" . implode("\n", $validator->getErrorsArray(false)));
+            throw new ConfigurationException('Config is not valid for ' . ($this->contextObject ? get_class($this->contextObject) : null) . "\n" . implode("\n", $validator->getErrorsArray(false)));
         }
-
-        $this->build();
     }
 
     public function getContextRules()
@@ -84,6 +88,27 @@ abstract class AbstractConfig
     {
         return $this->get('type');
     }
+
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    public function getContextObject()
+    {
+        return $this->contextObject;
+    }
+
+    public function isFinalClass()
+    {
+        return $this->finalClass;
+    }
+
+    public function isExtraFieldsAllowed()
+    {
+        return $this->extraFieldsAllowed;
+    }
+
 
     /**
      * @return null|callable

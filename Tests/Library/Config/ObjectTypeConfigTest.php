@@ -10,6 +10,7 @@ namespace Youshido\Tests\Library\Config;
 
 
 use Youshido\GraphQL\Config\Object\ObjectTypeConfig;
+use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
 use Youshido\Tests\DataProvider\TestInterfaceType;
 
 class ObjectTypeConfigTest extends \PHPUnit_Framework_TestCase
@@ -26,7 +27,9 @@ class ObjectTypeConfigTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidConfigNoFields()
     {
-        new ObjectTypeConfig(['name' => 'Test'], null, true);
+        ConfigValidator::getInstance()->assertValidateConfig(
+            new ObjectTypeConfig(['name' => 'Test'], null, true)
+        );
     }
 
     /**
@@ -34,7 +37,9 @@ class ObjectTypeConfigTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidConfigInvalidInterface()
     {
-        new ObjectTypeConfig(['name' => 'Test', 'interfaces' => ['Invalid interface']], null, false);
+        ConfigValidator::getInstance()->assertValidateConfig(
+            new ObjectTypeConfig(['name' => 'Test', 'interfaces' => ['Invalid interface']], null, false)
+        );
     }
 
     public function testInterfaces()
