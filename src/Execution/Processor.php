@@ -143,7 +143,7 @@ class Processor
             return null;
         }
 
-        $resolvedValue = $field->resolve($contextValue, $this->parseArgumentsValues($field, $query), $this->createResolveInfo($field, $query->getFields()));
+        $resolvedValue = $this->resolveFieldValue($field, $contextValue, $query->getFields(), $this->parseArgumentsValues($field, $query));
 
         if (!$this->resolveValidator->isValidValueForField($field, $resolvedValue)) {
             return null;
@@ -260,8 +260,13 @@ class Processor
 
         }
 
-        return $field->resolve($contextValue, $fieldAst->getKeyValueArguments(), $this->createResolveInfo($field, [$fieldAst]));
+        return $this->resolveFieldValue($field, $contextValue, [$fieldAst], $fieldAst->getKeyValueArguments());
 
+    }
+
+    protected function resolveFieldValue(AbstractField $field, $contextValue, array $fields, array $args)
+    {
+        return $field->resolve($contextValue, $args, $this->createResolveInfo($field, $fields));
     }
 
     /**
