@@ -171,14 +171,14 @@ class ResolveValidator implements ResolveValidatorInterface
      *
      * @throws \Exception
      */
-    public function assertValidFragmentForField(Fragment $fragment, FragmentReference $fragmentReference, AbstractType $queryType)
+    public function assertValidFragmentForField($fragment, FragmentReference $fragmentReference, AbstractType $queryType)
     {
         $innerType = $queryType;
         while ($innerType->isCompositeType()) {
             $innerType = $innerType->getTypeOf();
         }
 
-        if ($fragment->getModel() !== $innerType->getName()) {
+        if (!$fragment instanceof Fragment || $fragment->getModel() !== $innerType->getName()) {
             throw new ResolveException(sprintf('Fragment reference "%s" not found on model "%s"', $fragmentReference->getName(), $queryType->getName()));
         }
     }

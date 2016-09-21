@@ -189,10 +189,10 @@ const blogSchema = new GraphQLSchema({
                     }
                 })),
                 args: {
-                    count: {type: GraphQLInt, defaultValue: 10}
+                    count: {type: GraphQLInt, defaultValue: "12"}
                 },
                 resolve: (source, args) => {
-                    console.log((args['count'] === 10));
+                    console.log(args['count'], (args['count'] === "12"));
                     return [
                         {
                             id: 1,
@@ -200,7 +200,7 @@ const blogSchema = new GraphQLSchema({
                         },
                         {
                             id: 2,
-                            cost: '123'
+                            cost: [123, 55]
                         }
                     ]
                 }
@@ -224,10 +224,12 @@ const blogSchema = new GraphQLSchema({
     })
 });
 
-var query = '{ scalarList { id, cost } }';
+var query = '{ scalarList(count: 12) { id, cost } }';
 graphql(blogSchema, query).then(result => {
-    console.log(JSON.stringify(result, null, 4));
+    console.log(JSON.stringify(result, null, 5));
     process.exit(0);
+}).catch(res => {
+    console.log('error', res);
 });
 
 
