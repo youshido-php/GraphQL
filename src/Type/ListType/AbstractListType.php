@@ -32,7 +32,7 @@ abstract class AbstractListType extends AbstractObjectType implements CompositeT
 
     public function isValidValue($value)
     {
-        $isValid = is_null($value) || is_array($value) || (is_object($value) && in_array('IteratorAggregate', class_implements($value)));
+        $isValid = is_null($value) || is_array($value) || $this->isIterableObject($value);
         $itemType = $this->config->get('itemType');
         if ($isValid && $itemType->isInputType()) {
             foreach($value as $item) {
@@ -41,6 +41,15 @@ abstract class AbstractListType extends AbstractObjectType implements CompositeT
             }
         }
         return $isValid;
+    }
+
+    private function isIterableObject($value)
+    {
+        if(is_object($value)) {
+            $implements = class_implements($value);
+            return isset($implements['Iterator']) || isset($implements['IteratorAggregate']);
+        }
+        return false;
     }
 
     /**
