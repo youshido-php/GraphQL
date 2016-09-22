@@ -9,7 +9,7 @@
 namespace Youshido\GraphQL\Type\Scalar;
 
 /**
- * @deprecated USE DateTime type instead. To be removed in 1.7.
+ * @deprecated USE DateTime type instead. To be removed in 1.4.
  *
  * Class DateType
  * @package Youshido\GraphQL\Type\Scalar

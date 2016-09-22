@@ -55,15 +55,15 @@ class Processor
 
     public function __construct(AbstractSchema $schema)
     {
+        $this->executionContext = new ExecutionContext();
+
         (new SchemaValidator())->validate($schema);
 
         $this->introduceIntrospectionFields($schema);
-        $this->executionContext = new ExecutionContext();
         $this->executionContext->setSchema($schema);
 
         $this->resolveValidator = new ResolveValidator($this->executionContext);
     }
-
 
     public function processPayload($payload, $variables = [], $reducers = [])
     {
