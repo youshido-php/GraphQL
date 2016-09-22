@@ -692,7 +692,34 @@ To fix it we have to declare fields that exist in the `Interface` with the same 
 We already have `title` but it's a nullable field so we have to change it by adding a non-null wrapper – `new NonNullType(new StringType())`.
 You can check the result by executing index.php script again, you should get the usual response.
 
+For the convenience we also created `$config->applyInterface()` method that could be inside `build()`:
+```php
+<?php
+/**
+ * PostType.php
+ */
+namespace Examples\Blog\Schema;
 
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\Scalar\IntType;
+
+class PostType extends AbstractObjectType
+{
+
+    public function build($config)
+    {
+        $config->applyInterface(new ContentBlockInterface());
+        $config->addFields([
+            'likesCount' => new IntType()
+        ]);
+    }
+
+    public function getInterfaces()
+    {
+        return [new ContentBlockInterface()];
+    }
+}
+```
 
 ### Enums
 
