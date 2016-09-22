@@ -47,7 +47,7 @@ class Container
         $this->keyset[$id]   = true;
     }
 
-    public function unset($id)
+    public function remove($id)
     {
         $this->assertIdentifierSet($id);
         if (array_key_exists($id, $this->values)) {
