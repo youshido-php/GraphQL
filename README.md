@@ -732,7 +732,6 @@ To show you how Enums work we're going to create a new class - `PostStatus`:
 /**
  * PostStatus.php
  */
-
 namespace Examples\Blog\Schema;
 
 use Youshido\GraphQL\Type\Enum\AbstractEnumType;
@@ -752,38 +751,81 @@ class PostStatus extends AbstractEnumType
             ]
         ];
     }
-
 }
 ```
-Now when you have this class created you can add a status field to our `PostType`:
+Now, add a status field to the `PostType`:
 ```php
 <?php
-// add field to the build function of the PostType class
-->addField('status', new PostStatus())
+/**
+ * PostType.php
+ */
+namespace Examples\Blog\Schema;
 
-// and update the resolve function
-return [
-    "title"     => "Post title from the PostType class",
-    "summary"   => "This new GraphQL library for PHP works really well",
-    "status"    => 1,
-    "likeCount" => 2
-];
+use Youshido\GraphQL\Type\NonNullType;
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\Scalar\IntType;
+use Youshido\GraphQL\Type\Scalar\StringType;
 
+class PostType extends AbstractObjectType
+{
+
+    public function build($config)
+    {
+        $config->addFields([
+            'title'      => new NonNullType(new StringType()),
+            'summary'    => new StringType(),
+            'likesCount' => new IntType(),
+            'status'     => new PostStatus()
+        ]);
+    }
+
+    public function getInterfaces()
+    {
+        return [new ContentBlockInterface()];
+    }
+}
+```
+and update the resolve function inside latestPost field:
+```php
+<?php
+
+namespace Examples\Blog\Schema;
+
+use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQL\Field\AbstractField;
+
+class LatestPostField extends AbstractField
+{
+    public function getType()
+    {
+        return new PostType();
+    }
+
+    public function resolve($value, array $args, ResolveInfo $info)
+    {
+        return [
+            "title"      => "New approach in API has been revealed",
+            "summary"    => "In two words - GraphQL Rocks!",
+            "status"     => 1,
+            "likesCount" => 2
+        ];
+    }
+}
 ```
 
-Call the `status` field in your request:
+Request the `status` field in your query:
 ```php
 $payload  = '{ latestPost { title, status, likeCount } }';
 ```
 You should get a result similar to the following:
 ```js
-{"data":{"latestPost":{"title":"Post title from the PostType class","status":"PUBLISHED","likeCount":2}}}
+{"data":{"latestPost":{"title":"New approach in API has been revealed","status":"PUBLISHED"}}}
 ```
 
 ### Unions
 
 GraphQL Unions represent an object type that could be resolved as one of a specified GraphQL Object types.
-To get you an idea of what this is we'll create a new query field that will return a list of unions (and get to the `ListType` after it).
+To get you an idea of what this is we're going to create a new query field that will return a list of unions (and get to the `ListType` after it).
 > You can consider Union as a combined type that is needed mostly when you want to have a list of different objects
 
 Imaging that you have a page and you need to get all content blocks for this page. Let content block be either `Post` or `Banner`.
@@ -793,16 +835,14 @@ Create a `BannerType`:
 /**
  * BannerType.php
  */
-
 namespace Examples\Blog\Schema;
 
-use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
 class BannerType extends AbstractObjectType
 {
-    public function build(TypeConfigInterface $config)
+    public function build($config)
     {
         $config
             ->addField('title', new StringType())
@@ -820,7 +860,7 @@ Each `UnionType` needs to define a list of types it unites by implementing the `
 
 namespace Examples\Blog\Schema;
 
-use Youshido\GraphQL\Type\Object\AbstractUnionType;
+use Youshido\GraphQL\Type\Union\AbstractUnionType;
 
 class ContentBlockUnion extends AbstractUnionType
 {
@@ -843,7 +883,6 @@ We're also going to create a simple `DataProvider` that will give us test data t
 /**
  * DataProvider.php
  */
-
 namespace Examples\Blog\Schema;
 
 class DataProvider
@@ -871,17 +910,16 @@ class DataProvider
 ```
 
 Now, we're ready to update our Schema and include `ContentBlockUnion` into it.
-As we're getting our schema bigger we'd like to extract it to a separate file:
+As we're getting our schema bigger we'd like to extract it to a separate file as well:
 ```php
 <?php
 /**
  * BlogSchema.php
  */
-
 namespace Examples\Blog\Schema;
 
-use Youshido\GraphQL\AbstractSchema;
-use Youshido\GraphQL\Type\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\ListType\ListType;
 
 class BlogSchema extends AbstractSchema
@@ -889,14 +927,14 @@ class BlogSchema extends AbstractSchema
     public function build(SchemaConfig $config)
     {
         $config->getQuery()->addFields([
-            'latestPost'           => new PostType(),
-            'randomBanner'         => [
+            new LatestPostField(),
+            'randomBanner'     => [
                 'type'    => new BannerType(),
                 'resolve' => function () {
                     return DataProvider::getBanner(rand(1, 10));
                 }
             ],
-            'pageContentUnion'     => [
+            'pageContentUnion' => [
                 'type'    => new ListType(new ContentBlockUnion()),
                 'resolve' => function () {
                     return [DataProvider::getPost(1), DataProvider::getBanner(1)];
@@ -904,7 +942,7 @@ class BlogSchema extends AbstractSchema
             ]
         ]);
         $config->getMutation()->addFields([
-            'likePost' => new LikePost()
+            new LikePostField()
         ]);
     }
 
@@ -914,49 +952,37 @@ Having this separate schema file you should update your `index.php` to look like
 ```php
 <?php
 
-namespace BlogTest;
+namespace Examples\Blog;
 
+use Examples\Blog\Schema\BlogSchema;
 use Youshido\GraphQL\Execution\Processor;
-use Youshido\GraphQL\Schema\Schema;
 
-require_once __DIR__ . '/schema-bootstrap.php';
-$schema = new BlogSchema();
+require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/Schema/PostType.php';
+require_once __DIR__ . '/Schema/LatestPostField.php';
+require_once __DIR__ . '/Schema/ContentBlockInterface.php';
+require_once __DIR__ . '/Schema/PostStatus.php';
+require_once __DIR__ . '/Schema/LikePostField.php';
+require_once __DIR__ . '/Schema/BlogSchema.php';
+require_once __DIR__ . '/Schema/ContentBlockUnion.php';
+require_once __DIR__ . '/Schema/BannerType.php';
+require_once __DIR__ . '/Schema/DataProvider.php';
 
-$processor = new Processor($schema);
+$processor = new Processor(new BlogSchema());
 $payload  = '{ pageContentUnion { ... on Post { title } ... on Banner { title, imageLink } } }';
+
 
 $processor->processPayload($payload);
 echo json_encode($processor->getResponseData()) . "\n";
 ```
 
-For the convenience of use we've created the `schema-bootstrap.php`:
-```php
-<?php
-
-namespace BlogTest;
-
-require_once __DIR__ . '/vendor/autoload.php';
-require_once __DIR__ . '/Schema/DataProvider.php';
-require_once __DIR__ . '/Schema/PostType.php';
-require_once __DIR__ . '/Schema/PostStatus.php';
-require_once __DIR__ . '/Schema/ContentBlockInterface.php';
-require_once __DIR__ . '/Schema/LikePost.php';
-require_once __DIR__ . '/Schema/BannerType.php';
-require_once __DIR__ . '/Schema/ContentBlockUnion.php';
-require_once __DIR__ . '/Schema/BlogSchema.php';
-```
-
 Due to the GraphQL syntax you have to specify fields for each type of object you're getting in the union request, if you're not familiar with it read more at [official documentation(https://facebook.github.io/graphql/#sec-Unions)]
 If everything was done right you should see the following response:
 ```js
-{
-  "data": {
-    "pageContentUnion":[
-      {"title":"Post 1 title","summary":"This new GraphQL library for PHP works really well"},
-      {"title":"Banner 1","imageLink":"banner1.jpg"}
-    ]
-  }
-}
+{"data":{"pageContentUnion":[
+  {"title":"Post 1 title"},
+  {"title":"Banner 1","imageLink":"banner1.jpg"}
+]}}
 ```
 Also, you might want to check out how to use [GraphiQL tool](#graphiql-tool) to get a better visualization of what you're doing here.
 
@@ -970,11 +996,10 @@ Let's go ahead and add `ListType` field to our BlogSchema.
 /**
  * BlogSchema.php
  */
-
 namespace Examples\Blog\Schema;
 
-use Youshido\GraphQL\AbstractSchema;
-use Youshido\GraphQL\Type\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\ListType\ListType;
 
 class BlogSchema extends AbstractSchema
@@ -982,20 +1007,20 @@ class BlogSchema extends AbstractSchema
     public function build(SchemaConfig $config)
     {
         $config->getQuery()->addFields([
-            'latestPost'           => new PostType(),
-            'randomBanner'         => [
+            new LatestPostField(),
+            'randomBanner'     => [
                 'type'    => new BannerType(),
                 'resolve' => function () {
                     return DataProvider::getBanner(rand(1, 10));
                 }
             ],
-            'pageContentUnion'     => [
+            'pageContentUnion' => [
                 'type'    => new ListType(new ContentBlockUnion()),
                 'resolve' => function () {
                     return [DataProvider::getPost(1), DataProvider::getBanner(1)];
                 }
             ],
-            'pageContentInterfaced' => [
+            'pageContentInterface' => [
                 'type'    => new ListType(new ContentBlockInterface()),
                 'resolve' => function () {
                     return [DataProvider::getPost(2), DataProvider::getBanner(3)];
@@ -1003,13 +1028,15 @@ class BlogSchema extends AbstractSchema
             ]
         ]);
         $config->getMutation()->addFields([
-            'likePost' => new LikePost()
+            new LikePostField()
         ]);
     }
 
 }
 ```
-We've added a `pageContentInterfaced` field that have a `ListType` with items of `ContentBlockInterface` type. Resolve function returns list of one `Post` and one `Banner` objects.
+
+We've added a `pageContentInterface` field that have a `ListType` of `ContentBlockInterface`.  
+Resolve function returns list which consists of one `Post` and one `Banner`.
 To test it we'll modify our payload to the following one:
 ```php
 <?php
