@@ -57,7 +57,11 @@ class Processor
     {
         $this->executionContext = new ExecutionContext();
 
-        (new SchemaValidator())->validate($schema);
+        try {
+            (new SchemaValidator())->validate($schema);
+        } catch (\Exception $e) {
+            $this->executionContext->addError($e);
+        };
 
         $this->introduceIntrospectionFields($schema);
         $this->executionContext->setSchema($schema);
@@ -67,9 +71,6 @@ class Processor
 
     public function processPayload($payload, $variables = [], $reducers = [])
     {
-        if ($this->executionContext->hasErrors()) {
-            $this->executionContext->clearErrors();
-        }
 
         $this->data = [];
 
@@ -385,6 +386,16 @@ class Processor
         }
 
         return $result;
+    }
+
+    /**
+     * You can access ExecutionContext to check errors and inject dependencies
+     *
+     * @return ExecutionContext
+     */
+    public function getExecutionContext()
+    {
+        return $this->executionContext;
     }
 
     /**
