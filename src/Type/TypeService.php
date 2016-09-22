@@ -80,7 +80,7 @@ class TypeService
     public static function isScalarType($type)
     {
         if (is_object($type)) {
-            return $type instanceof AbstractScalarType;
+            return $type instanceof AbstractScalarType || $type instanceof AbstractEnumType;
         }
 
         return in_array(strtolower($type), TypeFactory::getScalarTypesNames());

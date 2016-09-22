@@ -166,8 +166,18 @@ class Processor
             return null;
         }
 
-        $fieldType = $this->resolveValidator->resolveTypeIfAbstract($fieldType, $resolvedValue);
-        $value     = [];
+        $value = [];
+
+        if (!$query->hasFields()) {
+            $fieldType = $this->resolveValidator->resolveTypeIfAbstract($fieldType, $resolvedValue);
+
+            if (TypeService::isObjectType($fieldType->getNamedType())) {
+                throw new ResolveException(sprintf('You have to specify fields for "%s"', $query->getName()));
+            }
+            if (TypeService::isScalarType($fieldType)) {
+                return $this->getOutputValue($fieldType, $resolvedValue);
+            }
+        }
 
         if ($fieldType->getKind() == TypeMap::KIND_LIST) {
             if (!$this->resolveValidator->hasArrayAccess($resolvedValue)) return null;
@@ -196,14 +206,6 @@ class Processor
                 $value[$index] = $this->processQueryFields($query, $namedType, $resolvedValueItem, $value[$index]);
             }
         } else {
-            if (!$query->hasFields()) {
-                if (TypeService::isObjectType($fieldType)) {
-                    throw new ResolveException(sprintf('You have to specify fields for "%s"', $query->getName()));
-                }
-
-                return $this->getOutputValue($fieldType, $resolvedValue);
-            }
-
             $value = $this->processQueryFields($query, $fieldType, $resolvedValue, $value);
         }
 
@@ -301,7 +303,10 @@ class Processor
      */
     protected function processQueryFields($query, AbstractType $queryType, $resolvedValue, $value)
     {
-        $currentType = $queryType->getNullableType();
+        $originalType = $queryType;
+        $queryType    = $this->resolveValidator->resolveTypeIfAbstract($queryType, $resolvedValue);
+        $currentType  = $queryType->getNullableType();
+
 
         if ($currentType->getKind() == TypeMap::KIND_SCALAR) {
             if (!$query->hasFields()) {
@@ -322,7 +327,7 @@ class Processor
                     /** @var Fragment $fragment */
                     $fieldAstName = $fieldAst->getName();
                     $fragment     = $this->executionContext->getRequest()->getFragment($fieldAstName);
-                    $this->resolveValidator->assertValidFragmentForField($fragment, $fieldAst, $queryType);
+                    $this->resolveValidator->assertValidFragmentForField($fragment, $fieldAst, $originalType);
                 } elseif ($fragment->getTypeName() !== $queryType->getName()) {
                     continue;
                 }
