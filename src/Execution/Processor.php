@@ -158,6 +158,7 @@ class Processor
      * @param AbstractType   $fieldType
      * @param mixed          $resolvedValue
      * @return array|mixed
+     * @throws ResolveException
      */
     protected function collectValueForQueryWithType(Query $query, AbstractType $fieldType, $resolvedValue)
     {
