@@ -72,5 +72,14 @@ abstract class AbstractInputObjectType extends AbstractType
         return true;
     }
 
+    public function parseValue($value)
+    {
+        $typeConfig = $this->getConfig();
+        foreach ($value as $valueKey => $item) {
+            $value[$valueKey] = $typeConfig->getField($valueKey)->getType()->parseValue($item);
+        }
+
+        return $value;
+    }
 
 }
