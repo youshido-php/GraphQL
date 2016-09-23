@@ -57,7 +57,11 @@ class Processor
     {
         $this->executionContext = new ExecutionContext();
 
-        (new SchemaValidator())->validate($schema);
+        try {
+            (new SchemaValidator())->validate($schema);
+        } catch (\Exception $e) {
+            $this->executionContext->addError($e);
+        };
 
         $this->introduceIntrospectionFields($schema);
         $this->executionContext->setSchema($schema);
@@ -67,9 +71,6 @@ class Processor
 
     public function processPayload($payload, $variables = [], $reducers = [])
     {
-        if ($this->executionContext->hasErrors()) {
-            $this->executionContext->clearErrors();
-        }
 
         $this->data = [];
 
@@ -157,6 +158,7 @@ class Processor
      * @param AbstractType   $fieldType
      * @param mixed          $resolvedValue
      * @return array|mixed
+     * @throws ResolveException
      */
     protected function collectValueForQueryWithType(Query $query, AbstractType $fieldType, $resolvedValue)
     {
@@ -164,8 +166,18 @@ class Processor
             return null;
         }
 
-        $fieldType = $this->resolveValidator->resolveTypeIfAbstract($fieldType, $resolvedValue);
-        $value     = [];
+        $value = [];
+
+        if (!$query->hasFields()) {
+            $fieldType = $this->resolveValidator->resolveTypeIfAbstract($fieldType, $resolvedValue);
+
+            if (TypeService::isObjectType($fieldType->getNamedType())) {
+                throw new ResolveException(sprintf('You have to specify fields for "%s"', $query->getName()));
+            }
+            if (TypeService::isScalarType($fieldType)) {
+                return $this->getOutputValue($fieldType, $resolvedValue);
+            }
+        }
 
         if ($fieldType->getKind() == TypeMap::KIND_LIST) {
             if (!$this->resolveValidator->hasArrayAccess($resolvedValue)) return null;
@@ -194,14 +206,6 @@ class Processor
                 $value[$index] = $this->processQueryFields($query, $namedType, $resolvedValueItem, $value[$index]);
             }
         } else {
-            if (!$query->hasFields()) {
-                if (TypeService::isObjectType($fieldType)) {
-                    throw new ResolveException(sprintf('You have to specify fields for "%s"', $query->getName()));
-                }
-
-                return $this->getOutputValue($fieldType, $resolvedValue);
-            }
-
             $value = $this->processQueryFields($query, $fieldType, $resolvedValue, $value);
         }
 
@@ -299,7 +303,10 @@ class Processor
      */
     protected function processQueryFields($query, AbstractType $queryType, $resolvedValue, $value)
     {
-        $currentType = $queryType->getNullableType();
+        $originalType = $queryType;
+        $queryType    = $this->resolveValidator->resolveTypeIfAbstract($queryType, $resolvedValue);
+        $currentType  = $queryType->getNullableType();
+
 
         if ($currentType->getKind() == TypeMap::KIND_SCALAR) {
             if (!$query->hasFields()) {
@@ -320,7 +327,7 @@ class Processor
                     /** @var Fragment $fragment */
                     $fieldAstName = $fieldAst->getName();
                     $fragment     = $this->executionContext->getRequest()->getFragment($fieldAstName);
-                    $this->resolveValidator->assertValidFragmentForField($fragment, $fieldAst, $queryType);
+                    $this->resolveValidator->assertValidFragmentForField($fragment, $fieldAst, $originalType);
                 } elseif ($fragment->getTypeName() !== $queryType->getName()) {
                     continue;
                 }
@@ -385,6 +392,16 @@ class Processor
         }
 
         return $result;
+    }
+
+    /**
+     * You can access ExecutionContext to check errors and inject dependencies
+     *
+     * @return ExecutionContext
+     */
+    public function getExecutionContext()
+    {
+        return $this->executionContext;
     }
 
     /**

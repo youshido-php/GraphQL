@@ -130,6 +130,7 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('mutation { createList(topArgument:{
                                         postObject:[{title: null}] })}');
         $this->assertEquals(['errors' => [['message' => 'Not valid type for argument "topArgument" in query "createList"']]], $processor->getResponseData());
+        $processor->getExecutionContext()->clearErrors();
         $processor->processPayload('mutation { createList(topArgument:{
                                         postObject:[{title: "not empty"}] })}');
         $this->assertEquals(['data' => ['createList' => 'success message']], $processor->getResponseData());

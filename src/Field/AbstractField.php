@@ -9,6 +9,7 @@ namespace Youshido\GraphQL\Field;
 
 use Youshido\GraphQL\Config\Field\FieldConfig;
 use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\Traits\FieldsArgumentsAwareObjectTrait;
@@ -48,7 +49,7 @@ abstract class AbstractField implements FieldInterface
     }
 
     /**
-     * @return AbstractObjectType
+     * @return AbstractObjectType|AbstractType
      */
     abstract public function getType();
 
