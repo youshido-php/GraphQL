@@ -9,12 +9,11 @@
 namespace Youshido\GraphQL\Execution\Context;
 
 
-use Youshido\GraphQL\Execution\Container\Container;
+use Youshido\GraphQL\Execution\Container\ContainerInterface;
 use Youshido\GraphQL\Execution\Request;
 use Youshido\GraphQL\Introspection\Field\SchemaField;
 use Youshido\GraphQL\Introspection\Field\TypeDefinitionField;
 use Youshido\GraphQL\Schema\AbstractSchema;
-use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
 use Youshido\GraphQL\Validator\SchemaValidator\SchemaValidator;
 
@@ -29,7 +28,7 @@ class ExecutionContext implements ExecutionContextInterface
     /** @var Request */
     private $request;
 
-    /** @var Container */
+    /** @var ContainerInterface */
     private $container;
 
     /**
@@ -102,12 +101,19 @@ class ExecutionContext implements ExecutionContextInterface
         return $this->container->get($id);
     }
 
+    /**
+     * @return ContainerInterface
+     */
     public function getContainer()
     {
         return $this->container;
     }
 
-    public function setContainer($container)
+    /**
+     * @param ContainerInterface $container
+     * @return $this
+     */
+    public function setContainer(ContainerInterface $container)
     {
         $this->container = $container;
 
