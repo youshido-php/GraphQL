@@ -39,4 +39,8 @@ interface ExecutionContextInterface extends ErrorContainerInterface
      */
     public function setRequest(Request $request);
 
+    public function getContainer();
+
+    public function setContainer($container);
+
 }

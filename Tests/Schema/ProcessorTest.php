@@ -9,6 +9,8 @@
 namespace Youshido\Tests\Schema;
 
 
+use Youshido\GraphQL\Execution\Context\Container;
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor;
@@ -212,19 +214,19 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['data' => ['labels' => ['one', 'two']]], $processor->getResponseData());
 
         $schema->getMutationType()
-            ->addField(new Field([
-                'name'    => 'increaseCounter',
-                'type'    => new IntType(),
-                'resolve' => function ($value, $args, ResolveInfo $info) {
-                    return $this->_counter += $args['amount'];
-                },
-                'args'    => [
-                    'amount' => [
-                        'type'    => new IntType(),
-                        'default' => 1
-                    ]
-                ]
-            ]))->addField(new Field([
+               ->addField(new Field([
+                   'name'    => 'increaseCounter',
+                   'type'    => new IntType(),
+                   'resolve' => function ($value, $args, ResolveInfo $info) {
+                       return $this->_counter += $args['amount'];
+                   },
+                   'args'    => [
+                       'amount' => [
+                           'type'    => new IntType(),
+                           'default' => 1
+                       ]
+                   ]
+               ]))->addField(new Field([
                 'name'    => 'invalidResolveTypeMutation',
                 'type'    => new NonNullType(new IntType()),
                 'resolve' => function () {
@@ -544,6 +546,30 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $visitor = new MaxComplexityQueryVisitor(1000); // arbitrarily high cost
         $processor->processPayload('{ union(type: "object2") { ... on Object1 { id }, ... on Object2 { name } } }', [], [$visitor]);
         $this->assertEquals(10 + 13 + 1, $visitor->getMemo());
+    }
+
+    public function testContainer()
+    {
+        $container = new Container();
+        $container->set('user', ['name' => 'Alex']);
+
+        $executionContext = new ExecutionContext($container);
+        $this->assertNotNull($executionContext->getContainer());
+        $processor = new Processor(new Schema([
+            'query' => new ObjectType([
+                'name'   => 'RootQuery',
+                'fields' => [
+                    'currentUser' => [
+                        'type'    => new StringType(),
+                        'resolve' => function ($source, $args, ResolveInfo $info) {
+                            return $info->getContainer()->get('user')['name'];
+                        }
+                    ]
+                ]
+            ])
+        ]), $executionContext);
+
+        $this->assertEquals(['data' => ['currentUser' => 'Alex']], $processor->processPayload('{ currentUser }')->getResponseData());
     }
 
     public function testComplexityReducer()

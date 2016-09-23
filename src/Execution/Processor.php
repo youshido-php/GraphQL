@@ -10,6 +10,7 @@
 namespace Youshido\GraphQL\Execution;
 
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
+use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Execution\Visitor\AbstractQueryVisitor;
 use Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor;
 use Youshido\GraphQL\Field\AbstractField;
@@ -53,9 +54,12 @@ class Processor
     /** @var int */
     protected $maxComplexity;
 
-    public function __construct(AbstractSchema $schema)
+    public function __construct(AbstractSchema $schema, ExecutionContextInterface $executionContent = null)
     {
-        $this->executionContext = new ExecutionContext();
+        if (!$executionContent) {
+            $executionContent = new ExecutionContext();
+        }
+        $this->executionContext = $executionContent;
 
         try {
             (new SchemaValidator())->validate($schema);
@@ -245,7 +249,9 @@ class Processor
 
     protected function createResolveInfo($field, $fields)
     {
-        return new ResolveInfo($field, $fields, $this->executionContext);
+        $resolveInfo = new ResolveInfo($field, $fields, $this->executionContext);
+        $resolveInfo->setContainer($this->getExecutionContext()->getContainer());
+        return $resolveInfo;
     }
 
     /**

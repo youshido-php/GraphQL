@@ -21,8 +21,19 @@ class ExecutionContext implements ExecutionContextInterface
     /** @var AbstractSchema */
     private $schema;
 
-    /** @var  Request */
+    /** @var Request */
     private $request;
+
+    /** @var Container */
+    private $container;
+
+    public function __construct($container = null)
+    {
+        if (!$container) {
+            $container = new Container();
+        }
+        $this->container = $container;
+    }
 
     /**
      * @return AbstractSchema
@@ -60,6 +71,23 @@ class ExecutionContext implements ExecutionContextInterface
     public function setRequest(Request $request)
     {
         $this->request = $request;
+
+        return $this;
+    }
+
+    public function get($id)
+    {
+        return $this->container->get($id);
+    }
+
+    public function getContainer()
+    {
+        return $this->container;
+    }
+
+    public function setContainer($container)
+    {
+        $this->container = $container;
 
         return $this;
     }
