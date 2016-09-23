@@ -6,9 +6,9 @@
 * created: 9/22/16 7:00 PM
 */
 
-namespace Youshido\GraphQL\Execution\Context;
+namespace Youshido\GraphQL\Execution\Container;
 
-class Container
+class Container implements ContainerInterface
 {
 
     private $keyset   = [];
@@ -37,7 +37,7 @@ class Container
         return $this;
     }
 
-    public function registerService($id, $service)
+    public function setAsService($id, $service)
     {
         if (!is_object($service)) {
             throw new \RuntimeException(sprintf('Service %s has to be an object', $id));

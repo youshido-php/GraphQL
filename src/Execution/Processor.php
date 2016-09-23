@@ -9,14 +9,12 @@
 
 namespace Youshido\GraphQL\Execution;
 
+use Youshido\GraphQL\Execution\Container\Container;
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
-use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Execution\Visitor\AbstractQueryVisitor;
 use Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor;
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\Field;
-use Youshido\GraphQL\Introspection\Field\SchemaField;
-use Youshido\GraphQL\Introspection\Field\TypeDefinitionField;
 use Youshido\GraphQL\Parser\Ast\Field as FieldAst;
 use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\FragmentInterface;
@@ -54,28 +52,15 @@ class Processor
     /** @var int */
     protected $maxComplexity;
 
-    public function __construct(AbstractSchema $schema, ExecutionContextInterface $executionContent = null)
+    public function __construct(AbstractSchema $schema)
     {
-        if (!$executionContent) {
-            $executionContent = new ExecutionContext();
-        }
-        $this->executionContext = $executionContent;
-
-        try {
-            (new SchemaValidator())->validate($schema);
-        } catch (\Exception $e) {
-            $this->executionContext->addError($e);
-        };
-
-        $this->introduceIntrospectionFields($schema);
-        $this->executionContext->setSchema($schema);
-
+        $this->executionContext = new ExecutionContext($schema);
+        $this->executionContext->setContainer(new Container());
         $this->resolveValidator = new ResolveValidator($this->executionContext);
     }
 
     public function processPayload($payload, $variables = [], $reducers = [])
     {
-
         $this->data = [];
 
         try {
@@ -249,9 +234,7 @@ class Processor
 
     protected function createResolveInfo($field, $fields)
     {
-        $resolveInfo = new ResolveInfo($field, $fields, $this->executionContext);
-        $resolveInfo->setContainer($this->getExecutionContext()->getContainer());
-        return $resolveInfo;
+        return new ResolveInfo($field, $fields, $this->executionContext);
     }
 
     /**
@@ -376,13 +359,6 @@ class Processor
     protected function getOutputValue(AbstractType $type, $value)
     {
         return in_array($type->getKind(), [TypeMap::KIND_OBJECT, TypeMap::KIND_NON_NULL]) ? $value : $type->serialize($value);
-    }
-
-    protected function introduceIntrospectionFields(AbstractSchema $schema)
-    {
-        $schemaField = new SchemaField();
-        $schema->addQueryField($schemaField);
-        $schema->addQueryField(new TypeDefinitionField());
     }
 
     public function getResponseData()

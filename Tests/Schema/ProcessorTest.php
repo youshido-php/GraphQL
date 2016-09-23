@@ -9,7 +9,7 @@
 namespace Youshido\Tests\Schema;
 
 
-use Youshido\GraphQL\Execution\Context\Container;
+use Youshido\GraphQL\Execution\Container\Container;
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Execution\ResolveInfo;
@@ -553,9 +553,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $container = new Container();
         $container->set('user', ['name' => 'Alex']);
 
-        $executionContext = new ExecutionContext($container);
-        $this->assertNotNull($executionContext->getContainer());
-        $processor = new Processor(new Schema([
+        $executionContext = new ExecutionContext(new Schema([
             'query' => new ObjectType([
                 'name'   => 'RootQuery',
                 'fields' => [
@@ -567,7 +565,12 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                     ]
                 ]
             ])
-        ]), $executionContext);
+        ]));
+        $executionContext->setContainer($container);
+        $this->assertNotNull($executionContext->getContainer());
+
+        $processor = new Processor($executionContext->getSchema());
+        $processor->getExecutionContext()->setContainer($container);
 
         $this->assertEquals(['data' => ['currentUser' => 'Alex']], $processor->processPayload('{ currentUser }')->getResponseData());
     }

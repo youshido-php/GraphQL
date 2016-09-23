@@ -9,9 +9,14 @@
 namespace Youshido\GraphQL\Execution\Context;
 
 
+use Youshido\GraphQL\Execution\Container\Container;
 use Youshido\GraphQL\Execution\Request;
+use Youshido\GraphQL\Introspection\Field\SchemaField;
+use Youshido\GraphQL\Introspection\Field\TypeDefinitionField;
 use Youshido\GraphQL\Schema\AbstractSchema;
+use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
+use Youshido\GraphQL\Validator\SchemaValidator\SchemaValidator;
 
 class ExecutionContext implements ExecutionContextInterface
 {
@@ -27,12 +32,29 @@ class ExecutionContext implements ExecutionContextInterface
     /** @var Container */
     private $container;
 
-    public function __construct($container = null)
+    /**
+     * ExecutionContext constructor.
+     * @param AbstractSchema $schema
+     */
+    public function __construct($schema)
     {
-        if (!$container) {
-            $container = new Container();
-        }
-        $this->container = $container;
+        $this->schema = $schema;
+        $this->validateSchema();
+        $this->introduceIntrospectionFields();
+    }
+
+    protected function validateSchema() {
+        try {
+            (new SchemaValidator())->validate($this->schema);
+        } catch (\Exception $e) {
+            $this->addError($e);
+        };
+    }
+
+    protected function introduceIntrospectionFields() {
+        $schemaField = new SchemaField();
+        $this->schema->addQueryField($schemaField);
+        $this->schema->addQueryField(new TypeDefinitionField());
     }
 
     /**

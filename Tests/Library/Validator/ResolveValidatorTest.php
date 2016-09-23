@@ -29,13 +29,14 @@ use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
 use Youshido\Tests\DataProvider\TestEnumType;
 use Youshido\Tests\DataProvider\TestInterfaceType;
 use Youshido\Tests\DataProvider\TestObjectType;
+use Youshido\Tests\DataProvider\TestSchema;
 
 class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testValidMethods()
     {
-        $validator = new ResolveValidator(new ExecutionContext());
+        $validator = new ResolveValidator(new ExecutionContext(new TestSchema()));
         $this->assertEmpty($validator->getExecutionContext()->getErrors());
 
         $object       = new TestObjectType();
@@ -64,7 +65,7 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testValidFragmentTypeWithComposite()
     {
-      $validator = new ResolveValidator(new ExecutionContext());
+      $validator = new ResolveValidator(new ExecutionContext(new TestSchema()));
       $userType = new ObjectType([
         'name'       => 'User',
         'fields'     => [
@@ -92,7 +93,7 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
         $fragmentReference = new FragmentReference('user');
         $fragment          = new Fragment('name', 'Product', []);
 
-        $validator = new ResolveValidator(new ExecutionContext());
+        $validator = new ResolveValidator(new ExecutionContext(new TestSchema()));
         $validator->assertValidFragmentForField($fragment, $fragmentReference, $userType);
     }
 
@@ -108,7 +109,7 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
             ],
         ]);
 
-        $validator = new ResolveValidator(new ExecutionContext());
+        $validator = new ResolveValidator(new ExecutionContext(new TestSchema()));
         $validator->assertTypeImplementsInterface($userType, new TestInterfaceType());
     }
 
@@ -125,7 +126,7 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
             }
         ]);
 
-        $validator = new ResolveValidator(new ExecutionContext());
+        $validator = new ResolveValidator(new ExecutionContext(new TestSchema()));
         $validator->assertTypeInUnionTypes($union->resolveType(new \stdClass()), $union);
     }
 
@@ -139,7 +140,7 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
             }
         ]);
 
-        $validator = new ResolveValidator(new ExecutionContext());
+        $validator = new ResolveValidator(new ExecutionContext(new TestSchema()));
         try {
             $validator->assertTypeInUnionTypes($union->resolveType(new \stdClass()), $union);
             $this->assertTrue(true);
@@ -168,7 +169,7 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
                 'year'   => new IntType(),
             ]
         ]);
-        $validator = new ResolveValidator(new ExecutionContext());
+        $validator = new ResolveValidator(new ExecutionContext(new TestSchema()));
         $request   = new Request([]);
 
 

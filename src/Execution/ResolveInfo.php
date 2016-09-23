@@ -72,14 +72,9 @@ class ResolveInfo
         return $this->field->getType();
     }
 
-    public function setContainer($container)
-    {
-        $this->container = $container;
-    }
-
     public function getContainer()
     {
-        return $this->container;
+        return $this->executionContext->getContainer();
     }
 
 
