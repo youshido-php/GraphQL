@@ -53,8 +53,10 @@ class Processor
 
     public function __construct(AbstractSchema $schema)
     {
-        $this->executionContext = new ExecutionContext($schema);
-        $this->executionContext->setContainer(new Container());
+        if (empty($this->executionContext)) {
+            $this->executionContext = new ExecutionContext($schema);
+            $this->executionContext->setContainer(new Container());
+        }
         $this->resolveValidator = new ResolveValidator($this->executionContext);
     }
 
