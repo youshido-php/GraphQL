@@ -11,6 +11,4 @@ interface ContainerInterface
 
     public function has($id);
 
-    public function setAsService($id, $service);
-
 }

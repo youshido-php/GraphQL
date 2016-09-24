@@ -37,13 +37,16 @@ class Container implements ContainerInterface
         return $this;
     }
 
-    public function setAsService($id, $service)
+    protected function setAsService($id, $service)
     {
         if (!is_object($service)) {
             throw new \RuntimeException(sprintf('Service %s has to be an object', $id));
         }
 
         $this->services[$id] = $service;
+        if (isset($this->values[$id])) {
+            unset($this->values[$id]);
+        }
         $this->keyset[$id]   = true;
     }
 

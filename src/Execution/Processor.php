@@ -33,7 +33,6 @@ use Youshido\GraphQL\Type\Union\AbstractUnionType;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidatorInterface;
-use Youshido\GraphQL\Validator\SchemaValidator\SchemaValidator;
 
 class Processor
 {
@@ -250,7 +249,6 @@ class Processor
     {
         if ($field->hasArguments() && !$this->resolveValidator->validateArguments($field, $fieldAst, $this->executionContext->getRequest())) {
             throw new \Exception(sprintf('Not valid arguments for the field "%s"', $fieldAst->getName()));
-
         }
 
         return $this->resolveFieldValue($field, $contextValue, [$fieldAst], $fieldAst->getKeyValueArguments());
