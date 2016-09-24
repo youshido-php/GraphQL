@@ -50,7 +50,6 @@ abstract class AbstractConfig
         $this->data          = $configData;
         $this->finalClass    = $finalClass;
 
-//        $this->validate();
         $this->build();
     }
 
