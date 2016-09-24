@@ -53,6 +53,9 @@ class Processor
 
     public function __construct(AbstractSchema $schema)
     {
+        /**
+         * This will be removed in 1.4 when __construct signature is changed to accept ExecutionContext
+         */
         if (empty($this->executionContext)) {
             $this->executionContext = new ExecutionContext($schema);
             $this->executionContext->setContainer(new Container());
