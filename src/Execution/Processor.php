@@ -13,8 +13,8 @@ use Youshido\GraphQL\Execution\Container\Container;
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Visitor\AbstractQueryVisitor;
 use Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor;
-use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\Field;
+use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Parser\Ast\Field as FieldAst;
 use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\FragmentInterface;
@@ -114,7 +114,7 @@ class Processor
             return null;
         }
 
-        /** @var AbstractField $field */
+        /** @var FieldInterface $field */
         $operationField = $currentLevelSchema->getField($query->getName());
         $alias          = $query->getAlias() ?: $query->getName();
 
@@ -127,11 +127,11 @@ class Processor
 
     /**
      * @param Query         $query
-     * @param AbstractField $field
+     * @param FieldInterface $field
      * @param               $contextValue
      * @return array|mixed|null
      */
-    protected function processQueryAST(Query $query, AbstractField $field, $contextValue = null)
+    protected function processQueryAST(Query $query, FieldInterface $field, $contextValue = null)
     {
         if (!$this->resolveValidator->validateArguments($field, $query, $this->executionContext->getRequest())) {
             return null;
@@ -207,14 +207,14 @@ class Processor
 
     /**
      * @param FieldAst      $fieldAst
-     * @param AbstractField $field
+     * @param FieldInterface $field
      *
      * @param mixed         $contextValue
      * @return array|mixed|null
      * @throws ResolveException
      * @throws \Exception
      */
-    protected function processFieldAST(FieldAst $fieldAst, AbstractField $field, $contextValue)
+    protected function processFieldAST(FieldAst $fieldAst, FieldInterface $field, $contextValue)
     {
         $value            = null;
         $fieldType        = $field->getType();
@@ -244,13 +244,13 @@ class Processor
     /**
      * @param               $contextValue
      * @param FieldAst      $fieldAst
-     * @param AbstractField $field
+     * @param FieldInterface $field
      *
      * @throws \Exception
      *
      * @return mixed
      */
-    protected function getPreResolvedValue($contextValue, FieldAst $fieldAst, AbstractField $field)
+    protected function getPreResolvedValue($contextValue, FieldAst $fieldAst, FieldInterface $field)
     {
         if ($field->hasArguments() && !$this->resolveValidator->validateArguments($field, $fieldAst, $this->executionContext->getRequest())) {
             throw new \Exception(sprintf('Not valid arguments for the field "%s"', $fieldAst->getName()));
@@ -260,18 +260,18 @@ class Processor
 
     }
 
-    protected function resolveFieldValue(AbstractField $field, $contextValue, array $fields, array $args)
+    protected function resolveFieldValue(FieldInterface $field, $contextValue, array $fields, array $args)
     {
         return $field->resolve($contextValue, $args, $this->createResolveInfo($field, $fields));
     }
 
     /**
-     * @param $field     AbstractField
+     * @param $field     FieldInterface
      * @param $query     Query
      *
      * @return array
      */
-    protected function parseArgumentsValues(AbstractField $field, Query $query)
+    protected function parseArgumentsValues(FieldInterface $field, Query $query)
     {
         $args = [];
         foreach ($query->getArguments() as $argument) {
@@ -354,7 +354,7 @@ class Processor
         return $value;
     }
 
-    protected function getFieldValidatedValue(AbstractField $field, $value)
+    protected function getFieldValidatedValue(FieldInterface $field, $value)
     {
         return ($this->resolveValidator->isValidValueForField($field, $value)) ? $this->getOutputValue($field->getType(), $value) : null;
     }
@@ -463,11 +463,11 @@ class Processor
      * case of a Field and yield that back up to the visitor up in `doVisit`.
      *
      * @param Query|Field|FragmentInterface $queryNode
-     * @param AbstractField                 $currentLevelAST
+     * @param FieldInterface                 $currentLevelAST
      *
      * @return \Generator
      */
-    protected function walkQuery($queryNode, AbstractField $currentLevelAST)
+    protected function walkQuery($queryNode, FieldInterface $currentLevelAST)
     {
         $childrenScore = 0;
         if (!($queryNode instanceof FieldAst)) {
