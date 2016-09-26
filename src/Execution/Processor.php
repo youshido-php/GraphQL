@@ -275,7 +275,7 @@ class Processor
     {
         $args = [];
         foreach ($query->getArguments() as $argument) {
-            if ($configArgument = $field->getConfig()->getArgument($argument->getName())) {
+            if ($configArgument = $field->getArgument($argument->getName())) {
                 $args[$argument->getName()] = $configArgument->getType()->parseValue($argument->getValue()->getValue());
             }
         }
