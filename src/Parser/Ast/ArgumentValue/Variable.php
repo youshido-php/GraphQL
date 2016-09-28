@@ -40,7 +40,7 @@ class Variable implements ValueInterface
      */
     public function getValue()
     {
-        if (!$this->value) {
+        if (null === $this->value) {
             throw new \LogicException('Value is not set for variable "' . $this->name . '"');
         }
 

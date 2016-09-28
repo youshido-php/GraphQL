@@ -94,7 +94,7 @@ class ResolveValidator implements ResolveValidatorInterface
 
                 /** @var Variable $requestVariable */
                 $requestVariable = $request->getVariable($variable->getName());
-                if (!$requestVariable) {
+                if (null === $requestVariable) {
                     $this->executionContext->addError(new ResolveException(sprintf('Variable "%s" does not exist for query "%s"', $argument->getName(), $field->getName())));
 
                     return false;
