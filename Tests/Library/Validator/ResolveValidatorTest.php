@@ -217,6 +217,11 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
         $validator->validateArguments($field, $argumentWithVariable, $request);
         $this->assertFalse($validator->getExecutionContext()->hasErrors());
 
+        $request->setVariables(['year' => 0]);
+        $validator->validateArguments($field, $argumentWithVariable, $request);
+        $this->assertFalse($validator->getExecutionContext()->hasErrors());
+        $request->setVariables([]);
+
         $validator->validateArguments($field, $argumentWithVariableWrongType, $request);
         $this->assertEquals([
             ['message' => 'Invalid variable "year" type, allowed type is "Int"']

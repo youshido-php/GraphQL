@@ -50,4 +50,17 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($request->getFragment('unknown fragment'));
     }
 
+    public function testSetVariableParseJson()
+    {
+        $variables = '{"foo": "bar"}';
+        $expectedVariableArray = [ 'foo' => 'bar' ];
+
+        $request = new Request([], $variables);
+        $this->assertEquals($expectedVariableArray, $request->getVariables());
+
+        $request = new Request();
+        $request->setVariables($variables);
+        $this->assertEquals($expectedVariableArray, $request->getVariables());
+    }
+
 }

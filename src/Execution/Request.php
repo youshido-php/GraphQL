@@ -152,6 +152,10 @@ class Request
      */
     public function setVariables($variables)
     {
+        if (!is_array($variables)) {
+            $variables = json_decode($variables, true);
+        }
+
         $this->variables = $variables;
 
         return $this;
