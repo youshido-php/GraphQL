@@ -11,15 +11,16 @@ namespace Youshido\GraphQL\Field;
 use Youshido\GraphQL\Config\Field\InputFieldConfig;
 use Youshido\GraphQL\Config\Traits\ResolvableObjectTrait;
 use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
+use Youshido\GraphQL\Type\InputTypeInterface;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\Traits\FieldsArgumentsAwareObjectTrait;
 use Youshido\GraphQL\Type\TypeFactory;
 use Youshido\GraphQL\Type\TypeService;
 
-abstract class AbstractInputField implements FieldInterface
+abstract class AbstractInputField implements InputFieldInterface
 {
 
-    use FieldsArgumentsAwareObjectTrait, AutoNameTrait, ResolvableObjectTrait;
+    use FieldsArgumentsAwareObjectTrait, AutoNameTrait;
 
     protected $isFinal = false;
 
@@ -44,7 +45,7 @@ abstract class AbstractInputField implements FieldInterface
     }
 
     /**
-     * @return AbstractInputObjectType
+     * @return InputTypeInterface
      */
     abstract public function getType();
 
