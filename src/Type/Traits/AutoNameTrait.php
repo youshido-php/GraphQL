@@ -7,7 +7,7 @@
 */
 
 namespace Youshido\GraphQL\Type\Traits;
-use Youshido\GraphQL\Field\AbstractField;
+use Youshido\GraphQL\Field\FieldInterface;
 
 /**
  * Class AutoNameTrait
@@ -33,7 +33,7 @@ trait AutoNameTrait
             $className = substr($className, 0, -4);
         }
 
-        if ($this instanceof AbstractField) {
+        if ($this instanceof FieldInterface) {
             $className = lcfirst($className);
         }
 

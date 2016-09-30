@@ -9,7 +9,7 @@ namespace Youshido\GraphQL\Validator\ResolveValidator;
 
 use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Execution\Request;
-use Youshido\GraphQL\Field\AbstractField;
+use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Parser\Ast\Argument;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal;
@@ -20,7 +20,6 @@ use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Type\AbstractType;
-use Youshido\GraphQL\Type\CompositeTypeInterface;
 use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\ListType\AbstractListType;
@@ -60,7 +59,7 @@ class ResolveValidator implements ResolveValidatorInterface
     /**
      * @inheritdoc
      */
-    public function validateArguments(AbstractField $field, $query, Request $request)
+    public function validateArguments(FieldInterface $field, $query, Request $request)
     {
         $requiredArguments = array_filter($field->getArguments(), function (InputField $argument) {
             return $argument->getType()->getKind() == TypeMap::KIND_NON_NULL;
@@ -188,7 +187,7 @@ class ResolveValidator implements ResolveValidatorInterface
         return is_array($data) || $data instanceof \Traversable;
     }
 
-    public function isValidValueForField(AbstractField $field, $value)
+    public function isValidValueForField(FieldInterface $field, $value)
     {
         $fieldType = $field->getType();
         if ($fieldType->getKind() == TypeMap::KIND_NON_NULL && is_null($value)) {
