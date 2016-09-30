@@ -28,6 +28,10 @@ class TypeDefinitionField extends AbstractField
         $this->collectTypes($schema->getQueryType());
         $this->collectTypes($schema->getMutationType());
 
+        foreach ($schema->getTypes() as $type) {
+            $this->collectTypes($type);
+        }
+
         foreach ($this->types as $name => $info) {
             if ($name == $args['name']) {
                 return $info;
