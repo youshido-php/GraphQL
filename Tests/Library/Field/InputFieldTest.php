@@ -32,7 +32,7 @@ class InputFieldTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('id', $field->getName());
         $this->assertEquals(new IdType(), $field->getType());
         $this->assertEquals('description', $field->getDescription());
-        $this->assertEquals(123, $field->getDefaultValue());
+        $this->assertSame(123, $field->getDefaultValue());
     }
 
 
