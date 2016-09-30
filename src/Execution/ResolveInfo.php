@@ -10,12 +10,13 @@ namespace Youshido\GraphQL\Execution;
 
 use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Field\AbstractField;
+use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Parser\Ast\Field;
 use Youshido\GraphQL\Type\AbstractType;
 
 class ResolveInfo
 {
-    /** @var  AbstractField */
+    /** @var  FieldInterface */
     protected $field;
 
     /** @var Field[] */
@@ -33,7 +34,7 @@ class ResolveInfo
      */
     protected $container;
 
-    public function __construct(AbstractField $field, array $fieldASTList, ExecutionContextInterface $executionContext)
+    public function __construct(FieldInterface $field, array $fieldASTList, ExecutionContextInterface $executionContext)
     {
         $this->field            = $field;
         $this->fieldASTList     = $fieldASTList;
@@ -49,7 +50,7 @@ class ResolveInfo
     }
 
     /**
-     * @return AbstractField
+     * @return FieldInterface
      */
     public function getField()
     {

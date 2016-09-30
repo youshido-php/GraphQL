@@ -8,14 +8,11 @@
 namespace Youshido\GraphQL\Field;
 
 
-use Youshido\GraphQL\Type\AbstractType;
+use Youshido\GraphQL\Execution\ResolveInfo;
 
-interface FieldInterface
+interface FieldInterface extends InputFieldInterface
 {
-    /**
-     * @return AbstractType
-     */
-    public function getType();
+    public function resolve($value, array $args, ResolveInfo $info);
 
-    public function getName();
+    public function getResolveFunction();
 }

@@ -9,7 +9,6 @@
 namespace Youshido\GraphQL\Config\Traits;
 
 
-use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
@@ -61,7 +60,7 @@ trait FieldsAwareConfigTrait
     }
 
     /**
-     * @param AbstractField|string $field     Field name or Field Object
+     * @param FieldInterface|string $field     Field name or Field Object
      * @param mixed                $fieldInfo Field Type or Field Config array
      * @return $this
      */
