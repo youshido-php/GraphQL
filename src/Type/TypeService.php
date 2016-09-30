@@ -91,6 +91,11 @@ class TypeService
         return $type instanceof AbstractType || TypeService::isScalarType($type);
     }
 
+    public static function isLeafType($type)
+    {
+        return $type instanceof AbstractEnumType || TypeService::isScalarType($type);
+    }
+
     public static function isObjectType($type)
     {
         return $type instanceof AbstractObjectType;

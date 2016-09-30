@@ -270,7 +270,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('{ randomUser { region }}');
-        $this->assertEquals(['errors' => [['message' => 'Property "region" not found in resolve result']]], $processor->getResponseData());
+        $this->assertEquals(['errors' => [['message' => 'You have to specify fields for "region"']]], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('mutation { invalidResolveTypeMutation }');

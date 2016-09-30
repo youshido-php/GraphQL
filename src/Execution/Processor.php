@@ -164,7 +164,7 @@ class Processor
         if (!$query->hasFields()) {
             $fieldType = $this->resolveValidator->resolveTypeIfAbstract($fieldType, $resolvedValue);
 
-            if (TypeService::isObjectType($fieldType->getNamedType())) {
+            if (!TypeService::isLeafType($fieldType->getNamedType())) {
                 throw new ResolveException(sprintf('You have to specify fields for "%s"', $query->getName()));
             }
             if (TypeService::isScalarType($fieldType)) {
@@ -342,6 +342,9 @@ class Processor
                     if ($fieldAst instanceof Query) {
                         $value[$alias] = $this->processQueryAST($fieldAst, $field, $resolvedValue);
                     } elseif ($fieldAst instanceof FieldAst) {
+                        if (!TypeService::isLeafType($field->getType()->getNamedType()->getNullableType())) {
+                            throw new ResolveException(sprintf('You have to specify fields for "%s"', $field->getName()));
+                        }
                         $value[$alias] = $this->processFieldAST($fieldAst, $field, $resolvedValue);
                     } else {
                         return $value;
