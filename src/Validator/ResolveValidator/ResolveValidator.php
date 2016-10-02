@@ -190,18 +190,20 @@ class ResolveValidator implements ResolveValidatorInterface
     public function isValidValueForField(FieldInterface $field, $value)
     {
         $fieldType = $field->getType();
-        if ($fieldType->getKind() == TypeMap::KIND_NON_NULL && is_null($value)) {
+        if (is_null($value)) {
+          if ($fieldType->getKind() == TypeMap::KIND_NON_NULL) {
             $this->executionContext->addError(new ResolveException(sprintf('Cannot return null for non-nullable field %s', $field->getName())));
+            return false;
+          }
 
-            return null;
-        } else {
-            $fieldType = $this->resolveTypeIfAbstract($fieldType->getNullableType(), $value);
+          return true;
         }
 
-        if (!is_null($value) && !$fieldType->isValidValue($value)) {
+        $fieldType = $this->resolveTypeIfAbstract($fieldType->getNullableType(), $value);
+        if (!$fieldType->isValidValue($value)) {
             $this->executionContext->addError(new ResolveException(sprintf('Not valid value for %s field %s', $fieldType->getNullableType()->getKind(), $field->getName())));
 
-            return null;
+            return false;
         }
 
         return true;
