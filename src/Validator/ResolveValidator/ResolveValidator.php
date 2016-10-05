@@ -12,6 +12,8 @@ use Youshido\GraphQL\Execution\Request;
 use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Parser\Ast\Argument;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputList;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputObject;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
 use Youshido\GraphQL\Parser\Ast\Field as AstField;
@@ -24,6 +26,7 @@ use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\ListType\AbstractListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
 use Youshido\GraphQL\Type\Union\AbstractUnionType;
@@ -43,6 +46,7 @@ class ResolveValidator implements ResolveValidatorInterface
     /**
      * @param AbstractObjectType      $objectType
      * @param Mutation|Query|AstField $field
+     *
      * @return null
      */
     public function objectHasField($objectType, $field)
@@ -76,30 +80,27 @@ class ResolveValidator implements ResolveValidatorInterface
                 return false;
             }
 
-            /** @var AbstractType $argumentType */
             $originalArgumentType = $field->getArgument($argument->getName())->getType();
             $argumentType         = $originalArgumentType->getNullableType()->getNamedType();
+
             if ($argument->getValue() instanceof Variable) {
-                /** @var Variable $variable */
-                $variable = $argument->getValue();
-
-                //todo: here validate argument
-
-                if ($variable->getTypeName() !== $argumentType->getName()) {
-                    $this->executionContext->addError(new ResolveException(sprintf('Invalid variable "%s" type, allowed type is "%s"', $variable->getName(), $argumentType->getName())));
-
+                if (!$this->processVariable($argument, $argumentType, $field, $request)) {
                     return false;
                 }
+            } elseif ($argumentType->getKind() == TypeMap::KIND_INPUT_OBJECT) {
+                if ($originalArgumentType->getNullableType()->getKind() == TypeMap::KIND_LIST) {
+                    if (!$argument->getValue() instanceof InputList) {
+                        return false;
+                    }
 
-                /** @var Variable $requestVariable */
-                $requestVariable = $request->getVariable($variable->getName());
-                if (null === $requestVariable) {
-                    $this->executionContext->addError(new ResolveException(sprintf('Variable "%s" does not exist for query "%s"', $argument->getName(), $field->getName())));
-
+                    foreach ($argument->getValue()->getValue() as $item) {
+                        if(!$this->processInputObject($item, $argumentType, $request)) {
+                            return false;
+                        }
+                    }
+                } else if (!$this->processInputObject($argument->getValue(), $argumentType, $request)) {
                     return false;
                 }
-                $variable->setValue($requestVariable);
-
             }
 
             $values = $argument->getValue()->getValue();
@@ -133,6 +134,51 @@ class ResolveValidator implements ResolveValidatorInterface
                 $query->addArgument(new Argument($name, new Literal($argument->getConfig()->get('default'))));
             }
         }
+
+        return true;
+    }
+
+    private function processInputObject(InputObject $astObject, AbstractInputObjectType $inputObjectType, $request)
+    {
+        foreach ($astObject->getValue() as $name => $value) {
+            $field = $inputObjectType->getField($name);
+
+            if (!$field) {
+                return false;
+            }
+
+            $argumentType = $field->getType()->getNullableType();
+
+            if ($value instanceof Variable && !$this->processVariable(new Argument($name, $value), $argumentType, $field, $request)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function processVariable(Argument $argument, TypeInterface $argumentType, FieldInterface $field, Request $request)
+    {
+        /** @var Variable $variable */
+        $variable = $argument->getValue();
+
+        //todo: here validate argument
+
+        if ($variable->getTypeName() !== $argumentType->getName()) {
+            $this->executionContext->addError(new ResolveException(sprintf('Invalid variable "%s" type, allowed type is "%s"', $variable->getName(), $argumentType->getName())));
+
+            return false;
+        }
+
+        /** @var Variable $requestVariable */
+        $requestVariable = $request->getVariable($variable->getName());
+        if (null === $requestVariable) {
+            $this->executionContext->addError(new ResolveException(sprintf('Variable "%s" does not exist for query "%s"', $argument->getName(), $field->getName())));
+
+            return false;
+        }
+
+        $variable->setValue($requestVariable);
 
         return true;
     }
@@ -215,6 +261,7 @@ class ResolveValidator implements ResolveValidatorInterface
     /**
      * @param AbstractType $type
      * @param              $resolvedValue
+     *
      * @return AbstractObjectType
      * @throws ResolveException
      */

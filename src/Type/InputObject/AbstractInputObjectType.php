@@ -11,6 +11,8 @@ namespace Youshido\GraphQL\Type\InputObject;
 
 use Youshido\GraphQL\Config\Object\InputObjectTypeConfig;
 use Youshido\GraphQL\Field\FieldInterface;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputObject;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\Traits\FieldsAwareObjectTrait;
@@ -40,6 +42,10 @@ abstract class AbstractInputObjectType extends AbstractType
 
     public function isValidValue($value)
     {
+        if($value instanceof InputObject) {
+            $value = $value->getValue();
+        }
+
         if (!is_array($value)) {
             return false;
         }
@@ -50,6 +56,10 @@ abstract class AbstractInputObjectType extends AbstractType
         });
 
         foreach ($value as $valueKey => $valueItem) {
+            if($valueItem instanceof Variable) {
+                $valueItem = $valueItem->getValue();
+            }
+
             if (!$typeConfig->hasField($valueKey) || !$typeConfig->getField($valueKey)->getType()->isValidValue($valueItem)) {
                 return false;
             }
@@ -76,6 +86,10 @@ abstract class AbstractInputObjectType extends AbstractType
     {
         $typeConfig = $this->getConfig();
         foreach ($value as $valueKey => $item) {
+            if($item instanceof Variable) {
+                $item = $item->getValue();
+            }
+
             $value[$valueKey] = $typeConfig->getField($valueKey)->getType()->parseValue($item);
         }
 
