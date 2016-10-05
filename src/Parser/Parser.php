@@ -339,8 +339,11 @@ class Parser extends Tokenizer
             case Token::TYPE_IDENTIFIER:
                 return $this->expect($this->lookAhead->getType())->getData();
 
+            case Token::TYPE_VARIABLE:
+                return $this->parseReference();
+
             case Token::TYPE_LBRACE:
-                return $this->parseObject(false);
+                return $this->parseObject(true);
 
             case Token::TYPE_LSQUARE_BRACE:
                 return $this->parseList(false);
