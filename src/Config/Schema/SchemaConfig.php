@@ -22,7 +22,9 @@ class SchemaConfig extends AbstractConfig
         return [
             'query'    => ['type' => TypeService::TYPE_OBJECT_TYPE, 'required' => true],
             'mutation' => ['type' => TypeService::TYPE_OBJECT_TYPE],
+            'types'    => ['type' => TypeService::TYPE_ARRAY],
             'name'     => ['type' => TypeService::TYPE_STRING],
+
         ];
     }
 
@@ -71,5 +73,22 @@ class SchemaConfig extends AbstractConfig
         return $this->get('name', 'RootSchema');
     }
 
+    /**
+     * @param array $types
+     *
+     * @return $this
+     */
+    public function setTypes(array $types) {
+        $this->data['types'] = $types;
+
+        return $this;
+    }
+
+    /**
+     * @return callable|mixed|null
+     */
+    public function getTypes() {
+        return $this->get('types');
+    }
 
 }
