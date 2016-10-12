@@ -11,31 +11,10 @@ namespace Youshido\GraphQL\Introspection\Field;
 use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Introspection\SchemaType;
-use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 
 class SchemaField extends AbstractField
 {
-
-    /** @var AbstractSchema */
-    public static $schema;
-
-    /**
-     * @param AbstractSchema $schema
-     */
-    public function setSchema($schema)
-    {
-        self::$schema = $schema;
-    }
-
-    /**
-     * @return AbstractSchema
-     */
-    public function getSchema()
-    {
-        return self::$schema;
-    }
-
     /**
      * @return AbstractObjectType
      */
@@ -51,7 +30,7 @@ class SchemaField extends AbstractField
 
     public function resolve($value, array $args, ResolveInfo $info)
     {
-        return $this->getSchema();
+        return $info->getExecutionContext()->getSchema();
     }
 
 

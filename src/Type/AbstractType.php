@@ -43,6 +43,11 @@ abstract class AbstractType implements TypeInterface
         return $this;
     }
 
+    public function isValidValue($value)
+    {
+        return true;
+    }
+
     public function parseValue($value)
     {
         return $value;
@@ -51,6 +56,11 @@ abstract class AbstractType implements TypeInterface
     public function serialize($value)
     {
         return $value;
+    }
+
+    public function isInputType()
+    {
+        return false;
     }
 
     public function __toString()

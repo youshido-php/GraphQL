@@ -9,9 +9,9 @@
 namespace Youshido\GraphQL\Config\Traits;
 
 
-use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\FieldInterface;
+use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 
 /**
  * Class FieldsAwareTrait
@@ -26,6 +26,18 @@ trait FieldsAwareConfigTrait
         if (!empty($this->data['fields'])) {
             $this->addFields($this->data['fields']);
         }
+    }
+
+    /**
+     * Add fields from passed interface
+     * @param AbstractInterfaceType $interfaceType
+     * @return $this
+     */
+    public function applyInterface(AbstractInterfaceType $interfaceType)
+    {
+        $this->addFields($interfaceType->getFields());
+
+        return $this;
     }
 
     /**
@@ -48,7 +60,7 @@ trait FieldsAwareConfigTrait
     }
 
     /**
-     * @param AbstractField|string $field     Field name or Field Object
+     * @param FieldInterface|string $field     Field name or Field Object
      * @param mixed                $fieldInfo Field Type or Field Config array
      * @return $this
      */
@@ -76,21 +88,6 @@ trait FieldsAwareConfigTrait
 
         return $info;
     }
-
-    /**
-     * public function addFieldOld($name, $type, $config = [])
-     * {
-     * if (
-     * isset($this->contextObject)
-     * && method_exists($this->contextObject, 'getKind')
-     * && $this->contextObject->getKind() == TypeMap::KIND_INPUT_OBJECT
-     * ) {
-     * $field = new InputField($config);
-     * } else {
-     * $field = new Field($config);
-     * }
-     * }
-     */
 
     /**
      * @param $name

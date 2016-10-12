@@ -13,6 +13,7 @@ use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Type\InterfaceType\InterfaceType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\StringType;
+use Youshido\Tests\DataProvider\TestExtendedType;
 use Youshido\Tests\DataProvider\TestInterfaceType;
 
 class InterfaceTypeTest extends \PHPUnit_Framework_TestCase
@@ -22,7 +23,10 @@ class InterfaceTypeTest extends \PHPUnit_Framework_TestCase
     {
         $interface = new TestInterfaceType();
         $this->assertEquals($interface->getNamedType(), $interface->getType());
-        $this->assertEquals(['name' => new Field(['name' => 'name', 'type' => new StringType()])],
+        $nameField = new Field(['name' => 'name', 'type' => new StringType()]);
+        $nameField->getName();
+
+        $this->assertEquals(['name' => $nameField],
             $interface->getFields());
 
         $object = new ObjectType([
@@ -53,6 +57,14 @@ class InterfaceTypeTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse($interfaceType->isValidValue($object));
         $this->assertFalse($interfaceType->isValidValue('invalid object'));
+    }
+
+    public function testApplyInterface()
+    {
+        $extendedType = new TestExtendedType();
+
+        $this->assertArrayHasKey('ownField', $extendedType->getFields());
+        $this->assertArrayHasKey('name', $extendedType->getFields());
     }
 
 }

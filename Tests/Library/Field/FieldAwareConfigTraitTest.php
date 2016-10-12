@@ -30,36 +30,41 @@ class FieldAwareConfigTraitTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $this->assertTrue($config->hasFields());
+        $idField = new Field(['name' => 'id', 'type' => new IntType()]);
+        $idField->getName();
+        $nameField = new Field(['name' => 'name', 'type' => new StringType()]);
+
         $this->assertEquals([
-            'id' => new Field(['name' => 'id', 'type' => new IntType()]),
+            'id' => $idField,
         ], $config->getFields());
 
-        $config->addField('name', new StringType());
+        $config->addField($nameField);
         $this->assertEquals([
-            'id'   => new Field(['name' => 'id', 'type' => new IntType()]),
-            'name' => new Field(['name' => 'name', 'type' => new StringType()])
+            'id'   => $idField,
+            'name' => $nameField
         ], $config->getFields());
 
         $config->removeField('id');
         $this->assertEquals([
-            'name' => new Field(['name' => 'name', 'type' => new StringType()])
+            'name' => $nameField
         ], $config->getFields());
 
         $config->addFields([
-            'id' => new Field(['name' => 'id', 'type' => new IntType()])
+            'id' => $idField
         ]);
         $this->assertEquals([
-            'name' => new Field(['name' => 'name', 'type' => new StringType()]),
-            'id'   => new Field(['name' => 'id', 'type' => new IntType()]),
+            'name' => $nameField,
+            'id'   => $idField,
         ], $config->getFields());
 
+        $levelField = new Field(['name' => 'level', 'type' => new IntType()]);
         $config->addFields([
-            new Field(['name' => 'level', 'type' => new IntType()])
+            $levelField
         ]);
         $this->assertEquals([
-            'name'  => new Field(['name' => 'name', 'type' => new StringType()]),
-            'id'    => new Field(['name' => 'id', 'type' => new IntType()]),
-            'level' => new Field(['name' => 'level', 'type' => new IntType()]),
+            'name'  => $nameField,
+            'id'    => $idField,
+            'level' => $levelField,
         ], $config->getFields());
 
     }

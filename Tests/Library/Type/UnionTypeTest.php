@@ -12,6 +12,7 @@ use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\Union\UnionType;
+use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
 use Youshido\Tests\DataProvider\TestObjectType;
 use Youshido\Tests\DataProvider\TestUnionType;
 
@@ -61,7 +62,7 @@ class UnionTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidTypesWithScalar()
     {
-        new UnionType([
+        $type = new UnionType([
             'name'        => 'Car',
             'description' => 'Union collect cars types',
             'types'       => [
@@ -71,6 +72,7 @@ class UnionTypeTest extends \PHPUnit_Framework_TestCase
                 return $type;
             }
         ]);
+        ConfigValidator::getInstance()->assertValidateConfig($type->getConfig());
     }
 
     /**
@@ -78,7 +80,7 @@ class UnionTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidTypes()
     {
-        new UnionType([
+        $type = new UnionType([
             'name'        => 'Car',
             'description' => 'Union collect cars types',
             'types'       => [
@@ -88,5 +90,6 @@ class UnionTypeTest extends \PHPUnit_Framework_TestCase
                 return $type;
             }
         ]);
+        ConfigValidator::getInstance()->assertValidateConfig($type->getConfig());
     }
 }

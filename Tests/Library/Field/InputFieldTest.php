@@ -14,6 +14,7 @@ use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IdType;
 use Youshido\GraphQL\Type\Scalar\IntType;
+use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
 use Youshido\Tests\DataProvider\TestInputField;
 
 class InputFieldTest extends \PHPUnit_Framework_TestCase
@@ -31,7 +32,7 @@ class InputFieldTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('id', $field->getName());
         $this->assertEquals(new IdType(), $field->getType());
         $this->assertEquals('description', $field->getDescription());
-        $this->assertEquals(123, $field->getDefaultValue());
+        $this->assertSame(123, $field->getDefaultValue());
     }
 
 
@@ -59,7 +60,8 @@ class InputFieldTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidInputFieldParams($fieldConfig)
     {
-        new InputField($fieldConfig);
+        $field = new InputField($fieldConfig);
+        ConfigValidator::getInstance()->assertValidateConfig($field->getConfig());
     }
 
     public function invalidInputFieldProvider()

@@ -10,28 +10,34 @@ namespace Youshido\GraphQL\Execution;
 
 use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Field\AbstractField;
+use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Parser\Ast\Field;
 use Youshido\GraphQL\Type\AbstractType;
 
 class ResolveInfo
 {
-    /** @var  AbstractField */
+    /** @var  FieldInterface */
     protected $field;
 
     /** @var Field[] */
     protected $fieldASTList;
 
-    /** @var  AbstractType */
-    protected $returnType;
-
     /** @var ExecutionContextInterface */
     protected $executionContext;
 
-    public function __construct(AbstractField $field, array $fieldASTList, AbstractType $returnType, ExecutionContextInterface $executionContext)
+    /**
+     * This property is to be used for DI in various scenario
+     * Added to original class to keep backward compatibility
+     * because of the way AbstractField::resolve has been declared
+     *
+     * @var mixed $container
+     */
+    protected $container;
+
+    public function __construct(FieldInterface $field, array $fieldASTList, ExecutionContextInterface $executionContext)
     {
         $this->field            = $field;
         $this->fieldASTList     = $fieldASTList;
-        $this->returnType       = $returnType;
         $this->executionContext = $executionContext;
     }
 
@@ -44,7 +50,7 @@ class ResolveInfo
     }
 
     /**
-     * @return AbstractField
+     * @return FieldInterface
      */
     public function getField()
     {
@@ -64,19 +70,12 @@ class ResolveInfo
      */
     public function getReturnType()
     {
-        return $this->returnType;
+        return $this->field->getType();
     }
 
-    /**
-     * @param mixed $returnType
-     *
-     * @return ResolveInfo
-     */
-    public function setReturnType($returnType)
+    public function getContainer()
     {
-        $this->returnType = $returnType;
-
-        return $this;
+        return $this->executionContext->getContainer();
     }
 
 

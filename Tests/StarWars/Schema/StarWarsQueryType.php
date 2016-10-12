@@ -13,12 +13,8 @@ use Youshido\GraphQL\Field\FieldFactory;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\IdType;
 
-class QueryType extends AbstractObjectType
+class StarWarsQueryType extends AbstractObjectType
 {
-
-    public function resolve($value = null, $args = [], $type = null)
-    {
-    }
 
     /**
      * @return String type name

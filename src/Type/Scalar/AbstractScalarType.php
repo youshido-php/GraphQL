@@ -33,4 +33,10 @@ abstract class AbstractScalarType extends AbstractType
         return $this->serialize($value);
     }
 
+    public function isInputType()
+    {
+        return true;
+    }
+
+
 }

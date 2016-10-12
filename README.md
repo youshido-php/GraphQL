@@ -6,7 +6,7 @@
 [![Code Coverage](https://scrutinizer-ci.com/g/Youshido/GraphQL/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Youshido/GraphQL/?branch=master)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/8b8ab2a2-32fb-4298-a986-b75ca523c7c9/mini.png)](https://insight.sensiolabs.com/projects/8b8ab2a2-32fb-4298-a986-b75ca523c7c9)
 
-This is a pure PHP realization of the GraphQL protocol based on the working draft of the official GraphQL Specification located on https://github.com/facebook/graphql.
+This is a pure PHP realization of the GraphQL protocol based on the working draft of the official GraphQL Specification located on http://facebook.github.io/graphql/.
 
 GraphQL is a modern replacement of the almost obsolete REST approach to present API. It's been almost 16 years since the REST idea was found in 2000 by Roy Fielding. With all credit to everything we accomplished using REST it's time to change for something better.
 GraphQL advanced in many ways and has fundamental improvements over the old good REST:
@@ -23,11 +23,13 @@ It could be hard to believe but give it a try and you'll be rewarded with much b
 
 > Symfony bundle is available by the link – [http://github.com/Youshido/GraphqlBundle](http://github.com/Youshido/GraphqlBundle)
 
+> If you have any questions or suggestions – let's talk on [GraphQL Gitter channel](https://gitter.im/Youshido/GraphQL)
+
 ## Table of Contents
 
 * [Getting Started](#getting-started)
 * [Installation](#installation)
-* [Example – Creating Blog Schema](#example--creating-blog-schema)
+* [Example – Creating Blog Schema](#tutorial--creating-blog-schema)
   * [Inline approach](#inline-approach)
   * [Object Oriented approach](#object-oriented-approach)
   * [Choosing approach for your project](#choosing-approach-for-your-project)
@@ -49,33 +51,33 @@ It could be hard to believe but give it a try and you'll be rewarded with much b
 
 ## Getting Started
 
-You should be better off starting with some examples, and "Star Wars" become a somewhat "Hello world" example for the GraphQL implementations.
-We have that too and if you're looking for just that go directly by this link – [Star Wars example](https://github.com/Youshido/GraphQL/tree/master/Tests/StarWars).
-On the other hand based on the feedback we prepared a step-by-step guide for those who wants to get up to speed bit by bit.
+You should be better off starting with some examples and "Star Wars" become a somewhat "Hello world" for the GraphQL implementations.
+If you're looking just for that – you can get it via this link – [Star Wars example](https://github.com/Youshido/GraphQL/tree/master/Tests/StarWars).
+On the other hand, we prepared a step-by-step guide for those who wants to get up to speed bit by bit.
 
 ### Installation
 
-You should simply install this package using the composer. If you're not familiar with it you should check out their [manual](https://getcomposer.org/doc/00-intro.md).
+Install GraphQL package using composer. If you're not familiar with it, you should check out their [manual](https://getcomposer.org/doc/00-intro.md).
 Add the following package to your `composer.json` (or simply create a new file with this content):
 
  ```
  {
      "require": {
-         "youshido/graphql": "*"
+         "youshido/graphql": "^1.2"
      }
  }
  ```
 Run `composer update`.
 
-Alternatively you can do the following sequence:
+Alternatively you can run the following commands:
 ```sh
 mkdir graphql-test && cd graphql-test
-composer init
+composer init -n
 composer require youshido/graphql
 ```
 
-Having the previous step done you're ready to create your first GraphQL Schema and check if you've successful installation.
-Your simple schema will accept one request `currentTime` and response with a formatted time string.
+Now you're ready to create your `GraphQL Schema` and check if everything works fine.
+Your first GraphQL app will be able to receive `currentTime` request and response with a formatted time string.
 > you can find this example in the examples directory – [01_sandbox](https://github.com/Youshido/GraphQL/examples/01_sandbox).
 
 Create an `index.php` file with the following content:
@@ -108,35 +110,38 @@ $processor->processPayload('{ currentTime }');
 echo json_encode($processor->getResponseData()) . "\n";
 ```
 
-Now you can run `php index.php` and if everything was set up correctly you should see the response with your current time:
+You can now execute `php index.php` and get a response with your current time:
  ```js
  {
     data: { currentTime: "2016-05-01 19:27pm" }
  }
  ```
+Just like that, you have created a `GraphQL Schema` with a `field` `currentTime` of type `String` and `resolver` for it. Don't worry if you don't know what the `field`, `type` and `resolver` mean here, you'll learn along the way.
 
-If you're having any troubles here are steps to troubleshoot them:
+If you're having any troubles – here're some troubleshooting points:
 * check that you have the latest composer version (`composer self-update`)
-* your `index.php` file is created in the same directory you have `vendor` folder in (presumably in`graphql-test`)
-* last but not least, you have php-cli installed and running and it's version >= 5.3 (`php -v`)
+* make sure your `index.php` file has been created in the same directory that you have `vendor` folder in (presumably it's `graphql-test` folder)
+* last but not least, check that you have php-cli installed and running and it's version >= 5.5 (`php -v`)
 
-Also, you can always run a script from `examples` folder. Simply run `php vendor/youshido/GraphQL/examples/01_sandbox/index.php`.
+Also, you can always check if script from the [examples folder](https://github.com/Youshido/GraphQL/examples/01_sandbox) work.
 
-## Example – Creating Blog Schema
+## Tutorial – Creating Blog Schema
 
-For our learning example we'll architect a GraphQL Schema for the Blog.
+For our learning example we'll architect a GraphQL Schema for a Blog.
+You'll probably be using our package along with your favorite framework (we have a Symfony version [here](http://github.com/Youshido/GraphqlBundle)), but for the purpose of this tutorial we're keeping it all examples as plain php code.
+>> (Complete example of the Blog schema available by the following link https://github.com/Youshido/GraphQL/examples/02_Blog)
 
-To keep it simple we'll just have Users who can write Posts and leave Comments.
-Take a look at the example query that returns title and summary of the latest Post:
+Our Blog will have `Users` who can write `Posts` and leave `Comments`. Also, there will be a `LikePost` operation that could be performed by anyone.
+Let's start with `Post`. Take a look at the query that returns `title` and `summary` of the latest Post:
+>> GraphQL query is a simple text query structured very much similar to the json format.
  ```
  latestPost {
      title,
      summary
  }
  ```
-As you can see, GraphQL query is a simple text query structured very much similar to the json format.
 
-Supposedly our server should reply with a json response structured the following way:
+Supposedly server should reply with a relevant json response:
  ```js
  {
     data: {
@@ -147,106 +152,92 @@ Supposedly our server should reply with a json response structured the following
     }
  }
  ```
-
-Let's go ahead and create a backend that can handle that.
+It looks very simple and straight forward, so let's go ahead and write code that can handle this request.
 
 ### Creating Post schema
 
-You'll probably be using our package along with your favorite framework (we have a Symfony version [here](http://github.com/Youshido/GraphqlBundle)).
-But for the purpose of the current example we'll keep it all examples as plain php code.
-*(Complete example of the Blog schema available by the following link https://github.com/Youshido/GraphQL/examples/02_Blog)*
-
 We'll take a quick look on different approaches you can use to define your schema.
 Each of them has it's own pros and cons, inline approach might seem to be easier and faster when object oriented gives you more flexibility and freedom as your project grows.
-We believe that you should architect your schema using the OOP approach and use inline for small implementations where it's appropriate.
+You should definitely use OOP approach every time you can reuse the type you're creating.
+
+We're going to create `RootQueryType` with one field `latestPost`.
+Every `GraphQL Field` has a `type`(e.g. String, Int, Boolean) and it could be of a different `kind`(e.g. Scalar, Enum, List). You can read more about it in the [official documentation](https://facebook.github.io/graphql/#sec-Type-System), but for now you can think of `field of a type` like about `instance of a class`.
 
 #### Inline approach
 
-Let's start by creating the Post type. For now we'll have only two fields – a title and a summary:
+You can create `inline-index.php` file in your project folder and paste the following code there
 
-**inline-schema.php**
+**inline-index.php**
 ```php
 <?php
-use Youshido\GraphQL\Type\Object\ObjectType;
-use Youshido\GraphQL\Type\Scalar\StringType;
-
-// creating a root query structure
-$rootQueryType = new ObjectType([
-    // name for the root query type doesn't matter, by the convention it's RootQueryType
-    'name'   => 'RootQueryType',
-    'fields' => [
-        'latestPost' => new ObjectType([ // the Post type will be extended from the generic ObjectType
-            'name'    => 'Post', // name of our type – "Post"
-            'fields'  => [
-                'title'   => new StringType(),  // defining the "title" field, type - String
-                'summary' => new StringType(),  // defining the "summary" field, also a String type
-            ],
-            'resolve' => function () {          // this is a resolve function
-                return [                        // for now it returns a static array with data
-                    "title"   => "New approach in API has been revealed",
-                    "summary" => "This post describes a new approach to create and maintain APIs",
-                ];
-            }
-        ])
-    ]
-]);
-```
-
-We should also create an endpoint to work with our schema so we can actually test what we do.
-*Later on we'll add an ability to handle the requests from the client.*
-
-**index.php**
-```php
-<?php
-
-namespace BlogTest;
+namespace InlineSchema;
 
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\Object\ObjectType;
-use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
+use Youshido\GraphQL\Type\Scalar\StringType;
 
+// including autoloader
 require_once __DIR__ . '/vendor/autoload.php';
-require_once __DIR__ . '/inline-schema.php';       // including our schema
-/** @var ObjectType $rootQueryType */
 
+// instantiating Processor and setting the schema
 $processor = new Processor(new Schema([
-    'query' => $rootQueryType
+    'query' => new ObjectType([
+        // root query by convention has a name RootQueryType
+        'name'   => 'RootQueryType',
+        'fields' => [
+            'latestPost' => [
+                'type'    => new ObjectType([ // Post type is being created as ObjectType
+                    'name'    => 'Post', // name of our type – "Post"
+                    'fields'  => [
+                        'title'   => new StringType(),  // defining "title" field, type - String
+                        'summary' => new StringType(),  // defining "summary" field, type - String
+                    ],
+                ]),
+                'resolve' => function () {          // resolver for latestPost field
+                    return [                        // for now it returns a static array with data
+                        "title"   => "New approach in API has been revealed",
+                        "summary" => "In two words - GraphQL Rocks!",
+                    ];
+                }
+            ]
+        ]
+    ])
 ]));
-$payload = '{ latestPost { title, summary } }';
 
+// creating payload and running it through processor
+$payload = '{ latestPost { title, summary } }';
 $processor->processPayload($payload);
+// displaying result
 echo json_encode($processor->getResponseData()) . "\n";
 ```
 
-To check if everything is working well, simply execute index.php – `php index.php`
-You should see a json encoded object `latestPost` inside the `data` section:
+To check if everything is working – execute index.php: `php index.php`
+You should see response as the json encoded object `latestPost` inside the `data` section:
  ```js
  {
     data: {
         latestPost: {
             title: "New approach in API has been revealed",
-            summary: "This post describes a new approach to create and maintain APIs"
+            summary: "In two words - GraphQL Rocks!"
         }
     }
  }
  ```
 
-> You can try to play with the code by removing one field from the request or by changing the resolve function.
+> Try to play with the code by removing one field from the request or by changing the resolve function.
 
 #### Object oriented approach
 
-We're going to create a separate class for the `PostType` and then use it to build our GraphQL Schema.
-To keep everything structured we're going to put this and all our future classes to the `Schema` folder.
+It's a common situation when you need to use the same custom type in different places, so we're going to create a separate class for the `PostType` and use it in our `GraphQL Schema`.
+To keep everything structured we're going to put this and all our future classes into the `Schema` folder.
 
-Create a file `Schema/PostType.php` and put the following content there:
+Create a file `Schema/PostType.php` and put the following code in there:
 ```php
 <?php
 namespace Examples\Blog\Schema;
 
-use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
-use Youshido\GraphQL\Type\Scalar\IdType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
 class PostType extends AbstractObjectType   // extending abstract Object type
@@ -254,24 +245,26 @@ class PostType extends AbstractObjectType   // extending abstract Object type
 
     public function build($config)  // implementing an abstract function where you build your type
     {
-        $config->addField('title', new StringType())        // adding title field of type String
-               ->addField('summary', new StringType());     // adding summary field of type String
+        $config
+            ->addField('title', new StringType())       // defining "title" field of type String
+            ->addField('summary', new StringType());    // defining "summary" field of type String
     }
 
     public function getName()
     {
-        return "Post";  // important to use the real name here, it will be used later in the Schema
+        return "Post";  // if you don't do getName – className without "Type" will be used
     }
 
 }
 ```
 
-In order to make it work we need to update our `index.php` as well:
+Now let's create the main entry point for this example – `index.php`:
 ```php
 <?php
 
-namespace BlogTest;
+namespace Examples\Blog;
 
+use Examples\Blog\Schema\PostType;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\Object\ObjectType;
@@ -282,14 +275,13 @@ require_once __DIR__ . '/Schema/PostType.php';       // including PostType defin
 $rootQueryType = new ObjectType([
     'name' => 'RootQueryType',
     'fields' => [
-        // you can specify fields for your query as an array      
         'latestPost' => [
             'type'    => new PostType(),
-            'resolve' => function ($value, $args, $info)  // implementing resolve function
+            'resolve' => function ($source, $args, $info)
             {
                 return [
                     "title"   => "New approach in API has been revealed",
-                    "summary" => "This post describes a new approach to create and maintain APIs",
+                    "summary" => "In two words - GraphQL Rocks!",
                 ];
             }
         ]
@@ -307,8 +299,16 @@ echo json_encode($processor->getResponseData()) . "\n";
 
 Ensure everything is working properly by running `php index.php`. You should see the same response you saw for the inline approach.
 
-You can make a complete separate class for the field to incapsulate the resolve function, you'll have to extend `AbstractField` class to do so:
+Next step would be to create a separate class for the latestPostField by extending `AbstractField` class:
+**Schema/LatestPostField.php**
 ```php
+<?php
+
+namespace Examples\Blog\Schema;
+
+use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQL\Field\AbstractField;
+
 class LatestPostField extends AbstractField
 {
     public function getType()
@@ -320,51 +320,71 @@ class LatestPostField extends AbstractField
     {
         return [
             "title"   => "New approach in API has been revealed",
-            "summary" => "This post describes a new approach to create and maintain APIs",
+            "summary" => "In two words - GraphQL Rocks!",
         ];
     }
-
 }
 ```
-We will use this class later in our Schema by adding it's instance to `fields` definition:
+And now we can update our `index.php`:
 ```php
+<?php
+
+namespace Examples\Blog;
+
+use Examples\Blog\Schema\LatestPostField;
+use Youshido\GraphQL\Execution\Processor;
+use Youshido\GraphQL\Schema\Schema;
+use Youshido\GraphQL\Type\Object\ObjectType;
+
+require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/Schema/PostType.php';       // including PostType definition
+require_once __DIR__ . '/Schema/LatestPostField.php';
+
 $rootQueryType = new ObjectType([
     'name' => 'RootQueryType',
     'fields' => [
         new LatestPostField()
     ]
 ]);
+
+$processor = new Processor(new Schema([
+    'query' => $rootQueryType
+]));
+$payload = '{ latestPost { title, summary } }';
+
+$processor->processPayload($payload);
+echo json_encode($processor->getResponseData()) . "\n";
 ```
 
 ### Choosing approach for your project
 
 We would recommend to stick to object oriented approach for the several reasons (that matter the most for the GraphQL specifically):
- - it makes your Types reusable
+ - makes your `Types` reusable
  - adds an ability to refactor your schema using IDEs
  - autocomplete to help you avoid typos
- - much easier to navigate through your Schema
+ - much easier to navigate through your Schema when project grows
 
- Inline approach is usually used to bootstrap and explore your ideas or to create simple parts of the schema where creating classes might be an overkill.
+ With that being said, we use inline approach a lot to explore and bootstrap ideas or to develop simple fields/resolver that are going to be used in one place only.
  With the inline approach you can be fast and agile in creating mock-data server to test your frontend or mobile client.
 
-> **Use valid Names**
+> **Use valid Names**  
 > We highly recommend to get familiar with the [official GraphQL Specification](https://facebook.github.io/graphql/#sec-Language.Query-Document)
 > Remember that valid identifier in GraphQL should follow the pattern `/[_A-Za-z][_0-9A-Za-z]*/`.
 > That means any identifier should consist of a latin letter, underscore, or a digit and cannot start with a digit.
-> *Names are case sensitive*
+> **Names are case sensitive**
 
-We'll continue to develop on the Blog Schema to explore all the details of GraphQL.
+We'll continue to work on the Blog Schema to explore all essentials details of developing GraphQL server.
 
 ## Query Documents
 
-Query Document in terms of GraphQL describes a complete request received by GraphQL service.
+In GraphQL terms – query document describe a complete request received by GraphQL service.
 It contains list of *Operations* and *Fragments*. Both are fully supported by our PHP library.
 There are two types of *Operations* in GraphQL:
 - *Query* – a read only request that is not supposed to do any changes on the server
-- *Mutation* – a request that changes data on the server followed by a data fetch
+- *Mutation* – a request that changes(mutate) data on the server followed by a data fetch
 
-You've already seen `latestPost` and `currentTime` queries in the examples above, so let's define a simple Mutation that will provide an API to *Like* the Post.
-Here's an example of the request sent and expected result of the simplest possible mutation for our task:
+You've already seen examples of `Query` with `latestPost` and `currentTime`, so let's define a simple Mutation that will provide API to *Like* the Post.
+Here's sample request and response of `likePost` mutation:
 
 *request*
 ```
@@ -378,17 +398,16 @@ mutation {
   data: { likePost: 2 }
 }
 ```
-> Any Operation needs to have a response type and in this case the mutation type is `Int`
+> Any Operation has a response type and in this case the likePost mutation type is `Int`
 
 Note, that the response type of this mutation is a scalar `Int`.
-Of course in real life you'll more likely have a response of type `Post` for such mutation, but we're going to create a simple example above and even keep it inside the `index.php`:
+Of course in real life you'll more likely have a response of type `Post` for such mutation, but we're going to implement code for a simple example above and even keep it inside `index.php`:
 
 ```php
 <?php
 
-namespace BlogTest;
+namespace Examples\Blog;
 
-use Examples\Blog\Schema\PostType;
 use Examples\Blog\Schema\LatestPostField;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
@@ -397,26 +416,24 @@ use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 
 require_once __DIR__ . '/vendor/autoload.php';
-require_once __DIR__ . '/Schema/PostType.php';        // including PostType definition
-require_once __DIR__ . '/Schema/LatestPostField.php'; // including field definition
+require_once __DIR__ . '/Schema/PostType.php';       // including PostType definition
+require_once __DIR__ . '/Schema/LatestPostField.php';
 
 $rootQueryType = new ObjectType([
-    'name' => 'RootQueryType',
+    'name'   => 'RootQueryType',
     'fields' => [
-        'latestPost' => new LatestPostField()
+        new LatestPostField()
     ]
 ]);
 
-$rootMutationType =  new ObjectType([
+$rootMutationType = new ObjectType([
     'name'   => 'RootMutationType',
     'fields' => [
-        // here's our likePost mutation
-        'likePost' => [                   
+        // defining likePost mutation field
+        'likePost' => [
             // we specify the output type – simple Int, since it doesn't have a structure
-            // mutation name will be used as a key for the result
-            'type'    => new IntType(),   
-            // we set the argument for our mutation, in our case it's an Int
-            // with a composition of NonNull
+            'type'    => new IntType(),
+            // we need a post ID and we set it to be required Int
             'args'    => [
                 'id' => new NonNullType(new IntType())
             ],
@@ -430,54 +447,99 @@ $rootMutationType =  new ObjectType([
 
 $processor = new Processor(new Schema([
     'query'    => $rootQueryType,
-    'mutation' => $rootMutationType,
+    'mutation' => $rootMutationType
 ]));
-$payload  = 'mutation { likePost(id:5) }';
+$payload   = 'mutation { likePost(id: 5) }';
 
 $processor->processPayload($payload);
 echo json_encode($processor->getResponseData()) . "\n";
 ```
 
-If you run `php index.php` you should see a valid response:
+Run `php index.php`, you should see a valid response:
 ```js
 {"data":{"likePost":2}}
 ```
 
-Now, let's make our GraphQL Schema a little more complex by adding a `likeCount` field to the `PostType`:
+Now, let's make our `likePost` mutation to return the whole `Post` as a result.
+First, we'll add `likeCount` field to the `PostType`:
 ```php
 <?php
-// add it after the last ->addField in your build function
-  ->addField('likeCount', new IntType())
-// update the resolve function:
-public function resolve($value, $args, $info)
-{
-  $id = !empty($args['id']) ? $args['id'] : null;
-  return [
-      "title"     => "Post " . $id . " title",
-      "summary"   => "This new GraphQL library for PHP works really well",
-      "likeCount" => 2
-  ];
+namespace Examples\Blog\Schema;
 
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\Scalar\IntType;
+use Youshido\GraphQL\Type\Scalar\StringType;
+
+class PostType extends AbstractObjectType
+{
+
+    public function build($config)
+    {
+        // you can define fields in a single addFields call instead of chaining multiple addField()
+        $config->addFields([
+            'title'      => new StringType(),
+            'summary'    => new StringType(),
+            'likesCount' => new IntType()
+        ]);
+    }
+
+    // Since our class named by a convention, we can remove getName() method
+}
+```
+Secondly, modify `resolve` function in `LatestPostField`:
+```php
+public function resolve($value, array $args, ResolveInfo $info)
+{
+    return [
+        "title"      => "New approach in API has been revealed",
+        "summary"    => "In two words - GraphQL Rocks!",
+        "likesCount" => 2
+    ];
 }
 ```
 
-Let's also change our mutation type from the `IntType` to the `PostType` and update the `resolve` function to be complaint with the the new type we set:
+Lastly, we're going to change `Mutation Type` from `IntType` to `PostType` and update the `resolve` function to be complaint with the the new type and update the request:
 ```php
 <?php
-$rootMutationType =  new ObjectType([
+// ...
+$rootMutationType = new ObjectType([
     'name'   => 'RootMutationType',
     'fields' => [
-        'likePost' => [                   
-            'type'    => new PostType(),   
+        'likePost' => [
+            'type'    => new PostType(),
             'args'    => [
                 'id' => new NonNullType(new IntType())
             ],
-            'resolve' => function ($value, $args, $type) {
-                // adding like count code goes here
+            'resolve' => function () {
                 return [
-                    'title' => 'Title for the post #' . $args['id'],
-                    'summary' => 'We can now get a richer response from the mutation',
-                    'likeCount' => 2
+                    'title'     => 'New approach in API has been revealed',
+                    'summary'   => 'In two words - GraphQL Rocks!',
+                    'likesCount' => 2
+                ];
+            },
+        ]
+    ]
+]);
+// ...
+$payload   = 'mutation { likePost(id: 5) { title, likesCount } }';
+//...
+```
+
+Execute `php index.php`, you should see `title` and `likesCount` in response. We can now try to use `id: 5` that we're passing as a parameter to our mutation:
+```php
+$rootMutationType = new ObjectType([
+    'name'   => 'RootMutationType',
+    'fields' => [
+        'likePost' => [
+            'type'    => new PostType(),
+            'args'    => [
+                'id' => new NonNullType(new IntType())
+            ],
+            'resolve' => function ($source, $args, $resolveInfo) {
+                return [
+                    'title'      => 'Title for the post #' . $args['id'], // we can be sure that $args['id'] is always set
+                    'summary'    => 'In two words - GraphQL Rocks!',
+                    'likesCount' => 2
                 ];
             },
         ]
@@ -485,44 +547,12 @@ $rootMutationType =  new ObjectType([
 ]);
 ```
 
-As you can see we're repeating ourselves with the resolve function. Since we already have one that can return `PostType` structure, we can utilize it by using the 3rd argument of the `resolve` function – it's output type:
-```php
-$rootMutationType =  new ObjectType([
-    'name'   => 'RootMutationType',
-    'fields' => [
-        'likePost' => [                   
-            'type'    => new PostType(),   
-            'args'    => [
-                'id' => new NonNullType(new IntType())
-            ],
-            'resolve' => function ($value, $args, $type) {
-                // adding like count code goes here
-                return $type->resolve($value, $args, $type);
-            },
-        ]
-    ]
-]);
-```
-Finally, run this code to make sure everything is good so far – `php index.php`:
-```js
-{
-  "data": {
-    "likePost": {
-      "title":"Title for the post #5",
-      "summary":"We can now get a richer response from the mutation",
-      "likeCount":2
-    }
-  }
-}
-```
-
-Now you have a basic understanding of how queries and mutations are structured and ready to move on to the details of the GraphQL Type System and PHP-specific features of the GraphQL service architecture.
+Now you have a basic understanding of how queries and mutations are structured and ready to move on to the details of the GraphQL Type System and PHP-specific features of the GraphQL server architecture.
 
 ## Type System
 
-*Type* is an atom of definition in GraphQL Schema. Every field, object, or argument has a type. As a result – GraphQL is a strongly typed language.
-There are common types and types defined specifically for the application, in our case we'll have types like `Post`, `User`, `Comment` and so on.
-GraphQL has variety of build in types that are usually used to build your own custom types.
+*Type* is an atom of definition in GraphQL Schema. Every field, object, or argument has a type. GraphQL is a strongly typed language.
+There are `system types` and `custom types` defined specifically for the application, in our app we'll have custom  types  `Post`, `User`, `Comment`, etc. Your custom types are usually built on top of GraphQL system types.
 
 ### Scalar Types
 
@@ -535,128 +565,78 @@ List of GraphQL Scalar types:
 
 In addition, we implemented some types that might be useful and which we're considering to be scalar as well:
 - Timestamp
-- Date
-- DateTime
-- DateTimeTz
+- DateTimeTz (» RFC 2822 formatted date with TimeZone)
+>> Date and DateTime are deprecated and will be remove. We're going to provide an easy solution how to replace them in your project
 
 If you will ever need to define a new Scalar type, you can do that by extending from the `AbstractScalarType` class.
-> usage of scalar types will be shown in combination with other types along the way
+> usage of scalar types will be shown in combination with other types down here
 
 ### Objects
 
 Every entity in your business logic will probably have a class that represents it's type. That class must be either extended from the `AbstractObjectType` or created as an instance of `ObjectType`.
-In our blog example we used `ObjectType` to create an inline `Post` type and in the object oriented example we extended the `AbstractObjectType` to create a `PostType` class.
+In our blog example we used `ObjectType` to create an inline `PostType` and extended `AbstractObjectType` to create a `PostType` class in the object oriented approach.
 
-Let's look closer on the structure of the `ObjectType` and pay attention to it's fields configuration.
-We'll start with the inline approach:
+Let's take a closer look at the structure of `PostType` and see what parameters we can configure for each field.
+
 ```php
 <?php
+namespace Examples\Blog\Schema;
 
-$postType = new ObjectType([
-  // you have to specify a valid name
-  'name'    => 'Post',
-  // fields are represented as an array
-  'fields'  => [
-      // here you have a complex field with a lot of parameters defined
-      'title'   => [
-          'type'              => new StringType(),                    // string type
-          'description'       => 'This field contains a post title',  // description
-          'isDeprecated'      => true,                                // marked as deprecated
-          'deprecationReason' => 'field title is now deprecated',     // explain the reason
-          'args'              => [
-              'truncated' => new BooleanType()                        // add an optional argument
-          ],
-          'resolve'           => function ($value, $args, $info) {
-              // using argument defined above to modify a field value
-              return (!empty($args['truncated'])) ? explode(' ', $value)[0] . '...' : $value;
-          }
-      ],
-      // if field just has a type, you can use a short declaration syntax like this
-      'summary' => new StringType(),  
-      'likeCount' => new IntType(),
-  ],
-   // arguments for the query
-  'args'    => [
-      'id' => new IntType()
-  ],
-  // resolve function for the query
-  'resolve' => function ($value, $args, $info) {
-      return [
-          'title'   => 'Title for the latest Post',
-          'summary' => 'Post summary',
-          'likeCount' => 2,
-      ];
-  },
-])
-```
-
-And in comparison take a look at the Object oriented version with all the same fields:
-```php
-<?php
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\Scalar\BooleanType;
+use Youshido\GraphQL\Type\Scalar\IntType;
+use Youshido\GraphQL\Type\Scalar\StringType;
 
 class PostType extends AbstractObjectType
 {
 
-    public function getName()
+    public function build($config)
     {
-        return "Post";
-    }
-
-    public function build(TypeConfigInterface $config)
-    {
-        $config
-            ->addField('title', new NonNullType(new StringType()), [
+        // you can define fields in a single addFields call instead of chaining multiple addField()
+        $config->addFields([
+            'title'      => [
+                'type' => new StringType(),
                 'description'       => 'This field contains a post title',
                 'isDeprecated'      => true,
                 'deprecationReason' => 'field title is now deprecated',
                 'args'              => [
-                    'truncated' => new BooleanType()
+                    'truncate' => new BooleanType()
                 ],
-                'resolve'           => function ($value, $args) {
-                    return (!empty($args['truncated'])) ? explode(' ', $value)[0] . '...' : $value;
+                'resolve'           => function ($source, $args) {
+                    return (!empty($args['truncate'])) ? explode(' ', $source['title'])[0] . '...' : $source['title'];
                 }
-            ])
-            ->addField('summary', new StringType())
-            ->addField('likeCount', new IntType());
-        $config->addArgument('id', new IntType());
+            ],
+            'summary'    => new StringType(),
+            'likesCount' => new IntType()
+        ]);
     }
-
-    public function resolve($value, $args, $info)
-    {
-        return [
-            "title"     => "Title for the latest Post",
-            "summary"   => "Post summary",
-            "likeCount" => 2
-        ];
-    }
-
 }
-
 ```
-
-Once again, it's not that a difference between two approaches but having a separate class for the Type will give you some freedom and flexibility along the way.
+Now you can change `index.php` to perform requests like these:
+```php
+$payload   = 'mutation { likePost(id: 5) { title(truncate: true), likesCount } }';
+```
+As you can see we now have argument `id` for the mutation and another argument `truncate` for the field `title` inside `PostTitle`. We can use it everywhere that `PostType` is being used.
 
 ### Interfaces
 
 GraphQL supports `Interfaces`. You can define Interface and use it as a `Type` of an item in the `List`, or use Interface to make sure that specific objects certainly have fields you need.
-Each `InterfaceType` needs to have at least one defined field and `resolveType` function. That function will be used to determine what exact `Type` of the object GraphQL resolver is currently working on.
-Let's create a `ContentBlockInterface` that can represent a piece of content for the web page that have a `title` and a `summary`.
+Each `InterfaceType` has to have at least one defined field and `resolveType` function. That function will be used to determine what exact `Type` will be returned by GraphQL resolver.
+Let's create a `ContentBlockInterface` that can represent a piece of content for the web page that have a `title` and a `summary` (just like our post earlier).
 ```php
 <?php
 /**
-* ContentBlockInterface.php
-*/
-
+ * ContentBlockInterface.php
+ */
 namespace Examples\Blog\Schema;
 
-use Youshido\GraphQL\Type\Config\TypeConfigInterface;
+use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\NonNullType;
-use Youshido\GraphQL\Type\Object\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
 class ContentBlockInterface extends AbstractInterfaceType
 {
-    public function build(TypeConfigInterface $config)
+    public function build($config)
     {
         $config->addField('title', new NonNullType(new StringType()));
         $config->addField('summary', new StringType());
@@ -666,51 +646,38 @@ class ContentBlockInterface extends AbstractInterfaceType
         // since there's only one type right now this interface will always resolve PostType
         return new PostType();
     }
-
 }
 ```
-Most often you'll be using only the `build` function to define fields and/or arguments that need to be implemented.
-In order to add this Interface to the `PostType` we have to override it's `getInterfaces` method:
+
+Most often you'll be using only the `build` method to define fields and that need to be implemented.
+In order to associate this Interface to the `PostType` we have to override it's `getInterfaces` method:
 ```php
 <?php
 /**
 * PostType.php
 */
-
 namespace Examples\Blog\Schema;
 
-use Youshido\GraphQL\Type\Config\TypeConfigInterface;
-use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
-use Youshido\GraphQL\Type\Scalar\BooleanType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
 class PostType extends AbstractObjectType
 {
 
-    public function build(TypeConfigInterface $config)
+    public function build($config)
     {
-        $config
-            ->addField('title', new StringType())
-            ->addField('summary', new StringType())
-            ->addField('likeCount', new IntType());
+        $config->addFields([
+            'title'      => new StringType(),
+            'summary'    => new StringType(),
+            'likesCount' => new IntType()
+        ]);
     }
 
     public function getInterfaces()
     {
         return [new ContentBlockInterface()];
     }
-
-    public function resolve($value, $args, $info)
-    {
-        return [
-            "title"     => "Post title from the PostType class",
-            "summary"   => "This new GraphQL library for PHP works really well",
-            "likeCount" => 2
-        ];
-    }
-
 }
 
 ```
@@ -721,9 +688,38 @@ If you run the script as it is right now – `php index.php`, you should get an 
 {"errors":[{"message":"Implementation of ContentBlockInterface is invalid for the field title"}]}
 ```
 You've got this error because the `title` field definition in the `PostType` is different from the one described in the `ContentBlockInterface`.
-To fix it we have to declare fields that exist in the `Interface` with the same names and same types in out `PostType`.
+To fix it we have to declare fields that exist in the `Interface` with the same names and types.
 We already have `title` but it's a nullable field so we have to change it by adding a non-null wrapper – `new NonNullType(new StringType())`.
 You can check the result by executing index.php script again, you should get the usual response.
+
+For the convenience we also created `$config->applyInterface()` method that could be inside `build()`:
+```php
+<?php
+/**
+ * PostType.php
+ */
+namespace Examples\Blog\Schema;
+
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\Scalar\IntType;
+
+class PostType extends AbstractObjectType
+{
+
+    public function build($config)
+    {
+        $config->applyInterface(new ContentBlockInterface());
+        $config->addFields([
+            'likesCount' => new IntType()
+        ]);
+    }
+
+    public function getInterfaces()
+    {
+        return [new ContentBlockInterface()];
+    }
+}
+```
 
 ### Enums
 
@@ -736,10 +732,9 @@ To show you how Enums work we're going to create a new class - `PostStatus`:
 /**
  * PostStatus.php
  */
-
 namespace Examples\Blog\Schema;
 
-use Youshido\GraphQL\Type\Object\AbstractEnumType;
+use Youshido\GraphQL\Type\Enum\AbstractEnumType;
 
 class PostStatus extends AbstractEnumType
 {
@@ -756,38 +751,81 @@ class PostStatus extends AbstractEnumType
             ]
         ];
     }
-
 }
 ```
-Now when you have this class created you can add a status field to our `PostType`:
+Now, add a status field to the `PostType`:
 ```php
 <?php
-// add field to the build function of the PostType class
-->addField('status', new PostStatus())
+/**
+ * PostType.php
+ */
+namespace Examples\Blog\Schema;
 
-// and update the resolve function
-return [
-    "title"     => "Post title from the PostType class",
-    "summary"   => "This new GraphQL library for PHP works really well",
-    "status"    => 1,
-    "likeCount" => 2
-];
+use Youshido\GraphQL\Type\NonNullType;
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\Scalar\IntType;
+use Youshido\GraphQL\Type\Scalar\StringType;
 
+class PostType extends AbstractObjectType
+{
+
+    public function build($config)
+    {
+        $config->addFields([
+            'title'      => new NonNullType(new StringType()),
+            'summary'    => new StringType(),
+            'likesCount' => new IntType(),
+            'status'     => new PostStatus()
+        ]);
+    }
+
+    public function getInterfaces()
+    {
+        return [new ContentBlockInterface()];
+    }
+}
+```
+and update the resolve function inside latestPost field:
+```php
+<?php
+
+namespace Examples\Blog\Schema;
+
+use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQL\Field\AbstractField;
+
+class LatestPostField extends AbstractField
+{
+    public function getType()
+    {
+        return new PostType();
+    }
+
+    public function resolve($value, array $args, ResolveInfo $info)
+    {
+        return [
+            "title"      => "New approach in API has been revealed",
+            "summary"    => "In two words - GraphQL Rocks!",
+            "status"     => 1,
+            "likesCount" => 2
+        ];
+    }
+}
 ```
 
-Call the `status` field in your request:
+Request the `status` field in your query:
 ```php
 $payload  = '{ latestPost { title, status, likeCount } }';
 ```
 You should get a result similar to the following:
 ```js
-{"data":{"latestPost":{"title":"Post title from the PostType class","status":"PUBLISHED","likeCount":2}}}
+{"data":{"latestPost":{"title":"New approach in API has been revealed","status":"PUBLISHED"}}}
 ```
 
 ### Unions
 
 GraphQL Unions represent an object type that could be resolved as one of a specified GraphQL Object types.
-To get you an idea of what this is we'll create a new query field that will return a list of unions (and get to the `ListType` after it).
+To get you an idea of what this is we're going to create a new query field that will return a list of unions (and get to the `ListType` after it).
 > You can consider Union as a combined type that is needed mostly when you want to have a list of different objects
 
 Imaging that you have a page and you need to get all content blocks for this page. Let content block be either `Post` or `Banner`.
@@ -797,16 +835,14 @@ Create a `BannerType`:
 /**
  * BannerType.php
  */
-
 namespace Examples\Blog\Schema;
 
-use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
 class BannerType extends AbstractObjectType
 {
-    public function build(TypeConfigInterface $config)
+    public function build($config)
     {
         $config
             ->addField('title', new StringType())
@@ -824,7 +860,7 @@ Each `UnionType` needs to define a list of types it unites by implementing the `
 
 namespace Examples\Blog\Schema;
 
-use Youshido\GraphQL\Type\Object\AbstractUnionType;
+use Youshido\GraphQL\Type\Union\AbstractUnionType;
 
 class ContentBlockUnion extends AbstractUnionType
 {
@@ -847,7 +883,6 @@ We're also going to create a simple `DataProvider` that will give us test data t
 /**
  * DataProvider.php
  */
-
 namespace Examples\Blog\Schema;
 
 class DataProvider
@@ -875,17 +910,16 @@ class DataProvider
 ```
 
 Now, we're ready to update our Schema and include `ContentBlockUnion` into it.
-As we're getting our schema bigger we'd like to extract it to a separate file:
+As we're getting our schema bigger we'd like to extract it to a separate file as well:
 ```php
 <?php
 /**
  * BlogSchema.php
  */
-
 namespace Examples\Blog\Schema;
 
-use Youshido\GraphQL\AbstractSchema;
-use Youshido\GraphQL\Type\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\ListType\ListType;
 
 class BlogSchema extends AbstractSchema
@@ -893,14 +927,14 @@ class BlogSchema extends AbstractSchema
     public function build(SchemaConfig $config)
     {
         $config->getQuery()->addFields([
-            'latestPost'           => new PostType(),
-            'randomBanner'         => [
+            new LatestPostField(),
+            'randomBanner'     => [
                 'type'    => new BannerType(),
                 'resolve' => function () {
                     return DataProvider::getBanner(rand(1, 10));
                 }
             ],
-            'pageContentUnion'     => [
+            'pageContentUnion' => [
                 'type'    => new ListType(new ContentBlockUnion()),
                 'resolve' => function () {
                     return [DataProvider::getPost(1), DataProvider::getBanner(1)];
@@ -908,7 +942,7 @@ class BlogSchema extends AbstractSchema
             ]
         ]);
         $config->getMutation()->addFields([
-            'likePost' => new LikePost()
+            new LikePostField()
         ]);
     }
 
@@ -918,49 +952,37 @@ Having this separate schema file you should update your `index.php` to look like
 ```php
 <?php
 
-namespace BlogTest;
+namespace Examples\Blog;
 
+use Examples\Blog\Schema\BlogSchema;
 use Youshido\GraphQL\Execution\Processor;
-use Youshido\GraphQL\Schema\Schema;
 
-require_once __DIR__ . '/schema-bootstrap.php';
-$schema = new BlogSchema();
+require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/Schema/PostType.php';
+require_once __DIR__ . '/Schema/LatestPostField.php';
+require_once __DIR__ . '/Schema/ContentBlockInterface.php';
+require_once __DIR__ . '/Schema/PostStatus.php';
+require_once __DIR__ . '/Schema/LikePostField.php';
+require_once __DIR__ . '/Schema/BlogSchema.php';
+require_once __DIR__ . '/Schema/ContentBlockUnion.php';
+require_once __DIR__ . '/Schema/BannerType.php';
+require_once __DIR__ . '/Schema/DataProvider.php';
 
-$processor = new Processor($schema);
+$processor = new Processor(new BlogSchema());
 $payload  = '{ pageContentUnion { ... on Post { title } ... on Banner { title, imageLink } } }';
+
 
 $processor->processPayload($payload);
 echo json_encode($processor->getResponseData()) . "\n";
 ```
 
-For the convenience of use we've created the `schema-bootstrap.php`:
-```php
-<?php
-
-namespace BlogTest;
-
-require_once __DIR__ . '/vendor/autoload.php';
-require_once __DIR__ . '/Schema/DataProvider.php';
-require_once __DIR__ . '/Schema/PostType.php';
-require_once __DIR__ . '/Schema/PostStatus.php';
-require_once __DIR__ . '/Schema/ContentBlockInterface.php';
-require_once __DIR__ . '/Schema/LikePost.php';
-require_once __DIR__ . '/Schema/BannerType.php';
-require_once __DIR__ . '/Schema/ContentBlockUnion.php';
-require_once __DIR__ . '/Schema/BlogSchema.php';
-```
-
 Due to the GraphQL syntax you have to specify fields for each type of object you're getting in the union request, if you're not familiar with it read more at [official documentation(https://facebook.github.io/graphql/#sec-Unions)]
 If everything was done right you should see the following response:
 ```js
-{
-  "data": {
-    "pageContentUnion":[
-      {"title":"Post 1 title","summary":"This new GraphQL library for PHP works really well"},
-      {"title":"Banner 1","imageLink":"banner1.jpg"}
-    ]
-  }
-}
+{"data":{"pageContentUnion":[
+  {"title":"Post 1 title"},
+  {"title":"Banner 1","imageLink":"banner1.jpg"}
+]}}
 ```
 Also, you might want to check out how to use [GraphiQL tool](#graphiql-tool) to get a better visualization of what you're doing here.
 
@@ -974,11 +996,10 @@ Let's go ahead and add `ListType` field to our BlogSchema.
 /**
  * BlogSchema.php
  */
-
 namespace Examples\Blog\Schema;
 
-use Youshido\GraphQL\AbstractSchema;
-use Youshido\GraphQL\Type\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\ListType\ListType;
 
 class BlogSchema extends AbstractSchema
@@ -986,20 +1007,20 @@ class BlogSchema extends AbstractSchema
     public function build(SchemaConfig $config)
     {
         $config->getQuery()->addFields([
-            'latestPost'           => new PostType(),
-            'randomBanner'         => [
+            new LatestPostField(),
+            'randomBanner'     => [
                 'type'    => new BannerType(),
                 'resolve' => function () {
                     return DataProvider::getBanner(rand(1, 10));
                 }
             ],
-            'pageContentUnion'     => [
+            'pageContentUnion' => [
                 'type'    => new ListType(new ContentBlockUnion()),
                 'resolve' => function () {
                     return [DataProvider::getPost(1), DataProvider::getBanner(1)];
                 }
             ],
-            'pageContentInterfaced' => [
+            'pageContentInterface' => [
                 'type'    => new ListType(new ContentBlockInterface()),
                 'resolve' => function () {
                     return [DataProvider::getPost(2), DataProvider::getBanner(3)];
@@ -1007,13 +1028,15 @@ class BlogSchema extends AbstractSchema
             ]
         ]);
         $config->getMutation()->addFields([
-            'likePost' => new LikePost()
+            new LikePostField()
         ]);
     }
 
 }
 ```
-We've added a `pageContentInterfaced` field that have a `ListType` with items of `ContentBlockInterface` type. Resolve function returns list of one `Post` and one `Banner` objects.
+
+We've added a `pageContentInterface` field that have a `ListType` of `ContentBlockInterface`.  
+Resolve function returns list which consists of one `Post` and one `Banner`.
 To test it we'll modify our payload to the following one:
 ```php
 <?php
@@ -1081,7 +1104,7 @@ namespace Examples\Blog\Schema;
 
 use Youshido\GraphQL\Type\Config\InputTypeConfigInterface;
 use Youshido\GraphQL\Type\NonNullType;
-use Youshido\GraphQL\Type\Object\AbstractInputObjectType;
+use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
 class PostInputType extends AbstractInputObjectType

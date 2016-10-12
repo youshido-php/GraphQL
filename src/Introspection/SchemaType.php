@@ -26,24 +26,35 @@ class SchemaType extends AbstractObjectType
         return '__Schema';
     }
 
+    public function resolveQueryType($value)
+    {
+        /** @var AbstractSchema|Field $value */
+        return $value->getQueryType();
+    }
+
+    public function resolveMutationType($value)
+    {
+        /** @var AbstractSchema|Field $value */
+        return $value->getMutationType()->hasFields() ? $value->getMutationType() : null;
+    }
+
+    public function resolveSubscriptionType()
+    {
+        return null;
+    }
+
     public function build($config)
     {
         $config
             ->addField(new Field([
                 'name'    => 'queryType',
                 'type'    => new QueryType(),
-                'resolve' => function ($value) {
-                    /** @var AbstractSchema|Field $value */
-                    return $value->getQueryType();
-                }
+                'resolve' => [$this, 'resolveQueryType']
             ]))
             ->addField(new Field([
                 'name'    => 'mutationType',
                 'type'    => new QueryType(),
-                'resolve' => function ($value) {
-                    /** @var AbstractSchema|Field $value */
-                    return $value->getMutationType()->hasFields() ? $value->getMutationType() : null;
-                }
+                'resolve' => [$this, 'resolveMutationType']
             ]))
             ->addField(new Field([
                 'name'    => 'subscriptionType',
@@ -53,7 +64,7 @@ class SchemaType extends AbstractObjectType
                         'name' => ['type' => TypeMap::TYPE_STRING]
                     ]
                 ]),
-                'resolve' => function () { return null; }
+                'resolve' => [$this, 'resolveSubscriptionType']
             ]))
             ->addField(new TypesField())
             ->addField(new Field([

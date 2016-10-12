@@ -668,10 +668,10 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                                     'a' => 123,
                                     'd' => 'asd',
                                     'b' => [1, 2, 4],
-                                    'c' => [
+                                    'c' => new InputObject([
                                         'a' => 123,
                                         'b' => 'asd'
-                                    ]
+                                    ])
                                 ]))
                             ],
                             [

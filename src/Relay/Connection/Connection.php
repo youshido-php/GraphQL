@@ -58,9 +58,7 @@ class Connection
                 'node'   => [
                     'type'        => $type,
                     'description' => 'The item at the end of the edge',
-                    'resolve'     => function ($value) {
-                        return $value['node'];
-                    }
+                    'resolve'     => [__CLASS__, 'getNode'],
                 ],
                 'cursor' => [
                     'type'        => TypeMap::TYPE_STRING,
@@ -92,16 +90,12 @@ class Connection
                 'pageInfo' => [
                     'type'        => new NonNullType(self::getPageInfoType()),
                     'description' => 'Information to aid in pagination.',
-                    'resolve'     => function ($value) {
-                        return isset($value['pageInfo']) ? $value['pageInfo'] : null;
-                    }
+                    'resolve'     => [__CLASS__, 'getPageInfo'],
                 ],
                 'edges'    => [
                     'type'        => new ListType(self::edgeDefinition($type, $name, $config)),
                     'description' => 'A list of edges.',
-                    'resolve'     => function ($value) {
-                        return isset($value['edges']) ? $value['edges'] : null;
-                    }
+                    'resolve'     => [__CLASS__, 'getEdges'],
                 ]
             ], $connectionFields)
         ]);
@@ -135,4 +129,18 @@ class Connection
         ]);
     }
 
+    public static function getEdges($value)
+    {
+        return isset($value['edges']) ? $value['edges'] : null;
+    }
+
+    public static function getPageInfo($value)
+    {
+        return isset($value['pageInfo']) ? $value['pageInfo'] : null;
+    }
+
+    public static function getNode($value)
+    {
+        return isset($value['node']) ? $value['node'] : null;
+    }
 }

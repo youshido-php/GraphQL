@@ -8,7 +8,8 @@
 namespace Youshido\GraphQL\Field;
 
 use Youshido\GraphQL\Config\Field\FieldConfig;
-use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQL\Config\Traits\ResolvableObjectTrait;
+use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\Traits\FieldsArgumentsAwareObjectTrait;
@@ -18,27 +19,37 @@ use Youshido\GraphQL\Type\TypeService;
 abstract class AbstractField implements FieldInterface
 {
 
-    use FieldsArgumentsAwareObjectTrait, AutoNameTrait;
-
+    use FieldsArgumentsAwareObjectTrait;
+    use ResolvableObjectTrait;
+    use AutoNameTrait {
+        getName as getAutoName;
+    }
     protected $isFinal = false;
+
+    private $resolveFunctionCache = null;
+    private $nameCache            = null;
 
     public function __construct(array $config = [])
     {
         if (empty($config['type'])) {
             $config['type'] = $this->getType();
             $config['name'] = $this->getName();
+            if (empty($config['name'])) {
+                $config['name'] =$this->getAutoName();
+            }
         }
 
         if (TypeService::isScalarType($config['type'])) {
             $config['type'] = TypeFactory::getScalarType($config['type']);
         }
+        $this->nameCache = isset($config['name']) ? $config['name'] : $this->getAutoName();
 
         $this->config = new FieldConfig($config, $this, $this->isFinal);
         $this->build($this->config);
     }
 
     /**
-     * @return AbstractObjectType
+     * @return AbstractObjectType|AbstractType
      */
     abstract public function getType();
 
@@ -51,15 +62,9 @@ abstract class AbstractField implements FieldInterface
         $this->getConfig()->set('type', $type);
     }
 
-    /**
-     * @param             $value
-     * @param array       $args
-     * @param ResolveInfo $info
-     * @return mixed
-     */
-    public function resolve($value, array $args, ResolveInfo $info)
+    public function getName()
     {
-        return null;
+        return $this->nameCache;
     }
 
     public function isDeprecated()

@@ -9,14 +9,14 @@ namespace Youshido\Tests\DataProvider;
 
 
 use Youshido\GraphQL\Field\AbstractInputField;
-use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
+use Youshido\GraphQL\Type\InputTypeInterface;
 use Youshido\GraphQL\Type\Scalar\IntType;
 
 class TestInputField extends AbstractInputField
 {
 
     /**
-     * @return AbstractInputObjectType
+     * @return InputTypeInterface
      */
     public function getType()
     {

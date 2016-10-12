@@ -29,13 +29,14 @@ use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
 use Youshido\Tests\DataProvider\TestEnumType;
 use Youshido\Tests\DataProvider\TestInterfaceType;
 use Youshido\Tests\DataProvider\TestObjectType;
+use Youshido\Tests\DataProvider\TestSchema;
 
 class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testValidMethods()
     {
-        $validator = new ResolveValidator(new ExecutionContext());
+        $validator = new ResolveValidator(new ExecutionContext(new TestSchema()));
         $this->assertEmpty($validator->getExecutionContext()->getErrors());
 
         $object       = new TestObjectType();
@@ -62,6 +63,22 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
         $validator->assertValidFragmentForField($fragment, $fragmentReference, $userType);
     }
 
+    public function testValidFragmentTypeWithComposite()
+    {
+      $validator = new ResolveValidator(new ExecutionContext(new TestSchema()));
+      $userType = new ObjectType([
+        'name'       => 'User',
+        'fields'     => [
+          'name' => new StringType(),
+        ],
+        'interfaces' => [new TestInterfaceType()]
+      ]);
+
+      $fragment          = new Fragment('name', 'User', []);
+      $fragmentReference = new FragmentReference('name');
+      $validator->assertValidFragmentForField($fragment, $fragmentReference, new NonNullType($userType));
+    }
+
     /**
      * @expectedException \Youshido\GraphQL\Validator\Exception\ResolveException
      */
@@ -76,7 +93,7 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
         $fragmentReference = new FragmentReference('user');
         $fragment          = new Fragment('name', 'Product', []);
 
-        $validator = new ResolveValidator(new ExecutionContext());
+        $validator = new ResolveValidator(new ExecutionContext(new TestSchema()));
         $validator->assertValidFragmentForField($fragment, $fragmentReference, $userType);
     }
 
@@ -92,7 +109,7 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
             ],
         ]);
 
-        $validator = new ResolveValidator(new ExecutionContext());
+        $validator = new ResolveValidator(new ExecutionContext(new TestSchema()));
         $validator->assertTypeImplementsInterface($userType, new TestInterfaceType());
     }
 
@@ -109,7 +126,7 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
             }
         ]);
 
-        $validator = new ResolveValidator(new ExecutionContext());
+        $validator = new ResolveValidator(new ExecutionContext(new TestSchema()));
         $validator->assertTypeInUnionTypes($union->resolveType(new \stdClass()), $union);
     }
 
@@ -123,7 +140,7 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
             }
         ]);
 
-        $validator = new ResolveValidator(new ExecutionContext());
+        $validator = new ResolveValidator(new ExecutionContext(new TestSchema()));
         try {
             $validator->assertTypeInUnionTypes($union->resolveType(new \stdClass()), $union);
             $this->assertTrue(true);
@@ -152,7 +169,7 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
                 'year'   => new IntType(),
             ]
         ]);
-        $validator = new ResolveValidator(new ExecutionContext());
+        $validator = new ResolveValidator(new ExecutionContext(new TestSchema()));
         $request   = new Request([]);
 
 
@@ -196,9 +213,14 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
         ], $validator->getExecutionContext()->getErrorsArray());
         $validator->getExecutionContext()->clearErrors();
 
-        $request->setVariables(['year' => '2016']);
+        $request->setVariables(['year' => 2016]);
         $validator->validateArguments($field, $argumentWithVariable, $request);
         $this->assertFalse($validator->getExecutionContext()->hasErrors());
+
+        $request->setVariables(['year' => 0]);
+        $validator->validateArguments($field, $argumentWithVariable, $request);
+        $this->assertFalse($validator->getExecutionContext()->hasErrors());
+        $request->setVariables([]);
 
         $validator->validateArguments($field, $argumentWithVariableWrongType, $request);
         $this->assertEquals([

@@ -8,12 +8,27 @@
 namespace Youshido\GraphQL\Introspection;
 
 use Youshido\GraphQL\Field\AbstractField;
+use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 
 class FieldType extends AbstractObjectType
 {
+
+    public function resolveType(FieldInterface $value)
+    {
+        return $value->getType();
+    }
+
+    public function resolveArgs(FieldInterface $value)
+    {
+        if ($value->hasArguments()) {
+            return $value->getArguments();
+        }
+
+        return [];
+    }
 
     public function build($config)
     {
@@ -24,25 +39,17 @@ class FieldType extends AbstractObjectType
             ->addField('deprecationReason', TypeMap::TYPE_STRING)
             ->addField('type', [
                 'type'    => new QueryType(),
-                'resolve' => function (AbstractField $value) {
-                    return $value->getType()->getNamedType();
-                }
+                'resolve' => [$this, 'resolveType'],
             ])
             ->addField('args', [
                 'type'    => new ListType(new InputValueType()),
-                'resolve' => function (AbstractField $value) {
-                    if ($value->getConfig()->hasArguments()) {
-                        return $value->getConfig()->getArguments();
-                    }
-
-                    return [];
-                }
+                'resolve' => [$this, 'resolveArgs'],
             ]);
     }
 
     public function isValidValue($value)
     {
-        return $value instanceof AbstractField;
+        return $value instanceof FieldInterface;
     }
 
     /**

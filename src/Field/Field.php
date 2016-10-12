@@ -19,17 +19,20 @@ final class Field extends AbstractField
 
     protected $isFinal = true;
 
+    protected $_typeCache = null;
+    protected $_nameCache = null;
+
     /**
      * @return AbstractObjectType
      */
     public function getType()
     {
-        return $this->getConfigValue('type');
+        return $this->_typeCache ? $this->_typeCache : ($this->_typeCache = $this->getConfigValue('type'));
     }
 
     public function getName()
     {
-        return $this->getConfigValue('name');
+        return $this->_nameCache ? $this->_nameCache : ($this->_nameCache = $this->getConfigValue('name'));
     }
 
 }

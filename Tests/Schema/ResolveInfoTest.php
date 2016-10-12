@@ -24,7 +24,7 @@ class ResolveInfoTest extends \PHPUnit_Framework_TestCase
         $field            = new Field(['name' => 'id', 'type' => new IntType()]);
         $returnType       = new IntType();
         $executionContext = new ExecutionContext(new TestSchema());
-        $info             = new ResolveInfo($field, [$fieldAst], $returnType, $executionContext);
+        $info             = new ResolveInfo($field, [$fieldAst], $executionContext);
 
         $this->assertEquals($field, $info->getField());
         $this->assertEquals([$fieldAst], $info->getFieldASTList());

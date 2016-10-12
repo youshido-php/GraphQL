@@ -11,6 +11,7 @@ namespace Youshido\GraphQL\Type;
 
 use Youshido\GraphQL\Type\Enum\AbstractEnumType;
 use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
+use Youshido\GraphQL\Type\ListType\AbstractListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 use Youshido\GraphQL\Type\Scalar\StringType;
@@ -79,7 +80,7 @@ class TypeService
     public static function isScalarType($type)
     {
         if (is_object($type)) {
-            return $type instanceof AbstractScalarType;
+            return $type instanceof AbstractScalarType || $type instanceof AbstractEnumType;
         }
 
         return in_array(strtolower($type), TypeFactory::getScalarTypesNames());
@@ -88,6 +89,11 @@ class TypeService
     public static function isGraphQLType($type)
     {
         return $type instanceof AbstractType || TypeService::isScalarType($type);
+    }
+
+    public static function isLeafType($type)
+    {
+        return $type instanceof AbstractEnumType || TypeService::isScalarType($type);
     }
 
     public static function isObjectType($type)
@@ -102,11 +108,12 @@ class TypeService
     public static function isInputType($type)
     {
         if (is_object($type)) {
-            $type = $type->getNullableType()->getNamedType();
+            $namedType = $type->getNullableType()->getNamedType();
 
-            return ($type instanceof AbstractScalarType)
-                   || ($type instanceof AbstractInputObjectType)
-                   || ($type instanceof AbstractEnumType);
+            return ($namedType instanceof AbstractScalarType)
+                   || ($type instanceof AbstractListType)
+                   || ($namedType instanceof AbstractInputObjectType)
+                   || ($namedType instanceof AbstractEnumType);
         } else {
             return TypeService::isScalarType($type);
         }
@@ -125,7 +132,7 @@ class TypeService
                 $getter = 'get' . self::classify($path);
             }
 
-            return is_callable([$data, $getter]) ? $data->$getter() : null;
+            return is_callable([$data, $getter]) ? $data->$getter() : (isset($data->$path) ? $data->$path : null);
         } elseif (is_array($data)) {
             return array_key_exists($path, $data) ? $data[$path] : null;
         }

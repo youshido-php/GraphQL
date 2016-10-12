@@ -9,9 +9,11 @@ namespace Youshido\GraphQL\Validator\ResolveValidator;
 
 use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Execution\Request;
-use Youshido\GraphQL\Field\AbstractField;
+use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Parser\Ast\Argument;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputList;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputObject;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
 use Youshido\GraphQL\Parser\Ast\Field as AstField;
@@ -20,8 +22,11 @@ use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Type\AbstractType;
+use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
+use Youshido\GraphQL\Type\ListType\AbstractListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
 use Youshido\GraphQL\Type\Union\AbstractUnionType;
@@ -41,11 +46,12 @@ class ResolveValidator implements ResolveValidatorInterface
     /**
      * @param AbstractObjectType      $objectType
      * @param Mutation|Query|AstField $field
+     *
      * @return null
      */
     public function objectHasField($objectType, $field)
     {
-        if (!($objectType instanceof AbstractObjectType) || !$objectType->hasField($field->getName())) {
+        if (!(($objectType instanceof AbstractObjectType || $objectType instanceof AbstractInputObjectType)) || !$objectType->hasField($field->getName())) {
             $this->executionContext->addError(new ResolveException(sprintf('Field "%s" not found in type "%s"', $field->getName(), $objectType->getNamedType()->getName())));
 
             return false;
@@ -57,10 +63,8 @@ class ResolveValidator implements ResolveValidatorInterface
     /**
      * @inheritdoc
      */
-    public function validateArguments(AbstractField $field, $query, Request $request)
+    public function validateArguments(FieldInterface $field, $query, Request $request)
     {
-        if (!count($field->getArguments())) return true;
-
         $requiredArguments = array_filter($field->getArguments(), function (InputField $argument) {
             return $argument->getType()->getKind() == TypeMap::KIND_NON_NULL;
         });
@@ -76,35 +80,39 @@ class ResolveValidator implements ResolveValidatorInterface
                 return false;
             }
 
-            /** @var AbstractType $argumentType */
-            $argumentType = $field->getArgument($argument->getName())->getType()->getNullableType()->getNamedType();
+            $originalArgumentType = $field->getArgument($argument->getName())->getType();
+            $argumentType         = $originalArgumentType->getNullableType()->getNamedType();
+
             if ($argument->getValue() instanceof Variable) {
-                /** @var Variable $variable */
-                $variable = $argument->getValue();
-
-                //todo: here validate argument
-
-                if ($variable->getTypeName() !== $argumentType->getName()) {
-                    $this->executionContext->addError(new ResolveException(sprintf('Invalid variable "%s" type, allowed type is "%s"', $variable->getName(), $argumentType->getName())));
-
+                if (!$this->processVariable($argument, $argumentType, $field, $request)) {
                     return false;
                 }
+            } elseif ($argumentType->getKind() == TypeMap::KIND_INPUT_OBJECT) {
+                if ($originalArgumentType->getNullableType()->getKind() == TypeMap::KIND_LIST) {
+                    if (!$argument->getValue() instanceof InputList) {
+                        return false;
+                    }
 
-                /** @var Variable $requestVariable */
-                $requestVariable = $request->getVariable($variable->getName());
-                if (!$requestVariable) {
-                    $this->executionContext->addError(new ResolveException(sprintf('Variable "%s" does not exist for query "%s"', $argument->getName(), $field->getName())));
-
+                    foreach ($argument->getValue()->getValue() as $item) {
+                        if(!$this->processInputObject($item, $argumentType, $request)) {
+                            return false;
+                        }
+                    }
+                } else if (!$this->processInputObject($argument->getValue(), $argumentType, $request)) {
                     return false;
                 }
-                $variable->setValue($requestVariable);
-
             }
 
-            if (!$argumentType->isValidValue($argumentType->parseValue($argument->getValue()->getValue()))) {
-                $this->executionContext->addError(new ResolveException(sprintf('Not valid type for argument "%s" in query "%s"', $argument->getName(), $field->getName())));
+            $values = $argument->getValue()->getValue();
+            if (!$originalArgumentType instanceof AbstractListType) {
+                $values = [$values];
+            }
+            foreach ($values as $value) {
+                if (!$argumentType->isValidValue($value)) {
+                    $this->executionContext->addError(new ResolveException(sprintf('Not valid type for argument "%s" in query "%s"', $argument->getName(), $field->getName())));
 
-                return false;
+                    return false;
+                }
             }
 
             if (array_key_exists($argument->getName(), $requiredArguments)) {
@@ -126,6 +134,51 @@ class ResolveValidator implements ResolveValidatorInterface
                 $query->addArgument(new Argument($name, new Literal($argument->getConfig()->get('default'))));
             }
         }
+
+        return true;
+    }
+
+    private function processInputObject(InputObject $astObject, AbstractInputObjectType $inputObjectType, $request)
+    {
+        foreach ($astObject->getValue() as $name => $value) {
+            $field = $inputObjectType->getField($name);
+
+            if (!$field) {
+                return false;
+            }
+
+            $argumentType = $field->getType()->getNullableType();
+
+            if ($value instanceof Variable && !$this->processVariable(new Argument($name, $value), $argumentType, $field, $request)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function processVariable(Argument $argument, TypeInterface $argumentType, FieldInterface $field, Request $request)
+    {
+        /** @var Variable $variable */
+        $variable = $argument->getValue();
+
+        //todo: here validate argument
+
+        if ($variable->getTypeName() !== $argumentType->getName()) {
+            $this->executionContext->addError(new ResolveException(sprintf('Invalid variable "%s" type, allowed type is "%s"', $variable->getName(), $argumentType->getName())));
+
+            return false;
+        }
+
+        /** @var Variable $requestVariable */
+        $requestVariable = $request->getVariable($variable->getName());
+        if (null === $requestVariable) {
+            $this->executionContext->addError(new ResolveException(sprintf('Variable "%s" does not exist for query "%s"', $argument->getName(), $field->getName())));
+
+            return false;
+        }
+
+        $variable->setValue($requestVariable);
 
         return true;
     }
@@ -163,18 +216,29 @@ class ResolveValidator implements ResolveValidatorInterface
      *
      * @throws \Exception
      */
-    public function assertValidFragmentForField(Fragment $fragment, FragmentReference $fragmentReference, AbstractType $queryType)
+    public function assertValidFragmentForField($fragment, FragmentReference $fragmentReference, AbstractType $queryType)
     {
-        if ($fragment->getModel() !== $queryType->getName()) {
+        $innerType = $queryType;
+        while ($innerType->isCompositeType()) {
+            $innerType = $innerType->getTypeOf();
+        }
+
+        if (!$fragment instanceof Fragment || $fragment->getModel() !== $innerType->getName()) {
             throw new ResolveException(sprintf('Fragment reference "%s" not found on model "%s"', $fragmentReference->getName(), $queryType->getName()));
         }
     }
 
-    public function isValidValueForField(AbstractField $field, $value)
+    public function hasArrayAccess($data)
+    {
+        return is_array($data) || $data instanceof \Traversable;
+    }
+
+    public function isValidValueForField(FieldInterface $field, $value)
     {
         $fieldType = $field->getType();
         if ($fieldType->getKind() == TypeMap::KIND_NON_NULL && is_null($value)) {
             $this->executionContext->addError(new ResolveException(sprintf('Cannot return null for non-nullable field %s', $field->getName())));
+
             return null;
         } else {
             $fieldType = $this->resolveTypeIfAbstract($fieldType->getNullableType(), $value);
@@ -182,33 +246,45 @@ class ResolveValidator implements ResolveValidatorInterface
 
         if (!is_null($value) && !$fieldType->isValidValue($value)) {
             $this->executionContext->addError(new ResolveException(sprintf('Not valid value for %s field %s', $fieldType->getNullableType()->getKind(), $field->getName())));
+
             return null;
         }
+
         return true;
     }
 
     public function resolveTypeIfAbstract(AbstractType $type, $resolvedValue)
     {
-        if (TypeService::isAbstractType($type)) {
-            /** @var AbstractInterfaceType $type */
-            $resolvedType = $type->resolveType($resolvedValue);
+        return TypeService::isAbstractType($type) ? $this->resolveAbstractType($type, $resolvedValue) : $type;
+    }
 
-            if (!$resolvedType) {
-                $this->executionContext->addError(new \Exception('Cannot resolve type'));
-                return $type;
-            }
-            if ($type instanceof AbstractInterfaceType) {
-                $this->assertTypeImplementsInterface($resolvedType, $type);
-            } else {
-                /** @var AbstractUnionType $type */
-                $this->assertTypeInUnionTypes($resolvedType, $type);
-            }
+    /**
+     * @param AbstractType $type
+     * @param              $resolvedValue
+     *
+     * @return AbstractObjectType
+     * @throws ResolveException
+     */
+    public function resolveAbstractType(AbstractType $type, $resolvedValue)
+    {
+        /** @var AbstractInterfaceType $type */
+        $resolvedType = $type->resolveType($resolvedValue);
 
-            return $resolvedType;
+        if (!$resolvedType) {
+            $this->executionContext->addError(new \Exception('Cannot resolve type'));
+
+            return $type;
+        }
+        if ($type instanceof AbstractInterfaceType) {
+            $this->assertTypeImplementsInterface($resolvedType, $type);
+        } else {
+            /** @var AbstractUnionType $type */
+            $this->assertTypeInUnionTypes($resolvedType, $type);
         }
 
-        return $type;
+        return $resolvedType;
     }
+
     /**
      * @return ExecutionContextInterface
      */

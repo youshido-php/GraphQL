@@ -14,6 +14,7 @@ use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
 use Youshido\Tests\DataProvider\TestInterfaceType;
 use Youshido\Tests\DataProvider\TestObjectType;
+use Youshido\Tests\Library\Type\ObjectTypeTest;
 
 class TypeUtilitiesTest extends \PHPUnit_Framework_TestCase
 {
@@ -54,5 +55,12 @@ class TypeUtilitiesTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(TypeService::isAbstractType(new TestInterfaceType()));
         $this->assertFalse(TypeService::isAbstractType(new StringType()));
         $this->assertFalse(TypeService::isAbstractType('invalid type'));
+    }
+
+    public function testGetPropertyValue() {
+        $arrayData = (new TestObjectType())->getData();
+
+        $this->assertEquals('John', TypeService::getPropertyValue($arrayData, 'name'));
+        $this->assertEquals('John', TypeService::getPropertyValue((object) $arrayData, 'name'));
     }
 }

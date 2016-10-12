@@ -13,6 +13,7 @@ use Youshido\GraphQL\Config\Object\InterfaceTypeConfig;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
+use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
 use Youshido\Tests\DataProvider\TestInterfaceType;
 
 class InterfaceTypeConfigTest extends \PHPUnit_Framework_TestCase
@@ -29,7 +30,9 @@ class InterfaceTypeConfigTest extends \PHPUnit_Framework_TestCase
      */
     public function testConfigNoFields()
     {
-        new InterfaceTypeConfig(['name' => 'Test', 'resolveType' => function () { }], null, true);
+        ConfigValidator::getInstance()->assertValidateConfig(
+            new InterfaceTypeConfig(['name' => 'Test', 'resolveType' => function () { }], null, true)
+        );
     }
 
     /**
@@ -37,7 +40,9 @@ class InterfaceTypeConfigTest extends \PHPUnit_Framework_TestCase
      */
     public function testConfigNoResolve()
     {
-        new InterfaceTypeConfig(['name' => 'Test', 'fields' => ['id' => new IntType()]], null, true);
+        ConfigValidator::getInstance()->assertValidateConfig(
+            new InterfaceTypeConfig(['name' => 'Test', 'fields' => ['id' => new IntType()]], null, true)
+        );
     }
 
     /**

@@ -16,7 +16,7 @@ class StarWarsSchema extends AbstractSchema
 
     public function build(SchemaConfig $config)
     {
-        $config->setQuery(new QueryType());
+        $config->setQuery(new StarWarsQueryType());
     }
 
 }

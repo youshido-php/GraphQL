@@ -10,6 +10,8 @@ namespace Youshido\GraphQL\Schema;
 
 
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Type\Object\ObjectType;
+use Youshido\GraphQL\Type\TypeInterface;
 
 abstract class AbstractSchema
 {
@@ -24,6 +26,9 @@ abstract class AbstractSchema
         }
         if (!array_key_exists('mutation', $config)) {
             $config['mutation'] = new InternalSchemaMutationObject(['name' => $this->getName() . 'Mutation']);
+        }
+        if (!array_key_exists('types', $config)) {
+          $config['types'] = [];
         }
 
         $this->config = new SchemaConfig($config, $this);
@@ -51,6 +56,14 @@ abstract class AbstractSchema
     final public function getMutationType()
     {
         return $this->config->getMutation();
+    }
+
+    /**
+     * @return callable|mixed|null
+     */
+    public function getTypes()
+    {
+        return $this->config->getTypes();
     }
 
     public function getName()

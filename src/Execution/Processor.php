@@ -9,11 +9,12 @@
 
 namespace Youshido\GraphQL\Execution;
 
+use Youshido\GraphQL\Execution\Container\Container;
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
-use Youshido\GraphQL\Field\AbstractField;
+use Youshido\GraphQL\Execution\Visitor\AbstractQueryVisitor;
+use Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor;
 use Youshido\GraphQL\Field\Field;
-use Youshido\GraphQL\Introspection\Field\SchemaField;
-use Youshido\GraphQL\Introspection\Field\TypeDefinitionField;
+use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Parser\Ast\Field as FieldAst;
 use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\FragmentInterface;
@@ -28,10 +29,10 @@ use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
+use Youshido\GraphQL\Type\Union\AbstractUnionType;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidatorInterface;
-use Youshido\GraphQL\Validator\SchemaValidator\SchemaValidator;
 
 class Processor
 {
@@ -47,24 +48,23 @@ class Processor
     /** @var ExecutionContext */
     protected $executionContext;
 
+    /** @var int */
+    protected $maxComplexity;
+
     public function __construct(AbstractSchema $schema)
     {
-        (new SchemaValidator())->validate($schema);
-
-        $this->introduceIntrospectionFields($schema);
-        $this->executionContext = new ExecutionContext();
-        $this->executionContext->setSchema($schema);
-
+        /**
+         * This will be removed in 1.4 when __construct signature is changed to accept ExecutionContext
+         */
+        if (empty($this->executionContext)) {
+            $this->executionContext = new ExecutionContext($schema);
+            $this->executionContext->setContainer(new Container());
+        }
         $this->resolveValidator = new ResolveValidator($this->executionContext);
     }
 
-
-    public function processPayload($payload, $variables = [])
+    public function processPayload($payload, $variables = [], $reducers = [])
     {
-        if ($this->executionContext->hasErrors()) {
-            $this->executionContext->clearErrors();
-        }
-
         $this->data = [];
 
         try {
@@ -72,6 +72,13 @@ class Processor
 
             $queryType    = $this->executionContext->getSchema()->getQueryType();
             $mutationType = $this->executionContext->getSchema()->getMutationType();
+
+            if ($this->maxComplexity) {
+                $reducers[] = new MaxComplexityQueryVisitor($this->maxComplexity);
+            }
+
+            $this->reduceQuery($queryType, $mutationType, $reducers);
+
             foreach ($this->executionContext->getRequest()->getOperationsInOrder() as $operation) {
                 if ($operationResult = $this->executeOperation($operation, $operation instanceof Mutation ? $mutationType : $queryType)) {
                     $this->data = array_merge($this->data, $operationResult);
@@ -107,7 +114,7 @@ class Processor
             return null;
         }
 
-        /** @var AbstractField $field */
+        /** @var FieldInterface $field */
         $operationField = $currentLevelSchema->getField($query->getName());
         $alias          = $query->getAlias() ?: $query->getName();
 
@@ -120,13 +127,17 @@ class Processor
 
     /**
      * @param Query         $query
-     * @param AbstractField $field
+     * @param FieldInterface $field
      * @param               $contextValue
      * @return array|mixed|null
      */
-    protected function processQueryAST(Query $query, AbstractField $field, $contextValue = null)
+    protected function processQueryAST(Query $query, FieldInterface $field, $contextValue = null)
     {
-        $resolvedValue = $this->resolveFieldValue($field, $contextValue, $query);
+        if (!$this->resolveValidator->validateArguments($field, $query, $this->executionContext->getRequest())) {
+            return null;
+        }
+
+        $resolvedValue = $this->resolveFieldValue($field, $contextValue, $query->getFields(), $this->parseArgumentsValues($field, $query));
 
         if (!$this->resolveValidator->isValidValueForField($field, $resolvedValue)) {
             return null;
@@ -140,34 +151,54 @@ class Processor
      * @param AbstractType   $fieldType
      * @param mixed          $resolvedValue
      * @return array|mixed
+     * @throws ResolveException
      */
     protected function collectValueForQueryWithType(Query $query, AbstractType $fieldType, $resolvedValue)
     {
-        $fieldType = $this->resolveValidator->resolveTypeIfAbstract($fieldType, $resolvedValue);
-        if (is_null($resolvedValue)) return null;
+        if (is_null($resolvedValue)) {
+            return null;
+        }
 
         $value = [];
+
+        if (!$query->hasFields()) {
+            $fieldType = $this->resolveValidator->resolveTypeIfAbstract($fieldType, $resolvedValue);
+
+            if (!TypeService::isLeafType($fieldType->getNamedType())) {
+                throw new ResolveException(sprintf('You have to specify fields for "%s"', $query->getName()));
+            }
+            if (TypeService::isScalarType($fieldType)) {
+                return $this->getOutputValue($fieldType, $resolvedValue);
+            }
+        }
+
         if ($fieldType->getKind() == TypeMap::KIND_LIST) {
-            foreach ((array)$resolvedValue as $resolvedValueItem) {
+            if (!$this->resolveValidator->hasArrayAccess($resolvedValue)) return null;
+
+            $namedType          = $fieldType->getNamedType();
+            $isAbstract         = TypeService::isAbstractType($namedType);
+            $validItemStructure = false;
+
+            foreach ($resolvedValue as $resolvedValueItem) {
                 $value[] = [];
                 $index   = count($value) - 1;
 
+                if ($isAbstract) {
+                    $namedType = $this->resolveValidator->resolveAbstractType($fieldType->getNamedType(), $resolvedValueItem);
+                }
 
-                $namedType = $fieldType->getNamedType();
-                $namedType = $this->resolveValidator->resolveTypeIfAbstract($namedType, $resolvedValueItem);
-                if (!$namedType->isValidValue($resolvedValueItem)) {
-                    $this->executionContext->addError(new ResolveException(sprintf('Not valid resolve value in %s field', $query->getName())));
-                    $value[$index] = null;
-                    continue;
+                if (!$validItemStructure) {
+                    if (!$namedType->isValidValue($resolvedValueItem)) {
+                        $this->executionContext->addError(new ResolveException(sprintf('Not valid resolve value in %s field', $query->getName())));
+                        $value[$index] = null;
+                        continue;
+                    }
+                    $validItemStructure = true;
                 }
 
                 $value[$index] = $this->processQueryFields($query, $namedType, $resolvedValueItem, $value[$index]);
             }
         } else {
-            if (!$query->hasFields()) {
-                return $this->getOutputValue($fieldType, $resolvedValue);
-            }
-
             $value = $this->processQueryFields($query, $fieldType, $resolvedValue, $value);
         }
 
@@ -176,14 +207,14 @@ class Processor
 
     /**
      * @param FieldAst      $fieldAst
-     * @param AbstractField $field
+     * @param FieldInterface $field
      *
      * @param mixed         $contextValue
      * @return array|mixed|null
      * @throws ResolveException
      * @throws \Exception
      */
-    protected function processFieldAST(FieldAst $fieldAst, AbstractField $field, $contextValue)
+    protected function processFieldAST(FieldAst $fieldAst, FieldInterface $field, $contextValue)
     {
         $value            = null;
         $fieldType        = $field->getType();
@@ -191,96 +222,60 @@ class Processor
 
         if ($fieldType->getKind() == TypeMap::KIND_LIST) {
             $listValue = [];
+            $type      = $fieldType->getNamedType();
+
             foreach ($preResolvedValue as $resolvedValueItem) {
-                $type = $fieldType->getNamedType();
-
-                if (!$type->isValidValue($resolvedValueItem)) {
-                    $this->executionContext->addError(new ResolveException(sprintf('Not valid resolve value in %s field', $field->getName())));
-
-                    $listValue = null;
-                    break;
-                }
                 $listValue[] = $this->getOutputValue($type, $resolvedValueItem);
             }
 
             $value = $listValue;
         } else {
-            $value = $this->getFieldValidatedValue($field, $preResolvedValue);
+            $value = $this->getOutputValue($fieldType, $preResolvedValue);
         }
 
         return $value;
     }
 
-    /**
-     * @param AbstractField $field
-     * @param mixed         $contextValue
-     * @param Query         $query
-     *
-     * @return mixed
-     */
-    protected function resolveFieldValue(AbstractField $field, $contextValue, Query $query)
+    protected function createResolveInfo($field, $fields)
     {
-        $resolveInfo = new ResolveInfo($field, $query->getFields(), $field->getType(), $this->executionContext);
-
-        if ($resolveFunc = $field->getConfig()->getResolveFunction()) {
-            return $resolveFunc($contextValue, $this->parseArgumentsValues($field, $query), $resolveInfo);
-        } elseif ($propertyValue = TypeService::getPropertyValue($contextValue, $field->getName())) {
-            return $propertyValue;
-        } else {
-            return $field->resolve($contextValue, $this->parseArgumentsValues($field, $query), $resolveInfo);
-        }
+        return new ResolveInfo($field, $fields, $this->executionContext);
     }
 
     /**
      * @param               $contextValue
      * @param FieldAst      $fieldAst
-     * @param AbstractField $field
+     * @param FieldInterface $field
      *
      * @throws \Exception
      *
      * @return mixed
      */
-    protected function getPreResolvedValue($contextValue, FieldAst $fieldAst, AbstractField $field)
+    protected function getPreResolvedValue($contextValue, FieldAst $fieldAst, FieldInterface $field)
     {
-        $resolved      = false;
-        $resolverValue = null;
-
-        if (is_array($contextValue) && array_key_exists($fieldAst->getName(), $contextValue)) {
-            $resolverValue = $contextValue[$fieldAst->getName()];
-            $resolved      = true;
-        } elseif (is_object($contextValue)) {
-            $resolverValue = TypeService::getPropertyValue($contextValue, $fieldAst->getName());
-            $resolved      = true;
+        if ($field->hasArguments() && !$this->resolveValidator->validateArguments($field, $fieldAst, $this->executionContext->getRequest())) {
+            throw new \Exception(sprintf('Not valid arguments for the field "%s"', $fieldAst->getName()));
         }
 
-        if (!$resolved && $field->getType()->getNamedType()->getKind() == TypeMap::KIND_SCALAR) {
-            $resolved = true;
-        }
+        return $this->resolveFieldValue($field, $contextValue, [$fieldAst], $fieldAst->getKeyValueArguments());
 
-        if ($resolveFunction = $field->getConfig()->getResolveFunction()) {
-            $resolveInfo   = new ResolveInfo($field, [$fieldAst], $field->getType(), $this->executionContext);
+    }
 
-            $resolverValue = $resolveFunction($resolved ? $resolverValue : $contextValue, $fieldAst->getKeyValueArguments(), $resolveInfo);
-        }
-
-        if (!$resolverValue && !$resolved) {
-            throw new \Exception(sprintf('Property "%s" not found in resolve result', $fieldAst->getName()));
-        }
-
-        return $resolverValue;
+    protected function resolveFieldValue(FieldInterface $field, $contextValue, array $fields, array $args)
+    {
+        return $field->resolve($contextValue, $args, $this->createResolveInfo($field, $fields));
     }
 
     /**
-     * @param $field     AbstractField
+     * @param $field     FieldInterface
      * @param $query     Query
      *
      * @return array
      */
-    protected function parseArgumentsValues(AbstractField $field, Query $query)
+    protected function parseArgumentsValues(FieldInterface $field, Query $query)
     {
         $args = [];
         foreach ($query->getArguments() as $argument) {
-            if ($configArgument = $field->getConfig()->getArgument($argument->getName())) {
+            if ($configArgument = $field->getArgument($argument->getName())) {
                 $args[$argument->getName()] = $configArgument->getType()->parseValue($argument->getValue()->getValue());
             }
         }
@@ -300,50 +295,69 @@ class Processor
      */
     protected function processQueryFields($query, AbstractType $queryType, $resolvedValue, $value)
     {
+        $originalType = $queryType;
+        $queryType    = $this->resolveValidator->resolveTypeIfAbstract($queryType, $resolvedValue);
+        $currentType  = $queryType->getNullableType();
+
+
+        if ($currentType->getKind() == TypeMap::KIND_SCALAR) {
+            if (!$query->hasFields()) {
+                return $this->getOutputValue($currentType, $resolvedValue);
+            } else {
+                $this->executionContext->addError(new ResolveException(sprintf('Fields are not found in query "%s"', $query->getName())));
+
+                return null;
+            }
+        }
+
         foreach ($query->getFields() as $fieldAst) {
-            $fieldResolvedValue = null;
 
             if ($fieldAst instanceof FragmentInterface) {
                 /** @var TypedFragmentReference $fragment */
                 $fragment = $fieldAst;
                 if ($fieldAst instanceof FragmentReference) {
                     /** @var Fragment $fragment */
-                    $fragment = $this->executionContext->getRequest()->getFragment($fieldAst->getName());
-                    $this->resolveValidator->assertValidFragmentForField($fragment, $fieldAst, $queryType);
+                    $fieldAstName = $fieldAst->getName();
+                    $fragment     = $this->executionContext->getRequest()->getFragment($fieldAstName);
+                    $this->resolveValidator->assertValidFragmentForField($fragment, $fieldAst, $originalType);
                 } elseif ($fragment->getTypeName() !== $queryType->getName()) {
                     continue;
                 }
 
-                $fragmentValue      = $this->processQueryFields($fragment, $queryType, $resolvedValue, $value);
-                $fieldResolvedValue = is_array($fragmentValue) ? $fragmentValue : [];
+                $fragmentValue = $this->processQueryFields($fragment, $queryType, $resolvedValue, $value);
+                $value         = is_array($fragmentValue) ? $fragmentValue : [];
             } else {
-                $alias       = $fieldAst->getAlias() ?: $fieldAst->getName();
-                $currentType = $queryType->getNullableType();
+                $fieldAstName = $fieldAst->getName();
+                $alias        = $fieldAst->getAlias() ?: $fieldAstName;
 
-                if ($fieldAst->getName() == self::TYPE_NAME_QUERY) {
-                    $fieldResolvedValue = [$alias => $queryType->getName()];
-                } elseif ($fieldAst instanceof Query) {
-                    $fieldValue         = $this->processQueryAST($fieldAst, $currentType->getField($fieldAst->getName()), $resolvedValue);
-                    $fieldResolvedValue = [$alias => $fieldValue];
-                } elseif ($fieldAst instanceof FieldAst) {
+                if ($fieldAstName == self::TYPE_NAME_QUERY) {
+                    $value[$alias] = $queryType->getName();
+                } else {
+                    $field = $currentType->getField($fieldAstName);
+                    if (!$field) {
+                        $this->executionContext->addError(new ResolveException(sprintf('Field "%s" is not found in type "%s"', $fieldAstName, $currentType->getName())));
 
-                    if (!$this->resolveValidator->objectHasField($currentType, $fieldAst)) {
-                        $fieldResolvedValue = null;
+                        return null;
+                    }
+                    if ($fieldAst instanceof Query) {
+                        $value[$alias] = $this->processQueryAST($fieldAst, $field, $resolvedValue);
+                    } elseif ($fieldAst instanceof FieldAst) {
+                        if (!TypeService::isLeafType($field->getType()->getNamedType()->getNullableType())) {
+                            throw new ResolveException(sprintf('You have to specify fields for "%s"', $field->getName()));
+                        }
+                        $value[$alias] = $this->processFieldAST($fieldAst, $field, $resolvedValue);
                     } else {
-                        $fieldResolvedValue = [
-                            $alias => $this->processFieldAST($fieldAst, $currentType->getField($fieldAst->getName()), $resolvedValue)
-                        ];
+                        return $value;
                     }
                 }
             }
 
-            $value = $this->collectValue($value, $fieldResolvedValue);
         }
 
         return $value;
     }
 
-    protected function getFieldValidatedValue(AbstractField $field, $value)
+    protected function getFieldValidatedValue(FieldInterface $field, $value)
     {
         return ($this->resolveValidator->isValidValueForField($field, $value)) ? $this->getOutputValue($field->getType(), $value) : null;
     }
@@ -351,26 +365,6 @@ class Processor
     protected function getOutputValue(AbstractType $type, $value)
     {
         return in_array($type->getKind(), [TypeMap::KIND_OBJECT, TypeMap::KIND_NON_NULL]) ? $value : $type->serialize($value);
-    }
-
-    protected function collectValue($value, $queryValue)
-    {
-        if ($queryValue && is_array($queryValue)) {
-            $value = array_merge(is_array($value) ? $value : [], $queryValue);
-        } else {
-            $value = $queryValue;
-        }
-
-        return $value;
-    }
-
-    protected function introduceIntrospectionFields(AbstractSchema $schema)
-    {
-        $schemaField = new SchemaField();
-        $schemaField->setSchema($schema);
-
-        $schema->addQueryField($schemaField);
-        $schema->addQueryField(new TypeDefinitionField());
     }
 
     public function getResponseData()
@@ -386,5 +380,147 @@ class Processor
         }
 
         return $result;
+    }
+
+    /**
+     * You can access ExecutionContext to check errors and inject dependencies
+     *
+     * @return ExecutionContext
+     */
+    public function getExecutionContext()
+    {
+        return $this->executionContext;
+    }
+
+    /**
+     * Convenience function for attaching a MaxComplexityQueryVisitor($max) to the next processor run
+     *
+     * @param int $max
+     */
+    public function setMaxComplexity($max)
+    {
+        $this->maxComplexity = $max;
+    }
+
+    /**
+     * Apply all of $reducers to this query.  Example reducer operations: checking for maximum query complexity,
+     * performing look-ahead query planning, etc.
+     *
+     * @param AbstractType           $queryType
+     * @param AbstractType           $mutationType
+     * @param AbstractQueryVisitor[] $reducers
+     */
+    protected function reduceQuery($queryType, $mutationType, array $reducers)
+    {
+        foreach ($reducers as $reducer) {
+            foreach ($this->executionContext->getRequest()->getOperationsInOrder() as $operation) {
+                $this->doVisit($operation, $operation instanceof Mutation ? $mutationType : $queryType, $reducer);
+            }
+        }
+    }
+
+    /**
+     * Entry point for the `walkQuery` routine.  Execution bounces between here, where the reducer's ->visit() method
+     * is invoked, and `walkQuery` where we send in the scores from the `visit` call.
+     *
+     * @param Query                $query
+     * @param AbstractType         $currentLevelSchema
+     * @param AbstractQueryVisitor $reducer
+     */
+    protected function doVisit(Query $query, $currentLevelSchema, $reducer)
+    {
+        if (!($currentLevelSchema instanceof AbstractObjectType) || !$currentLevelSchema->hasField($query->getName())) {
+            return;
+        }
+
+        if ($operationField = $currentLevelSchema->getField($query->getName())) {
+
+            $coroutine = $this->walkQuery($query, $operationField);
+
+            if ($results = $coroutine->current()) {
+                $queryCost = 0;
+                while ($results) {
+                    // initial values come from advancing the generator via ->current, subsequent values come from ->send()
+                    list($queryField, $astField, $childCost) = $results;
+
+                    /**
+                     * @var Query|FieldAst $queryField
+                     * @var Field          $astField
+                     */
+                    $cost = $reducer->visit($queryField->getKeyValueArguments(), $astField->getConfig(), $childCost);
+                    $queryCost += $cost;
+                    $results = $coroutine->send($cost);
+                }
+            }
+        }
+    }
+
+    /**
+     * Coroutine to walk the query and schema in DFS manner (see AbstractQueryVisitor docs for more info) and yield a
+     * tuple of (queryNode, schemaNode, childScore)
+     *
+     * childScore costs are accumulated via values sent into the coroutine.
+     *
+     * Most of the branching in this function is just to handle the different types in a query: Queries, Unions,
+     * Fragments (anonymous and named), and Fields.  The core of the function is simple: recurse until we hit the base
+     * case of a Field and yield that back up to the visitor up in `doVisit`.
+     *
+     * @param Query|Field|FragmentInterface $queryNode
+     * @param FieldInterface                 $currentLevelAST
+     *
+     * @return \Generator
+     */
+    protected function walkQuery($queryNode, FieldInterface $currentLevelAST)
+    {
+        $childrenScore = 0;
+        if (!($queryNode instanceof FieldAst)) {
+            foreach ($queryNode->getFields() as $queryField) {
+                if ($queryField instanceof FragmentInterface) {
+                    if ($queryField instanceof FragmentReference) {
+                        $queryField = $this->executionContext->getRequest()->getFragment($queryField->getName());
+                    }
+                    // the next 7 lines are essentially equivalent to `yield from $this->walkQuery(...)` in PHP7.
+                    // for backwards compatibility this is equivalent.
+                    // This pattern is repeated multiple times in this function, and unfortunately cannot be extracted or
+                    // made less verbose.
+                    $gen  = $this->walkQuery($queryField, $currentLevelAST);
+                    $next = $gen->current();
+                    while ($next) {
+                        $received = (yield $next);
+                        $childrenScore += (int)$received;
+                        $next = $gen->send($received);
+                    }
+                } else {
+                    $fieldType = $currentLevelAST->getType()->getNamedType();
+                    if ($fieldType instanceof AbstractUnionType) {
+                        foreach ($fieldType->getTypes() as $unionFieldType) {
+                            if ($fieldAst = $unionFieldType->getField($queryField->getName())) {
+                                $gen  = $this->walkQuery($queryField, $fieldAst);
+                                $next = $gen->current();
+                                while ($next) {
+                                    $received = (yield $next);
+                                    $childrenScore += (int)$received;
+                                    $next = $gen->send($received);
+                                }
+                            }
+                        }
+                    } elseif ($fieldType instanceof AbstractObjectType && $fieldAst = $fieldType->getField($queryField->getName())) {
+                        $gen  = $this->walkQuery($queryField, $fieldAst);
+                        $next = $gen->current();
+                        while ($next) {
+                            $received = (yield $next);
+                            $childrenScore += (int)$received;
+                            $next = $gen->send($received);
+                        }
+                    }
+                }
+            }
+        }
+        // sanity check.  don't yield fragments; they don't contribute to cost
+        if ($queryNode instanceof Query || $queryNode instanceof FieldAst) {
+            // BASE CASE.  If we're here we're done recursing -
+            // this node is either a field, or a query that we've finished recursing into.
+            yield [$queryNode, $currentLevelAST, $childrenScore];
+        }
     }
 }

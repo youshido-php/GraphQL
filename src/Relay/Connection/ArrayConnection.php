@@ -83,7 +83,10 @@ class ArrayConnection
             $startOffset = max($startOffset, $endOffset - $last);
         }
 
-        $slice = array_slice($data, max($startOffset - $sliceStart, 0), count($data) - ($sliceEnd - $endOffset));
+        $arraySliceStart    = max($startOffset - $sliceStart, 0);
+        $arraySliceEnd      = count($data) - ($sliceEnd - $endOffset) - $arraySliceStart;
+
+        $slice = array_slice($data, $arraySliceStart, $arraySliceEnd, true);
         $edges = array_map(['self', 'edgeForObjectWithIndex'], $slice, array_keys($slice));
 
         $firstEdge  = array_key_exists(0, $edges) ? $edges[0] : null;
