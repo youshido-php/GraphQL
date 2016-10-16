@@ -11,6 +11,7 @@ namespace Youshido\GraphQL\Schema;
 
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
 use Youshido\GraphQL\Type\Object\ObjectType;
+use Youshido\GraphQL\Type\SchemaTypesList;
 use Youshido\GraphQL\Type\TypeInterface;
 
 abstract class AbstractSchema
@@ -59,11 +60,11 @@ abstract class AbstractSchema
     }
 
     /**
-     * @return callable|mixed|null
+     * @return SchemaTypesList
      */
-    public function getTypes()
+    public function getTypesList()
     {
-        return $this->config->getTypes();
+        return $this->config->getTypesList();
     }
 
     public function getName()

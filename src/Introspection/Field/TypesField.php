@@ -44,7 +44,7 @@ class TypesField extends AbstractField
             $this->collectTypes($value->getMutationType());
         }
 
-        foreach ($value->getTypes() as $type) {
+        foreach ($value->getTypesList()->getTypes() as $type) {
           $this->collectTypes($type);
         }
 

@@ -9,6 +9,7 @@
 namespace Youshido\Tests\Schema;
 
 
+use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\ObjectType;
@@ -66,7 +67,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
     {
         $schema = new TestEmptySchema();
         $schema->getQueryType()->addField('randomInt', [
-            'type' => new NonNullType(new IntType()),
+            'type'    => new NonNullType(new IntType()),
             'resolve' => 'rand',
         ]);
 
@@ -77,6 +78,59 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($unserialized->getQueryType()->hasFields());
         $this->assertFalse($unserialized->getMutationType()->hasFields());
         $this->assertEquals(1, count($unserialized->getQueryType()->getFields()));
+    }
+
+    public function testCustomTypes()
+    {
+        $authorType = null;
+
+        $userInterface = new ObjectType([
+            'name'        => 'UserInterface',
+            'fields'      => [
+                'name' => new StringType(),
+            ],
+            'resolveType' => function () use ($authorType) {
+                return $authorType;
+            }
+        ]);
+
+        $authorType = new ObjectType([
+            'name'       => 'Author',
+            'fields'     => [
+                'name' => new StringType(),
+            ],
+            'interfaces' => [$userInterface]
+        ]);
+
+        $schema    = new Schema([
+            'query' => new ObjectType([
+                'name'   => 'QueryType',
+                'fields' => [
+                    'user' => [
+                        'type'    => $userInterface,
+                        'resolve' => function () {
+                            return [
+                                'name' => 'Alex'
+                            ];
+                        }
+                    ]
+                ]
+            ])
+        ]);
+        $schema->getTypesList()->addType($authorType);
+        $processor = new Processor($schema);
+        $processor->processPayload('{ user { name } }');
+        $this->assertEquals(['data' => ['user' => ['name' => 'Alex']]], $processor->getResponseData());
+
+        $processor->processPayload('{
+                    __schema {
+                        types {
+                            name
+                        }
+                    }
+                }');
+        $data = $processor->getResponseData();
+        $this->assertArraySubset([11 => ['name' => 'Author']], $data['data']['__schema']['types']);
     }
 
 }

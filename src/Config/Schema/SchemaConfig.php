@@ -12,10 +12,23 @@ namespace Youshido\GraphQL\Config\Schema;
 use Youshido\GraphQL\Config\AbstractConfig;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
+use Youshido\GraphQL\Type\SchemaTypesList;
 use Youshido\GraphQL\Type\TypeService;
 
 class SchemaConfig extends AbstractConfig
 {
+
+    /**
+     * @var SchemaTypesList
+     */
+    private $typesList;
+
+    public function __construct(array $configData, $contextObject = null, $finalClass = false)
+    {
+        $this->typesList = new SchemaTypesList();
+        parent::__construct($configData, $contextObject, $finalClass);
+    }
+
 
     public function getRules()
     {
@@ -24,9 +37,17 @@ class SchemaConfig extends AbstractConfig
             'mutation' => ['type' => TypeService::TYPE_OBJECT_TYPE],
             'types'    => ['type' => TypeService::TYPE_ARRAY],
             'name'     => ['type' => TypeService::TYPE_STRING],
-
         ];
     }
+
+    protected function build()
+    {
+        parent::build();
+        if (!empty($this->data['types'])) {
+            $this->typesList->addTypes($this->data['types']);
+        }
+    }
+
 
     /**
      * @return AbstractObjectType
@@ -73,22 +94,9 @@ class SchemaConfig extends AbstractConfig
         return $this->get('name', 'RootSchema');
     }
 
-    /**
-     * @param array $types
-     *
-     * @return $this
-     */
-    public function setTypes(array $types) {
-        $this->data['types'] = $types;
-
-        return $this;
-    }
-
-    /**
-     * @return callable|mixed|null
-     */
-    public function getTypes() {
-        return $this->get('types');
+    public function getTypesList()
+    {
+        return $this->typesList;
     }
 
 }
