@@ -14,31 +14,25 @@ use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputList;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputObject;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\VariableReference;
 use Youshido\GraphQL\Parser\Ast\Field;
 use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
-use Youshido\GraphQL\Parser\Exception\DuplicationVariableException;
 use Youshido\GraphQL\Parser\Exception\SyntaxErrorException;
-use Youshido\GraphQL\Parser\Exception\UnusedVariableException;
 use Youshido\GraphQL\Parser\Exception\VariableTypeNotDefined;
 
 class Parser extends Tokenizer
 {
 
     /** @var array */
-    protected $variablesInfo = [];
-
-    /** @var array */
-    protected $variableTypeUsage = [];
+    private $data = [];
 
     public function parse($source = null)
     {
-        $this->initTokenizer($source);
-
-        $data = ['queries' => [], 'mutations' => [], 'fragments' => []];
+        $this->init($source);
 
         while (!$this->end()) {
             $tokenType = $this->peek()->getType();
@@ -46,15 +40,22 @@ class Parser extends Tokenizer
             switch ($tokenType) {
                 case Token::TYPE_LBRACE:
                 case Token::TYPE_QUERY:
-                    $data = array_merge($data, ['queries' => $this->parseBody()]);
+                    foreach ($this->parseBody() as $query) {
+                        $this->data['queries'][] = $query;
+                    }
+
                     break;
 
                 case Token::TYPE_MUTATION:
-                    $data = array_merge($data, ['mutations' => $this->parseBody(Token::TYPE_MUTATION)]);
+                    foreach ($this->parseBody(Token::TYPE_MUTATION) as $query) {
+                        $this->data['mutations'][] = $query;
+                    }
+
                     break;
 
                 case Token::TYPE_FRAGMENT:
-                    $data['fragments'][] = $this->parseFragment();
+                    $this->data['fragments'][] = $this->parseFragment();
+
                     break;
 
                 default:
@@ -62,9 +63,20 @@ class Parser extends Tokenizer
             }
         }
 
-        $this->checkVariableUsage();
+        return $this->data;
+    }
 
-        return $data;
+    private function init($source = null)
+    {
+        $this->initTokenizer($source);
+
+        $this->data = [
+            'queries'            => [],
+            'mutations'          => [],
+            'fragments'          => [],
+            'fragmentReferences' => [],
+            'variables'          => []
+        ];
     }
 
     protected function parseBody($token = Token::TYPE_QUERY, $highLevel = true)
@@ -77,7 +89,7 @@ class Parser extends Tokenizer
             $this->eat(Token::TYPE_IDENTIFIER);
 
             if ($this->match(Token::TYPE_LPAREN)) {
-                $this->variablesInfo = $this->parseVariableTypes();
+                $this->parseVariables();
             }
         }
 
@@ -108,18 +120,9 @@ class Parser extends Tokenizer
         return $fields;
     }
 
-    protected function checkVariableUsage()
+    protected function parseVariables()
     {
-        if ($this->variablesInfo && count($this->variablesInfo) != count($this->variableTypeUsage)) {
-            throw new UnusedVariableException(sprintf('Not all variables in query was used'));
-        }
-    }
-
-    protected function parseVariableTypes()
-    {
-        $types = [];
         $first = true;
-
         $this->eat(Token::TYPE_LPAREN);
 
         while (!$this->match(Token::TYPE_RPAREN) && !$this->end()) {
@@ -150,22 +153,10 @@ class Parser extends Tokenizer
                 $this->eat(Token::TYPE_REQUIRED);
             }
 
-
-            if (array_key_exists($name, $types)) {
-                throw new DuplicationVariableException(sprintf('"%s" variable duplication', $name));
-            }
-
-            $types[$name] = [
-                'name'     => $name,
-                'isArray'  => $isArray,
-                'required' => $required,
-                'type'     => $type
-            ];
+            $this->data['variables'][] = new Variable($name, $type, $required, $isArray);
         }
 
         $this->expect(Token::TYPE_RPAREN);
-
-        return $types;
     }
 
     protected function expectMulti($types)
@@ -177,22 +168,14 @@ class Parser extends Tokenizer
         throw $this->createUnexpectedException($this->peek());
     }
 
-    protected function parseReference()
+    protected function parseVariableReference()
     {
         $this->expectMulti([Token::TYPE_VARIABLE]);
 
         if ($this->match(Token::TYPE_NUMBER) || $this->match(Token::TYPE_IDENTIFIER)) {
             $name = $this->lex()->getData();
 
-            if (!array_key_exists($name, $this->variablesInfo)) {
-                throw new VariableTypeNotDefined(sprintf('Type for variable "%s" not defined', $name));
-            }
-
-            $this->variableTypeUsage[$name] = true;
-
-            $variableInfo = $this->variablesInfo[$name];
-
-            return new Variable($variableInfo['name'], $variableInfo['type'], $variableInfo['required'], $variableInfo['isArray']);
+            return new VariableReference($name);
         }
 
         throw $this->createUnexpectedException($this->peek());
@@ -200,9 +183,12 @@ class Parser extends Tokenizer
 
     protected function parseFragmentReference()
     {
-        $name = $this->parseIdentifier();
+        $name              = $this->parseIdentifier();
+        $fragmentReference = new FragmentReference($name);
 
-        return new FragmentReference($name);
+        $this->data['fragmentReferences'][] = $fragmentReference;
+
+        return $fragmentReference;
     }
 
     protected function parseIdentifier()
@@ -294,7 +280,7 @@ class Parser extends Tokenizer
                 return $this->parseObject();
 
             case Token::TYPE_VARIABLE:
-                return $this->parseReference();
+                return $this->parseVariableReference();
 
             case Token::TYPE_NUMBER:
             case Token::TYPE_STRING:
@@ -340,7 +326,7 @@ class Parser extends Tokenizer
                 return $this->expect($this->lookAhead->getType())->getData();
 
             case Token::TYPE_VARIABLE:
-                return $this->parseReference();
+                return $this->parseVariableReference();
 
             case Token::TYPE_LBRACE:
                 return $this->parseObject(true);

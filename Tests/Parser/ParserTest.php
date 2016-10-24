@@ -27,53 +27,13 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     {
         $parser = new Parser();
 
-        $this->assertEquals(['queries' => [], 'mutations' => [], 'fragments' => []], $parser->parse());
-    }
-
-    /**
-     * @expectedException Youshido\GraphQL\Parser\Exception\VariableTypeNotDefined
-     */
-    public function testTypeNotDefinedException()
-    {
-        $parser = new Parser();
-        $parser->parse('query getZuckProfile($devicePicSize: Int, $second: Int) {
-                  user(id: 4) {
-                    profilePic(size: $devicePicSize, test: $second, a: $c) {
-                        url
-                    }
-                  }
-                }');
-
-    }
-
-    /**
-     * @expectedException Youshido\GraphQL\Parser\Exception\UnusedVariableException
-     */
-    public function testTypeUnusedVariableException()
-    {
-        $parser = new Parser();
-        $parser->parse('query getZuckProfile($devicePicSize: Int, $second: Int) {
-                  user(id: 4) {
-                    profilePic(size: $devicePicSize) {
-                        url
-                    }
-                  }
-                }');
-    }
-
-    /**
-     * @expectedException Youshido\GraphQL\Parser\Exception\DuplicationVariableException
-     */
-    public function testDuplicationVariableException()
-    {
-        $parser = new Parser();
-        $parser->parse('query getZuckProfile($devicePicSize: Int, $second: Int, $second: Int) {
-                  user(id: 4) {
-                    profilePic(size: $devicePicSize, test: $second) {
-                        url
-                    }
-                  }
-                }');
+        $this->assertEquals([
+            'queries'            => [],
+            'mutations'          => [],
+            'fragments'          => [],
+            'fragmentReferences' => [],
+            'variables'          => [],
+        ], $parser->parse());
     }
 
     public function testComments()
@@ -93,7 +53,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser = new Parser();
 
         $this->assertEquals($parser->parse($query), [
-            'queries'   => [
+            'queries'            => [
                 new Query('authors', null,
                     [
                         new Argument('category', new Literal('#2'))
@@ -102,8 +62,10 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                         new Field('_id', null),
                     ])
             ],
-            'mutations' => [],
-            'fragments' => []
+            'mutations'          => [],
+            'fragments'          => [],
+            'fragmentReferences' => [],
+            'variables'          => []
         ]);
     }
 
@@ -126,11 +88,13 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser = new Parser();
         $data   = $parser->parse('{ name }');
         $this->assertEquals([
-            'queries'   => [
+            'queries'            => [
                 new Query('name')
             ],
-            'mutations' => [],
-            'fragments' => [],
+            'mutations'          => [],
+            'fragments'          => [],
+            'fragmentReferences' => [],
+            'variables'          => [],
         ], $data);
     }
 
@@ -139,14 +103,16 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser = new Parser();
         $data   = $parser->parse('{ post, user { name } }');
         $this->assertEquals([
-            'queries'   => [
+            'queries'            => [
                 new Query('post'),
                 new Query('user', null, [], [
                     new Field('name')
                 ])
             ],
-            'mutations' => [],
-            'fragments' => [],
+            'mutations'          => [],
+            'fragments'          => [],
+            'fragmentReferences' => [],
+            'variables'          => []
         ], $data);
     }
 
@@ -161,9 +127,9 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 }
             }');
         $this->assertEquals([
-            'queries'   => [],
-            'mutations' => [],
-            'fragments' => [
+            'queries'            => [],
+            'mutations'          => [],
+            'fragments'          => [
                 new Fragment('FullType', '__Type', [
                     new Field('kind'),
                     new Query('fields', null, [], [
@@ -171,6 +137,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     ])
                 ])
             ],
+            'fragmentReferences' => [],
+            'variables'          => [],
         ], $data);
     }
 
@@ -258,7 +226,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         ');
 
         $this->assertEquals([
-            'queries'   => [
+            'queries'            => [
                 new Query('__schema', null, [], [
                     new Query('queryType', null, [], [
                         new Field('name')
@@ -281,8 +249,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     ]),
                 ])
             ],
-            'mutations' => [],
-            'fragments' => [
+            'mutations'          => [],
+            'fragments'          => [
                 new Fragment('FullType', '__Type', [
                     new Field('kind'),
                     new Field('name'),
@@ -340,7 +308,18 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                         ]),
                     ]),
                 ]),
-            ]
+            ],
+            'fragmentReferences' => [
+                new FragmentReference('FullType'),
+                new FragmentReference('InputValue'),
+                new FragmentReference('InputValue'),
+                new FragmentReference('TypeRef'),
+                new FragmentReference('InputValue'),
+                new FragmentReference('TypeRef'),
+                new FragmentReference('TypeRef'),
+                new FragmentReference('TypeRef'),
+            ],
+            'variables'          => []
         ], $data);
     }
 
@@ -389,7 +368,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         ');
 
         $this->assertEquals($parsedStructure, [
-            'queries'   => [
+            'queries'            => [
                 new Query('test', 'test', [],
                     [
                         new Field('name', null),
@@ -398,8 +377,10 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                         ])
                     ])
             ],
-            'mutations' => [],
-            'fragments' => []
+            'mutations'          => [],
+            'fragments'          => [],
+            'fragmentReferences' => [],
+            'variables'          => []
         ]);
     }
 
@@ -409,7 +390,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             [
                 'query ($variable: Int){ query ( teas: $variable ) { alias: name } }',
                 [
-                    'queries'   => [
+                    'queries'            => [
                         new Query('query', null,
                             [
                                 new Argument('teas', new Variable('variable', 'Int'))
@@ -418,25 +399,31 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                                 new Field('name', 'alias')
                             ])
                     ],
-                    'mutations' => [],
-                    'fragments' => []
+                    'mutations'          => [],
+                    'fragments'          => [],
+                    'fragmentReferences' => [],
+                    'variables'          => [
+                        new Variable('variable', 'Int')
+                    ]
                 ]
             ],
             [
                 '{ query { alias: name } }',
                 [
-                    'queries'   => [
+                    'queries'            => [
                         new Query('query', null, [], [new Field('name', 'alias')])
                     ],
-                    'mutations' => [],
-                    'fragments' => []
+                    'mutations'          => [],
+                    'fragments'          => [],
+                    'fragmentReferences' => [],
+                    'variables'          => []
                 ]
             ],
             [
                 'mutation { createUser ( email: "test@test.com", active: true ) { id } }',
                 [
-                    'queries'   => [],
-                    'mutations' => [
+                    'queries'            => [],
+                    'mutations'          => [
                         new Mutation(
                             'createUser',
                             null,
@@ -449,14 +436,16 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                             ]
                         )
                     ],
-                    'fragments' => []
+                    'fragments'          => [],
+                    'fragmentReferences' => [],
+                    'variables'          => []
                 ]
             ],
             [
                 'mutation { test : createUser (id: 4) }',
                 [
-                    'queries'   => [],
-                    'mutations' => [
+                    'queries'            => [],
+                    'mutations'          => [
                         new Mutation(
                             'createUser',
                             'test',
@@ -466,7 +455,9 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                             []
                         )
                     ],
-                    'fragments' => []
+                    'fragments'          => [],
+                    'fragmentReferences' => [],
+                    'variables'          => []
                 ]
             ]
         ];
@@ -490,29 +481,33 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             [
                 '{ test (id: -5) { id } } ',
                 [
-                    'queries'   => [
+                    'queries'            => [
                         new Query('test', null, [
                             new Argument('id', new Literal(-5))
                         ], [
                             new Field('id'),
                         ])
                     ],
-                    'mutations' => [],
-                    'fragments' => []
+                    'mutations'          => [],
+                    'fragments'          => [],
+                    'fragmentReferences' => [],
+                    'variables'          => []
                 ]
             ],
             [
                 "{ test (id: -5) \r\n { id } } ",
                 [
-                    'queries'   => [
+                    'queries'            => [
                         new Query('test', null, [
                             new Argument('id', new Literal(-5))
                         ], [
                             new Field('id'),
                         ])
                     ],
-                    'mutations' => [],
-                    'fragments' => []
+                    'mutations'          => [],
+                    'fragments'          => [],
+                    'fragmentReferences' => [],
+                    'variables'          => []
                 ]
             ],
             [
@@ -523,7 +518,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                   }
                 }',
                 [
-                    'queries'   => [
+                    'queries'            => [
                         new Query('hero', null, [
                             new Argument('episode', new Literal('EMPIRE'))
                         ], [
@@ -531,75 +526,91 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                             new Field('name'),
                         ])
                     ],
-                    'mutations' => [],
-                    'fragments' => []
+                    'mutations'          => [],
+                    'fragments'          => [],
+                    'fragmentReferences' => [],
+                    'variables'          => []
                 ]
             ],
             [
                 '{ test { __typename, id } }',
                 [
-                    'queries'   => [
+                    'queries'            => [
                         new Query('test', null, [], [
                             new Field('__typename'),
                             new Field('id'),
                         ])
                     ],
-                    'mutations' => [],
-                    'fragments' => []
+                    'mutations'          => [],
+                    'fragments'          => [],
+                    'fragmentReferences' => [],
+                    'variables'          => []
                 ]
             ],
             [
                 '{}',
                 [
-                    'queries'   => [],
-                    'mutations' => [],
-                    'fragments' => []
+                    'queries'            => [],
+                    'mutations'          => [],
+                    'fragments'          => [],
+                    'fragmentReferences' => [],
+                    'variables'          => []
                 ]
             ],
             [
                 'query test {}',
                 [
-                    'queries'   => [],
-                    'mutations' => [],
-                    'fragments' => []
+                    'queries'            => [],
+                    'mutations'          => [],
+                    'fragments'          => [],
+                    'fragmentReferences' => [],
+                    'variables'          => []
                 ]
             ],
             [
                 'query {}',
                 [
-                    'queries'   => [],
-                    'mutations' => [],
-                    'fragments' => []
+                    'queries'            => [],
+                    'mutations'          => [],
+                    'fragments'          => [],
+                    'fragmentReferences' => [],
+                    'variables'          => []
                 ]
             ],
             [
                 'mutation setName { setUserName }',
                 [
-                    'queries'   => [],
-                    'mutations' => [new Mutation('setUserName')],
-                    'fragments' => []
+                    'queries'            => [],
+                    'mutations'          => [new Mutation('setUserName')],
+                    'fragments'          => [],
+                    'fragmentReferences' => [],
+                    'variables'          => []
                 ]
             ],
             [
                 '{ test { ...userDataFragment } } fragment userDataFragment on User { id, name, email }',
                 [
-                    'queries'   => [
+                    'queries'            => [
                         new Query('test', null, [], [new FragmentReference('userDataFragment')])
                     ],
-                    'mutations' => [],
-                    'fragments' => [
+                    'mutations'          => [],
+                    'fragments'          => [
                         new Fragment('userDataFragment', 'User', [
                             new Field('id'),
                             new Field('name'),
                             new Field('email')
                         ])
-                    ]
+                    ],
+                    'fragmentReferences' => [
+                        new FragmentReference('userDataFragment')
+                    ],
+                    'variables'          => []
                 ]
             ],
             [
                 '{ user (id: 10, name: "max", float: 123.123 ) { id, name } }',
                 [
-                    'queries'   => [
+                    'queries'            => [
                         new Query(
                             'user',
                             null,
@@ -614,14 +625,16 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                             ]
                         )
                     ],
-                    'mutations' => [],
-                    'fragments' => []
+                    'mutations'          => [],
+                    'fragments'          => [],
+                    'fragmentReferences' => [],
+                    'variables'          => []
                 ]
             ],
             [
                 '{ allUsers : users ( id: [ 1, 2, 3] ) { id } }',
                 [
-                    'queries'   => [
+                    'queries'            => [
                         new Query(
                             'users',
                             'allUsers',
@@ -633,14 +646,16 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                             ]
                         )
                     ],
-                    'mutations' => [],
-                    'fragments' => []
+                    'mutations'          => [],
+                    'fragments'          => [],
+                    'fragmentReferences' => [],
+                    'variables'          => []
                 ]
             ],
             [
                 '{ allUsers : users ( id: [ 1, "2", true, null] ) { id } }',
                 [
-                    'queries'   => [
+                    'queries'            => [
                         new Query(
                             'users',
                             'allUsers',
@@ -652,14 +667,16 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                             ]
                         )
                     ],
-                    'mutations' => [],
-                    'fragments' => []
+                    'mutations'          => [],
+                    'fragments'          => [],
+                    'fragmentReferences' => [],
+                    'variables'          => []
                 ]
             ],
             [
                 '{ allUsers : users ( object: { "a": 123, "d": "asd",  "b" : [ 1, 2, 4 ], "c": { "a" : 123, "b":  "asd" } } ) { id } }',
                 [
-                    'queries'   => [
+                    'queries'            => [
                         new Query(
                             'users',
                             'allUsers',
@@ -679,8 +696,10 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                             ]
                         )
                     ],
-                    'mutations' => [],
-                    'fragments' => []
+                    'mutations'          => [],
+                    'fragments'          => [],
+                    'fragmentReferences' => [],
+                    'variables'          => []
                 ]
             ]
         ];
