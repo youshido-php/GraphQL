@@ -33,16 +33,23 @@ class ExecutionContext implements ExecutionContextInterface
 
     /**
      * ExecutionContext constructor.
+     *
      * @param AbstractSchema $schema
+     * @param boolean        $ignoreValidation
      */
-    public function __construct($schema)
+    public function __construct(AbstractSchema $schema, $ignoreValidation = false)
     {
         $this->schema = $schema;
-        $this->validateSchema();
+
+        if (!$ignoreValidation) {
+            $this->validateSchema();
+        }
+
         $this->introduceIntrospectionFields();
     }
 
-    protected function validateSchema() {
+    protected function validateSchema()
+    {
         try {
             (new SchemaValidator())->validate($this->schema);
         } catch (\Exception $e) {
@@ -50,7 +57,8 @@ class ExecutionContext implements ExecutionContextInterface
         };
     }
 
-    protected function introduceIntrospectionFields() {
+    protected function introduceIntrospectionFields()
+    {
         $schemaField = new SchemaField();
         $this->schema->addQueryField($schemaField);
         $this->schema->addQueryField(new TypeDefinitionField());
@@ -111,6 +119,7 @@ class ExecutionContext implements ExecutionContextInterface
 
     /**
      * @param ContainerInterface $container
+     *
      * @return $this
      */
     public function setContainer(ContainerInterface $container)
