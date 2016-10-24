@@ -9,6 +9,7 @@ namespace Youshido\GraphQL\Introspection;
 
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Type\ListType\ListType;
+use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 
@@ -26,7 +27,7 @@ class DirectiveType extends AbstractObjectType
     public function build($config)
     {
         $config
-            ->addField('name', TypeMap::TYPE_STRING)
+            ->addField('name', new NonNullType(TypeMap::TYPE_STRING))
             ->addField('description', TypeMap::TYPE_STRING)
             ->addField(new Field([
                 'name' => 'args',

@@ -15,6 +15,7 @@ use Youshido\GraphQL\Type\CompositeTypeInterface;
 use Youshido\GraphQL\Type\Enum\AbstractEnumType;
 use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
 use Youshido\GraphQL\Type\ListType\ListType;
+use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\BooleanType;
 use Youshido\GraphQL\Type\TypeMap;
@@ -147,7 +148,7 @@ class QueryType extends AbstractObjectType
     {
         $config
             ->addField('name', TypeMap::TYPE_STRING)
-            ->addField('kind', TypeMap::TYPE_STRING)
+            ->addField('kind', new NonNullType(TypeMap::TYPE_STRING))
             ->addField('description', TypeMap::TYPE_STRING)
             ->addField('ofType', [
                 'type'    => new QueryType(),
@@ -155,7 +156,7 @@ class QueryType extends AbstractObjectType
             ])
             ->addField(new Field([
                 'name'    => 'inputFields',
-                'type'    => new ListType(new InputValueType()),
+                'type'    => new ListType(new NonNullType(new InputValueType())),
                 'resolve' => [$this, 'resolveInputFields']
             ]))
             ->addField(new Field([
@@ -166,7 +167,7 @@ class QueryType extends AbstractObjectType
                         'default' => false
                     ]
                 ],
-                'type'    => new ListType(new EnumValueType()),
+                'type'    => new ListType(new NonNullType(new EnumValueType())),
                 'resolve' => [$this, 'resolveEnumValues']
             ]))
             ->addField(new Field([
@@ -177,16 +178,16 @@ class QueryType extends AbstractObjectType
                         'default' => false
                     ]
                 ],
-                'type'    => new ListType(new FieldType()),
+                'type'    => new ListType(new NonNullType(new FieldType())),
                 'resolve' => [$this, 'resolveFields']
             ]))
             ->addField(new Field([
                 'name'    => 'interfaces',
-                'type'    => new ListType(new QueryType()),
+                'type'    => new ListType(new NonNullType(new QueryType())),
                 'resolve' => [$this, 'resolveInterfaces']
             ]))
             ->addField('possibleTypes', [
-                'type'    => new ListType(new QueryType()),
+                'type'    => new ListType(new NonNullType(new QueryType())),
                 'resolve' => [$this, 'resolvePossibleTypes']
             ]);
     }

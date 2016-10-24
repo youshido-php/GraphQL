@@ -161,6 +161,8 @@ class Processor
 
         $value = [];
 
+        $fieldType = $fieldType->getNullableType();
+
         if (!$query->hasFields()) {
             $fieldType = $this->resolveValidator->resolveTypeIfAbstract($fieldType, $resolvedValue);
 
@@ -297,7 +299,7 @@ class Processor
     {
         $originalType = $queryType;
         $queryType    = $this->resolveValidator->resolveTypeIfAbstract($queryType, $resolvedValue);
-        $currentType  = $queryType->getNullableType();
+        $currentType  = $queryType->getNullableType()->getNullableType();
 
 
         if ($currentType->getKind() == TypeMap::KIND_SCALAR) {

@@ -30,6 +30,8 @@ class InputValueType extends AbstractObjectType
      * @param AbstractSchema|Field $value
      *
      * @return string|null
+     *
+     * //todo implement value printer
      */
     public function resolveDefaultValue($value)
     {

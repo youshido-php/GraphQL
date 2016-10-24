@@ -10,6 +10,7 @@ namespace Youshido\GraphQL\Introspection;
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Type\ListType\ListType;
+use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 
@@ -33,16 +34,16 @@ class FieldType extends AbstractObjectType
     public function build($config)
     {
         $config
-            ->addField('name', TypeMap::TYPE_STRING)
+            ->addField('name', new NonNullType(TypeMap::TYPE_STRING))
             ->addField('description', TypeMap::TYPE_STRING)
-            ->addField('isDeprecated', TypeMap::TYPE_BOOLEAN)
+            ->addField('isDeprecated', new NonNullType(TypeMap::TYPE_BOOLEAN))
             ->addField('deprecationReason', TypeMap::TYPE_STRING)
             ->addField('type', [
-                'type'    => new QueryType(),
+                'type'    => new NonNullType(new QueryType()),
                 'resolve' => [$this, 'resolveType'],
             ])
             ->addField('args', [
-                'type'    => new ListType(new InputValueType()),
+                'type'    => new NonNullType(new ListType(new NonNullType(new InputValueType()))),
                 'resolve' => [$this, 'resolveArgs'],
             ]);
     }
