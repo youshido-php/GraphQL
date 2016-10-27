@@ -174,7 +174,7 @@ class AstTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('id', $variable->getName());
         $this->assertEquals('int', $variable->getTypeName());
-        $this->assertFalse($variable->isRequired());
+        $this->assertFalse($variable->isNullable());
         $this->assertFalse($variable->isArray());
 
         $variable->setTypeName('string');
@@ -184,9 +184,9 @@ class AstTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('limit', $variable->getName());
 
         $variable->setIsArray(true);
-        $variable->setRequired(true);
+        $variable->setNullable(true);
 
-        $this->assertTrue($variable->isRequired());
+        $this->assertTrue($variable->isNullable());
         $this->assertTrue($variable->isArray());
 
         $variable->setValue(new Literal('text'));

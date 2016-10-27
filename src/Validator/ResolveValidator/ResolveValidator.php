@@ -16,6 +16,7 @@ use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputList;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputObject;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\VariableReference;
 use Youshido\GraphQL\Parser\Ast\Field as AstField;
 use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
@@ -83,7 +84,7 @@ class ResolveValidator implements ResolveValidatorInterface
             $originalArgumentType = $field->getArgument($argument->getName())->getType();
             $argumentType         = $originalArgumentType->getNullableType()->getNamedType();
 
-            if ($argument->getValue() instanceof Variable) {
+            if ($argument->getValue() instanceof VariableReference) {
                 if (!$this->processVariable($argument, $argumentType, $field, $request)) {
                     return false;
                 }
@@ -94,7 +95,7 @@ class ResolveValidator implements ResolveValidatorInterface
                     }
 
                     foreach ($argument->getValue()->getValue() as $item) {
-                        if(!$this->processInputObject($item, $argumentType, $request)) {
+                        if (!$this->processInputObject($item, $argumentType, $request)) {
                             return false;
                         }
                     }
@@ -149,7 +150,7 @@ class ResolveValidator implements ResolveValidatorInterface
 
             $argumentType = $field->getType()->getNullableType();
 
-            if ($value instanceof Variable && !$this->processVariable(new Argument($name, $value), $argumentType, $field, $request)) {
+            if ($value instanceof VariableReference && !$this->processVariable(new Argument($name, $value), $argumentType, $field, $request)) {
                 return false;
             }
         }
@@ -159,8 +160,11 @@ class ResolveValidator implements ResolveValidatorInterface
 
     private function processVariable(Argument $argument, TypeInterface $argumentType, FieldInterface $field, Request $request)
     {
+        /** @var VariableReference $variableReference */
+        $variableReference = $argument->getValue();
+
         /** @var Variable $variable */
-        $variable = $argument->getValue();
+        $variable = $variableReference->getVariable();
 
         //todo: here validate argument
 
@@ -172,13 +176,13 @@ class ResolveValidator implements ResolveValidatorInterface
 
         /** @var Variable $requestVariable */
         $requestVariable = $request->getVariable($variable->getName());
-        if (null === $requestVariable) {
+        if (!$request->hasVariable($variable->getName()) || (null === $requestVariable && $variable->isNullable())) {
             $this->executionContext->addError(new ResolveException(sprintf('Variable "%s" does not exist for query "%s"', $argument->getName(), $field->getName())));
 
             return false;
         }
 
-        $variable->setValue($requestVariable);
+        $variableReference->setValue($requestVariable);
 
         return true;
     }

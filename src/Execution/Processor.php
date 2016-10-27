@@ -100,12 +100,15 @@ class Processor
         $parser = new Parser();
 
         $data = $parser->parse($payload);
-        $this->executionContext->setRequest(new Request($data, $variables));
+        $request = new Request($data, $variables);
+
+        $this->executionContext->setRequest($request);
     }
 
     /**
      * @param Query|Field        $query
      * @param AbstractObjectType $currentLevelSchema
+     *
      * @return array|bool|mixed
      */
     protected function executeOperation(Query $query, $currentLevelSchema)
@@ -126,9 +129,10 @@ class Processor
     }
 
     /**
-     * @param Query         $query
+     * @param Query          $query
      * @param FieldInterface $field
-     * @param               $contextValue
+     * @param                $contextValue
+     *
      * @return array|mixed|null
      */
     protected function processQueryAST(Query $query, FieldInterface $field, $contextValue = null)
@@ -150,6 +154,7 @@ class Processor
      * @param Query|Mutation $query
      * @param AbstractType   $fieldType
      * @param mixed          $resolvedValue
+     *
      * @return array|mixed
      * @throws ResolveException
      */
@@ -208,10 +213,11 @@ class Processor
     }
 
     /**
-     * @param FieldAst      $fieldAst
+     * @param FieldAst       $fieldAst
      * @param FieldInterface $field
      *
-     * @param mixed         $contextValue
+     * @param mixed          $contextValue
+     *
      * @return array|mixed|null
      * @throws ResolveException
      * @throws \Exception
@@ -244,8 +250,8 @@ class Processor
     }
 
     /**
-     * @param               $contextValue
-     * @param FieldAst      $fieldAst
+     * @param                $contextValue
+     * @param FieldAst       $fieldAst
      * @param FieldInterface $field
      *
      * @throws \Exception
@@ -255,7 +261,7 @@ class Processor
     protected function getPreResolvedValue($contextValue, FieldAst $fieldAst, FieldInterface $field)
     {
         if ($field->hasArguments() && !$this->resolveValidator->validateArguments($field, $fieldAst, $this->executionContext->getRequest())) {
-            throw new \Exception(sprintf('Not valid arguments for the field "%s"', $fieldAst->getName()));
+            return null;
         }
 
         return $this->resolveFieldValue($field, $contextValue, [$fieldAst], $fieldAst->getKeyValueArguments());
@@ -468,7 +474,7 @@ class Processor
      * case of a Field and yield that back up to the visitor up in `doVisit`.
      *
      * @param Query|Field|FragmentInterface $queryNode
-     * @param FieldInterface                 $currentLevelAST
+     * @param FieldInterface                $currentLevelAST
      *
      * @return \Generator
      */

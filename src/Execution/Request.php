@@ -27,6 +27,12 @@ class Request
     /** @var array */
     private $variables = [];
 
+    /** @var  array */
+    private $queryVariables = [];
+
+    /** @var array */
+    private $fragmentReferences = [];
+
     public function __construct($data = [], $variables = [])
     {
         if (array_key_exists('queries', $data)) {
@@ -40,6 +46,15 @@ class Request
         if (array_key_exists('fragments', $data)) {
             $this->addFragments($data['fragments']);
         }
+
+        if (array_key_exists('fragmentReferences', $data)) {
+            $this->addFragmentReferences($data['fragmentReferences']);
+        }
+
+        if (array_key_exists('variables', $data)) {
+            $this->addQueryVariables($data['variables']);
+        }
+
         $this->setVariables($variables);
     }
 
@@ -57,10 +72,24 @@ class Request
         }
     }
 
+    public function addQueryVariables($queryVariables)
+    {
+        foreach ($queryVariables as $queryVariable) {
+            $this->queryVariables[] = $queryVariable;
+        }
+    }
+
+    public function addFragmentReferences($fragmentReferences)
+    {
+        foreach ($fragmentReferences as $fragmentReference) {
+            $this->fragmentReferences[] = $fragmentReference;
+        }
+    }
+
     public function addFragments($fragments)
     {
         foreach ($fragments as $fragment) {
-            $this->fragments[] = $fragment;
+            $this->addFragment($fragment);
         }
     }
 
@@ -148,6 +177,7 @@ class Request
 
     /**
      * @param array $variables
+     *
      * @return $this
      */
     public function setVariables($variables)

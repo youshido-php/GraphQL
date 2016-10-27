@@ -12,6 +12,7 @@ use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputList;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputObject;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\VariableReference;
 use Youshido\GraphQL\Parser\Ast\Field;
 use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
@@ -393,7 +394,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     'queries'            => [
                         new Query('query', null,
                             [
-                                new Argument('teas', new Variable('variable', 'Int'))
+                                new Argument('teas', new VariableReference('variable', new Variable('variable', 'Int')))
                             ],
                             [
                                 new Field('name', 'alias')

@@ -20,17 +20,17 @@ class Variable implements ValueInterface
     private $type;
 
     /** @var bool */
-    private $required = false;
+    private $nullable = false;
 
     /** @var bool */
     private $isArray = false;
 
-    public function __construct($name, $type, $required = false, $isArray = false)
+    public function __construct($name, $type, $nullable = false, $isArray = false)
     {
         $this->name     = $name;
         $this->type     = $type;
         $this->isArray  = $isArray;
-        $this->required = $required;
+        $this->nullable = $nullable;
     }
 
     /**
@@ -106,16 +106,16 @@ class Variable implements ValueInterface
     /**
      * @return boolean
      */
-    public function isRequired()
+    public function isNullable()
     {
-        return $this->required;
+        return $this->nullable;
     }
 
     /**
-     * @param boolean $required
+     * @param boolean $nullable
      */
-    public function setRequired($required)
+    public function setNullable($nullable)
     {
-        $this->required = $required;
+        $this->nullable = $nullable;
     }
 }

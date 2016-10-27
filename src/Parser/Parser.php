@@ -175,10 +175,22 @@ class Parser extends Tokenizer
         if ($this->match(Token::TYPE_NUMBER) || $this->match(Token::TYPE_IDENTIFIER)) {
             $name = $this->lex()->getData();
 
-            return new VariableReference($name);
+            return new VariableReference($name, $this->findVariable($name));
         }
 
         throw $this->createUnexpectedException($this->peek());
+    }
+
+    protected function findVariable($name)
+    {
+        foreach ($this->data['variables'] as $variable) {
+            /** @var $variable Variable */
+            if ($variable->getName() == $name) {
+                return $variable;
+            }
+        }
+
+        return null;
     }
 
     protected function parseFragmentReference()

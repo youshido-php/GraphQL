@@ -73,7 +73,8 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
           }
         }';
         $processor->processPayload($parameterizedFieldQuery, ['value' => 'foo']);
-        $this->assertEquals($expectedData, $processor->getResponseData());
+        $response = $processor->getResponseData();
+        $this->assertEquals($expectedData, $response);
 
         $parameterizedQueryQuery =
             'query nestedQueryQuery($value:Int){

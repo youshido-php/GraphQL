@@ -14,6 +14,7 @@ use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Parser\Ast\Argument;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\VariableReference;
 use Youshido\GraphQL\Parser\Ast\Field as AstField;
 use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
@@ -152,8 +153,12 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
     public function testArgumentsValidation()
     {
         $variable          = new Variable('year', 'Int');
-        $variableWrongType = new Variable('year', 'String');
         $variable->setValue(2016);
+
+        $variableWrongType = new Variable('year', 'String');
+
+        $variableReference = new VariableReference('year', $variable);
+        $variableWrongTypeReference = new VariableReference('year', $variableWrongType);
 
 
         $field     = new Field([
@@ -183,10 +188,10 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
             new Argument('year', new Literal('invalid type'))
         ]);
         $argumentWithVariable          = new Query('hero', null, [
-            new Argument('year', $variable)
+            new Argument('year', $variableReference)
         ]);
         $argumentWithVariableWrongType = new Query('hero', null, [
-            new Argument('year', $variableWrongType)
+            new Argument('year', $variableWrongTypeReference)
         ]);
 
 
