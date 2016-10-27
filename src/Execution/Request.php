@@ -8,7 +8,9 @@
 namespace Youshido\GraphQL\Execution;
 
 
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
 use Youshido\GraphQL\Parser\Ast\Fragment;
+use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
 
@@ -201,4 +203,35 @@ class Request
         return array_key_exists($name, $this->variables);
     }
 
+    /**
+     * @return array|Variable[]
+     */
+    public function getQueryVariables()
+    {
+        return $this->queryVariables;
+    }
+
+    /**
+     * @param array $queryVariables
+     */
+    public function setQueryVariables($queryVariables)
+    {
+        $this->queryVariables = $queryVariables;
+    }
+
+    /**
+     * @return array|FragmentReference[]
+     */
+    public function getFragmentReferences()
+    {
+        return $this->fragmentReferences;
+    }
+
+    /**
+     * @param array $fragmentReferences
+     */
+    public function setFragmentReferences($fragmentReferences)
+    {
+        $this->fragmentReferences = $fragmentReferences;
+    }
 }

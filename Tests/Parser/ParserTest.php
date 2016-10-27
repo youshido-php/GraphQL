@@ -394,7 +394,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     'queries'            => [
                         new Query('query', null,
                             [
-                                new Argument('teas', new VariableReference('variable', new Variable('variable', 'Int')))
+                                new Argument('teas', new VariableReference('variable', (new Variable('variable', 'Int'))->setUsed(true)))
                             ],
                             [
                                 new Field('name', 'alias')
@@ -404,7 +404,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     'fragments'          => [],
                     'fragmentReferences' => [],
                     'variables'          => [
-                        new Variable('variable', 'Int')
+                        (new Variable('variable', 'Int'))->setUsed(true)
                     ]
                 ]
             ],

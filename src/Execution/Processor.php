@@ -31,6 +31,7 @@ use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
 use Youshido\GraphQL\Type\Union\AbstractUnionType;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
+use Youshido\GraphQL\Validator\RequestValidator\RequestValidator;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidatorInterface;
 
@@ -97,10 +98,11 @@ class Processor
         if (empty($payload)) {
             throw new \Exception('Must provide an operation.');
         }
-        $parser = new Parser();
 
-        $data = $parser->parse($payload);
-        $request = new Request($data, $variables);
+        $parser  = new Parser();
+        $request = new Request($parser->parse($payload), $variables);
+
+        (new RequestValidator())->validate($request);
 
         $this->executionContext->setRequest($request);
     }

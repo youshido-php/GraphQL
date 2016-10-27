@@ -25,6 +25,9 @@ class Variable implements ValueInterface
     /** @var bool */
     private $isArray = false;
 
+    /** @var bool  */
+    private $used = false;
+
     public function __construct($name, $type, $nullable = false, $isArray = false)
     {
         $this->name     = $name;
@@ -117,5 +120,25 @@ class Variable implements ValueInterface
     public function setNullable($nullable)
     {
         $this->nullable = $nullable;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isUsed()
+    {
+        return $this->used;
+    }
+
+    /**
+     * @param boolean $used
+     *
+     * @return $this
+     */
+    public function setUsed($used)
+    {
+        $this->used = $used;
+
+        return $this;
     }
 }

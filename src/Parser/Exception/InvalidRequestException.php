@@ -8,7 +8,7 @@
 namespace Youshido\GraphQL\Parser\Exception;
 
 
-class UnusedVariableException extends \Exception
+class InvalidRequestException extends \Exception
 {
 
 }
