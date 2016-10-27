@@ -34,6 +34,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             'fragments'          => [],
             'fragmentReferences' => [],
             'variables'          => [],
+            'variableReferences' => [],
         ], $parser->parse());
     }
 
@@ -66,7 +67,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             'mutations'          => [],
             'fragments'          => [],
             'fragmentReferences' => [],
-            'variables'          => []
+            'variables'          => [],
+            'variableReferences' => []
         ]);
     }
 
@@ -96,6 +98,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             'fragments'          => [],
             'fragmentReferences' => [],
             'variables'          => [],
+            'variableReferences' => [],
         ], $data);
     }
 
@@ -113,7 +116,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             'mutations'          => [],
             'fragments'          => [],
             'fragmentReferences' => [],
-            'variables'          => []
+            'variables'          => [],
+            'variableReferences' => [],
         ], $data);
     }
 
@@ -140,6 +144,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             ],
             'fragmentReferences' => [],
             'variables'          => [],
+            'variableReferences' => [],
         ], $data);
     }
 
@@ -320,7 +325,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 new FragmentReference('TypeRef'),
                 new FragmentReference('TypeRef'),
             ],
-            'variables'          => []
+            'variables'          => [],
+            'variableReferences' => []
         ], $data);
     }
 
@@ -381,7 +387,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             'mutations'          => [],
             'fragments'          => [],
             'fragmentReferences' => [],
-            'variables'          => []
+            'variables'          => [],
+            'variableReferences' => []
         ]);
     }
 
@@ -405,6 +412,9 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     'fragmentReferences' => [],
                     'variables'          => [
                         (new Variable('variable', 'Int'))->setUsed(true)
+                    ],
+                    'variableReferences' => [
+                        new VariableReference('variable', (new Variable('variable', 'Int'))->setUsed(true))
                     ]
                 ]
             ],
@@ -417,7 +427,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     'mutations'          => [],
                     'fragments'          => [],
                     'fragmentReferences' => [],
-                    'variables'          => []
+                    'variables'          => [],
+                    'variableReferences' => []
                 ]
             ],
             [
@@ -439,7 +450,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     ],
                     'fragments'          => [],
                     'fragmentReferences' => [],
-                    'variables'          => []
+                    'variables'          => [],
+                    'variableReferences' => []
                 ]
             ],
             [
@@ -458,7 +470,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     ],
                     'fragments'          => [],
                     'fragmentReferences' => [],
-                    'variables'          => []
+                    'variables'          => [],
+                    'variableReferences' => []
                 ]
             ]
         ];
@@ -492,7 +505,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     'mutations'          => [],
                     'fragments'          => [],
                     'fragmentReferences' => [],
-                    'variables'          => []
+                    'variables'          => [],
+                    'variableReferences' => []
                 ]
             ],
             [
@@ -508,7 +522,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     'mutations'          => [],
                     'fragments'          => [],
                     'fragmentReferences' => [],
-                    'variables'          => []
+                    'variables'          => [],
+                    'variableReferences' => []
                 ]
             ],
             [
@@ -530,7 +545,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     'mutations'          => [],
                     'fragments'          => [],
                     'fragmentReferences' => [],
-                    'variables'          => []
+                    'variables'          => [],
+                    'variableReferences' => []
                 ]
             ],
             [
@@ -545,7 +561,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     'mutations'          => [],
                     'fragments'          => [],
                     'fragmentReferences' => [],
-                    'variables'          => []
+                    'variables'          => [],
+                    'variableReferences' => []
                 ]
             ],
             [
@@ -555,7 +572,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     'mutations'          => [],
                     'fragments'          => [],
                     'fragmentReferences' => [],
-                    'variables'          => []
+                    'variables'          => [],
+                    'variableReferences' => []
                 ]
             ],
             [
@@ -565,7 +583,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     'mutations'          => [],
                     'fragments'          => [],
                     'fragmentReferences' => [],
-                    'variables'          => []
+                    'variables'          => [],
+                    'variableReferences' => []
                 ]
             ],
             [
@@ -575,7 +594,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     'mutations'          => [],
                     'fragments'          => [],
                     'fragmentReferences' => [],
-                    'variables'          => []
+                    'variables'          => [],
+                    'variableReferences' => []
                 ]
             ],
             [
@@ -585,7 +605,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     'mutations'          => [new Mutation('setUserName')],
                     'fragments'          => [],
                     'fragmentReferences' => [],
-                    'variables'          => []
+                    'variables'          => [],
+                    'variableReferences' => []
                 ]
             ],
             [
@@ -605,7 +626,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     'fragmentReferences' => [
                         new FragmentReference('userDataFragment')
                     ],
-                    'variables'          => []
+                    'variables'          => [],
+                    'variableReferences' => []
                 ]
             ],
             [
@@ -629,7 +651,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     'mutations'          => [],
                     'fragments'          => [],
                     'fragmentReferences' => [],
-                    'variables'          => []
+                    'variables'          => [],
+                    'variableReferences' => []
                 ]
             ],
             [
@@ -650,7 +673,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     'mutations'          => [],
                     'fragments'          => [],
                     'fragmentReferences' => [],
-                    'variables'          => []
+                    'variables'          => [],
+                    'variableReferences' => []
                 ]
             ],
             [
@@ -671,7 +695,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     'mutations'          => [],
                     'fragments'          => [],
                     'fragmentReferences' => [],
-                    'variables'          => []
+                    'variables'          => [],
+                    'variableReferences' => []
                 ]
             ],
             [
@@ -700,7 +725,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     'mutations'          => [],
                     'fragments'          => [],
                     'fragmentReferences' => [],
-                    'variables'          => []
+                    'variables'          => [],
+                    'variableReferences' => []
                 ]
             ]
         ];

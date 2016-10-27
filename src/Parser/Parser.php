@@ -75,7 +75,8 @@ class Parser extends Tokenizer
             'mutations'          => [],
             'fragments'          => [],
             'fragmentReferences' => [],
-            'variables'          => []
+            'variables'          => [],
+            'variableReferences' => []
         ];
     }
 
@@ -175,13 +176,16 @@ class Parser extends Tokenizer
         if ($this->match(Token::TYPE_NUMBER) || $this->match(Token::TYPE_IDENTIFIER)) {
             $name = $this->lex()->getData();
 
-
             $variable = $this->findVariable($name);
             if ($variable) {
                 $variable->setUsed(true);
             }
 
-            return new VariableReference($name, $variable);
+            $variableReference = new VariableReference($name, $variable);
+
+            $this->data['variableReferences'][] = $variableReference;
+
+            return $variableReference;
         }
 
         throw $this->createUnexpectedException($this->peek());

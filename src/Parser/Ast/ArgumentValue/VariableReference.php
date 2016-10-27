@@ -46,4 +46,12 @@ class VariableReference implements ValueInterface
     {
         $this->value = $value;
     }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 }

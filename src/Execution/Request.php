@@ -9,6 +9,7 @@ namespace Youshido\GraphQL\Execution;
 
 
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\VariableReference;
 use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Mutation;
@@ -28,6 +29,9 @@ class Request
 
     /** @var array */
     private $variables = [];
+
+    /** @var  array */
+    private $variableReferences = [];
 
     /** @var  array */
     private $queryVariables = [];
@@ -57,6 +61,10 @@ class Request
             $this->addQueryVariables($data['variables']);
         }
 
+        if (array_key_exists('variableReferences', $data)) {
+            $this->addVariableReferences($data['variableReferences']);
+        }
+
         $this->setVariables($variables);
     }
 
@@ -78,6 +86,13 @@ class Request
     {
         foreach ($queryVariables as $queryVariable) {
             $this->queryVariables[] = $queryVariable;
+        }
+    }
+
+    public function addVariableReferences($variableReferences)
+    {
+        foreach ($variableReferences as $variableReference) {
+            $this->variableReferences[] = $variableReference;
         }
     }
 
@@ -233,5 +248,13 @@ class Request
     public function setFragmentReferences($fragmentReferences)
     {
         $this->fragmentReferences = $fragmentReferences;
+    }
+
+    /**
+     * @return array|VariableReference[]
+     */
+    public function getVariableReferences()
+    {
+        return $this->variableReferences;
     }
 }

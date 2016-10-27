@@ -18,6 +18,7 @@ class RequestValidator implements RequestValidatorInterface
     {
         $this->assertFragmentReferencesValid($request);
         $this->assetFragmentsUsed($request);
+        $this->assertAllVariablesExists($request);
         $this->assertAllVariablesUsed($request);
     }
 
@@ -29,7 +30,7 @@ class RequestValidator implements RequestValidatorInterface
 
         foreach ($request->getFragments() as $fragment) {
             if (!$fragment->isUsed()) {
-                throw new InvalidRequestException(sprintf('Fragment "%s" not used'), $fragment->getName());
+                throw new InvalidRequestException(sprintf('Fragment "%s" not used', $fragment->getName()));
             }
         }
     }
@@ -38,7 +39,16 @@ class RequestValidator implements RequestValidatorInterface
     {
         foreach ($request->getFragmentReferences() as $fragmentReference) {
             if (!$request->getFragment($fragmentReference->getName())) {
-                throw new InvalidRequestException(sprintf('Fragment "%s" not defined in query'), $fragmentReference->getName());
+                throw new InvalidRequestException(sprintf('Fragment "%s" not defined in query', $fragmentReference->getName()));
+            }
+        }
+    }
+
+    private function assertAllVariablesExists(Request $request)
+    {
+        foreach ($request->getVariableReferences() as $variableReference) {
+            if (!$variableReference->getVariable()) {
+                throw new InvalidRequestException(sprintf('Variable "%s" not exists', $variableReference->getName()));
             }
         }
     }
