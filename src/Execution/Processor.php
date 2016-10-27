@@ -183,16 +183,13 @@ class Processor
             if (!$this->resolveValidator->hasArrayAccess($resolvedValue)) return null;
 
             $namedType          = $fieldType->getNamedType();
-            $isAbstract         = TypeService::isAbstractType($namedType);
             $validItemStructure = false;
 
             foreach ($resolvedValue as $resolvedValueItem) {
                 $value[] = [];
                 $index   = count($value) - 1;
 
-                if ($isAbstract) {
-                    $namedType = $this->resolveValidator->resolveAbstractType($fieldType->getNamedType(), $resolvedValueItem);
-                }
+                $namedType = $this->resolveValidator->resolveTypeIfAbstract($namedType, $resolvedValueItem);
 
                 if (!$validItemStructure) {
                     if (!$namedType->isValidValue($resolvedValueItem)) {
