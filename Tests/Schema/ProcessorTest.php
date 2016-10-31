@@ -640,7 +640,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayNotHasKey('error', $processor->getResponseData());
 
         $processor->processPayload('{ me { } }');
-        $this->assertEquals(['errors' => [['message' => 'You have to specify fields for "me"']]], $processor->getResponseData());
+        $this->assertEquals(['errors' => [['message' => 'Unexpected token "RBRACE" at (1:10)']]], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
 

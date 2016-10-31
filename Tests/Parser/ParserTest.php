@@ -38,6 +38,24 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         ], $parser->parse());
     }
 
+    /**
+     * @expectedException Youshido\GraphQL\Parser\Exception\SyntaxErrorException
+     */
+    public function testInvalidSelection()
+    {
+        $parser = new Parser();
+        $data = $parser->parse('
+        {
+            test {
+                id
+                image {
+                    
+                }
+            }
+        }
+        ');
+    }
+
     public function testComments()
     {
         $query = '

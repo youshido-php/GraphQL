@@ -238,6 +238,10 @@ class Parser extends Tokenizer
         if ($this->match(Token::TYPE_LBRACE)) {
             $fields = $this->parseBody($type == Token::TYPE_TYPED_FRAGMENT ? Token::TYPE_QUERY : $type, false);
 
+            if (!$fields) {
+                throw $this->createUnexpectedTokenTypeException($this->lookAhead->getType());
+            }
+
             if ($type == Token::TYPE_QUERY) {
                 return new Query($name, $alias, $arguments, $fields);
             } elseif ($type == Token::TYPE_TYPED_FRAGMENT) {
