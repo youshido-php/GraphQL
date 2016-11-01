@@ -35,15 +35,11 @@ class ExecutionContext implements ExecutionContextInterface
      * ExecutionContext constructor.
      *
      * @param AbstractSchema $schema
-     * @param boolean        $ignoreValidation
      */
-    public function __construct(AbstractSchema $schema, $ignoreValidation = false)
+    public function __construct(AbstractSchema $schema)
     {
         $this->schema = $schema;
-
-        if (!$ignoreValidation) {
-            $this->validateSchema();
-        }
+        $this->validateSchema();
 
         $this->introduceIntrospectionFields();
     }
