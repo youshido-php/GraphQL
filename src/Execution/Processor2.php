@@ -256,18 +256,18 @@ class Processor2
         $this->executionContext->setRequest($request);
     }
 
+    protected function doResolve(FieldInterface $field, AstFieldInterface $ast, $parentValue = null)
+    {
+        /** @var AstQuery|AstField $ast */
+        $arguments = $this->parseArgumentsValues($field, $ast);
+        $astFields = $ast instanceof AstQuery ? $ast->getFields() : [];
+
+        return $field->resolve($parentValue, $arguments, $this->createResolveInfo($field, $astFields));
+    }
+
     protected function parseArgumentsValues(FieldInterface $field, AstFieldInterface $ast)
     {
         //todo
-    }
-
-    protected function doResolve(FieldInterface $field, AstFieldInterface $ast, $parentValue = null)
-    {
-        $arguments = $this->parseArgumentsValues($field, $ast);
-
-        $astFields = [];//todo
-
-        return $field->resolve($parentValue, $arguments, $this->createResolveInfo($field, $astFields));
     }
 
     private function getAlias(AstFieldInterface $ast)
