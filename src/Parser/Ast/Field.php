@@ -8,7 +8,9 @@
 namespace Youshido\GraphQL\Parser\Ast;
 
 
-class Field
+use Youshido\GraphQL\Parser\Ast\Interfaces\FieldInterface;
+
+class Field implements FieldInterface
 {
     /** @var string */
     private $name;

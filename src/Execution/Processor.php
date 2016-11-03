@@ -80,7 +80,7 @@ class Processor
 
             $this->reduceQuery($queryType, $mutationType, $reducers);
 
-            foreach ($this->executionContext->getRequest()->getOperationsInOrder() as $operation) {
+            foreach ($this->executionContext->getRequest()->getAllOperations() as $operation) {
                 if ($operationResult = $this->executeOperation($operation, $operation instanceof Mutation ? $mutationType : $queryType)) {
                     $this->data = array_merge($this->data, $operationResult);
                 };
@@ -420,7 +420,7 @@ class Processor
     protected function reduceQuery($queryType, $mutationType, array $reducers)
     {
         foreach ($reducers as $reducer) {
-            foreach ($this->executionContext->getRequest()->getOperationsInOrder() as $operation) {
+            foreach ($this->executionContext->getRequest()->getAllOperations() as $operation) {
                 $this->doVisit($operation, $operation instanceof Mutation ? $mutationType : $queryType, $reducer);
             }
         }

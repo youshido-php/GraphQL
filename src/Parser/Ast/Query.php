@@ -7,8 +7,9 @@
 
 namespace Youshido\GraphQL\Parser\Ast;
 
+use Youshido\GraphQL\Parser\Ast\Interfaces\FieldInterface;
 
-class Query
+class Query implements FieldInterface
 {
 
     /** @var string */

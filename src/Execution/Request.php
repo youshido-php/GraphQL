@@ -110,7 +110,10 @@ class Request
         }
     }
 
-    public function getOperationsInOrder()
+    /**
+     * @return Query[]
+     */
+    public function getAllOperations()
     {
         return array_merge($this->mutations, $this->queries);
     }

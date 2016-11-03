@@ -20,7 +20,9 @@ final class NonNullType extends AbstractType implements CompositeTypeInterface
 
     /**
      * NonNullType constructor.
+     *
      * @param AbstractType|string $fieldType
+     *
      * @throws ConfigurationException
      */
     public function __construct($fieldType)
@@ -52,7 +54,11 @@ final class NonNullType extends AbstractType implements CompositeTypeInterface
 
     public function isValidValue($value)
     {
-        return $value !== null;
+        if ($value === null) {
+            return false;
+        }
+
+        return $this->getNullableType()->isValidValue($value);
     }
 
     public function isCompositeType()
