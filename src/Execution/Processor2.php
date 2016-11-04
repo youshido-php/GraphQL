@@ -250,7 +250,7 @@ class Processor2
 
     protected function resolveUnion(FieldInterface $field, AstFieldInterface $ast, $parentValue)
     {
-
+        //todo
     }
 
     protected function parseAndCreateRequest($payload, $variables = [])

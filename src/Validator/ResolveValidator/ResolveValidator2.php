@@ -80,7 +80,13 @@ class ResolveValidator2
 
     public function assertValidResolvedValueForField(FieldInterface $field, $resolvedValue)
     {
-        //todo
+        if ($field->getType()->getKind() == TypeMap::KIND_NON_NULL && is_null($resolvedValue)) {
+            throw new ResolveException(sprintf('Cannot return null for non-nullable field "%s"', $field->getName()));
+        }
+
+        if (!$field->getType()->getNullableType()->isValidValue($resolvedValue)) {
+            throw new ResolveException(sprintf('Not valid resolved type for field "%s"', $field->getName()));
+        }
     }
 
 }
