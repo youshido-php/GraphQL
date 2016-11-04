@@ -98,33 +98,38 @@ class Processor2
     protected function resolveQuery(AstQuery $query)
     {
         $schema = $this->executionContext->getSchema();
-        $value  = $this->resolveField(
-            new Field([
-                'name' => $query instanceof AstMutation ? 'mutation' : 'query',
-                'type' => $query instanceof AstMutation ? $schema->getMutationType() : $schema->getQueryType()
-            ]),
-            $query
-        );
+        $type   = $query instanceof AstMutation ? $schema->getMutationType() : $schema->getQueryType();
+        $field  = new Field([
+            'name' => $query instanceof AstMutation ? 'mutation' : 'query',
+            'type' => $type
+        ]);
 
-        return [$this->getAlias($query->getName()) => $value];
+        $this->resolveValidator->assetTypeHasField($type, $query);
+        $value = $this->resolveField($field, $query);
+
+        return [$this->getAlias($query) => $value];
     }
 
     protected function resolveField(FieldInterface $field, AstFieldInterface $ast, $parentValue = null)
     {
         try {
+            /** @var AbstractObjectType $type */
             $type = $field->getType();
 
             $this->resolveValidator->assetTypeHasField($type, $ast);
-            $this->resolveValidator->assertValidArguments($field, $ast);
 
-            switch ($kind = $type->getNullableType()->getKind()) {
+            $targetField = $type->getField($ast->getName());
+
+            $this->resolveValidator->assertValidArguments($targetField, $ast);
+
+            switch ($kind = $targetField->getType()->getNullableType()->getKind()) {
                 case TypeMap::KIND_ENUM:
                 case TypeMap::KIND_SCALAR:
-                    if (!$ast instanceof AstField) {
+                    if ($ast instanceof AstQuery && $ast->hasFields()) {
                         throw new ResolveException(sprintf('You can\'t specify fields for scalar type "%s"', $type->getName()));
                     }
 
-                    return $this->resolveScalar($field, $ast, $parentValue);
+                    return $this->resolveScalar($targetField, $ast, $parentValue);
 
                 case TypeMap::KIND_OBJECT:
                     /** @var $type AbstractObjectType */
@@ -132,13 +137,13 @@ class Processor2
                         throw new ResolveException(sprintf('You have to specify fields for "%s"', $ast->getName()));
                     }
 
-                    return $this->resolveObject($field, $ast, $parentValue);
+                    return $this->resolveObject($targetField, $ast, $parentValue);
 
                 case TypeMap::KIND_LIST:
-                    return $this->resolveList($field, $ast, $parentValue);
+                    return $this->resolveList($targetField, $ast, $parentValue);
 
                 case TypeMap::KIND_UNION:
-                    return $this->resolveUnion($field, $ast, $parentValue);
+                    return $this->resolveUnion($targetField, $ast, $parentValue);
 
                 default:
                     throw new ResolveException(sprintf('Resolving type with kind "%s" not supported', $kind));
@@ -164,7 +169,7 @@ class Processor2
         foreach ($ast->getFields() as $astField) {
             $this->resolveValidator->assetTypeHasField($type, $astField);
 
-            $result[$this->getAlias($field->getName())] = $this->resolveField($type->getField($astField->getName()), $astField, $resolvedValue);
+            $result[$this->getAlias($astField)] = $this->resolveField($field, $astField, $resolvedValue);
         }
 
         return $result;
@@ -179,7 +184,7 @@ class Processor2
         /** @var AbstractScalarType $type */
         $type = $field->getType()->getNullableType();
 
-        return $type->parseValue($resolvedValue);
+        return $type->serialize($resolvedValue);
     }
 
     protected function resolveList(FieldInterface $field, AstFieldInterface $ast, $parentValue)
@@ -193,10 +198,14 @@ class Processor2
         $type     = $field->getType()->getNullableType();
         $itemType = $type->getNamedType();
 
-        $fakeAst   = (clone $ast)->setArguments([]);
+        $fakeAst = clone $ast;
+        if ($fakeAst instanceof AstQuery) {
+            $fakeAst->setArguments([]);
+        }
+
         $fakeField = new Field([
             'name' => $field->getName(),
-            'type' => $field->getType(),
+            'type' => $itemType,
         ]);
 
         $result = [];
@@ -235,6 +244,8 @@ class Processor2
 
             $result[] = $value;
         }
+
+        return $result;
     }
 
     protected function resolveUnion(FieldInterface $field, AstFieldInterface $ast, $parentValue)
@@ -267,7 +278,7 @@ class Processor2
 
     protected function parseArgumentsValues(FieldInterface $field, AstFieldInterface $ast)
     {
-        //todo
+        return [];//todo
     }
 
     private function getAlias(AstFieldInterface $ast)

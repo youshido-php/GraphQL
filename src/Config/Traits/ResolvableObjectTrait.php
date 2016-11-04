@@ -16,17 +16,7 @@ trait ResolvableObjectTrait
 
     public function resolve($value, array $args, ResolveInfo $info)
     {
-        if ($this->resolveFunctionCache === null) {
-            $this->resolveFunctionCache = $this->getConfig()->getResolveFunction();
-
-            if (!$this->resolveFunctionCache) {
-                $this->resolveFunctionCache = false;
-            }
-        }
-        if ($this->resolveFunctionCache) {
-            /** @var callable $resolveFunction */
-            $resolveFunction = $this->resolveFunctionCache;
-
+        if ($resolveFunction = $this->getConfig()->getResolveFunction()) {
             return $resolveFunction($value, $args, $info);
         } else {
             if (is_array($value) && array_key_exists($this->getName(), $value)) {
