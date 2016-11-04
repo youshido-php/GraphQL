@@ -13,15 +13,19 @@ use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Parser\Ast\Field as AstField;
+use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Interfaces\FieldInterface as AstFieldInterface;
 use Youshido\GraphQL\Parser\Ast\Mutation as AstMutation;
 use Youshido\GraphQL\Parser\Ast\Query as AstQuery;
+use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
 use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Schema\AbstractSchema;
+use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\ListType\AbstractListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\Union\AbstractUnionType;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 use Youshido\GraphQL\Validator\RequestValidator\RequestValidator;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator2;
@@ -143,6 +147,10 @@ class Processor2
                     return $this->resolveList($targetField, $ast, $parentValue);
 
                 case TypeMap::KIND_UNION:
+                    if (!$ast instanceof AstQuery) {
+                        throw new ResolveException(sprintf('You have to specify fields for "%s"', $ast->getName()));
+                    }
+
                     return $this->resolveUnion($targetField, $ast, $parentValue);
 
                 default:
@@ -155,21 +163,40 @@ class Processor2
         }
     }
 
-    protected function resolveObject(FieldInterface $field, AstFieldInterface $ast, $parentValue)
+    protected function resolveObject(FieldInterface $field, AstFieldInterface $ast, $parentValue, $fromUnion = false)
     {
-        /** @var AstQuery $ast */
-        $resolvedValue = $this->doResolve($field, $ast, $parentValue);
+        if (!$fromUnion) {
+            $resolvedValue = $this->doResolve($field, $ast, $parentValue);
+        } else {
+            $resolvedValue = $parentValue;
+        }
 
         $this->resolveValidator->assertValidResolvedValueForField($field, $resolvedValue);
 
         /** @var AbstractObjectType $type */
         $type = $field->getType()->getNullableType();
 
-        $result = [];
-        foreach ($ast->getFields() as $astField) {
-            $this->resolveValidator->assetTypeHasField($type, $astField);
+        return $this->collectResult($field, $type, $ast, $resolvedValue);
+    }
 
-            $result[$this->getAlias($astField)] = $this->resolveField($field, $astField, $resolvedValue);
+    private function collectResult(FieldInterface $field, AbstractObjectType $type, $ast, $resolvedValue)
+    {
+        /** @var AstQuery $ast */
+        $result = [];
+
+        foreach ($ast->getFields() as $astField) {
+            if ($astField instanceof TypedFragmentReference) {
+                if ($type->getName() != $astField->getTypeName()) {
+                    continue;
+                }
+
+                $result = array_merge($result, $this->collectResult($field, $type, $astField, $resolvedValue));
+            } elseif ($astField instanceof FragmentReference) {
+                //todo
+            } else {
+                $this->resolveValidator->assetTypeHasField($type, $astField);
+                $result[$this->getAlias($astField)] = $this->resolveField($field, $astField, $resolvedValue);
+            }
         }
 
         return $result;
@@ -250,7 +277,31 @@ class Processor2
 
     protected function resolveUnion(FieldInterface $field, AstFieldInterface $ast, $parentValue)
     {
-        //todo
+        /** @var AstQuery $ast */
+        $resolvedValue = $this->doResolve($field, $ast, $parentValue);
+
+        $this->resolveValidator->assertValidResolvedValueForField($field, $resolvedValue);
+
+        /** @var AbstractUnionType $type */
+        $type         = $field->getType()->getNullableType();
+        $resolvedType = $type->resolveType($resolvedValue);
+
+        if (!$resolvedType) {
+            throw new ResolveException('Resoling function must return type');
+        }
+
+        if ($type instanceof AbstractInterfaceType) {
+            $this->resolveValidator->assertTypeImplementsInterface($resolvedType, $type);
+        } else {
+            $this->resolveValidator->assertTypeInUnionTypes($resolvedType, $type);
+        }
+
+        $fakeField = new Field([
+            'name' => $field->getName(),
+            'type' => $resolvedType,
+        ]);
+
+        return $this->resolveObject($fakeField, $ast, $resolvedValue, true);
     }
 
     protected function parseAndCreateRequest($payload, $variables = [])

@@ -14,8 +14,11 @@ use Youshido\GraphQL\Parser\Ast\Argument as AstArgument;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\VariableReference;
 use Youshido\GraphQL\Parser\Ast\Interfaces\FieldInterface as AstFieldInterface;
 use Youshido\GraphQL\Type\AbstractType;
+use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
+use Youshido\GraphQL\Type\Union\AbstractUnionType;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 
 class ResolveValidator2
@@ -23,6 +26,7 @@ class ResolveValidator2
 
     public function assetTypeHasField(AbstractType $objectType, AstFieldInterface $ast)
     {
+        /** @var AbstractObjectType $objectType */
         if (!(TypeService::isObjectType($objectType) || TypeService::isInputObjectType($objectType)) || !$objectType->hasField($ast->getName())) {
             throw new ResolveException(sprintf('Field "%s" not found in type "%s"', $ast->getName(), $objectType->getNamedType()->getName()));
         }
@@ -39,7 +43,8 @@ class ResolveValidator2
                 throw new ResolveException(sprintf('Unknown argument "%s" on field "%s"', $astArgument->getName(), $field->getName()));
             }
 
-            $argumentType = $field->getArgument($astArgument->getName())->getType();
+            $argument     = $argumentType = $field->getArgument($astArgument->getName());
+            $argumentType = $argument->getType()->getNullableType();
 
             switch ($argumentType->getKind()) {
                 case TypeMap::KIND_ENUM:
@@ -57,7 +62,7 @@ class ResolveValidator2
 
             }
 
-            if (array_key_exists($astArgument->getName(), $requiredArguments) || $argumentType->getConfig()->get('default') !== null) {
+            if (array_key_exists($astArgument->getName(), $requiredArguments) || $argument->getConfig()->get('default') !== null) {
                 unset($requiredArguments[$astArgument->getName()]);
             }
         }
@@ -75,7 +80,7 @@ class ResolveValidator2
             return null;
         }
 
-        return $argument->getValue();
+        return $argument->getValue()->getValue();
     }
 
     public function assertValidResolvedValueForField(FieldInterface $field, $resolvedValue)
@@ -87,6 +92,24 @@ class ResolveValidator2
         if (!$field->getType()->getNullableType()->isValidValue($resolvedValue)) {
             throw new ResolveException(sprintf('Not valid resolved type for field "%s"', $field->getName()));
         }
+    }
+
+    public function assertTypeImplementsInterface(AbstractType $type, AbstractInterfaceType $interface)
+    {
+        if (!$interface->isValidValue($type)) {
+            throw new ResolveException('Type ' . $type->getName() . ' does not implement ' . $interface->getName());
+        }
+    }
+
+    public function assertTypeInUnionTypes(AbstractType $type, AbstractUnionType $unionType)
+    {
+        foreach ($unionType->getTypes() as $unionTypeItem) {
+            if ($unionTypeItem->getName() == $type->getName()) {
+                return;
+            }
+        }
+
+        throw new ResolveException('Type ' . $type->getName() . ' not exist in types of ' . $unionType->getName());
     }
 
 }
