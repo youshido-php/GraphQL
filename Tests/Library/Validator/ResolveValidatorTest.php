@@ -30,6 +30,7 @@ use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
 use Youshido\Tests\DataProvider\TestEnumType;
 use Youshido\Tests\DataProvider\TestInterfaceType;
 use Youshido\Tests\DataProvider\TestObjectType;
+use Youshido\Tests\DataProvider\TestUnionType;
 use Youshido\Tests\DataProvider\TestSchema;
 
 class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
@@ -78,6 +79,24 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
       $fragment          = new Fragment('name', 'User', []);
       $fragmentReference = new FragmentReference('name');
       $validator->assertValidFragmentForField($fragment, $fragmentReference, new NonNullType($userType));
+    }
+
+    public function testValidFragmentTypeWithUnion()
+    {
+      $validator = new ResolveValidator(new ExecutionContext(new TestSchema()));
+
+      $unionType = new ObjectType([
+        'name' => 'Mammals',
+        'type'    => new TestUnionType(),
+        'resolve' => function ($value, $args, ResolveInfo $info) {
+          $testObject = new TestObjectType();
+          return [$testObject->getData()];
+        }
+      ]);
+
+      $fragment          = new Fragment('name', 'TestObject', ['name']);
+      $fragmentReference = new FragmentReference('name');
+      $validator->assertValidFragmentForField($fragment, $fragmentReference, $unionType);
     }
 
     /**
