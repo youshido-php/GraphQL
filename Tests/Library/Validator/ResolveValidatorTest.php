@@ -84,15 +84,7 @@ class ResolveValidatorTest extends \PHPUnit_Framework_TestCase
     public function testValidFragmentTypeWithUnion()
     {
       $validator = new ResolveValidator(new ExecutionContext(new TestSchema()));
-
-      $unionType = new ObjectType([
-        'name' => 'Mammals',
-        'type'    => new TestUnionType(),
-        'resolve' => function ($value, $args, ResolveInfo $info) {
-          $testObject = new TestObjectType();
-          return [$testObject->getData()];
-        }
-      ]);
+      $unionType = new TestUnionType();
 
       $fragment          = new Fragment('name', 'TestObject', ['name']);
       $fragmentReference = new FragmentReference('name');
