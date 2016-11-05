@@ -191,10 +191,10 @@ class Processor
                 $value[] = [];
                 $index   = count($value) - 1;
 
-                $namedType = $this->resolveValidator->resolveTypeIfAbstract($namedType, $resolvedValueItem);
+                $namedItemType = $this->resolveValidator->resolveTypeIfAbstract($namedType, $resolvedValueItem);
 
                 if (!$validItemStructure) {
-                    if (!$namedType->isValidValue($resolvedValueItem)) {
+                    if (!$namedItemType->isValidValue($resolvedValueItem)) {
                         $this->executionContext->addError(new ResolveException(sprintf('Not valid resolve value in %s field', $query->getName())));
                         $value[$index] = null;
                         continue;
@@ -202,7 +202,7 @@ class Processor
                     $validItemStructure = true;
                 }
 
-                $value[$index] = $this->processQueryFields($query, $namedType, $resolvedValueItem, $value[$index]);
+                $value[$index] = $this->processQueryFields($query, $namedItemType, $resolvedValueItem, $value[$index]);
             }
         } else {
             $value = $this->processQueryFields($query, $fieldType, $resolvedValue, $value);
