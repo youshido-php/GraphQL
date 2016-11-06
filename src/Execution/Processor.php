@@ -25,6 +25,7 @@ use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
 use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\AbstractType;
+use Youshido\GraphQL\Type\CompositeTypeInterface;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
@@ -191,10 +192,10 @@ class Processor
                 $value[] = [];
                 $index   = count($value) - 1;
 
-                $namedType = $this->resolveValidator->resolveTypeIfAbstract($namedType, $resolvedValueItem);
+                $namedItemType = $this->resolveValidator->resolveTypeIfAbstract($namedType, $resolvedValueItem);
 
                 if (!$validItemStructure) {
-                    if (!$namedType->isValidValue($resolvedValueItem)) {
+                    if (!$namedItemType->isValidValue($resolvedValueItem)) {
                         $this->executionContext->addError(new ResolveException(sprintf('Not valid resolve value in %s field', $query->getName())));
                         $value[$index] = null;
                         continue;
@@ -306,6 +307,15 @@ class Processor
         $queryType    = $this->resolveValidator->resolveTypeIfAbstract($queryType, $resolvedValue);
         $currentType  = $queryType->getNullableType()->getNullableType();
 
+        $innerQueryType = $queryType;
+        while ($innerQueryType instanceof CompositeTypeInterface) {
+            $innerQueryType = $innerQueryType->getTypeOf();
+        }
+
+        $innerOriginalType = $originalType;
+        while ($innerOriginalType instanceof CompositeTypeInterface) {
+            $innerOriginalType = $innerOriginalType->getTypeOf();
+        }
 
         if ($currentType->getKind() == TypeMap::KIND_SCALAR) {
             if (!$query->hasFields()) {
@@ -320,6 +330,7 @@ class Processor
         foreach ($query->getFields() as $fieldAst) {
 
             if ($fieldAst instanceof FragmentInterface) {
+
                 /** @var TypedFragmentReference $fragment */
                 $fragment = $fieldAst;
                 if ($fieldAst instanceof FragmentReference) {
@@ -327,8 +338,12 @@ class Processor
                     $fieldAstName = $fieldAst->getName();
                     $fragment     = $this->executionContext->getRequest()->getFragment($fieldAstName);
                     $this->resolveValidator->assertValidFragmentForField($fragment, $fieldAst, $originalType);
-                } elseif ($fragment->getTypeName() !== $queryType->getName()) {
-                    continue;
+
+                    if ($fragment->getModel() !== $innerQueryType->getName() && $fragment->getModel() !== $innerOriginalType->getName()) {
+                      continue;
+                    }
+                } elseif ($fragment->getTypeName() !== $innerQueryType->getName() && $fragment->getTypeName() !== $innerOriginalType->getName()) {
+                  continue;
                 }
 
                 $fragmentValue = $this->processQueryFields($fragment, $queryType, $resolvedValue, $value);
