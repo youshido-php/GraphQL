@@ -10,6 +10,7 @@ namespace Youshido\GraphQL\Execution;
 
 use Youshido\GraphQL\Execution\Container\Container;
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
+use Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Parser\Ast\Field as AstField;
@@ -45,6 +46,9 @@ class Processor2
     /** @var  array */
     protected $data;
 
+    /** @var int */
+    protected $maxComplexity;
+
     public function __construct(AbstractSchema $schema)
     {
         if (empty($this->executionContext)) {
@@ -55,12 +59,21 @@ class Processor2
         $this->resolveValidator = new ResolveValidator2($this->executionContext);
     }
 
-    public function processPayload($payload, $variables = [])
+    public function processPayload($payload, $variables = [], $reducers = [])
     {
         $this->data = [];
 
         try {
             $this->parseAndCreateRequest($payload, $variables);
+
+            if ($this->maxComplexity) {
+                $reducers[] = new MaxComplexityQueryVisitor($this->maxComplexity);
+            }
+
+            if ($reducers) {
+                $reducer = new Reducer();
+                $reducer->reduceQuery($this->executionContext, $reducers);
+            }
 
             foreach ($this->executionContext->getRequest()->getAllOperations() as $query) {
                 if ($operationResult = $this->resolveQuery($query)) {
@@ -97,6 +110,22 @@ class Processor2
     public function getExecutionContext()
     {
         return $this->executionContext;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxComplexity()
+    {
+        return $this->maxComplexity;
+    }
+
+    /**
+     * @param int $maxComplexity
+     */
+    public function setMaxComplexity($maxComplexity)
+    {
+        $this->maxComplexity = $maxComplexity;
     }
 
     protected function resolveQuery(AstQuery $query)
