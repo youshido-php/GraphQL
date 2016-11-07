@@ -8,21 +8,22 @@
 namespace Youshido\GraphQL\Validator\ResolveValidator;
 
 
-use Youshido\GraphQL\Execution\Request;
 use Youshido\GraphQL\Field\FieldInterface;
-use Youshido\GraphQL\Parser\Ast\Field;
-use Youshido\GraphQL\Parser\Ast\Query;
+use Youshido\GraphQL\Parser\Ast\Interfaces\FieldInterface as AstFieldInterface;
+use Youshido\GraphQL\Type\AbstractType;
+use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
+use Youshido\GraphQL\Type\Union\AbstractUnionType;
 
 interface ResolveValidatorInterface
 {
 
-    /**
-     * @param $field     FieldInterface
-     * @param $query     Query|Field
-     * @param $request   Request
-     *
-     * @return bool
-     */
-    public function validateArguments(FieldInterface $field, $query, Request $request);
+    public function assetTypeHasField(AbstractType $objectType, AstFieldInterface $ast);
 
+    public function assertValidArguments(FieldInterface $field, AstFieldInterface $query);
+
+    public function assertValidResolvedValueForField(FieldInterface $field, $resolvedValue);
+
+    public function assertTypeImplementsInterface(AbstractType $type, AbstractInterfaceType $interface);
+
+    public function assertTypeInUnionTypes(AbstractType $type, AbstractUnionType $unionType);
 }
