@@ -24,7 +24,7 @@ class IdType extends AbstractScalarType
 
     public function isValidValue($value)
     {
-        return !empty($value);
+        return !empty($value) || $value === null;
     }
 
     public function getDescription()

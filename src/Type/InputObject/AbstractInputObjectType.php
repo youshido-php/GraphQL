@@ -81,6 +81,10 @@ abstract class AbstractInputObjectType extends AbstractType
 
     public function parseValue($value)
     {
+        if($value instanceof InputObject) {
+            $value = $value->getValue();
+        }
+
         $typeConfig = $this->getConfig();
         foreach ($value as $valueKey => $item) {
             if ($item instanceof Variable) {

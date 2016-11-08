@@ -80,7 +80,8 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
             ])
         ]));
 
-        $processor->processPayload('mutation { createList(posts: [{title: "Fun post" }, {}]) }');
+        $processor->processPayload('mutation { createList(posts: [{title: null }, {}]) }');
+        $a = $processor->getResponseData();
         $this->assertEquals(
             [
                 'data'   => ['createList' => null],

@@ -11,9 +11,6 @@ namespace Youshido\GraphQL\Validator\ResolveValidator;
 use Youshido\GraphQL\Execution\Request;
 use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Field\InputField;
-use Youshido\GraphQL\Parser\Ast\Argument as AstArgument;
-use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal;
-use Youshido\GraphQL\Parser\Ast\ArgumentValue\VariableReference;
 use Youshido\GraphQL\Parser\Ast\Interfaces\FieldInterface as AstFieldInterface;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
@@ -53,9 +50,7 @@ class ResolveValidator implements ResolveValidatorInterface
                 case TypeMap::KIND_SCALAR:
                 case TypeMap::KIND_INPUT_OBJECT:
                 case TypeMap::KIND_LIST:
-                    $this->replaceVariables($astArgument, $argumentType, $request);
-
-                    if (!$argumentType->isValidValue($astArgument->getValue()->getValue())) {
+                    if (!$argument->getType()->isValidValue($astArgument->getValue())) {
                         throw new ResolveException(sprintf('Not valid type for argument "%s" in query "%s"', $astArgument->getName(), $field->getName()));
                     }
 
@@ -74,29 +69,6 @@ class ResolveValidator implements ResolveValidatorInterface
         if (count($requiredArguments)) {
             throw new ResolveException(sprintf('Require "%s" arguments to query "%s"', implode(', ', array_keys($requiredArguments)), $query->getName()));
         }
-    }
-
-    private function replaceVariables(AstArgument $argument, AbstractType $argumentType, Request $request)
-    {
-        $value = $argument->getValue();
-        if ($value instanceof VariableReference) {
-            $argument->setValue(new Literal($this->getVariableReferenceArgumentValue($value, $argumentType, $request)));
-        }
-    }
-
-    private function getVariableReferenceArgumentValue(VariableReference $variableReference, AbstractType $argumentType, Request $request)
-    {
-        $variable = $variableReference->getVariable();
-        if ($variable->getTypeName() != $argumentType->getName()) {
-            throw new ResolveException(sprintf('Invalid variable "%s" type, allowed type is "%s"', $variable->getName(), $argumentType->getName()));
-        }
-
-        $requestValue = $request->getVariable($variable->getName());
-        if (!$request->hasVariable($variable->getName()) || (null === $requestValue && $variable->isNullable())) {
-            throw  new ResolveException(sprintf('Variable "%s" does not exist in request', $variable->getName()));
-        }
-
-        return $requestValue;
     }
 
     public function assertValidResolvedValueForField(FieldInterface $field, $resolvedValue)

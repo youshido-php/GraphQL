@@ -14,6 +14,10 @@ use Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Field\InputField;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputObject as AstInputObject;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal as AstLiteral;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputList as AstInputList;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\VariableReference;
 use Youshido\GraphQL\Parser\Ast\Field as AstField;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Interfaces\FieldInterface as AstFieldInterface;
@@ -22,6 +26,8 @@ use Youshido\GraphQL\Parser\Ast\Query as AstQuery;
 use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
 use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Schema\AbstractSchema;
+use Youshido\GraphQL\Type\AbstractType;
+use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\ListType\AbstractListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
@@ -159,6 +165,7 @@ class Processor
 
             $targetField = $nonNullType->getField($ast->getName());
 
+            $this->prepareAstArguments($targetField, $ast, $this->executionContext->getRequest());
             $this->resolveValidator->assertValidArguments($targetField, $ast, $this->executionContext->getRequest());
 
             switch ($kind = $targetField->getType()->getNullableType()->getKind()) {
@@ -201,6 +208,77 @@ class Processor
 
             return null;
         }
+    }
+
+    private function prepareAstArguments(FieldInterface $field, AstFieldInterface $query, Request $request)
+    {
+        foreach ($query->getArguments() as $astArgument) {
+            if ($field->hasArgument($astArgument->getName())) {
+                $argumentType = $field->getArgument($astArgument->getName())->getType()->getNullableType();
+
+                $astArgument->setValue($this->prepareArgumentValue($astArgument->getValue(), $argumentType, $request));
+            }
+        }
+    }
+
+    private function prepareArgumentValue($argumentValue, AbstractType $argumentType, Request $request)
+    {
+        switch ($argumentType->getKind()) {
+            case TypeMap::KIND_LIST:
+                /** @var $argumentType AbstractListType */
+                $result = [];
+                if ($argumentValue instanceof AstInputList || is_array($argumentValue)) {
+                    $list = is_array($argumentValue) ? $argumentValue : $argumentValue->getValue();
+                    foreach ($list as $item) {
+                        $result[] = $this->prepareArgumentValue($item, $argumentType->getItemType()->getNullableType(), $request);
+                    }
+                }
+
+                return $result;
+
+            case TypeMap::KIND_INPUT_OBJECT:
+                /** @var $argumentType AbstractInputObjectType */
+                $result = [];
+                if ($argumentValue instanceof AstInputObject) {
+                    foreach ($argumentValue->getValue() as $key => $item) {
+                        if ($argumentType->hasField($key)) {
+                            $result[$key] = $this->prepareArgumentValue($item, $argumentType->getField($key)->getType()->getNullableType(), $request);
+                        } else {
+                            $result[$key] = $item;
+                        }
+                    }
+                }
+
+                return $result;
+
+            case TypeMap::KIND_SCALAR:
+            case TypeMap::KIND_ENUM:
+                /** @var $argumentValue AstLiteral|VariableReference */
+                if ($argumentValue instanceof VariableReference) {
+                    return $this->getVariableReferenceArgumentValue($argumentValue, $argumentType, $request);
+                } else if ($argumentValue instanceof AstLiteral) {
+                    return $argumentValue->getValue();
+                } else {
+                    return $argumentValue;
+                }
+        }
+
+        throw new ResolveException('Argument type not supported');
+    }
+
+    private function getVariableReferenceArgumentValue(VariableReference $variableReference, AbstractType $argumentType, Request $request)
+    {
+        $variable = $variableReference->getVariable();
+        if ($variable->getTypeName() != $argumentType->getName()) {
+            throw new ResolveException(sprintf('Invalid variable "%s" type, allowed type is "%s"', $variable->getName(), $argumentType->getName()));
+        }
+
+        $requestValue = $request->getVariable($variable->getName());
+        if (!$request->hasVariable($variable->getName()) || (null === $requestValue && $variable->isNullable())) {
+            throw  new ResolveException(sprintf('Variable "%s" does not exist in request', $variable->getName()));
+        }
+
+        return $requestValue;
     }
 
     protected function resolveObject(FieldInterface $field, AstFieldInterface $ast, $parentValue, $fromUnion = false)
@@ -403,7 +481,7 @@ class Processor
             $argument     = $field->getArgument($astArgument->getName());
             $argumentType = $argument->getType()->getNullableType();
 
-            $values[$argument->getName()] = $argumentType->parseValue($astArgument->getValue()->getValue());
+            $values[$argument->getName()] = $argumentType->parseValue($astArgument->getValue());
 
             if (isset($defaults[$argument->getName()])) {
                 unset($defaults[$argument->getName()]);
