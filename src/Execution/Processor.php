@@ -14,9 +14,9 @@ use Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Field\InputField;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputList as AstInputList;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputObject as AstInputObject;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal as AstLiteral;
-use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputList as AstInputList;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\VariableReference;
 use Youshido\GraphQL\Parser\Ast\Field as AstField;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
@@ -496,7 +496,7 @@ class Processor
         return $ast->getAlias() ?: $ast->getName();
     }
 
-    private function createResolveInfo(FieldInterface $field, array $astFields)
+    protected function createResolveInfo(FieldInterface $field, array $astFields)
     {
         return new ResolveInfo($field, $astFields, $this->executionContext);
     }

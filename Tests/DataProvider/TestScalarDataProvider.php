@@ -96,7 +96,7 @@ class TestScalarDataProvider
     {
         return [
             ["string-id", "string-id", true],
-            ["", null, false],
+            ["", null, true],
             [1, "1", true],
         ];
     }
