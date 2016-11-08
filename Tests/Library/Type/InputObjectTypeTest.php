@@ -9,13 +9,7 @@
 namespace Youshido\Tests\Library\Type;
 
 
-use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
-use Youshido\GraphQL\Execution\Request;
-use Youshido\GraphQL\Field\Field;
-use Youshido\GraphQL\Parser\Ast\Argument;
-use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal;
-use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\InputObject\InputObjectType;
 use Youshido\GraphQL\Type\ListType\ListType;
@@ -24,7 +18,6 @@ use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\BooleanType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\TypeMap;
-use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
 use Youshido\Tests\DataProvider\TestInputObjectType;
 
 class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
@@ -88,8 +81,13 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
         ]));
 
         $processor->processPayload('mutation { createList(posts: [{title: "Fun post" }, {}]) }');
-        $this->assertEquals(['errors' => [['message' => 'Not valid type for argument "posts" in query "createList"']]],
-            $processor->getResponseData());
+        $this->assertEquals(
+            [
+                'data'   => ['createList' => null],
+                'errors' => [['message' => 'Not valid type for argument "posts" in query "createList"']]
+            ],
+            $processor->getResponseData()
+        );
     }
 
     public function testListInsideInputObject()
@@ -100,7 +98,8 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
                 'fields' => [
                     'empty' => [
                         'type'    => new StringType(),
-                        'resolve' => function () { }
+                        'resolve' => function () {
+                        }
                     ],
                 ]
             ]),
@@ -122,14 +121,18 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
                                 ]
                             ])
                         ],
-                        'resolve' => function () { return 'success message'; }
+                        'resolve' => function () {
+                            return 'success message';
+                        }
                     ]
                 ]
             ])
         ]));
-        $processor->processPayload('mutation { createList(topArgument:{
-                                        postObject:[{title: null}] })}');
-        $this->assertEquals(['errors' => [['message' => 'Not valid type for argument "topArgument" in query "createList"']]], $processor->getResponseData());
+        $processor->processPayload('mutation { createList(topArgument: { postObject:[ { title: null } ] })}');
+        $this->assertEquals([
+            'data'   => ['createList' => null],
+            'errors' => [['message' => 'Not valid type for argument "topArgument" in query "createList"']],
+        ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
         $processor->processPayload('mutation { createList(topArgument:{
                                         postObject:[{title: "not empty"}] })}');

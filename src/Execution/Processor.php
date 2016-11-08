@@ -13,6 +13,7 @@ use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\FieldInterface;
+use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Parser\Ast\Field as AstField;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Interfaces\FieldInterface as AstFieldInterface;
@@ -143,23 +144,28 @@ class Processor
         return [$this->getAlias($query) => $value];
     }
 
-    protected function resolveField(FieldInterface $field, AstFieldInterface $ast, $parentValue = null)
+    protected function resolveField(FieldInterface $field, AstFieldInterface $ast, $parentValue = null, $fromObject = false)
     {
         try {
             /** @var AbstractObjectType $type */
-            $type = $field->getType();
+            $type        = $field->getType();
+            $nonNullType = $type->getNullableType();
 
-            $this->resolveValidator->assetTypeHasField($type, $ast);
+            if (self::TYPE_NAME_QUERY == $ast->getName()) {
+                return $type->getName();
+            }
 
-            $targetField = $type->getField($ast->getName());
+            $this->resolveValidator->assetTypeHasField($nonNullType, $ast);
 
-            $this->resolveValidator->assertValidArguments($targetField, $ast);
+            $targetField = $nonNullType->getField($ast->getName());
+
+            $this->resolveValidator->assertValidArguments($targetField, $ast, $this->executionContext->getRequest());
 
             switch ($kind = $targetField->getType()->getNullableType()->getKind()) {
                 case TypeMap::KIND_ENUM:
                 case TypeMap::KIND_SCALAR:
                     if ($ast instanceof AstQuery && $ast->hasFields()) {
-                        throw new ResolveException(sprintf('You can\'t specify fields for scalar type "%s"', $type->getName()));
+                        throw new ResolveException(sprintf('You can\'t specify fields for scalar type "%s"', $targetField->getType()->getNullableType()->getName()));
                     }
 
                     return $this->resolveScalar($targetField, $ast, $parentValue);
@@ -176,17 +182,22 @@ class Processor
                     return $this->resolveList($targetField, $ast, $parentValue);
 
                 case TypeMap::KIND_UNION:
+                case TypeMap::KIND_INTERFACE:
                     if (!$ast instanceof AstQuery) {
                         throw new ResolveException(sprintf('You have to specify fields for "%s"', $ast->getName()));
                     }
 
-                    return $this->resolveUnion($targetField, $ast, $parentValue);
+                    return $this->resolveComposite($targetField, $ast, $parentValue);
 
                 default:
                     throw new ResolveException(sprintf('Resolving type with kind "%s" not supported', $kind));
             }
         } catch (\Exception $e) {
             $this->executionContext->addError($e);
+
+            if ($fromObject) {
+                throw $e;
+            }
 
             return null;
         }
@@ -202,10 +213,17 @@ class Processor
 
         $this->resolveValidator->assertValidResolvedValueForField($field, $resolvedValue);
 
+        if (null === $resolvedValue) {
+            return null;
+        }
         /** @var AbstractObjectType $type */
         $type = $field->getType()->getNullableType();
 
-        return $this->collectResult($field, $type, $ast, $resolvedValue);
+        try {
+            return $this->collectResult($field, $type, $ast, $resolvedValue);
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     private function collectResult(FieldInterface $field, AbstractObjectType $type, $ast, $resolvedValue)
@@ -214,17 +232,25 @@ class Processor
         $result = [];
 
         foreach ($ast->getFields() as $astField) {
-            if ($astField instanceof TypedFragmentReference) {
-                if ($type->getName() != $astField->getTypeName()) {
-                    continue;
-                }
+            switch (true) {
+                case $astField instanceof TypedFragmentReference:
+                    if ($type->getName() != $astField->getTypeName()) {
+                        continue;
+                    }
 
-                $result = array_merge($result, $this->collectResult($field, $type, $astField, $resolvedValue));
-            } elseif ($astField instanceof FragmentReference) {
-                //todo
-            } else {
-                $this->resolveValidator->assetTypeHasField($type, $astField);
-                $result[$this->getAlias($astField)] = $this->resolveField($field, $astField, $resolvedValue);
+                    $result = array_merge($result, $this->collectResult($field, $type, $astField, $resolvedValue));
+
+                    break;
+
+                case $astField instanceof FragmentReference:
+                    $astFragment = $this->executionContext->getRequest()->getFragment($astField->getName());
+
+                    $result = array_merge($result, $this->collectResult($field, $type, $astFragment, $resolvedValue));
+
+                    break;
+
+                default:
+                    $result[$this->getAlias($astField)] = $this->resolveField($field, $astField, $resolvedValue, true);
             }
         }
 
@@ -249,6 +275,10 @@ class Processor
         $resolvedValue = $this->doResolve($field, $ast, $parentValue);
 
         $this->resolveValidator->assertValidResolvedValueForField($field, $resolvedValue);
+
+        if (null === $resolvedValue) {
+            return null;
+        }
 
         /** @var AbstractListType $type */
         $type     = $field->getType()->getNullableType();
@@ -285,7 +315,8 @@ class Processor
                         break;
 
                     case TypeMap::KIND_UNION:
-                        $value = $this->resolveUnion($fakeField, $fakeAst, $resolvedValueItem);
+                    case TypeMap::KIND_INTERFACE:
+                        $value = $this->resolveComposite($fakeField, $fakeAst, $resolvedValueItem);
 
                         break;
 
@@ -304,7 +335,7 @@ class Processor
         return $result;
     }
 
-    protected function resolveUnion(FieldInterface $field, AstFieldInterface $ast, $parentValue)
+    protected function resolveComposite(FieldInterface $field, AstFieldInterface $ast, $parentValue)
     {
         /** @var AstQuery $ast */
         $resolvedValue = $this->doResolve($field, $ast, $parentValue);
@@ -358,7 +389,28 @@ class Processor
 
     protected function parseArgumentsValues(FieldInterface $field, AstFieldInterface $ast)
     {
-        return [];//todo
+        $values   = [];
+        $defaults = [];
+
+        foreach ($field->getArguments() as $argument) {
+            /** @var $argument InputField */
+            if ($argument->getConfig()->has('default')) {
+                $defaults[$argument->getName()] = $argument->getConfig()->getDefaultValue();
+            }
+        }
+
+        foreach ($ast->getArguments() as $astArgument) {
+            $argument     = $field->getArgument($astArgument->getName());
+            $argumentType = $argument->getType()->getNullableType();
+
+            $values[$argument->getName()] = $argumentType->parseValue($astArgument->getValue()->getValue());
+
+            if (isset($defaults[$argument->getName()])) {
+                unset($defaults[$argument->getName()]);
+            }
+        }
+
+        return array_merge($values, $defaults);
     }
 
     private function getAlias(AstFieldInterface $ast)

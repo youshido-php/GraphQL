@@ -69,7 +69,7 @@ abstract class AbstractField implements FieldInterface
 
     public function isDeprecated()
     {
-        return $this->getConfigValue('isDeprecated');
+        return $this->getConfigValue('isDeprecated', false);
     }
 
     public function getDeprecationReason()

@@ -158,6 +158,7 @@ TEXT;
             [
                 '{ __type { name } }',
                 [
+                    'data'   => ['__type' => null],
                     'errors' => [['message' => 'Require "name" arguments to query "__type"']]
                 ]
             ],

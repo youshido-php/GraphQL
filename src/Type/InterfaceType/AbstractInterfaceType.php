@@ -11,7 +11,6 @@ namespace Youshido\GraphQL\Type\InterfaceType;
 
 use Youshido\GraphQL\Config\Object\InterfaceTypeConfig;
 use Youshido\GraphQL\Type\AbstractType;
-use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\Traits\FieldsAwareObjectTrait;
 use Youshido\GraphQL\Type\TypeMap;
@@ -34,6 +33,7 @@ abstract class AbstractInterfaceType extends AbstractType
 
     /**
      * ObjectType constructor.
+     *
      * @param $config
      */
     public function __construct($config = [])
@@ -49,6 +49,7 @@ abstract class AbstractInterfaceType extends AbstractType
 
     /**
      * @param InterfaceTypeConfig $config
+     *
      * @return mixed
      */
     abstract public function build($config);
@@ -65,13 +66,7 @@ abstract class AbstractInterfaceType extends AbstractType
 
     public function isValidValue($value)
     {
-        if ($value instanceof AbstractObjectType) {
-            foreach ($value->getInterfaces() as $interface) {
-                if ($interface instanceof $this) return true;
-            }
-        }
-
-        return false;
+        return is_array($value) || is_null($value) || is_object($value);
     }
 
 }

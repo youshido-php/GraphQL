@@ -55,7 +55,7 @@ class InterfaceTypeTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($object, $interfaceType->resolveType($object));
 
-        $this->assertFalse($interfaceType->isValidValue($object));
+        $this->assertTrue($interfaceType->isValidValue($object));
         $this->assertFalse($interfaceType->isValidValue('invalid object'));
     }
 

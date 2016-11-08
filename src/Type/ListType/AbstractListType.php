@@ -35,7 +35,7 @@ abstract class AbstractListType extends AbstractObjectType implements CompositeT
         $isValid  = is_null($value) || is_array($value) || ($value instanceof \Traversable);
         $itemType = $this->config->get('itemType');
 
-        if ($isValid && $itemType->isInputType()) {
+        if ($isValid && $value && $itemType->isInputType()) {
             foreach ($value as $item) {
                 $isValid = $itemType->isValidValue($item);
 

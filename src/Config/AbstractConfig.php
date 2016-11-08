@@ -15,6 +15,7 @@ use Youshido\GraphQL\Validator\Exception\ValidationException;
 
 /**
  * Class Config
+ *
  * @package Youshido\GraphQL\Config
  */
 abstract class AbstractConfig
@@ -33,6 +34,7 @@ abstract class AbstractConfig
 
     /**
      * TypeConfig constructor.
+     *
      * @param array $configData
      * @param mixed $contextObject
      * @param bool  $finalClass
@@ -124,11 +126,12 @@ abstract class AbstractConfig
     /**
      * @param      $key
      * @param null $defaultValue
+     *
      * @return mixed|null|callable
      */
     public function get($key, $defaultValue = null)
     {
-        return array_key_exists($key, $this->data) ? $this->data[$key] : $defaultValue;
+        return $this->has($key) ? $this->data[$key] : $defaultValue;
     }
 
     public function set($key, $value)
@@ -136,6 +139,11 @@ abstract class AbstractConfig
         $this->data[$key] = $value;
 
         return $this;
+    }
+
+    public function has($key)
+    {
+        return array_key_exists($key, $this->data);
     }
 
     public function __call($method, $arguments)

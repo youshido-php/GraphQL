@@ -36,13 +36,14 @@ abstract class AbstractInputObjectType extends AbstractType
 
     /**
      * @param InputObjectTypeConfig $config
+     *
      * @return mixed
      */
     abstract public function build($config);
 
     public function isValidValue($value)
     {
-        if($value instanceof InputObject) {
+        if ($value instanceof InputObject) {
             $value = $value->getValue();
         }
 
@@ -56,10 +57,6 @@ abstract class AbstractInputObjectType extends AbstractType
         });
 
         foreach ($value as $valueKey => $valueItem) {
-            if($valueItem instanceof Variable) {
-                $valueItem = $valueItem->getValue();
-            }
-
             if (!$typeConfig->hasField($valueKey) || !$typeConfig->getField($valueKey)->getType()->isValidValue($valueItem)) {
                 return false;
             }
@@ -86,7 +83,7 @@ abstract class AbstractInputObjectType extends AbstractType
     {
         $typeConfig = $this->getConfig();
         foreach ($value as $valueKey => $item) {
-            if($item instanceof Variable) {
+            if ($item instanceof Variable) {
                 $item = $item->getValue();
             }
 

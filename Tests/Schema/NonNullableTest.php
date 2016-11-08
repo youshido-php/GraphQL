@@ -72,7 +72,7 @@ class NonNullableTest extends \PHPUnit_Framework_TestCase
                     ],
                     'errors' => [
                         [
-                            'message' => 'Cannot return null for non-nullable field nonNullScalar'
+                            'message' => 'Cannot return null for non-nullable field "nonNullScalar"'
                         ]
                     ]
                 ]
@@ -86,7 +86,7 @@ class NonNullableTest extends \PHPUnit_Framework_TestCase
                     ],
                     'errors' => [
                         [
-                            'message' => 'Cannot return null for non-nullable field nonNullList'
+                            'message' => 'Cannot return null for non-nullable field "nonNullList"'
                         ]
                     ]
                 ]
@@ -96,11 +96,11 @@ class NonNullableTest extends \PHPUnit_Framework_TestCase
                 '{ nonNullListOfNpnNull  }',
                 [
                     'data' => [
-                        'nonNullListOfNpnNull' => null
+                        'nonNullListOfNpnNull' => [1, null]
                     ],
                     'errors' => [
                         [
-                            'message' => 'Cannot return null for non-nullable field nonNullList'
+                            'message' => 'Cannot return null for non-nullable field "nonNullListOfNpnNull"'
                         ]
                     ]
                 ]
