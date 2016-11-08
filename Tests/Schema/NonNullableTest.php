@@ -6,14 +6,28 @@
  */
 
 namespace Youshido\Tests\Schema;
-
-
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\ObjectType;
+use Youshido\GraphQL\Type\Scalar\IdType;
 use Youshido\GraphQL\Type\Scalar\IntType;
+use Youshido\GraphQL\Type\Scalar\StringType;
+
+class uid {
+    private $uid;
+
+    public function __construct($uid)
+    {
+        $this->uid = $uid;
+    }
+
+    public function __toString()
+    {
+        return $this->uid;
+    }
+}
 
 class NonNullableTest extends \PHPUnit_Framework_TestCase
 {
@@ -30,26 +44,38 @@ class NonNullableTest extends \PHPUnit_Framework_TestCase
             'query' => new ObjectType([
                 'name'   => 'RootQuery',
                 'fields' => [
-                    'nonNullScalar' => [
+                    'nonNullScalar'        => [
                         'type'    => new NonNullType(new IntType()),
                         'resolve' => function () {
                             return null;
                         },
                     ],
-
-                    'nonNullList' => [
+                    'nonNullList'          => [
                         'type'    => new NonNullType(new ListType(new IntType())),
                         'resolve' => function () {
                             return null;
                         }
                     ],
-
+                    'user'                 => [
+                        'type'    => new ObjectType([
+                            'fields' => [
+                                'id'   => new NonNullType(new IdType()),
+                                'name' => new StringType(),
+                            ]
+                        ]),
+                        'resolve' => function () {
+                            return [
+                                'id'   => new uid('6cfb044c-9c0a-4ddd-9ef8-a0b940818db3'),
+                                'name' => 'Alex'
+                            ];
+                        }
+                    ],
                     'nonNullListOfNpnNull' => [
                         'type'    => new NonNullType(new ListType(new NonNullType(new IntType()))),
                         'resolve' => function () {
                             return [1, null];
                         }
-                    ]
+                    ],
                 ]
             ])
         ]);
@@ -67,7 +93,7 @@ class NonNullableTest extends \PHPUnit_Framework_TestCase
             [
                 '{ nonNullScalar  }',
                 [
-                    'data' => [
+                    'data'   => [
                         'nonNullScalar' => null
                     ],
                     'errors' => [
@@ -81,7 +107,7 @@ class NonNullableTest extends \PHPUnit_Framework_TestCase
             [
                 '{ nonNullList  }',
                 [
-                    'data' => [
+                    'data'   => [
                         'nonNullList' => null
                     ],
                     'errors' => [
@@ -95,12 +121,24 @@ class NonNullableTest extends \PHPUnit_Framework_TestCase
             [
                 '{ nonNullListOfNpnNull  }',
                 [
-                    'data' => [
+                    'data'   => [
                         'nonNullListOfNpnNull' => [1, null]
                     ],
                     'errors' => [
                         [
                             'message' => 'Cannot return null for non-nullable field "nonNullListOfNpnNull"'
+                        ]
+                    ]
+                ]
+            ],
+
+            [
+                '{ user {id, name}  }',
+                [
+                    'data' => [
+                        'user' =>  [
+                            'id'   => '6cfb044c-9c0a-4ddd-9ef8-a0b940818db3',
+                            'name' => 'Alex'
                         ]
                     ]
                 ]
