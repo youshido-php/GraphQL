@@ -63,6 +63,21 @@ class VariablesTest extends \PHPUnit_Framework_TestCase
                     'sort' => null
                 ]
             ],
+            [
+                'query queryWithVariable($abc:String) {
+                  stringQuery {
+                    ...someFragment
+                  }
+                }',
+                [
+                    'errors' => [
+                        ['message' => 'Fragment "someFragment" not defined in query']
+                    ],
+                ],
+                [
+                    'abc' => null
+                ]
+            ],
         ];
     }
 
