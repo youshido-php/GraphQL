@@ -131,6 +131,11 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
                 }');
         $data = $processor->getResponseData();
         $this->assertArraySubset([11 => ['name' => 'Author']], $data['data']['__schema']['types']);
+
+        $processor->processPayload('{ user { name { } } }');
+        $result = $processor->getResponseData();
+
+        $this->assertEquals(['errors' => [ ['message' => 'Unexpected token "RBRACE" at (1:19)']]], $result);
     }
 
 }
