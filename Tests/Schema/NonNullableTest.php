@@ -6,6 +6,7 @@
  */
 
 namespace Youshido\Tests\Schema;
+
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\ListType\ListType;
@@ -15,7 +16,8 @@ use Youshido\GraphQL\Type\Scalar\IdType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
-class uid {
+class uid
+{
     private $uid;
 
     public function __construct($uid)
@@ -58,6 +60,7 @@ class NonNullableTest extends \PHPUnit_Framework_TestCase
                     ],
                     'user'                 => [
                         'type'    => new NonNullType(new ObjectType([
+                            'name'   => 'User',
                             'fields' => [
                                 'id'   => new NonNullType(new IdType()),
                                 'name' => new StringType(),
@@ -136,7 +139,7 @@ class NonNullableTest extends \PHPUnit_Framework_TestCase
                 '{ user {id, name}  }',
                 [
                     'data' => [
-                        'user' =>  [
+                        'user' => [
                             'id'   => '6cfb044c-9c0a-4ddd-9ef8-a0b940818db3',
                             'name' => 'Alex'
                         ]
@@ -147,7 +150,9 @@ class NonNullableTest extends \PHPUnit_Framework_TestCase
                 '{ user { __typename }  }',
                 [
                     'data' => [
-                        '__typename' =>  'User'
+                        'user' => [
+                            '__typename' => 'User'
+                        ]
                     ]
                 ]
             ]
