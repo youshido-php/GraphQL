@@ -57,12 +57,12 @@ class NonNullableTest extends \PHPUnit_Framework_TestCase
                         }
                     ],
                     'user'                 => [
-                        'type'    => new ObjectType([
+                        'type'    => new NonNullType(new ObjectType([
                             'fields' => [
                                 'id'   => new NonNullType(new IdType()),
                                 'name' => new StringType(),
                             ]
-                        ]),
+                        ])),
                         'resolve' => function () {
                             return [
                                 'id'   => new uid('6cfb044c-9c0a-4ddd-9ef8-a0b940818db3'),
@@ -140,6 +140,14 @@ class NonNullableTest extends \PHPUnit_Framework_TestCase
                             'id'   => '6cfb044c-9c0a-4ddd-9ef8-a0b940818db3',
                             'name' => 'Alex'
                         ]
+                    ]
+                ]
+            ],
+            [
+                '{ user { __typename }  }',
+                [
+                    'data' => [
+                        '__typename' =>  'User'
                     ]
                 ]
             ]
