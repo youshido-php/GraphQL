@@ -16,21 +16,6 @@ use Youshido\GraphQL\Type\Scalar\IdType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
-class uid
-{
-    private $uid;
-
-    public function __construct($uid)
-    {
-        $this->uid = $uid;
-    }
-
-    public function __toString()
-    {
-        return $this->uid;
-    }
-}
-
 class uid {
     private $uid;
 
