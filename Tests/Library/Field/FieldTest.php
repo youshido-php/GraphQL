@@ -92,7 +92,7 @@ class FieldTest extends \PHPUnit_Framework_TestCase
     public function testInvalidFieldParams($fieldConfig)
     {
         $field = new Field($fieldConfig);
-        ConfigValidator::getInstance()->assertValidateConfig($field->getConfig());
+        ConfigValidator::getInstance()->assertValidConfig($field->getConfig());
     }
 
     public function invalidFieldProvider()

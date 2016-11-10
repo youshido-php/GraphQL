@@ -61,7 +61,7 @@ class InputFieldTest extends \PHPUnit_Framework_TestCase
     public function testInvalidInputFieldParams($fieldConfig)
     {
         $field = new InputField($fieldConfig);
-        ConfigValidator::getInstance()->assertValidateConfig($field->getConfig());
+        ConfigValidator::getInstance()->assertValidConfig($field->getConfig());
     }
 
     public function invalidInputFieldProvider()

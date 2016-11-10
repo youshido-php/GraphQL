@@ -30,7 +30,7 @@ class InterfaceTypeConfigTest extends \PHPUnit_Framework_TestCase
      */
     public function testConfigNoFields()
     {
-        ConfigValidator::getInstance()->assertValidateConfig(
+        ConfigValidator::getInstance()->assertValidConfig(
             new InterfaceTypeConfig(['name' => 'Test', 'resolveType' => function () { }], null, true)
         );
     }
@@ -40,7 +40,7 @@ class InterfaceTypeConfigTest extends \PHPUnit_Framework_TestCase
      */
     public function testConfigNoResolve()
     {
-        ConfigValidator::getInstance()->assertValidateConfig(
+        ConfigValidator::getInstance()->assertValidConfig(
             new InterfaceTypeConfig(['name' => 'Test', 'fields' => ['id' => new IntType()]], null, true)
         );
     }

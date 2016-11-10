@@ -72,7 +72,7 @@ class UnionTypeTest extends \PHPUnit_Framework_TestCase
                 return $type;
             }
         ]);
-        ConfigValidator::getInstance()->assertValidateConfig($type->getConfig());
+        ConfigValidator::getInstance()->assertValidConfig($type->getConfig());
     }
 
     /**
@@ -90,6 +90,6 @@ class UnionTypeTest extends \PHPUnit_Framework_TestCase
                 return $type;
             }
         ]);
-        ConfigValidator::getInstance()->assertValidateConfig($type->getConfig());
+        ConfigValidator::getInstance()->assertValidConfig($type->getConfig());
     }
 }

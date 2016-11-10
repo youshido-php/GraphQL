@@ -15,6 +15,20 @@ use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 
+class uid {
+    private $uid;
+
+    public function __construct($uid)
+    {
+        $this->uid = $uid;
+    }
+
+    public function __toString()
+    {
+        return $this->uid;
+    }
+}
+
 class NonNullableTest extends \PHPUnit_Framework_TestCase
 {
 

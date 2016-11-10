@@ -35,7 +35,7 @@ class SchemaValidator
         $this->configValidator = ConfigValidator::getInstance();
 
         foreach ($schema->getQueryType()->getConfig()->getFields() as $field) {
-            $this->configValidator->assertValidateConfig($field->getConfig());
+            $this->configValidator->assertValidConfig($field->getConfig());
 
             if ($field->getType() instanceof AbstractObjectType) {
                 $this->assertInterfaceImplementationCorrect($field->getType());

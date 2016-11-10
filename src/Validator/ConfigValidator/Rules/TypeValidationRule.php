@@ -141,7 +141,11 @@ class TypeValidationRule implements ValidationRuleInterface
     private function isField($data, $name = null)
     {
         if (is_object($data)) {
-            return ($data instanceof FieldInterface) || ($data instanceof AbstractType);
+            if (($data instanceof FieldInterface) || ($data instanceof AbstractType)) {
+                return !$data->getConfig() || ($data->getConfig() && $this->configValidator->isValidConfig($data->getConfig()));
+            } else {
+                return false;
+            }
         }
         if (!is_array($data)) {
             $data = [

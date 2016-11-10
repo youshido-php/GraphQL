@@ -32,7 +32,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
         $enumField = new EnumType([
             'values' => []
         ]);
-        ConfigValidator::getInstance()->assertValidateConfig($enumField->getConfig());
+        ConfigValidator::getInstance()->assertValidConfig($enumField->getConfig());
 
     }
 
@@ -47,7 +47,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
                 'value' => 'asdasd'
             ]
         ]);
-        ConfigValidator::getInstance()->assertValidateConfig($enumField->getConfig());
+        ConfigValidator::getInstance()->assertValidConfig($enumField->getConfig());
     }
 
     /**
@@ -63,7 +63,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
                 ]
             ]
         ]);
-        ConfigValidator::getInstance()->assertValidateConfig($enumField->getConfig());
+        ConfigValidator::getInstance()->assertValidConfig($enumField->getConfig());
     }
 
     /**
@@ -79,7 +79,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
                 ]
             ]
         ]);
-        ConfigValidator::getInstance()->assertValidateConfig($enumField->getConfig());
+        ConfigValidator::getInstance()->assertValidConfig($enumField->getConfig());
     }
 
     /**
@@ -94,7 +94,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
                 ]
             ]
         ]);
-        ConfigValidator::getInstance()->assertValidateConfig($enumField->getConfig());
+        ConfigValidator::getInstance()->assertValidConfig($enumField->getConfig());
     }
 
     public function testNormalCreatingParams()

@@ -37,7 +37,7 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
         $type = new ObjectType([
             'name' => null
         ]);
-        ConfigValidator::getInstance()->assertValidateConfig($type->getConfig());
+        ConfigValidator::getInstance()->assertValidConfig($type->getConfig());
     }
 
     /**
@@ -49,7 +49,7 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
             'name'   => 'SomeName',
             'fields' => []
         ]);
-        ConfigValidator::getInstance()->assertValidateConfig($type->getConfig());
+        ConfigValidator::getInstance()->assertValidConfig($type->getConfig());
     }
 
     /**

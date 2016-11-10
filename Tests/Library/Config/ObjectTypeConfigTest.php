@@ -27,7 +27,7 @@ class ObjectTypeConfigTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidConfigNoFields()
     {
-        ConfigValidator::getInstance()->assertValidateConfig(
+        ConfigValidator::getInstance()->assertValidConfig(
             new ObjectTypeConfig(['name' => 'Test'], null, true)
         );
     }
@@ -37,7 +37,7 @@ class ObjectTypeConfigTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidConfigInvalidInterface()
     {
-        ConfigValidator::getInstance()->assertValidateConfig(
+        ConfigValidator::getInstance()->assertValidConfig(
             new ObjectTypeConfig(['name' => 'Test', 'interfaces' => ['Invalid interface']], null, false)
         );
     }
