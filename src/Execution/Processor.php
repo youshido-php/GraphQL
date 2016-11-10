@@ -312,7 +312,18 @@ class Processor
         foreach ($ast->getFields() as $astField) {
             switch (true) {
                 case $astField instanceof TypedFragmentReference:
-                    if ($type->getName() != $astField->getTypeName()) {
+                    $astName = $astField->getTypeName();
+                    $typeName = $type->getName();
+
+                    if ($typeName !== $astName) {
+                        foreach ($type->getInterfaces() as $interface) {
+                            if ($interface->getName() === $astName) {
+                                $result = array_merge($result, $this->collectResult($field, $type, $astField, $resolvedValue));
+
+                                break;
+                            }
+                        }
+
                         continue;
                     }
 
@@ -322,6 +333,21 @@ class Processor
 
                 case $astField instanceof FragmentReference:
                     $astFragment = $this->executionContext->getRequest()->getFragment($astField->getName());
+                    $astFragmentModel = $astFragment->getModel();
+                    $typeName = $type->getName();
+
+                    if ($typeName !== $astFragmentModel) {
+                        foreach ($type->getInterfaces() as $interface) {
+                            if ($interface->getName() === $astFragmentModel) {
+                                $result = array_merge($result, $this->collectResult($field, $type, $astFragment, $resolvedValue));
+
+                                break;
+                            }
+
+                        }
+
+                        continue;
+                    }
 
                     $result = array_merge($result, $this->collectResult($field, $type, $astFragment, $resolvedValue));
 
