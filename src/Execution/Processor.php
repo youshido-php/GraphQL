@@ -158,7 +158,7 @@ class Processor
             $nonNullType = $type->getNullableType();
 
             if (self::TYPE_NAME_QUERY == $ast->getName()) {
-                return $type->getName();
+                return $nonNullType->getName();
             }
 
             $this->resolveValidator->assetTypeHasField($nonNullType, $ast);
