@@ -755,8 +755,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser = new Parser();
 
         $data = $parser->parse('
-            query StarWarsAppHomeRoute($names_0:[String]!) {
-              factions(names:$names_0) {
+            query StarWarsAppHomeRoute($names_0:[String]!, $query: String) {
+              factions(names:$names_0, test: $query) {
                 id,
                 ...F2
               }

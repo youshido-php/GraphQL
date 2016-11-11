@@ -173,7 +173,7 @@ class Parser extends Tokenizer
     {
         $this->expectMulti([Token::TYPE_VARIABLE]);
 
-        if ($this->match(Token::TYPE_NUMBER) || $this->match(Token::TYPE_IDENTIFIER)) {
+        if ($this->match(Token::TYPE_NUMBER) || $this->match(Token::TYPE_IDENTIFIER) || $this->match(Token::TYPE_QUERY)) {
             $name = $this->lex()->getData();
 
             $variable = $this->findVariable($name);

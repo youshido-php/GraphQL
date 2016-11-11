@@ -247,6 +247,8 @@ class Processor
                             $result[$key] = $item;
                         }
                     }
+                } else if ($argumentValue instanceof VariableReference) {
+                    return $this->getVariableReferenceArgumentValue($argumentValue, $argumentType, $request);
                 }
 
                 return $result;
