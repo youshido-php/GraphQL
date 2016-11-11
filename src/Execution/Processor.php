@@ -232,6 +232,8 @@ class Processor
                     foreach ($list as $item) {
                         $result[] = $this->prepareArgumentValue($item, $argumentType->getItemType()->getNullableType(), $request);
                     }
+                } else if ($argumentValue instanceof VariableReference) {
+                    return $this->getVariableReferenceArgumentValue($argumentValue, $argumentType, $request);
                 }
 
                 return $result;
@@ -271,8 +273,14 @@ class Processor
     private function getVariableReferenceArgumentValue(VariableReference $variableReference, AbstractType $argumentType, Request $request)
     {
         $variable = $variableReference->getVariable();
-        if ($variable->getTypeName() != $argumentType->getName()) {
-            throw new ResolveException(sprintf('Invalid variable "%s" type, allowed type is "%s"', $variable->getName(), $argumentType->getName()));
+        if ($argumentType->getKind() == TypeMap::KIND_LIST) {
+            if ($variable->getTypeName() != $argumentType->getNamedType()->getName()) {
+                throw new ResolveException(sprintf('Invalid variable "%s" type, allowed type is "%s"', $variable->getName(), $argumentType->getName()));
+            }
+        } else {
+            if ($variable->getTypeName() != $argumentType->getName()) {
+                throw new ResolveException(sprintf('Invalid variable "%s" type, allowed type is "%s"', $variable->getName(), $argumentType->getName()));
+            }
         }
 
         $requestValue = $request->getVariable($variable->getName());
@@ -314,7 +322,7 @@ class Processor
         foreach ($ast->getFields() as $astField) {
             switch (true) {
                 case $astField instanceof TypedFragmentReference:
-                    $astName = $astField->getTypeName();
+                    $astName  = $astField->getTypeName();
                     $typeName = $type->getName();
 
                     if ($typeName !== $astName) {
@@ -334,9 +342,9 @@ class Processor
                     break;
 
                 case $astField instanceof FragmentReference:
-                    $astFragment = $this->executionContext->getRequest()->getFragment($astField->getName());
+                    $astFragment      = $this->executionContext->getRequest()->getFragment($astField->getName());
                     $astFragmentModel = $astFragment->getModel();
-                    $typeName = $type->getName();
+                    $typeName         = $type->getName();
 
                     if ($typeName !== $astFragmentModel) {
                         foreach ($type->getInterfaces() as $interface) {
