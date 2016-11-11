@@ -154,7 +154,7 @@ class FragmentsTest extends \PHPUnit_Framework_TestCase
                         }
                     }
                 }
-                fragment fReservation on Reservation {
+                fragment fReservation on ReservationInterface {
                     id
                     ... on CourtReservation {
                         players {
