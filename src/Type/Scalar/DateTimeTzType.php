@@ -28,13 +28,18 @@ class DateTimeTzType extends AbstractScalarType
         return $value->format('r');
     }
 
+    public function parseValue($value)
+    {
+        return is_object($value) ? $this->serialize($value) : $value;
+    }
+
     public function isValidValue($value)
     {
         if (is_object($value)) {
             return true;
         }
 
-        $d = \DateTime::createFromFormat('r', $value);
+        $d = \DateTime::createFromFormat('D, d M Y H:i:s O', $value);
 
         return $d && $d->format('r') == $value;
     }

@@ -36,6 +36,11 @@ class DateTimeType extends AbstractScalarType
         return $value->format($this->format);
     }
 
+    public function parseValue($value)
+    {
+        return is_object($value) ? $this->serialize($value) : $value;
+    }
+
     public function isValidValue($value)
     {
         if (is_object($value)) {

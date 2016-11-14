@@ -50,7 +50,7 @@ class ResolveValidator implements ResolveValidatorInterface
                 case TypeMap::KIND_SCALAR:
                 case TypeMap::KIND_INPUT_OBJECT:
                 case TypeMap::KIND_LIST:
-                    if (!$argument->getType()->isValidValue($astArgument->getValue())) {
+                    if (!$argument->getType()->isValidValue($argumentType->parseValue($astArgument->getValue()))) {
                         throw new ResolveException(sprintf('Not valid type for argument "%s" in query "%s"', $astArgument->getName(), $field->getName()));
                     }
 
