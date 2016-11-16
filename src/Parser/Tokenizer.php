@@ -263,7 +263,12 @@ class Tokenizer
 
     protected function createException($message)
     {
-        return new SyntaxErrorException(sprintf('%s', $message), new Location($this->getLine(), $this->getColumn()));
+        return new SyntaxErrorException(sprintf('%s', $message), $this->getLocation());
+    }
+
+    protected function getLocation()
+    {
+        return new Location($this->getLine(), $this->getColumn());
     }
 
     protected function getColumn()

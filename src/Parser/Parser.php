@@ -58,7 +58,7 @@ class Parser extends Tokenizer
                     break;
 
                 default:
-                    throw new SyntaxErrorException('Incorrect request syntax', new Location($this->getLine(), $this->getColumn()));
+                    throw new SyntaxErrorException('Incorrect request syntax', $this->getLocation());
             }
         }
 
@@ -360,7 +360,7 @@ class Parser extends Tokenizer
                 return $this->parseList(false);
         }
 
-        throw new SyntaxErrorException('Can\'t parse argument', new Location($this->getLine(), $this->getColumn()));
+        throw new SyntaxErrorException('Can\'t parse argument', $this->getLocation());
     }
 
     protected function parseObject($createType = true)
