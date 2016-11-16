@@ -26,7 +26,7 @@ class InterfaceTypeConfigTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
      */
     public function testConfigNoFields()
     {
@@ -36,7 +36,7 @@ class InterfaceTypeConfigTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
      */
     public function testConfigNoResolve()
     {
@@ -46,7 +46,7 @@ class InterfaceTypeConfigTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
      */
     public function testConfigInvalidResolve()
     {

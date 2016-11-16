@@ -39,7 +39,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Youshido\GraphQL\Parser\Exception\SyntaxErrorException
+     * @expectedException Youshido\GraphQL\Exception\Parser\SyntaxErrorException
      */
     public function testInvalidSelection()
     {
@@ -95,7 +95,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
      * @param $query string
      *
      * @dataProvider wrongQueriesProvider
-     * @expectedException Youshido\GraphQL\Parser\Exception\SyntaxErrorException
+     * @expectedException Youshido\GraphQL\Exception\Parser\SyntaxErrorException
      */
     public function testWrongQueries($query)
     {

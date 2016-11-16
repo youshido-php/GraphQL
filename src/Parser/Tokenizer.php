@@ -7,7 +7,7 @@
 
 namespace Youshido\GraphQL\Parser;
 
-use Youshido\GraphQL\Parser\Exception\SyntaxErrorException;
+use Youshido\GraphQL\Exception\Parser\SyntaxErrorException;
 
 class Tokenizer
 {

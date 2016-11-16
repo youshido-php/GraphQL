@@ -5,7 +5,7 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphQL\Parser\Exception;
+namespace Youshido\GraphQL\Exception\Parser;
 
 
 class DuplicationVariableException extends \Exception

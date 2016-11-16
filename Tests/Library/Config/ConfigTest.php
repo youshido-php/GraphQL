@@ -22,7 +22,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
-     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
      */
     public function testEmptyParams()
     {
@@ -30,7 +30,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
      */
     public function testInvalidParams()
     {
@@ -96,7 +96,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
      */
     public function testFinalRule()
     {
@@ -104,7 +104,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
      */
     public function testInvalidRule()
     {
@@ -114,7 +114,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
      */
     public function testEnumConfig()
     {

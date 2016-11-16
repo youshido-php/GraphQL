@@ -8,8 +8,8 @@
 namespace Youshido\GraphQL\Validator\RequestValidator;
 
 
+use Youshido\GraphQL\Exception\Parser\InvalidRequestException;
 use Youshido\GraphQL\Execution\Request;
-use Youshido\GraphQL\Parser\Exception\InvalidRequestException;
 
 class RequestValidator implements RequestValidatorInterface
 {

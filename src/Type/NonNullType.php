@@ -10,7 +10,7 @@ namespace Youshido\GraphQL\Type;
 
 
 use Youshido\GraphQL\Config\Traits\ConfigAwareTrait;
-use Youshido\GraphQL\Validator\Exception\ConfigurationException;
+use Youshido\GraphQL\Exception\ConfigurationException;
 
 final class NonNullType extends AbstractType implements CompositeTypeInterface
 {

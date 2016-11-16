@@ -87,7 +87,7 @@ class FieldTest extends \PHPUnit_Framework_TestCase
      * @param $fieldConfig
      *
      * @dataProvider invalidFieldProvider
-     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
      */
     public function testInvalidFieldParams($fieldConfig)
     {

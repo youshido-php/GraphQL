@@ -56,7 +56,7 @@ class InputFieldTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider invalidInputFieldProvider
-     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
      */
     public function testInvalidInputFieldParams($fieldConfig)
     {

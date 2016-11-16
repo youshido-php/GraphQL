@@ -9,8 +9,8 @@
 namespace Youshido\GraphQL\Type;
 
 
+use Youshido\GraphQL\Exception\ConfigurationException;
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
-use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 class TypeFactory
 {

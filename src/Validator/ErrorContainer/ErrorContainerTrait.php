@@ -8,7 +8,7 @@
 namespace Youshido\GraphQL\Validator\ErrorContainer;
 
 
-use Youshido\GraphQL\Validator\Exception\DatableResolveException;
+use Youshido\GraphQL\Exception\DatableResolveException;
 
 trait ErrorContainerTrait
 {

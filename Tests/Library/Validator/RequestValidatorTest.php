@@ -22,7 +22,7 @@ class RequestValidatorTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
-     * @expectedException Youshido\GraphQL\Parser\Exception\InvalidRequestException
+     * @expectedException Youshido\GraphQL\Exception\Parser\InvalidRequestException
      * @dataProvider invalidRequestProvider
      *
      * @param Request $request
