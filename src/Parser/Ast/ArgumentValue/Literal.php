@@ -10,14 +10,17 @@ namespace Youshido\GraphQL\Parser\Ast\ArgumentValue;
 
 use Youshido\GraphQL\Parser\Ast\AbstractAst;
 use Youshido\GraphQL\Parser\Ast\Interfaces\ValueInterface;
+use Youshido\GraphQL\Parser\Location;
 
 class Literal extends AbstractAst implements ValueInterface
 {
 
     private $value;
 
-    public function __construct($value)
+    public function __construct($value, Location $location)
     {
+        parent::__construct($location);
+
         $this->value = $value;
     }
 

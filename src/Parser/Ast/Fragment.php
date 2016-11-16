@@ -8,6 +8,8 @@
 namespace Youshido\GraphQL\Parser\Ast;
 
 
+use Youshido\GraphQL\Parser\Location;
+
 class Fragment extends AbstractAst
 {
 
@@ -22,14 +24,15 @@ class Fragment extends AbstractAst
     private $used = false;
 
     /**
-     * Fragment constructor.
-     *
      * @param                 $name
      * @param                 $model
      * @param Field[]|Query[] $fields
+     * @param Location        $location
      */
-    public function __construct($name, $model, array $fields)
+    public function __construct($name, $model, array $fields, Location $location)
     {
+        parent::__construct($location);
+
         $this->name   = $name;
         $this->model  = $model;
         $this->fields = $fields;

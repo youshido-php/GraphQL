@@ -10,6 +10,7 @@ namespace Youshido\GraphQL\Parser\Ast\ArgumentValue;
 
 use Youshido\GraphQL\Parser\Ast\AbstractAst;
 use Youshido\GraphQL\Parser\Ast\Interfaces\ValueInterface;
+use Youshido\GraphQL\Parser\Location;
 
 class InputList extends AbstractAst implements ValueInterface
 {
@@ -17,12 +18,13 @@ class InputList extends AbstractAst implements ValueInterface
     protected $list = [];
 
     /**
-     * InputList constructor.
-     *
-     * @param array $list
+     * @param array    $list
+     * @param Location $location
      */
-    public function __construct(array $list)
+    public function __construct(array $list, Location $location)
     {
+        parent::__construct($location);
+
         $this->list = $list;
     }
 

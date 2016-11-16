@@ -24,10 +24,6 @@ abstract class AbstractAst implements LocationableInterface
 
     public function getLocation()
     {
-        //todo: just for test working
-
-        return new Location(1, 1);
-
         return $this->location;
     }
 

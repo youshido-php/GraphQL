@@ -9,6 +9,7 @@ namespace Youshido\GraphQL\Parser\Ast;
 
 
 use Youshido\GraphQL\Parser\Ast\Interfaces\FragmentInterface;
+use Youshido\GraphQL\Parser\Location;
 
 class FragmentReference extends AbstractAst implements FragmentInterface
 {
@@ -17,11 +18,13 @@ class FragmentReference extends AbstractAst implements FragmentInterface
     protected $name;
 
     /**
-     * FragmentReference constructor.
-     * @param $name
+     * @param          $name
+     * @param Location $location
      */
-    public function __construct($name)
+    public function __construct($name, Location $location)
     {
+        parent::__construct($location);
+
         $this->name = $name;
     }
 

@@ -9,6 +9,7 @@ namespace Youshido\GraphQL\Parser\Ast\ArgumentValue;
 
 use Youshido\GraphQL\Parser\Ast\AbstractAst;
 use Youshido\GraphQL\Parser\Ast\Interfaces\ValueInterface;
+use Youshido\GraphQL\Parser\Location;
 
 class Variable extends AbstractAst implements ValueInterface
 {
@@ -28,11 +29,13 @@ class Variable extends AbstractAst implements ValueInterface
     /** @var bool */
     private $isArray = false;
 
-    /** @var bool  */
+    /** @var bool */
     private $used = false;
 
-    public function __construct($name, $type, $nullable = false, $isArray = false)
+    public function __construct($name, $type, $nullable = false, $isArray = false, Location $location)
     {
+        parent::__construct($location);
+
         $this->name     = $name;
         $this->type     = $type;
         $this->isArray  = $isArray;
