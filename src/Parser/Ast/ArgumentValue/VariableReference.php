@@ -8,7 +8,9 @@
 namespace Youshido\GraphQL\Parser\Ast\ArgumentValue;
 
 
-class VariableReference implements ValueInterface
+use Youshido\GraphQL\Parser\Ast\AbstractAst;
+
+class VariableReference extends AbstractAst implements ValueInterface
 {
 
     /** @var  string */

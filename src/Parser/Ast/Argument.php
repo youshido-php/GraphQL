@@ -10,7 +10,7 @@ namespace Youshido\GraphQL\Parser\Ast;
 
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\ValueInterface;
 
-class Argument
+class Argument extends AbstractAst
 {
 
     /** @var string */

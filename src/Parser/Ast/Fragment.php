@@ -8,7 +8,7 @@
 namespace Youshido\GraphQL\Parser\Ast;
 
 
-class Fragment
+class Fragment extends AbstractAst
 {
 
     protected $name;

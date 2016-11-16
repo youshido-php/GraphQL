@@ -13,8 +13,8 @@ use Youshido\GraphQL\Execution\Visitor\AbstractQueryVisitor;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Parser\Ast\Field as FieldAst;
-use Youshido\GraphQL\Parser\Ast\FragmentInterface;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
+use Youshido\GraphQL\Parser\Ast\Interfaces\FragmentInterface;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Type\AbstractType;
@@ -92,8 +92,8 @@ class Reducer
      * Fragments (anonymous and named), and Fields.  The core of the function is simple: recurse until we hit the base
      * case of a Field and yield that back up to the visitor up in `doVisit`.
      *
-     * @param Query|Field|FragmentInterface $queryNode
-     * @param FieldInterface                $currentLevelAST
+     * @param Query|Field|\Youshido\GraphQL\Parser\Ast\Interfaces\FragmentInterface $queryNode
+     * @param FieldInterface                                                        $currentLevelAST
      *
      * @return \Generator
      */

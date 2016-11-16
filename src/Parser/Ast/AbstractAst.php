@@ -1,0 +1,38 @@
+<?php
+/**
+ * Date: 16.11.16
+ *
+ * @author Portey Vasil <portey@gmail.com>
+ */
+
+namespace Youshido\GraphQL\Parser\Ast;
+
+
+use Youshido\GraphQL\Parser\Ast\Interfaces\LocationableInterface;
+use Youshido\GraphQL\Parser\Location;
+
+abstract class AbstractAst implements LocationableInterface
+{
+
+    /** @var  Location */
+    private $location;
+
+    public function __construct(Location $location)
+    {
+        $this->location = $location;
+    }
+
+    public function getLocation()
+    {
+        //todo: just for test working
+
+        return new Location(1, 1);
+
+        return $this->location;
+    }
+
+    public function setLocation(Location $location)
+    {
+        $this->location = $location;
+    }
+}

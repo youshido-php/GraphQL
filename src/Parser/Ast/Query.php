@@ -8,8 +8,9 @@
 namespace Youshido\GraphQL\Parser\Ast;
 
 use Youshido\GraphQL\Parser\Ast\Interfaces\FieldInterface;
+use Youshido\GraphQL\Parser\Ast\Interfaces\FragmentInterface;
 
-class Query implements FieldInterface
+class Query extends AbstractAst implements FieldInterface
 {
 
     /** @var string */

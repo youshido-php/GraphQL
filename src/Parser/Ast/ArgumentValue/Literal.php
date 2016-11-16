@@ -8,7 +8,9 @@
 namespace Youshido\GraphQL\Parser\Ast\ArgumentValue;
 
 
-class Literal implements ValueInterface
+use Youshido\GraphQL\Parser\Ast\AbstractAst;
+
+class Literal extends AbstractAst implements ValueInterface
 {
 
     private $value;

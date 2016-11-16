@@ -8,7 +8,9 @@
 namespace Youshido\GraphQL\Parser\Ast\ArgumentValue;
 
 
-class InputList implements ValueInterface
+use Youshido\GraphQL\Parser\Ast\AbstractAst;
+
+class InputList extends AbstractAst implements ValueInterface
 {
 
     protected $list = [];

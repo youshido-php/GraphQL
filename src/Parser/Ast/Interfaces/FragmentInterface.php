@@ -6,7 +6,7 @@
  * created: 12:26 PM 5/14/16
  */
 
-namespace Youshido\GraphQL\Parser\Ast;
+namespace Youshido\GraphQL\Parser\Ast\Interfaces;
 
 
 interface FragmentInterface

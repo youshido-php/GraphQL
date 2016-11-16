@@ -10,7 +10,6 @@ namespace Youshido\GraphQL\Parser;
 
 
 use Youshido\GraphQL\Exception\Parser\SyntaxErrorException;
-use Youshido\GraphQL\Exception\Parser\VariableTypeNotDefined;
 use Youshido\GraphQL\Parser\Ast\Argument;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputList;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputObject;
@@ -59,7 +58,7 @@ class Parser extends Tokenizer
                     break;
 
                 default:
-                    throw new SyntaxErrorException('Incorrect request syntax');
+                    throw new SyntaxErrorException('Incorrect request syntax', new Location($this->getLine(), $this->getColumn()));
             }
         }
 
@@ -361,7 +360,7 @@ class Parser extends Tokenizer
                 return $this->parseList(false);
         }
 
-        throw new SyntaxErrorException('Can\'t parse argument');
+        throw new SyntaxErrorException('Can\'t parse argument', new Location($this->getLine(), $this->getColumn()));
     }
 
     protected function parseObject($createType = true)

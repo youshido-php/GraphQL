@@ -7,8 +7,7 @@
 
 namespace Youshido\GraphQL\Exception\Parser;
 
-
-class InvalidRequestException extends \Exception
+class InvalidRequestException extends AbstractParserError
 {
 
 }

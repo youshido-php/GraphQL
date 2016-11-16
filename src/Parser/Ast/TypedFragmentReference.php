@@ -8,7 +8,9 @@
 namespace Youshido\GraphQL\Parser\Ast;
 
 
-class TypedFragmentReference implements FragmentInterface
+use Youshido\GraphQL\Parser\Ast\Interfaces\FragmentInterface;
+
+class TypedFragmentReference extends AbstractAst implements FragmentInterface
 {
 
     /** @var Field[]|Query[] */

@@ -8,7 +8,9 @@
 namespace Youshido\GraphQL\Parser\Ast;
 
 
-class FragmentReference implements FragmentInterface
+use Youshido\GraphQL\Parser\Ast\Interfaces\FragmentInterface;
+
+class FragmentReference extends AbstractAst implements FragmentInterface
 {
 
     /** @var  string */
