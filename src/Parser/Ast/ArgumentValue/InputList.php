@@ -9,6 +9,7 @@ namespace Youshido\GraphQL\Parser\Ast\ArgumentValue;
 
 
 use Youshido\GraphQL\Parser\Ast\AbstractAst;
+use Youshido\GraphQL\Parser\Ast\Interfaces\ValueInterface;
 
 class InputList extends AbstractAst implements ValueInterface
 {

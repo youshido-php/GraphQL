@@ -135,7 +135,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('{ user { name { } } }');
         $result = $processor->getResponseData();
 
-        $this->assertEquals(['errors' => [ ['message' => 'Unexpected token "RBRACE" at (1:19)']]], $result);
+        $this->assertEquals(['errors' => [ ['message' => 'Unexpected token "RBRACE"']]], $result);
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('{ user { name { invalidSelection } } }');

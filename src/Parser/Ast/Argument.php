@@ -8,7 +8,7 @@
 namespace Youshido\GraphQL\Parser\Ast;
 
 
-use Youshido\GraphQL\Parser\Ast\ArgumentValue\ValueInterface;
+use Youshido\GraphQL\Parser\Ast\Interfaces\ValueInterface;
 
 class Argument extends AbstractAst
 {
@@ -42,7 +42,7 @@ class Argument extends AbstractAst
     }
 
     /**
-     * @return ValueInterface
+     * @return \Youshido\GraphQL\Parser\Ast\Interfaces\ValueInterface
      */
     public function getValue()
     {
