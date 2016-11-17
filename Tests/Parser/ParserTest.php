@@ -512,6 +512,24 @@ GRAPHQL;
     {
         return [
             [
+                '{ film(id: 1 filmID: 2) { title } }',
+                [
+                    'queries'            => [
+                        new Query('film', null, [
+                            new Argument('id', new Literal(1, new Location(1, 12)), new Location(1, 8)),
+                            new Argument('filmID', new Literal(2, new Location(1, 22)), new Location(1, 14))
+                        ], [
+                            new Field('title', null, [], new Location(1, 27)),
+                        ], new Location(1, 3))
+                    ],
+                    'mutations'          => [],
+                    'fragments'          => [],
+                    'fragmentReferences' => [],
+                    'variables'          => [],
+                    'variableReferences' => []
+                ]
+            ],
+            [
                 '{ test (id: -5) { id } } ',
                 [
                     'queries'            => [

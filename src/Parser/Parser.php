@@ -271,7 +271,9 @@ class Parser extends Tokenizer
             if ($first) {
                 $first = false;
             } else {
-                $this->expect(Token::TYPE_COMMA);
+                if($this->match(Token::TYPE_COMMA)) {
+                    $this->eat(Token::TYPE_COMMA);
+                }
             }
 
             $args[] = $this->parseArgument();
