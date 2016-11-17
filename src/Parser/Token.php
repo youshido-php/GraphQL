@@ -59,6 +59,13 @@ class Token
         $this->line   = $line;
         $this->column = $column;
 
+        if ($data) {
+            $tokenLength = mb_strlen($data);
+            $tokenLength = $tokenLength > 1 ? $tokenLength - 1 : 0;
+
+            $this->column = $column - $tokenLength;
+        }
+
         if ($this->getType() == self::TYPE_TRUE) {
             $this->data = true;
         }

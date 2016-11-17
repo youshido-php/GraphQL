@@ -7,7 +7,9 @@
 
 namespace Youshido\GraphQL\Exception;
 
-class DatableResolveException extends \Exception
+use Youshido\GraphQL\Exception\Interfaces\DatableExceptionInterface;
+
+class DatableResolveException extends \Exception implements DatableExceptionInterface
 {
 
     /** @var  array */
