@@ -26,7 +26,16 @@ class Query extends AbstractAst implements FieldInterface
     /** @var Field[]|Query[] */
     protected $fields;
 
-    public function __construct($name, $alias = null, $arguments = [], $fields = [], Location $location)
+    /**
+     * Query constructor.
+     *
+     * @param string   $name
+     * @param string   $alias
+     * @param array    $arguments
+     * @param array    $fields
+     * @param Location $location
+     */
+    public function __construct($name, $alias = '', array $arguments, array $fields, Location $location)
     {
         parent::__construct($location);
 

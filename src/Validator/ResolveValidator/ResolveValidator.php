@@ -27,7 +27,7 @@ class ResolveValidator implements ResolveValidatorInterface
     {
         /** @var AbstractObjectType $objectType */
         if (!(TypeService::isObjectType($objectType) || TypeService::isInputObjectType($objectType)) || !$objectType->hasField($ast->getName())) {
-            throw new ResolveException(sprintf('Field "%s" not found in type "%s"', $ast->getName(), $objectType->getNamedType()->getName()));
+            throw new ResolveException(sprintf('Field "%s" not found in type "%s"', $ast->getName(), $objectType->getNamedType()->getName()), $ast->getLocation());
         }
     }
 
@@ -39,7 +39,7 @@ class ResolveValidator implements ResolveValidatorInterface
 
         foreach ($query->getArguments() as $astArgument) {
             if (!$field->hasArgument($astArgument->getName())) {
-                throw new ResolveException(sprintf('Unknown argument "%s" on field "%s"', $astArgument->getName(), $field->getName()));
+                throw new ResolveException(sprintf('Unknown argument "%s" on field "%s"', $astArgument->getName(), $field->getName()), $astArgument->getLocation());
             }
 
             $argument     = $field->getArgument($astArgument->getName());
@@ -51,7 +51,7 @@ class ResolveValidator implements ResolveValidatorInterface
                 case TypeMap::KIND_INPUT_OBJECT:
                 case TypeMap::KIND_LIST:
                     if (!$argument->getType()->isValidValue($astArgument->getValue())) {
-                        throw new ResolveException(sprintf('Not valid type for argument "%s" in query "%s"', $astArgument->getName(), $field->getName()));
+                        throw new ResolveException(sprintf('Not valid type for argument "%s" in query "%s"', $astArgument->getName(), $field->getName()), $astArgument->getLocation());
                     }
 
                     break;

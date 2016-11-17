@@ -19,6 +19,7 @@ use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
+use Youshido\GraphQL\Parser\Location;
 use Youshido\GraphQL\Parser\Parser;
 
 class ParserTest extends \PHPUnit_Framework_TestCase
@@ -76,11 +77,11 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             'queries'            => [
                 new Query('authors', null,
                     [
-                        new Argument('category', new Literal('#2'))
+                        new Argument('category', new Literal('#2', new Location(1,1)), new Location(1,1))
                     ],
                     [
-                        new Field('_id', null),
-                    ])
+                        new Field('_id', null, [], new Location(1,1)),
+                    ], new Location(1,1))
             ],
             'mutations'          => [],
             'fragments'          => [],
@@ -110,7 +111,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $data   = $parser->parse('{ name }');
         $this->assertEquals([
             'queries'            => [
-                new Query('name')
+                new Query('name', '', [], [], new Location(1,1))
             ],
             'mutations'          => [],
             'fragments'          => [],
@@ -126,10 +127,10 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $data   = $parser->parse('{ post, user { name } }');
         $this->assertEquals([
             'queries'            => [
-                new Query('post'),
+                new Query('post', null, [], [], new Location(1,1)),
                 new Query('user', null, [], [
-                    new Field('name')
-                ])
+                    new Field('name', null, [], new Location(1,1))
+                ], new Location(1,1))
             ],
             'mutations'          => [],
             'fragments'          => [],
@@ -154,11 +155,11 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             'mutations'          => [],
             'fragments'          => [
                 new Fragment('FullType', '__Type', [
-                    new Field('kind'),
+                    new Field('kind', null, [], new Location(1,1)),
                     new Query('fields', null, [], [
-                        new Field('name')
-                    ])
-                ])
+                        new Field('name', null, [], new Location(1,1))
+                    ], new Location(1,1))
+                ], new Location(1,1))
             ],
             'fragmentReferences' => [],
             'variables'          => [],
@@ -253,95 +254,95 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             'queries'            => [
                 new Query('__schema', null, [], [
                     new Query('queryType', null, [], [
-                        new Field('name')
-                    ]),
+                        new Field('name', null, [], new Location(1,1))
+                    ], new Location(1,1)),
                     new Query('mutationType', null, [], [
-                        new Field('name')
-                    ]),
+                        new Field('name', null, [], new Location(1,1))
+                    ], new Location(1,1)),
                     new Query('types', null, [], [
-                        new FragmentReference('FullType')
-                    ]),
+                        new FragmentReference('FullType', new Location(1,1))
+                    ], new Location(1,1)),
                     new Query('directives', null, [], [
-                        new Field('name'),
-                        new Field('description'),
+                        new Field('name', null, [], new Location(1,1)),
+                        new Field('description', null, [], new Location(1,1)),
                         new Query('args', null, [], [
-                            new FragmentReference('InputValue'),
-                        ]),
-                        new Field('onOperation'),
-                        new Field('onFragment'),
-                        new Field('onField'),
-                    ]),
-                ])
+                            new FragmentReference('InputValue', new Location(1,1)),
+                        ], new Location(1,1)),
+                        new Field('onOperation', null, [], new Location(1,1)),
+                        new Field('onFragment', null, [], new Location(1,1)),
+                        new Field('onField', null, [], new Location(1,1)),
+                    ], new Location(1,1)),
+                ], new Location(1,1))
             ],
             'mutations'          => [],
             'fragments'          => [
                 new Fragment('FullType', '__Type', [
-                    new Field('kind'),
-                    new Field('name'),
-                    new Field('description'),
+                    new Field('kind', null, [], new Location(1,1)),
+                    new Field('name', null, [], new Location(1,1)),
+                    new Field('description', null, [], new Location(1,1)),
                     new Query('fields', null, [], [
-                        new Field('name'),
-                        new Field('description'),
+                        new Field('name', null, [], new Location(1,1)),
+                        new Field('description', null, [], new Location(1,1)),
                         new Query('args', null, [], [
-                            new FragmentReference('InputValue'),
-                        ]),
+                            new FragmentReference('InputValue', new Location(1,1)),
+                        ], new Location(1,1)),
                         new Query('type', null, [], [
-                            new FragmentReference('TypeRef'),
-                        ]),
-                        new Field('isDeprecated'),
-                        new Field('deprecationReason'),
-                    ]),
+                            new FragmentReference('TypeRef', new Location(1,1)),
+                        ], new Location(1,1)),
+                        new Field('isDeprecated', null, [], new Location(1,1)),
+                        new Field('deprecationReason', null, [], new Location(1,1)),
+                    ], new Location(1,1)),
                     new Query('inputFields', null, [], [
-                        new FragmentReference('InputValue'),
-                    ]),
+                        new FragmentReference('InputValue', new Location(1,1)),
+                    ], new Location(1,1)),
                     new Query('interfaces', null, [], [
-                        new FragmentReference('TypeRef'),
-                    ]),
+                        new FragmentReference('TypeRef', new Location(1,1)),
+                    ], new Location(1,1)),
                     new Query('enumValues', null, [], [
-                        new Field('name'),
-                        new Field('description'),
+                        new Field('name', null, [], new Location(1,1)),
+                        new Field('description', null, [], new Location(1,1)),
 
-                        new Field('isDeprecated'),
-                        new Field('deprecationReason'),
-                    ]),
+                        new Field('isDeprecated', null, [], new Location(1,1)),
+                        new Field('deprecationReason', null, [], new Location(1,1)),
+                    ], new Location(1,1)),
                     new Query('possibleTypes', null, [], [
-                        new FragmentReference('TypeRef'),
-                    ]),
-                ]),
+                        new FragmentReference('TypeRef', new Location(1,1)),
+                    ], new Location(1,1)),
+                ], new Location(1,1)),
                 new Fragment('InputValue', '__InputValue', [
-                    new Field('name'),
-                    new Field('description'),
+                    new Field('name', null, [], new Location(1,1)),
+                    new Field('description', null, [], new Location(1,1)),
                     new Query('type', null, [], [
-                        new FragmentReference('TypeRef'),
-                    ]),
-                    new Field('defaultValue'),
-                ]),
+                        new FragmentReference('TypeRef', new Location(1,1)),
+                    ], new Location(1,1)),
+                    new Field('defaultValue', null, [], new Location(1,1)),
+                ], new Location(1,1)),
                 new Fragment('TypeRef', '__Type', [
-                    new Field('kind'),
-                    new Field('name'),
+                    new Field('kind', null, [], new Location(1,1)),
+                    new Field('name', null, [], new Location(1,1)),
                     new Query('ofType', null, [], [
-                        new Field('kind'),
-                        new Field('name'),
+                        new Field('kind', null, [], new Location(1,1)),
+                        new Field('name', null, [], new Location(1,1)),
                         new Query('ofType', null, [], [
-                            new Field('kind'),
-                            new Field('name'),
+                            new Field('kind', null, [], new Location(1,1)),
+                            new Field('name', null, [], new Location(1,1)),
                             new Query('ofType', null, [], [
-                                new Field('kind'),
-                                new Field('name'),
-                            ]),
-                        ]),
-                    ]),
-                ]),
+                                new Field('kind', null, [], new Location(1,1)),
+                                new Field('name', null, [], new Location(1,1)),
+                            ], new Location(1,1)),
+                        ], new Location(1,1)),
+                    ], new Location(1,1)),
+                ], new Location(1,1)),
             ],
             'fragmentReferences' => [
-                new FragmentReference('FullType'),
-                new FragmentReference('InputValue'),
-                new FragmentReference('InputValue'),
-                new FragmentReference('TypeRef'),
-                new FragmentReference('InputValue'),
-                new FragmentReference('TypeRef'),
-                new FragmentReference('TypeRef'),
-                new FragmentReference('TypeRef'),
+                new FragmentReference('FullType', new Location(1,1)),
+                new FragmentReference('InputValue', new Location(1,1)),
+                new FragmentReference('InputValue', new Location(1,1)),
+                new FragmentReference('TypeRef', new Location(1,1)),
+                new FragmentReference('InputValue', new Location(1,1)),
+                new FragmentReference('TypeRef', new Location(1,1)),
+                new FragmentReference('TypeRef', new Location(1,1)),
+                new FragmentReference('TypeRef', new Location(1,1)),
             ],
             'variables'          => [],
             'variableReferences' => []
@@ -396,11 +397,9 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             'queries'            => [
                 new Query('test', 'test', [],
                     [
-                        new Field('name', null),
-                        new TypedFragmentReference('UnionType', [
-                            new Field('unionName')
-                        ])
-                    ])
+                        new Field('name', null, [], new Location(1,1)),
+                        new TypedFragmentReference('UnionType', [new Field('unionName', null, [], new Location(1,1))], new Location(1,1))
+                    ], new Location(1,1))
             ],
             'mutations'          => [],
             'fragments'          => [],
@@ -419,20 +418,20 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     'queries'            => [
                         new Query('query', null,
                             [
-                                new Argument('teas', new VariableReference('variable', (new Variable('variable', 'Int'))->setUsed(true)))
+                                new Argument('teas', new VariableReference('variable', (new Variable('variable', 'Int', false, false, new Location(1,1)))->setUsed(true), new Location(1,1)), new Location(1,1))
                             ],
                             [
-                                new Field('name', 'alias')
-                            ])
+                                new Field('name', 'alias', [], new Location(1,1))
+                            ], new Location(1,1))
                     ],
                     'mutations'          => [],
                     'fragments'          => [],
                     'fragmentReferences' => [],
                     'variables'          => [
-                        (new Variable('variable', 'Int'))->setUsed(true)
+                        (new Variable('variable', 'Int', false, false, new Location(1,1)))->setUsed(true)
                     ],
                     'variableReferences' => [
-                        new VariableReference('variable', (new Variable('variable', 'Int'))->setUsed(true))
+                        new VariableReference('variable', (new Variable('variable', 'Int', false, false, new Location(1,1)))->setUsed(true), new Location(1,1))
                     ]
                 ]
             ],
@@ -440,7 +439,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 '{ query { alias: name } }',
                 [
                     'queries'            => [
-                        new Query('query', null, [], [new Field('name', 'alias')])
+                        new Query('query', null, [], [new Field('name', 'alias', [], new Location(1,1))], new Location(1,1))
                     ],
                     'mutations'          => [],
                     'fragments'          => [],
@@ -458,12 +457,13 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                             'createUser',
                             null,
                             [
-                                new Argument('email', new Literal('test@test.com')),
-                                new Argument('active', new Literal(true)),
+                                new Argument('email', new Literal('test@test.com', new Location(1,1)), new Location(1,1)),
+                                new Argument('active', new Literal(true, new Location(1,1)), new Location(1,1)),
                             ],
                             [
-                                new Field('id')
-                            ]
+                                new Field('id', null, [], new Location(1,1))
+                            ],
+                            new Location(1,1)
                         )
                     ],
                     'fragments'          => [],
@@ -481,9 +481,10 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                             'createUser',
                             'test',
                             [
-                                new Argument('id', new Literal(4)),
+                                new Argument('id', new Literal(4, new Location(1,1)), new Location(1,1)),
                             ],
-                            []
+                            [],
+                            new Location(1,1)
                         )
                     ],
                     'fragments'          => [],
@@ -515,10 +516,10 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 [
                     'queries'            => [
                         new Query('test', null, [
-                            new Argument('id', new Literal(-5))
+                            new Argument('id', new Literal(-5, new Location(1,1)), new Location(1,1))
                         ], [
-                            new Field('id'),
-                        ])
+                            new Field('id', null, [], new Location(1,1)),
+                        ], new Location(1,1))
                     ],
                     'mutations'          => [],
                     'fragments'          => [],
@@ -532,10 +533,10 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 [
                     'queries'            => [
                         new Query('test', null, [
-                            new Argument('id', new Literal(-5))
+                            new Argument('id', new Literal(-5, new Location(1,1)), new Location(1,1))
                         ], [
-                            new Field('id'),
-                        ])
+                            new Field('id', null, [], new Location(1,1)),
+                        ], new Location(1,1))
                     ],
                     'mutations'          => [],
                     'fragments'          => [],
@@ -554,11 +555,11 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 [
                     'queries'            => [
                         new Query('hero', null, [
-                            new Argument('episode', new Literal('EMPIRE'))
+                            new Argument('episode', new Literal('EMPIRE', new Location(1,1)), new Location(1,1))
                         ], [
-                            new Field('__typename'),
-                            new Field('name'),
-                        ])
+                            new Field('__typename', null, [], new Location(1,1)),
+                            new Field('name', null, [], new Location(1,1)),
+                        ], new Location(1,1))
                     ],
                     'mutations'          => [],
                     'fragments'          => [],
@@ -572,9 +573,9 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 [
                     'queries'            => [
                         new Query('test', null, [], [
-                            new Field('__typename'),
-                            new Field('id'),
-                        ])
+                            new Field('__typename', null, [], new Location(1,1)),
+                            new Field('id', null, [], new Location(1,1)),
+                        ], new Location(1,1))
                     ],
                     'mutations'          => [],
                     'fragments'          => [],
@@ -620,7 +621,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 'mutation setName { setUserName }',
                 [
                     'queries'            => [],
-                    'mutations'          => [new Mutation('setUserName')],
+                    'mutations'          => [new Mutation('setUserName', null, [], [], new Location(1,1))],
                     'fragments'          => [],
                     'fragmentReferences' => [],
                     'variables'          => [],
@@ -631,18 +632,18 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 '{ test { ...userDataFragment } } fragment userDataFragment on User { id, name, email }',
                 [
                     'queries'            => [
-                        new Query('test', null, [], [new FragmentReference('userDataFragment')])
+                        new Query('test', null, [], [new FragmentReference('userDataFragment', new Location(1,1))], new Location(1,1))
                     ],
                     'mutations'          => [],
                     'fragments'          => [
                         new Fragment('userDataFragment', 'User', [
-                            new Field('id'),
-                            new Field('name'),
-                            new Field('email')
-                        ])
+                            new Field('id', null, [], new Location(1,1)),
+                            new Field('name', null, [], new Location(1,1)),
+                            new Field('email', null, [], new Location(1,1))
+                        ], new Location(1,1))
                     ],
                     'fragmentReferences' => [
-                        new FragmentReference('userDataFragment')
+                        new FragmentReference('userDataFragment', new Location(1,1))
                     ],
                     'variables'          => [],
                     'variableReferences' => []
@@ -656,14 +657,15 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                             'user',
                             null,
                             [
-                                new Argument('id', new Literal('10')),
-                                new Argument('name', new Literal('max')),
-                                new Argument('float', new Literal('123.123'))
+                                new Argument('id', new Literal('10', new Location(1,1)), new Location(1,1)),
+                                new Argument('name', new Literal('max', new Location(1,1)), new Location(1,1)),
+                                new Argument('float', new Literal('123.123', new Location(1,1)), new Location(1,1))
                             ],
                             [
-                                new Field('id'),
-                                new Field('name')
-                            ]
+                                new Field('id', null, [], new Location(1,1)),
+                                new Field('name', null, [], new Location(1,1))
+                            ],
+                            new Location(1,1)
                         )
                     ],
                     'mutations'          => [],
@@ -681,11 +683,12 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                             'users',
                             'allUsers',
                             [
-                                new Argument('id', new InputList([1, 2, 3]))
+                                new Argument('id', new InputList([1, 2, 3], new Location(1,1)), new Location(1,1))
                             ],
                             [
-                                new Field('id')
-                            ]
+                                new Field('id', null, [], new Location(1,1))
+                            ],
+                            new Location(1,1)
                         )
                     ],
                     'mutations'          => [],
@@ -703,11 +706,12 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                             'users',
                             'allUsers',
                             [
-                                new Argument('id', new InputList([1, "2", true, null]))
+                                new Argument('id', new InputList([1, "2", true, null], new Location(1,1)), new Location(1,1))
                             ],
                             [
-                                new Field('id')
-                            ]
+                                new Field('id', null, [], new Location(1,1))
+                            ],
+                            new Location(1,1)
                         )
                     ],
                     'mutations'          => [],
@@ -732,12 +736,13 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                                     'c' => new InputObject([
                                         'a' => 123,
                                         'b' => 'asd'
-                                    ])
-                                ]))
+                                    ], new Location(1,1))
+                                ], new Location(1,1)), new Location(1,1))
                             ],
                             [
-                                new Field('id')
-                            ]
+                                new Field('id', null, [], new Location(1,1))
+                            ],
+                            new Location(1,1)
                         )
                     ],
                     'mutations'          => [],

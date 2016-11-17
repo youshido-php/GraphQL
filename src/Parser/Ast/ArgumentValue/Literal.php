@@ -17,6 +17,10 @@ class Literal extends AbstractAst implements ValueInterface
 
     private $value;
 
+    /**
+     * @param mixed $value
+     * @param Location $location
+     */
     public function __construct($value, Location $location)
     {
         parent::__construct($location);

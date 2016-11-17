@@ -32,7 +32,14 @@ class Variable extends AbstractAst implements ValueInterface
     /** @var bool */
     private $used = false;
 
-    public function __construct($name, $type, $nullable = false, $isArray = false, Location $location)
+    /**
+     * @param string   $name
+     * @param string   $type
+     * @param bool     $nullable
+     * @param bool     $isArray
+     * @param Location $location
+     */
+    public function __construct($name, $type, $nullable, $isArray, Location $location)
     {
         parent::__construct($location);
 

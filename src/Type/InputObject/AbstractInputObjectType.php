@@ -36,8 +36,6 @@ abstract class AbstractInputObjectType extends AbstractType
 
     /**
      * @param InputObjectTypeConfig $config
-     *
-     * @return mixed
      */
     abstract public function build($config);
 

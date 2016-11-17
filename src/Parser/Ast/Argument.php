@@ -20,6 +20,11 @@ class Argument extends AbstractAst
     /** @var ValueInterface */
     private $value;
 
+    /**
+     * @param string         $name
+     * @param ValueInterface $value
+     * @param Location       $location
+     */
     public function __construct($name, ValueInterface $value, Location $location)
     {
         parent::__construct($location);

@@ -24,8 +24,8 @@ class Fragment extends AbstractAst
     private $used = false;
 
     /**
-     * @param                 $name
-     * @param                 $model
+     * @param string          $name
+     * @param string          $model
      * @param Field[]|Query[] $fields
      * @param Location        $location
      */

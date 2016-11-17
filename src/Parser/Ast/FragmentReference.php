@@ -18,7 +18,7 @@ class FragmentReference extends AbstractAst implements FragmentInterface
     protected $name;
 
     /**
-     * @param          $name
+     * @param string   $name
      * @param Location $location
      */
     public function __construct($name, Location $location)

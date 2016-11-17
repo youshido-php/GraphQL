@@ -25,7 +25,7 @@ class TypedFragmentReference extends AbstractAst implements FragmentInterface
      * @param Field[]|Query[] $fields
      * @param Location        $location
      */
-    public function __construct($typeName, $fields, Location $location)
+    public function __construct($typeName, array $fields, Location $location)
     {
         parent::__construct($location);
 
