@@ -8,11 +8,13 @@
 namespace Youshido\GraphQL\Exception\Interfaces;
 
 
+use Youshido\GraphQL\Parser\Location;
+
 interface LocationableExceptionInterface
 {
 
     /**
-     * @return array
+     * @return Location
      */
     public function getLocation();
 
