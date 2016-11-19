@@ -8,7 +8,10 @@
 namespace Youshido\GraphQL\Parser\Ast;
 
 
-class TypedFragmentReference implements FragmentInterface
+use Youshido\GraphQL\Parser\Ast\Interfaces\FragmentInterface;
+use Youshido\GraphQL\Parser\Location;
+
+class TypedFragmentReference extends AbstractAst implements FragmentInterface
 {
 
     /** @var Field[]|Query[] */
@@ -20,9 +23,12 @@ class TypedFragmentReference implements FragmentInterface
     /**
      * @param string          $typeName
      * @param Field[]|Query[] $fields
+     * @param Location        $location
      */
-    public function __construct($typeName, $fields)
+    public function __construct($typeName, array $fields, Location $location)
     {
+        parent::__construct($location);
+
         $this->typeName = $typeName;
         $this->fields   = $fields;
     }

@@ -41,13 +41,30 @@ class Token
 
     /** @var mixed */
     private $data;
+
     /** @var  string */
     private $type;
 
-    public function __construct($type, $data = null)
+    /** @var integer */
+    private $line;
+
+    /** @var integer */
+    private $column;
+
+    public function __construct($type, $line, $column, $data = null)
     {
         $this->type = $type;
         $this->data = $data;
+
+        $this->line   = $line;
+        $this->column = $column;
+
+        if ($data) {
+            $tokenLength = mb_strlen($data);
+            $tokenLength = $tokenLength > 1 ? $tokenLength - 1 : 0;
+
+            $this->column = $column - $tokenLength;
+        }
 
         if ($this->getType() == self::TYPE_TRUE) {
             $this->data = true;
@@ -60,7 +77,6 @@ class Token
         if ($this->getType() == self::TYPE_NULL) {
             $this->data = null;
         }
-
     }
 
     public static function tokenName($tokenType)
@@ -109,4 +125,19 @@ class Token
         return $this->type;
     }
 
+    /**
+     * @return int
+     */
+    public function getLine()
+    {
+        return $this->line;
+    }
+
+    /**
+     * @return int
+     */
+    public function getColumn()
+    {
+        return $this->column;
+    }
 }

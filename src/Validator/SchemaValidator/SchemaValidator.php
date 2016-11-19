@@ -8,13 +8,12 @@
 
 namespace Youshido\GraphQL\Validator\SchemaValidator;
 
-use Youshido\GraphQL\Config\AbstractConfig;
+use Youshido\GraphQL\Exception\ConfigurationException;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
-use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 class SchemaValidator
 {

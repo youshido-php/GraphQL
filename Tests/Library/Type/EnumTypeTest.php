@@ -17,7 +17,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
-     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
      */
     public function testInvalidInlineCreation()
     {
@@ -25,7 +25,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
      */
     public function testInvalidEmptyParams()
     {
@@ -37,7 +37,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
      */
     public function testInvalidValueParams()
     {
@@ -51,7 +51,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
      */
     public function testExistingNameParams()
     {
@@ -67,7 +67,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
      */
     public function testInvalidNameParams()
     {
@@ -83,7 +83,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
      */
     public function testWithoutValueParams()
     {

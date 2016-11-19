@@ -13,6 +13,7 @@ use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Parser\Ast\Field as FieldAST;
+use Youshido\GraphQL\Parser\Location;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\Tests\DataProvider\TestSchema;
 
@@ -20,7 +21,7 @@ class ResolveInfoTest extends \PHPUnit_Framework_TestCase
 {
     public function testMethods()
     {
-        $fieldAst         = new FieldAST('name');
+        $fieldAst         = new FieldAST('name', null, [], new Location(1,1));
         $field            = new Field(['name' => 'id', 'type' => new IntType()]);
         $returnType       = new IntType();
         $executionContext = new ExecutionContext(new TestSchema());

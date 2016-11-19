@@ -7,7 +7,7 @@
 
 namespace Youshido\GraphQL\Parser;
 
-use Youshido\GraphQL\Parser\Exception\SyntaxErrorException;
+use Youshido\GraphQL\Exception\Parser\SyntaxErrorException;
 
 class Tokenizer
 {
@@ -69,11 +69,13 @@ class Tokenizer
 
     /**
      * @return Token
+     *
+     * @throws SyntaxErrorException
      */
     protected function scan()
     {
         if ($this->pos >= strlen($this->source)) {
-            return new Token(Token::TYPE_END);
+            return new Token(Token::TYPE_END, $this->getLine(), $this->getColumn());
         }
 
         $ch = $this->source[$this->pos];
@@ -81,51 +83,51 @@ class Tokenizer
             case Token::TYPE_LPAREN:
                 ++$this->pos;
 
-                return new Token(Token::TYPE_LPAREN);
+                return new Token(Token::TYPE_LPAREN, $this->getLine(), $this->getColumn());
             case Token::TYPE_RPAREN:
                 ++$this->pos;
 
-                return new Token(Token::TYPE_RPAREN);
+                return new Token(Token::TYPE_RPAREN, $this->getLine(), $this->getColumn());
             case Token::TYPE_LBRACE:
                 ++$this->pos;
 
-                return new Token(Token::TYPE_LBRACE);
+                return new Token(Token::TYPE_LBRACE, $this->getLine(), $this->getColumn());
             case Token::TYPE_RBRACE:
                 ++$this->pos;
 
-                return new Token(Token::TYPE_RBRACE);
+                return new Token(Token::TYPE_RBRACE, $this->getLine(), $this->getColumn());
             case Token::TYPE_COMMA:
                 ++$this->pos;
 
-                return new Token(Token::TYPE_COMMA);
+                return new Token(Token::TYPE_COMMA, $this->getLine(), $this->getColumn());
             case Token::TYPE_LSQUARE_BRACE:
                 ++$this->pos;
 
-                return new Token(Token::TYPE_LSQUARE_BRACE);
+                return new Token(Token::TYPE_LSQUARE_BRACE, $this->getLine(), $this->getColumn());
             case Token::TYPE_RSQUARE_BRACE:
                 ++$this->pos;
 
-                return new Token(Token::TYPE_RSQUARE_BRACE);
+                return new Token(Token::TYPE_RSQUARE_BRACE, $this->getLine(), $this->getColumn());
             case Token::TYPE_REQUIRED:
                 ++$this->pos;
 
-                return new Token(Token::TYPE_REQUIRED);
+                return new Token(Token::TYPE_REQUIRED, $this->getLine(), $this->getColumn());
             case Token::TYPE_COLON:
                 ++$this->pos;
 
-                return new Token(Token::TYPE_COLON);
+                return new Token(Token::TYPE_COLON, $this->getLine(), $this->getColumn());
 
             case Token::TYPE_POINT:
                 if ($this->checkFragment()) {
-                    return new Token(Token::TYPE_FRAGMENT_REFERENCE);
+                    return new Token(Token::TYPE_FRAGMENT_REFERENCE, $this->getLine(), $this->getColumn());
                 } else {
-                    return new Token(Token::TYPE_POINT);
+                    return new Token(Token::TYPE_POINT, $this->getLine(), $this->getColumn());
                 }
 
             case Token::TYPE_VARIABLE:
                 ++$this->pos;
 
-                return new Token(Token::TYPE_VARIABLE);
+                return new Token(Token::TYPE_VARIABLE, $this->getLine(), $this->getColumn());
         }
 
         if ($ch === '_' || 'a' <= $ch && $ch <= 'z' || 'A' <= $ch && $ch <= 'Z') {
@@ -179,7 +181,7 @@ class Tokenizer
 
         $value = substr($this->source, $start, $this->pos - $start);
 
-        return new Token($this->getKeyword($value), $value);
+        return new Token($this->getKeyword($value), $this->getLine(), $this->getColumn(), $value);
     }
 
     protected function getKeyword($name)
@@ -246,7 +248,7 @@ class Tokenizer
             $value = (float)$value;
         }
 
-        return new Token(Token::TYPE_NUMBER, $value);
+        return new Token(Token::TYPE_NUMBER, $this->getLine(), $this->getColumn(), $value);
     }
 
     protected function skipInteger()
@@ -263,12 +265,22 @@ class Tokenizer
 
     protected function createException($message)
     {
-        return new SyntaxErrorException(sprintf('%s at (%s:%s)', $message, $this->line, $this->getColumn()));
+        return new SyntaxErrorException(sprintf('%s', $message), $this->getLocation());
+    }
+
+    protected function getLocation()
+    {
+        return new Location($this->getLine(), $this->getColumn());
     }
 
     protected function getColumn()
     {
         return $this->pos - $this->lineStart;
+    }
+
+    protected function getLine()
+    {
+        return $this->line;
     }
 
     protected function scanString()
@@ -279,9 +291,10 @@ class Tokenizer
         while ($this->pos < strlen($this->source)) {
             $ch = $this->source[$this->pos];
             if ($ch === '"' && $this->source[$this->pos - 1] != '\\') {
+                $token = new Token(Token::TYPE_STRING, $this->getLine(), $this->getColumn(), $value);
                 $this->pos++;
 
-                return new Token(Token::TYPE_STRING, $value);
+                return $token;
             }
 
             $value .= $ch;

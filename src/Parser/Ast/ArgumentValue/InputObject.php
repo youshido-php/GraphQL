@@ -8,18 +8,23 @@
 namespace Youshido\GraphQL\Parser\Ast\ArgumentValue;
 
 
-class InputObject implements ValueInterface
+use Youshido\GraphQL\Parser\Ast\AbstractAst;
+use Youshido\GraphQL\Parser\Ast\Interfaces\ValueInterface;
+use Youshido\GraphQL\Parser\Location;
+
+class InputObject extends AbstractAst implements ValueInterface
 {
 
     protected $object = [];
 
     /**
-     * InputList constructor.
-     *
-     * @param array $object
+     * @param array    $object
+     * @param Location $location
      */
-    public function __construct(array $object)
+    public function __construct(array $object, Location $location)
     {
+        parent::__construct($location);
+
         $this->object = $object;
     }
 

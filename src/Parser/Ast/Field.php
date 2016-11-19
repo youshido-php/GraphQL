@@ -9,8 +9,9 @@ namespace Youshido\GraphQL\Parser\Ast;
 
 
 use Youshido\GraphQL\Parser\Ast\Interfaces\FieldInterface;
+use Youshido\GraphQL\Parser\Location;
 
-class Field implements FieldInterface
+class Field extends AbstractAst implements FieldInterface
 {
     /** @var string */
     private $name;
@@ -23,8 +24,16 @@ class Field implements FieldInterface
 
     private $argumentsCache = null;
 
-    public function __construct($name, $alias = null, $arguments = [])
+    /**
+     * @param string   $name
+     * @param string   $alias
+     * @param array    $arguments
+     * @param Location $location
+     */
+    public function __construct($name, $alias, $arguments, Location $location)
     {
+        parent::__construct($location);
+
         $this->name      = $name;
         $this->alias     = $alias;
         $this->arguments = $arguments;

@@ -21,7 +21,7 @@ use Youshido\Tests\DataProvider\TestInterfaceType;
 class SchemaValidatorTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @expectedException \Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedException \Youshido\GraphQL\Exception\ConfigurationException
      */
     public function testInvalidSchema()
     {
@@ -30,7 +30,7 @@ class SchemaValidatorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedException \Youshido\GraphQL\Exception\ConfigurationException
      * @expectedExceptionMessage Implementation of TestInterface is invalid for the field name
      */
     public function testInvalidInterfacesSimpleType()
@@ -55,7 +55,7 @@ class SchemaValidatorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedException \Youshido\GraphQL\Exception\ConfigurationException
      * @expectedExceptionMessage Implementation of TestInterface is invalid for the field name
      */
     public function testInvalidInterfacesCompositeType()
@@ -80,7 +80,7 @@ class SchemaValidatorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedException \Youshido\GraphQL\Exception\ConfigurationException
      * @expectedExceptionMessage Implementation of TestInterface is invalid for the field name
      */
     public function testInvalidInterfaces()

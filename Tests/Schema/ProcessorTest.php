@@ -244,25 +244,57 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['data' => ['increaseCounter' => 1]], $processor->getResponseData());
 
         $processor->processPayload('mutation { invalidMutation }');
-        $this->assertEquals(['errors' => [['message' => 'Field "invalidMutation" not found in type "RootSchemaMutation"']]], $processor->getResponseData());
+        $this->assertEquals(['errors' => [[
+            'message'   => 'Field "invalidMutation" not found in type "RootSchemaMutation"',
+            'locations' => [
+                [
+                    'line'   => 1,
+                    'column' => 12
+                ]
+            ]
+        ]]], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('mutation { increaseCounter(noArg: 2) }');
         $this->assertEquals([
             'data'   => ['increaseCounter' => null],
-            'errors' => [['message' => 'Unknown argument "noArg" on field "increaseCounter"']]
+            'errors' => [[
+                'message'   => 'Unknown argument "noArg" on field "increaseCounter"',
+                'locations' => [
+                    [
+                        'line'   => 1,
+                        'column' => 28
+                    ]
+                ]
+            ]]
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('mutation { increaseCounter(amount: 2) { invalidProp } }');
-        $this->assertEquals(['errors' => [['message' => 'You can\'t specify fields for scalar type "Int"']], 'data' => ['increaseCounter' => null]], $processor->getResponseData());
+        $this->assertEquals(['errors' => [[
+            'message'   => 'You can\'t specify fields for scalar type "Int"',
+            'locations' => [
+                [
+                    'line'   => 1,
+                    'column' => 12
+                ]
+            ]
+        ]], 'data'                    => ['increaseCounter' => null]], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('mutation { increaseCounter(amount: 2) }');
         $this->assertEquals(['data' => ['increaseCounter' => 3]], $processor->getResponseData());
 
         $processor->processPayload('{ invalidQuery }');
-        $this->assertEquals(['errors' => [['message' => 'Field "invalidQuery" not found in type "RootQuery"']]], $processor->getResponseData());
+        $this->assertEquals(['errors' => [[
+            'message'   => 'Field "invalidQuery" not found in type "RootQuery"',
+            'locations' => [
+                [
+                    'line'   => 1,
+                    'column' => 3
+                ]
+            ]
+        ]]], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('{ invalidValueQuery { id } }');
@@ -272,14 +304,30 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('{ me { firstName(shorten: true), middle }}');
         $this->assertEquals([
             'data'   => ['me' => null],
-            'errors' => [['message' => 'Field "middle" not found in type "User"']],
+            'errors' => [[
+                'message' => 'Field "middle" not found in type "User"',
+                'locations' => [
+                    [
+                        'line' => 1,
+                        'column' => 34
+                    ]
+                ]
+            ]],
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('{ randomUser { region }}');
         $this->assertEquals([
             'data'   => ['randomUser' => null],
-            'errors' => [['message' => 'You have to specify fields for "region"']]
+            'errors' => [[
+                'message' => 'You have to specify fields for "region"',
+                'locations' => [
+                    [
+                        'line' => 1,
+                        'column' => 16
+                    ]
+                ]
+            ]]
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
@@ -345,7 +393,15 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $response = $processor->getResponseData();
         $this->assertEquals([
             'data'   => ['alias' => null],
-            'errors' => [['message' => 'Not valid type for argument "argument1" in query "test"']]
+            'errors' => [[
+                'message'   => 'Not valid type for argument "argument1" in query "test"',
+                'locations' => [
+                    [
+                        'line'   => 1,
+                        'column' => 15
+                    ]
+                ]
+            ]]
         ], $response);
         $processor->getExecutionContext()->clearErrors();
 
@@ -547,7 +603,15 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                 'union' => null
             ],
             'errors' => [
-                ['message' => 'Field "name" not found in type "Object1"']
+                [
+                    'message'   => 'Field "name" not found in type "Object1"',
+                    'locations' => [
+                        [
+                            'line'   => 1,
+                            'column' => 45
+                        ]
+                    ]
+                ]
             ]
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
@@ -673,7 +737,15 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayNotHasKey('error', $processor->getResponseData());
 
         $processor->processPayload('{ me { } }');
-        $this->assertEquals(['errors' => [['message' => 'Unexpected token "RBRACE" at (1:10)']]], $processor->getResponseData());
+        $this->assertEquals(['errors' => [[
+            'message'   => 'Unexpected token "RBRACE"',
+            'locations' => [
+                [
+                    'line'   => 1,
+                    'column' => 10
+                ]
+            ]
+        ]]], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
 

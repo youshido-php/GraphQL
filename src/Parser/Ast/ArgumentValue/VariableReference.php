@@ -8,7 +8,11 @@
 namespace Youshido\GraphQL\Parser\Ast\ArgumentValue;
 
 
-class VariableReference implements ValueInterface
+use Youshido\GraphQL\Parser\Ast\AbstractAst;
+use Youshido\GraphQL\Parser\Ast\Interfaces\ValueInterface;
+use Youshido\GraphQL\Parser\Location;
+
+class VariableReference extends AbstractAst implements ValueInterface
 {
 
     /** @var  string */
@@ -21,13 +25,14 @@ class VariableReference implements ValueInterface
     private $value;
 
     /**
-     * VariableReference constructor.
-     *
      * @param string        $name
      * @param Variable|null $variable
+     * @param Location      $location
      */
-    public function __construct($name, Variable $variable = null)
+    public function __construct($name, Variable $variable = null, Location $location)
     {
+        parent::__construct($location);
+
         $this->name     = $name;
         $this->variable = $variable;
     }

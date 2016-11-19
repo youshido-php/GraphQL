@@ -8,6 +8,7 @@
 namespace Youshido\GraphQL\Execution;
 
 
+use Youshido\GraphQL\Exception\ResolveException;
 use Youshido\GraphQL\Execution\Container\Container;
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor;
@@ -34,7 +35,6 @@ use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\Union\AbstractUnionType;
-use Youshido\GraphQL\Validator\Exception\ResolveException;
 use Youshido\GraphQL\Validator\RequestValidator\RequestValidator;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidatorInterface;
@@ -172,7 +172,7 @@ class Processor
                 case TypeMap::KIND_ENUM:
                 case TypeMap::KIND_SCALAR:
                     if ($ast instanceof AstQuery && $ast->hasFields()) {
-                        throw new ResolveException(sprintf('You can\'t specify fields for scalar type "%s"', $targetField->getType()->getNullableType()->getName()));
+                        throw new ResolveException(sprintf('You can\'t specify fields for scalar type "%s"', $targetField->getType()->getNullableType()->getName()), $ast->getLocation());
                     }
 
                     return $this->resolveScalar($targetField, $ast, $parentValue);
@@ -180,7 +180,7 @@ class Processor
                 case TypeMap::KIND_OBJECT:
                     /** @var $type AbstractObjectType */
                     if (!$ast instanceof AstQuery) {
-                        throw new ResolveException(sprintf('You have to specify fields for "%s"', $ast->getName()));
+                        throw new ResolveException(sprintf('You have to specify fields for "%s"', $ast->getName()), $ast->getLocation());
                     }
 
                     return $this->resolveObject($targetField, $ast, $parentValue);
@@ -191,7 +191,7 @@ class Processor
                 case TypeMap::KIND_UNION:
                 case TypeMap::KIND_INTERFACE:
                     if (!$ast instanceof AstQuery) {
-                        throw new ResolveException(sprintf('You have to specify fields for "%s"', $ast->getName()));
+                        throw new ResolveException(sprintf('You have to specify fields for "%s"', $ast->getName()), $ast->getLocation());
                     }
 
                     return $this->resolveComposite($targetField, $ast, $parentValue);
@@ -274,18 +274,18 @@ class Processor
     {
         $variable = $variableReference->getVariable();
         if ($argumentType->getKind() == TypeMap::KIND_LIST) {
-            if ($variable->getTypeName() != $argumentType->getNamedType()->getName()) {
-                throw new ResolveException(sprintf('Invalid variable "%s" type, allowed type is "%s"', $variable->getName(), $argumentType->getName()));
+            if ($variable->getTypeName() != $argumentType->getNamedType()->getName() || !$variable->isArray()) {
+                throw new ResolveException(sprintf('Invalid variable "%s" type, allowed type is "%s"', $variable->getName(), $argumentType->getName()), $variable->getLocation());
             }
         } else {
             if ($variable->getTypeName() != $argumentType->getName()) {
-                throw new ResolveException(sprintf('Invalid variable "%s" type, allowed type is "%s"', $variable->getName(), $argumentType->getName()));
+                throw new ResolveException(sprintf('Invalid variable "%s" type, allowed type is "%s"', $variable->getName(), $argumentType->getName()), $variable->getLocation());
             }
         }
 
         $requestValue = $request->getVariable($variable->getName());
         if (!$request->hasVariable($variable->getName()) || (null === $requestValue && $variable->isNullable())) {
-            throw  new ResolveException(sprintf('Variable "%s" does not exist in request', $variable->getName()));
+            throw  new ResolveException(sprintf('Variable "%s" does not exist in request', $variable->getName()), $variable->getLocation());
         }
 
         return $requestValue;

@@ -3,6 +3,7 @@
 namespace Youshido\Tests\Parser;
 
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
+use Youshido\GraphQL\Parser\Location;
 
 class VariableTest extends \PHPUnit_Framework_TestCase
 {
@@ -13,7 +14,7 @@ class VariableTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetValue($actual, $expected)
     {
-        $var = new Variable('foo', 'bar');
+        $var = new Variable('foo', 'bar', false, false, new Location(1,1));
         $var->setValue($actual);
         $this->assertEquals($var->getValue(), $expected);
     }
@@ -24,7 +25,7 @@ class VariableTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetNullValueException()
     {
-        $var = new Variable('foo', 'bar');
+        $var = new Variable('foo', 'bar', false, false, new Location(1,1));
         $var->getValue();
     }
 

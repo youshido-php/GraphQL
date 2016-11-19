@@ -49,8 +49,6 @@ abstract class AbstractInterfaceType extends AbstractType
 
     /**
      * @param InterfaceTypeConfig $config
-     *
-     * @return mixed
      */
     abstract public function build($config);
 

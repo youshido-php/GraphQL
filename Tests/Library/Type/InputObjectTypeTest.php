@@ -81,11 +81,18 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
         ]));
 
         $processor->processPayload('mutation { createList(posts: [{title: null }, {}]) }');
-        $a = $processor->getResponseData();
         $this->assertEquals(
             [
                 'data'   => ['createList' => null],
-                'errors' => [['message' => 'Not valid type for argument "posts" in query "createList"']]
+                'errors' => [[
+                    'message' => 'Not valid type for argument "posts" in query "createList"',
+                    'locations' => [
+                        [
+                            'line' => 1,
+                            'column' => 23
+                        ]
+                    ]
+                ]]
             ],
             $processor->getResponseData()
         );
@@ -132,7 +139,15 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('mutation { createList(topArgument: { postObject:[ { title: null } ] })}');
         $this->assertEquals([
             'data'   => ['createList' => null],
-            'errors' => [['message' => 'Not valid type for argument "topArgument" in query "createList"']],
+            'errors' => [[
+                'message' => 'Not valid type for argument "topArgument" in query "createList"',
+                'locations' => [
+                    [
+                        'line' => 1,
+                        'column' => 23
+                    ]
+                ]
+            ]],
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
         $processor->processPayload('mutation { createList(topArgument:{

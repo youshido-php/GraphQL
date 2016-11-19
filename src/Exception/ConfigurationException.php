@@ -6,7 +6,7 @@
 * created: 11/27/15 2:28 AM
 */
 
-namespace Youshido\GraphQL\Validator\Exception;
+namespace Youshido\GraphQL\Exception;
 
 
 class ConfigurationException extends \Exception

@@ -15,7 +15,6 @@ use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\Traits\FieldsArgumentsAwareObjectTrait;
 use Youshido\GraphQL\Type\TypeMap;
-use Youshido\GraphQL\Validator\Exception\ResolveException;
 
 /**
  * Class AbstractObjectType
@@ -53,9 +52,7 @@ abstract class AbstractObjectType extends AbstractType
 
     final public function serialize($value)
     {
-        /** why final? */
-        /** and why we need this method in *ObjectType? */
-        throw new ResolveException('You can not serialize object value directly');
+        throw new \InvalidArgumentException('You can not serialize object value directly');
     }
 
     public function getKind()
@@ -75,7 +72,6 @@ abstract class AbstractObjectType extends AbstractType
 
     /**
      * @param ObjectTypeConfig $config
-     * @return mixed
      */
     abstract public function build($config);
 

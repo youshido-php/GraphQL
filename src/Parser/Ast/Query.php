@@ -8,8 +8,10 @@
 namespace Youshido\GraphQL\Parser\Ast;
 
 use Youshido\GraphQL\Parser\Ast\Interfaces\FieldInterface;
+use Youshido\GraphQL\Parser\Ast\Interfaces\FragmentInterface;
+use Youshido\GraphQL\Parser\Location;
 
-class Query implements FieldInterface
+class Query extends AbstractAst implements FieldInterface
 {
 
     /** @var string */
@@ -24,8 +26,19 @@ class Query implements FieldInterface
     /** @var Field[]|Query[] */
     protected $fields;
 
-    public function __construct($name, $alias = null, $arguments = [], $fields = [])
+    /**
+     * Query constructor.
+     *
+     * @param string   $name
+     * @param string   $alias
+     * @param array    $arguments
+     * @param array    $fields
+     * @param Location $location
+     */
+    public function __construct($name, $alias = '', array $arguments, array $fields, Location $location)
     {
+        parent::__construct($location);
+
         $this->name      = $name;
         $this->alias     = $alias;
         $this->arguments = $arguments;

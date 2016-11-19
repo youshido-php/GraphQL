@@ -8,8 +8,8 @@
 namespace Youshido\GraphQL\Validator\RequestValidator;
 
 
+use Youshido\GraphQL\Exception\Parser\InvalidRequestException;
 use Youshido\GraphQL\Execution\Request;
-use Youshido\GraphQL\Parser\Exception\InvalidRequestException;
 
 class RequestValidator implements RequestValidatorInterface
 {
@@ -30,7 +30,7 @@ class RequestValidator implements RequestValidatorInterface
 
         foreach ($request->getFragments() as $fragment) {
             if (!$fragment->isUsed()) {
-                throw new InvalidRequestException(sprintf('Fragment "%s" not used', $fragment->getName()));
+                throw new InvalidRequestException(sprintf('Fragment "%s" not used', $fragment->getName()), $fragment->getLocation());
             }
         }
     }
@@ -39,7 +39,7 @@ class RequestValidator implements RequestValidatorInterface
     {
         foreach ($request->getFragmentReferences() as $fragmentReference) {
             if (!$request->getFragment($fragmentReference->getName())) {
-                throw new InvalidRequestException(sprintf('Fragment "%s" not defined in query', $fragmentReference->getName()));
+                throw new InvalidRequestException(sprintf('Fragment "%s" not defined in query', $fragmentReference->getName()), $fragmentReference->getLocation());
             }
         }
     }
@@ -48,7 +48,7 @@ class RequestValidator implements RequestValidatorInterface
     {
         foreach ($request->getVariableReferences() as $variableReference) {
             if (!$variableReference->getVariable()) {
-                throw new InvalidRequestException(sprintf('Variable "%s" not exists', $variableReference->getName()));
+                throw new InvalidRequestException(sprintf('Variable "%s" not exists', $variableReference->getName()), $variableReference->getLocation());
             }
         }
     }
@@ -57,7 +57,7 @@ class RequestValidator implements RequestValidatorInterface
     {
         foreach ($request->getQueryVariables() as $queryVariable) {
             if (!$queryVariable->isUsed()) {
-                throw new InvalidRequestException(sprintf('Variable "%s" not used', $queryVariable->getName()));
+                throw new InvalidRequestException(sprintf('Variable "%s" not used', $queryVariable->getName()), $queryVariable->getLocation());
             }
         }
     }

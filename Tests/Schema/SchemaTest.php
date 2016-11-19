@@ -58,7 +58,8 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(1, count($schema->getMutationType()->getFields()));
 
-        $schema->addMutationField('changeUser', ['type' => new TestObjectType(), 'resolve' => function () { }]);
+        $schema->addMutationField('changeUser', ['type' => new TestObjectType(), 'resolve' => function () {
+        }]);
         $this->assertEquals(2, count($schema->getMutationType()->getFields()));
 
     }
@@ -102,7 +103,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
             'interfaces' => [$userInterface]
         ]);
 
-        $schema    = new Schema([
+        $schema = new Schema([
             'query' => new ObjectType([
                 'name'   => 'QueryType',
                 'fields' => [
@@ -135,13 +136,29 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('{ user { name { } } }');
         $result = $processor->getResponseData();
 
-        $this->assertEquals(['errors' => [ ['message' => 'Unexpected token "RBRACE" at (1:19)']]], $result);
+        $this->assertEquals(['errors' => [[
+            'message'   => 'Unexpected token "RBRACE"',
+            'locations' => [
+                [
+                    'line'   => 1,
+                    'column' => 19
+                ]
+            ]
+        ]]], $result);
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('{ user { name { invalidSelection } } }');
         $result = $processor->getResponseData();
 
-        $this->assertEquals(['data' => ['user' => null], 'errors' => [ ['message' => 'You can\'t specify fields for scalar type "String"']]], $result);
+        $this->assertEquals(['data' => ['user' => null], 'errors' => [[
+            'message'   => 'You can\'t specify fields for scalar type "String"',
+            'locations' => [
+                [
+                    'line'   => 1,
+                    'column' => 10
+                ]
+            ]
+        ]]], $result);
     }
 
 }

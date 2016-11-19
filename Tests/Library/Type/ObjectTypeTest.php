@@ -22,7 +22,7 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
-     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
      */
     public function testCreatingInvalidObject()
     {
@@ -30,7 +30,7 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
      */
     public function testInvalidNameParam()
     {
@@ -41,7 +41,7 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Youshido\GraphQL\Validator\Exception\ConfigurationException
+     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
      */
     public function testInvalidFieldsParam()
     {
@@ -53,7 +53,7 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Youshido\GraphQL\Validator\Exception\ResolveException
+     * @expectedException \InvalidArgumentException
      */
     public function testSerialize()
     {

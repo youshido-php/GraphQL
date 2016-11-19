@@ -9,10 +9,10 @@
 namespace Youshido\Tests\Library\Utilities;
 
 
+use Youshido\GraphQL\Exception\ConfigurationException;
+use Youshido\GraphQL\Exception\DatableResolveException;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerInterface;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
-use Youshido\GraphQL\Validator\Exception\ConfigurationException;
-use Youshido\GraphQL\Validator\Exception\DatableResolveException;
 
 class ErrorContainerTraitTest extends \PHPUnit_Framework_TestCase implements ErrorContainerInterface
 {
