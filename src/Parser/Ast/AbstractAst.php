@@ -8,10 +8,10 @@
 namespace Youshido\GraphQL\Parser\Ast;
 
 
-use Youshido\GraphQL\Parser\Ast\Interfaces\LocationableInterface;
+use Youshido\GraphQL\Parser\Ast\Interfaces\LocatableInterface;
 use Youshido\GraphQL\Parser\Location;
 
-abstract class AbstractAst implements LocationableInterface
+abstract class AbstractAst implements LocatableInterface
 {
 
     /** @var  Location */

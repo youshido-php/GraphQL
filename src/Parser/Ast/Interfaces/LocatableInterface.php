@@ -10,7 +10,7 @@ namespace Youshido\GraphQL\Parser\Ast\Interfaces;
 
 use Youshido\GraphQL\Parser\Location;
 
-interface LocationableInterface
+interface LocatableInterface
 {
 
     /**

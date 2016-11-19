@@ -10,7 +10,7 @@ namespace Youshido\GraphQL\Parser\Ast\Interfaces;
 
 use Youshido\GraphQL\Parser\Ast\Argument;
 
-interface FieldInterface extends LocationableInterface
+interface FieldInterface extends LocatableInterface
 {
 
     /**
