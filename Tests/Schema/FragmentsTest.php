@@ -119,9 +119,9 @@ class FragmentsTest extends \PHPUnit_Framework_TestCase
                                         'id'      => 'court-1',
                                         'players' => [
                                             [
-                                                'id'       => 'player-id-1',
+                                                'id'   => 'player-id-1',
                                                 'user' => [
-                                                    'id' => 'user-id-3',
+                                                    'id'       => 'user-id-3',
                                                     'fullName' => 'User court1'
                                                 ]
                                             ]
@@ -191,9 +191,9 @@ class FragmentsTest extends \PHPUnit_Framework_TestCase
                                     'id'      => 'court-1',
                                     'players' => [
                                         [
-                                            'id'       => 'player-id-1',
+                                            'id'   => 'player-id-1',
                                             'user' => [
-                                                'id' => 'user-id-3',
+                                                'id'       => 'user-id-3',
                                                 'fullName' => 'User court1'
                                             ]
                                         ]
@@ -207,6 +207,50 @@ class FragmentsTest extends \PHPUnit_Framework_TestCase
                 ]
             ],
         ];
+    }
+
+    public function testSimpleFragment()
+    {
+        $schema = new Schema([
+            'query' => new ObjectType([
+                'name'   => 'RootQuery',
+                'fields' => [
+                    'user' => [
+                        'type'    => new UserType(),
+                        'resolve' => function ($args) {
+                            return [
+                                'id'       => 'user-id-1',
+                                'fullName' => 'Alex',
+                            ];
+                        },
+                        'args' => [
+                            'id' => new IntType(),
+                        ]
+                    ],
+                ]
+            ])
+        ]);
+
+        $query = '
+        {
+            User1: user(id: 1) {
+                fullName
+            }
+            User2: user(id: 1) {
+                ...Fields
+            }
+        }
+        
+        fragment Fields on User {
+            fullName
+        }';
+
+        $processor = new Processor($schema);
+        $processor->processPayload($query);
+        $result = $processor->getResponseData();
+
+        $expected = ['data' => ['User1' => ['fullName' => 'Alex'], 'User2' => ['fullName' => 'Alex']]];
+        $this->assertEquals($expected, $result);
     }
 
 }
