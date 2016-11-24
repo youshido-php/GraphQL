@@ -16,7 +16,8 @@ use Youshido\GraphQL\Type\Scalar\IdType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
-class uid {
+class uid
+{
     private $uid;
 
     public function __construct($uid)
@@ -78,6 +79,24 @@ class NonNullableTest extends \PHPUnit_Framework_TestCase
                             return [1, null];
                         }
                     ],
+                    'nonNullArgument'     => [
+                        'args'    => [
+                            'ids' => new NonNullType(new ListType(new IntType()))
+                        ],
+                        'type'    => new IntType(),
+                        'resolve' => function () {
+                            return 1;
+                        }
+                    ],
+                    'nonNullArgument2'     => [
+                        'args'    => [
+                            'ids' => new NonNullType(new ListType(new NonNullType(new IntType())))
+                        ],
+                        'type'    => new IntType(),
+                        'resolve' => function () {
+                            return 1;
+                        }
+                    ],
                 ]
             ])
         ]);
@@ -92,6 +111,49 @@ class NonNullableTest extends \PHPUnit_Framework_TestCase
     public function queries()
     {
         return [
+            [
+                '{ test:nonNullArgument2(ids: [1, 2]) }',
+                [
+                    'data' => [
+                        'test' => 1
+                    ]
+                ],
+            ],
+            [
+                '{ test:nonNullArgument2(ids: [1, null]) }',
+                [
+                    'data' => [
+                        'test' => null
+                    ],
+                    'errors' => [
+                        [
+                            'message' => 'Not valid type for argument "ids" in query "nonNullArgument2"',
+                            'locations' => [['line' => 1, 'column' => 25]]
+                        ]
+                    ]
+                ],
+            ],
+            [
+                '{ test:nonNullArgument(ids: [1, null]) }',
+                [
+                    'data' => [
+                        'test' => 1
+                    ]
+                ]
+            ],
+            [
+                '{ test:nonNullArgument }',
+                [
+                    'data' => [
+                        'test' => null
+                    ],
+                    'errors' => [
+                        [
+                            'message' => 'Require "ids" arguments to query "nonNullArgument"'
+                        ]
+                    ]
+                ]
+            ],
             [
                 '{ nonNullScalar  }',
                 [
@@ -119,16 +181,15 @@ class NonNullableTest extends \PHPUnit_Framework_TestCase
                     ]
                 ]
             ],
-
             [
                 '{ nonNullListOfNpnNull  }',
                 [
                     'data'   => [
-                        'nonNullListOfNpnNull' => [1, null]
+                        'nonNullListOfNpnNull' => null,
                     ],
                     'errors' => [
                         [
-                            'message' => 'Cannot return null for non-nullable field "nonNullListOfNpnNull"'
+                            'message' => 'Not valid resolved type for field "nonNullListOfNpnNull"'
                         ]
                     ]
                 ]
