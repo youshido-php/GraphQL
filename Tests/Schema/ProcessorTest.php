@@ -196,6 +196,12 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         ]);
         $processor = new Processor($schema);
 
+        $processor->processPayload('mutation { __typename }');
+        $this->assertEquals(['data' => ['__typename' => 'RootSchemaMutation']], $processor->getResponseData());
+
+        $processor->processPayload('{ __typename }');
+        $this->assertEquals(['data' => ['__typename' => 'RootQuery']], $processor->getResponseData());
+
         $processor->processPayload('{ me { firstName } }');
         $this->assertEquals(['data' => ['me' => ['firstName' => 'John']]], $processor->getResponseData());
 
@@ -305,10 +311,10 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals([
             'data'   => ['me' => null],
             'errors' => [[
-                'message' => 'Field "middle" not found in type "User"',
+                'message'   => 'Field "middle" not found in type "User"',
                 'locations' => [
                     [
-                        'line' => 1,
+                        'line'   => 1,
                         'column' => 34
                     ]
                 ]
@@ -320,10 +326,10 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals([
             'data'   => ['randomUser' => null],
             'errors' => [[
-                'message' => 'You have to specify fields for "region"',
+                'message'   => 'You have to specify fields for "region"',
                 'locations' => [
                     [
-                        'line' => 1,
+                        'line'   => 1,
                         'column' => 16
                     ]
                 ]
