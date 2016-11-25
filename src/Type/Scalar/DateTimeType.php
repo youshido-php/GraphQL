@@ -43,7 +43,7 @@ class DateTimeType extends AbstractScalarType
 
     public function isValidValue($value)
     {
-        if (is_object($value)) {
+        if (is_null($value) || is_object($value)) {
             return true;
         }
 
