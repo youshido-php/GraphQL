@@ -89,7 +89,10 @@ abstract class AbstractInputObjectType extends AbstractType
                 $item = $item->getValue();
             }
 
-            $value[$valueKey] = $typeConfig->getField($valueKey)->getType()->parseValue($item);
+            if (!($inputField = $typeConfig->getField($valueKey))) {
+                throw new \Exception(sprintf('Invalid field "%s" on %s', $valueKey, $typeConfig->getName()));
+            }
+            $value[$valueKey] = $inputField->getType()->parseValue($item);
         }
 
         return $value;
