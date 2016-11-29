@@ -246,6 +246,12 @@ class Processor
                 /** @var $argumentType AbstractInputObjectType */
                 $result = [];
                 if ($argumentValue instanceof AstInputObject) {
+                    foreach($argumentType->getFields() as $field) {
+                        /** @var $field Field */
+                        if ($field->getConfig()->has('default')) {
+                            $result[$field->getName()] = $field->getConfig()->get('default');
+                        }
+                    }
                     foreach ($argumentValue->getValue() as $key => $item) {
                         if ($argumentType->hasField($key)) {
                             $result[$key] = $this->prepareArgumentValue($item, $argumentType->getField($key)->getType()->getNullableType(), $request);
