@@ -66,6 +66,11 @@ final class NonNullType extends AbstractType implements CompositeTypeInterface
         return true;
     }
 
+    public function isInputType()
+    {
+        return true;
+    }
+
     public function getNamedType()
     {
         return $this->getTypeOf();

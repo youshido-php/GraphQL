@@ -144,6 +144,10 @@ class Processor
             'type' => $type
         ]);
 
+        if (self::TYPE_NAME_QUERY == $query->getName()) {
+            return [$this->getAlias($query) => $type->getName()];
+        }
+
         $this->resolveValidator->assetTypeHasField($type, $query);
         $value = $this->resolveField($field, $query);
 
