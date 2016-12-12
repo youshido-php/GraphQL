@@ -104,7 +104,7 @@ class TestScalarDataProvider
     public static function getDatetimeTestData()
     {
         return [
-            [null, null, false],
+            [null, null, true],
             [new \DateTime('now'), date('Y-m-d H:i:s'), true],
         ];
     }
@@ -112,7 +112,7 @@ class TestScalarDataProvider
     public static function getDatetimetzTestData()
     {
         return [
-            [null, null, false],
+            [null, null, true],
             [new \DateTime('now'), date('r'), true],
         ];
     }
@@ -120,7 +120,7 @@ class TestScalarDataProvider
     public static function getDateTestData()
     {
         return [
-            [null, null, false],
+            [null, null, true],
             [new \DateTime('now'), date('Y-m-d'), true],
         ];
     }
@@ -130,7 +130,7 @@ class TestScalarDataProvider
     {
         return [
             [new \DateTime('now'), time(), true],
-            [null, null, false],
+            [null, null, true],
         ];
     }
 

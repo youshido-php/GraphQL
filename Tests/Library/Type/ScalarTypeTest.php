@@ -36,7 +36,7 @@ class ScalarTypeTest extends \PHPUnit_Framework_TestCase
             foreach (call_user_func(['Youshido\Tests\DataProvider\TestScalarDataProvider', $testDataMethod]) as list($data, $serialized, $isValid)) {
 
                 $this->assertSerialization($scalarType, $data, $serialized);
-                $this->assertParse($scalarType, $data, $serialized);
+                $this->assertParse($scalarType, $data, $serialized, $typeName);
 
                 if ($isValid) {
                     $this->assertTrue($scalarType->isValidValue($data), $typeName . ' validation for :' . serialize($data));
@@ -65,9 +65,13 @@ class ScalarTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $object->serialize($input), $object->getName() . ' serialize for: ' . serialize($input));
     }
 
-    private function assertParse(AbstractScalarType $object, $input, $expected)
+    private function assertParse(AbstractScalarType $object, $input, $expected, $typeName)
     {
-        $this->assertEquals($expected, $object->parseValue($input), $object->getName() . ' serialize for: ' . serialize($input));
+        $parsed = $object->parseValue($input);
+        if ($parsed instanceof \DateTime) {
+            $expected = \DateTime::createFromFormat($typeName == 'datetime' ? 'Y-m-d H:i:s' : 'D, d M Y H:i:s O', $expected);
+        }
+        $this->assertEquals($expected, $parsed, $object->getName() . ' parse for: ' . serialize($input));
     }
 
 }

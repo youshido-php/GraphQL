@@ -10,38 +10,54 @@ namespace Youshido\GraphQL\Type\Scalar;
 
 class DateTimeTzType extends AbstractScalarType
 {
+    private $format = 'D, d M Y H:i:s O';
+
     public function getName()
     {
         return 'DateTimeTz';
     }
-
-    /**
-     * @param $value \DateTime
-     * @return null|string
-     */
-    public function serialize($value)
+    public function isValidValue($value)
     {
-        if ($value === null) {
-            return null;
+        if ((is_object($value) && $value instanceof \DateTime) || is_null($value)) {
+            return true;
+        } else if (is_string($value)) {
+            $date = $this->createFromFormat($value);
+        } else {
+            $date = null;
         }
 
-        return $value->format('r');
+        return $date ? true : false;
+    }
+
+    public function serialize($value)
+    {
+        $date = null;
+
+        if (is_string($value)) {
+            $date = $this->createFromFormat($value);
+        } elseif ($value instanceof \DateTime) {
+            $date = $value;
+        }
+
+        return $date ? $date->format($this->format) : null;
     }
 
     public function parseValue($value)
     {
-        return is_object($value) ? $this->serialize($value) : $value;
-    }
-
-    public function isValidValue($value)
-    {
-        if (is_object($value)) {
-            return true;
+        if (is_string($value)) {
+            $date = $this->createFromFormat($value);
+        } elseif ($value instanceof \DateTime) {
+            $date = $value;
+        } else {
+            $date = false;
         }
 
-        $d = \DateTime::createFromFormat('D, d M Y H:i:s O', $value);
+        return $date ?: null;
+    }
 
-        return $d && $d->format('r') == $value;
+    private function createFromFormat($value)
+    {
+        return \DateTime::createFromFormat($this->format, $value);
     }
 
     public function getDescription()

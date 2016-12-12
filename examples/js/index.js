@@ -180,6 +180,12 @@ const blogSchema = new GraphQLSchema({
                     return [DataProvider.getPost(2), DataProvider.getBanner(3)];
                 }
             },
+            enumNull: {
+                type: postStatus,
+                resolve: () => {
+                    return null;
+                }
+            },
             scalarList: {
                 type: new GraphQLList(new GraphQLObjectType({
                     name: 'scalarObject',
@@ -224,7 +230,7 @@ const blogSchema = new GraphQLSchema({
     })
 });
 
-var query = '{ scalarList(count: 12) { id, cost } }';
+var query = '{ enumNull }';
 graphql(blogSchema, query).then(result => {
     console.log(JSON.stringify(result, null, 5));
     process.exit(0);

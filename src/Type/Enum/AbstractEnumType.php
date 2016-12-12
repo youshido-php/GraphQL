@@ -48,6 +48,7 @@ abstract class AbstractEnumType extends AbstractType
      */
     public function isValidValue($value)
     {
+        if (is_null($value)) return true;
         foreach ($this->getConfig()->get('values') as $item) {
             if ($value === $item['name'] || $value === $item['value']) {
                 return true;
@@ -78,6 +79,17 @@ abstract class AbstractEnumType extends AbstractType
         foreach ($this->getConfig()->get('values') as $valueItem) {
             if ($value === $valueItem['name']) {
                 return $valueItem['value'];
+            }
+        }
+
+        return null;
+    }
+
+    public function parseInputValue($value)
+    {
+        foreach ($this->getConfig()->get('values') as $valueItem) {
+            if ($value === $valueItem['value']) {
+                return $valueItem['name'];
             }
         }
 

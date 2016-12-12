@@ -22,12 +22,12 @@ class InputObjectDefaultValuesTest extends \PHPUnit_Framework_TestCase
             'name'   => 'InternalStatus',
             'values' => [
                 [
-                    'name'  => 1,
-                    'value' => 'ACTIVE'
+                    'name'  => 'ACTIVE',
+                    'value' => 1,
                 ],
                 [
-                    'name'  => 0,
-                    'value' => 'DISABLED'
+                    'name'  => 'DISABLED',
+                    'value' => 0,
                 ],
             ]
         ]);
@@ -36,8 +36,8 @@ class InputObjectDefaultValuesTest extends \PHPUnit_Framework_TestCase
                 'name'   => 'RootQuery',
                 'fields' => [
                     'stringQuery' => [
-                        'type'    => new StringType(),
-                        'args'    => [
+                        'type'       => new StringType(),
+                        'args'       => [
                             'statObject' => new InputObjectType([
                                 'name'   => 'StatObjectType',
                                 'fields' => [
@@ -49,12 +49,26 @@ class InputObjectDefaultValuesTest extends \PHPUnit_Framework_TestCase
                                 ]
                             ])
                         ],
-                        'resolve' => function ($source, $args) {
+                        'resolve'    => function ($source, $args) {
                             return sprintf('Result with level %s and status %s',
                                 $args['statObject']['level'], $args['statObject']['status']
                             );
                         },
                     ],
+                    'enumObject' => [
+                        'type' => new ObjectType([
+                            'name'   => 'EnumObject',
+                            'fields' => [
+                                'status' => $enumType
+                            ]
+                        ]),
+                        'resolve' => function() {
+                            return [
+                                'status' => null
+                            ];
+                        }
+                    ],
+
                 ]
             ])
         ]);
@@ -62,9 +76,24 @@ class InputObjectDefaultValuesTest extends \PHPUnit_Framework_TestCase
         $processor = new Processor($schema);
         $processor->processPayload('{ stringQuery(statObject: { level: 1 }) }');
         $result = $processor->getResponseData();
+        $this->assertEquals(['data' => [
+            'stringQuery' => 'Result with level 1 and status 1'
+        ]], $result);
+
+        $processor->processPayload('{ stringQuery(statObject: { level: 1, status: DISABLED }) }');
+        $result = $processor->getResponseData();
 
         $this->assertEquals(['data' => [
-            'stringQuery' => 'Result with level 1 and status ACTIVE'
+            'stringQuery' => 'Result with level 1 and status 0'
+        ]], $result);
+
+        $processor->processPayload('{ enumObject { status } }');
+        $result = $processor->getResponseData();
+
+        $this->assertEquals(['data' => [
+            'enumObject' => [
+                'status' => null
+            ]
         ]], $result);
     }
 

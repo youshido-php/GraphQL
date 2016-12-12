@@ -26,11 +26,7 @@ class TypeFactory
     {
         if (TypeService::isScalarType($type)) {
             if (is_object($type)) {
-                $typeName = $type->getName();
-                if (empty(self::$objectsHash[$typeName])) {
-                    self::$objectsHash[$typeName] = $type;
-                }
-                return self::$objectsHash[$typeName];
+                return $type;
             }
             if (empty(self::$objectsHash[$type])) {
                 $name = ucfirst($type);
