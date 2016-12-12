@@ -91,7 +91,9 @@ class InputObjectDefaultValuesTest extends \PHPUnit_Framework_TestCase
         $result = $processor->getResponseData();
 
         $this->assertEquals(['data' => [
-            'enumObject' => null
+            'enumObject' => [
+                'status' => null
+            ]
         ]], $result);
     }
 
