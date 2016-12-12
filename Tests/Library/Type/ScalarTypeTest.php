@@ -22,6 +22,7 @@ class ScalarTypeTest extends \PHPUnit_Framework_TestCase
     public function testScalarPrimitives()
     {
         foreach (TypeFactory::getScalarTypesNames() as $typeName) {
+            $typeName = 'DateTime';
             $scalarType     = TypeFactory::getScalarType($typeName);
             $testDataMethod = 'get' . $typeName . 'TestData';
 
