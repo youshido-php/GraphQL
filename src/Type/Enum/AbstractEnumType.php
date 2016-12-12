@@ -84,4 +84,15 @@ abstract class AbstractEnumType extends AbstractType
         return null;
     }
 
+    public function parseInputValue($value)
+    {
+        foreach ($this->getConfig()->get('values') as $valueItem) {
+            if ($value === $valueItem['value']) {
+                return $valueItem['name'];
+            }
+        }
+
+        return null;
+    }
+
 }

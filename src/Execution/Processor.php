@@ -249,7 +249,7 @@ class Processor
                     foreach($argumentType->getFields() as $field) {
                         /** @var $field Field */
                         if ($field->getConfig()->has('default')) {
-                            $result[$field->getName()] = $field->getConfig()->get('default');
+                            $result[$field->getName()] = $field->getType()->getNullableType()->parseInputValue($field->getConfig()->get('default'));
                         }
                     }
                     foreach ($argumentValue->getValue() as $key => $item) {

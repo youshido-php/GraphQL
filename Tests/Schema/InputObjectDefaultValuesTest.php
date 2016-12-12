@@ -22,12 +22,12 @@ class InputObjectDefaultValuesTest extends \PHPUnit_Framework_TestCase
             'name'   => 'InternalStatus',
             'values' => [
                 [
-                    'name'  => 1,
-                    'value' => 'ACTIVE'
+                    'name'  => 'ACTIVE',
+                    'value' => 1,
                 ],
                 [
-                    'name'  => 0,
-                    'value' => 'DISABLED'
+                    'name'  => 'DISABLED',
+                    'value' => 0,
                 ],
             ]
         ]);
@@ -64,7 +64,13 @@ class InputObjectDefaultValuesTest extends \PHPUnit_Framework_TestCase
         $result = $processor->getResponseData();
 
         $this->assertEquals(['data' => [
-            'stringQuery' => 'Result with level 1 and status ACTIVE'
+            'stringQuery' => 'Result with level 1 and status 1'
+        ]], $result);
+        $processor->processPayload('{ stringQuery(statObject: { level: 1, status: DISABLED }) }');
+        $result = $processor->getResponseData();
+
+        $this->assertEquals(['data' => [
+            'stringQuery' => 'Result with level 1 and status 0'
         ]], $result);
     }
 

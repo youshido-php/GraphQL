@@ -53,6 +53,11 @@ abstract class AbstractType implements TypeInterface
         return $value;
     }
 
+    public function parseInputValue($value)
+    {
+        return $this->parseValue($value);
+    }
+
     public function serialize($value)
     {
         return $value;
