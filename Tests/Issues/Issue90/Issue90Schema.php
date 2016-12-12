@@ -13,20 +13,20 @@ class Issue90Schema extends AbstractSchema
     {
         $config->setQuery(
             new ObjectType([
-                'name' => 'QueryType',
+                'name'   => 'QueryType',
                 'fields' => [
                     'echo' => [
-                        'type' => new DateTimeType('Y-m-d H:ia'),
-                        'args' => [
+                        'type'    => new DateTimeType('Y-m-d H:ia'),
+                        'args'    => [
                             'date' => new DateTimeType('Y-m-d H:ia')
                         ],
                         'resolve' => function ($value, $args, $info) {
 
-                                if (isset($args['date'])) {
-                                    return \DateTime::createFromFormat('Y-m-d H:ia',$args['date']);
-                                }
+                            if (isset($args['date'])) {
+                                return $args['date'];
+                            }
 
-                                return null;
+                            return null;
                         }
                     ]
                 ]
@@ -35,17 +35,17 @@ class Issue90Schema extends AbstractSchema
 
         $config->setMutation(
             new ObjectType([
-                'name' => 'MutationType',
+                'name'   => 'MutationType',
                 'fields' => [
                     'echo' => [
-                        'type' => new DateTimeType('Y-m-d H:ia'),
-                        'args' => [
+                        'type'    => new DateTimeType('Y-m-d H:ia'),
+                        'args'    => [
                             'date' => new DateTimeType('Y-m-d H:ia')
                         ],
                         'resolve' => function ($value, $args, $info) {
 
                             if (isset($args['date'])) {
-                                return \DateTime::createFromFormat('Y-m-d H:ia', $args['date']);
+                                return $args['date'];
                             }
 
                             return null;

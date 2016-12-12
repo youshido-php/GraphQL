@@ -27,13 +27,13 @@ class InputParseTest extends \PHPUnit_Framework_TestCase
                     'stringQuery' => [
                         'type'    => new StringType(),
                         'args'    => [
-                            'from'   => new DateTimeType(),
+                            'from'   => new DateTimeType('Y-m-d H:i:s'),
                             'fromtz' => new DateTimeTzType(),
                         ],
                         'resolve' => function ($source, $args) {
                             return sprintf('Result with %s date and %s tz',
-                                empty($args['from']) ? 'default' : $args['from'],
-                                empty($args['fromtz']) ? 'default' : $args['fromtz']
+                                empty($args['from']) ? 'default' : $args['from']->format('Y-m-d H:i:s'),
+                                empty($args['fromtz']) ? 'default' : $args['fromtz']->format('r')
                             );
                         },
                     ],
