@@ -471,7 +471,7 @@ class Processor
         $resolvedType = $type->resolveType($resolvedValue);
 
         if (!$resolvedType) {
-            throw new ResolveException('Resoling function must return type');
+            throw new ResolveException('Resolving function must return type');
         }
 
         if ($type instanceof AbstractInterfaceType) {
