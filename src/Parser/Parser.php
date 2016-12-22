@@ -84,7 +84,7 @@ class Parser extends Tokenizer
         $fields = [];
         $first  = true;
 
-        if ($this->peek()->getType() == $token && $highLevel) {
+        if ($highLevel && $this->peek()->getType() === $token) {
             $this->lex();
             $this->eat(Token::TYPE_IDENTIFIER);
 
@@ -136,15 +136,23 @@ class Parser extends Tokenizer
             $nameToken     = $this->eatIdentifierToken();
             $this->eat(Token::TYPE_COLON);
 
+            $isArray              = false;
+            $arrayElementNullable = true;
+
             if ($this->match(Token::TYPE_LSQUARE_BRACE)) {
                 $isArray = true;
 
                 $this->eat(Token::TYPE_LSQUARE_BRACE);
                 $type = $this->eatIdentifierToken()->getData();
+
+                if ($this->match(Token::TYPE_REQUIRED)) {
+                    $arrayElementNullable = false;
+                    $this->eat(Token::TYPE_REQUIRED);
+                }
+
                 $this->eat(Token::TYPE_RSQUARE_BRACE);
             } else {
-                $isArray = false;
-                $type    = $this->eatIdentifierToken()->getData();
+                $type = $this->eatIdentifierToken()->getData();
             }
 
             $required = false;
@@ -153,7 +161,14 @@ class Parser extends Tokenizer
                 $this->eat(Token::TYPE_REQUIRED);
             }
 
-            $this->data['variables'][] = new Variable($nameToken->getData(), $type, $required, $isArray, new Location($variableToken->getLine(), $variableToken->getColumn()));
+            $this->data['variables'][] = new Variable(
+                $nameToken->getData(),
+                $type,
+                $required,
+                $isArray,
+                new Location($variableToken->getLine(), $variableToken->getColumn()),
+                $arrayElementNullable
+            );
         }
 
         $this->expect(Token::TYPE_RPAREN);
@@ -271,7 +286,7 @@ class Parser extends Tokenizer
             if ($first) {
                 $first = false;
             } else {
-                if($this->match(Token::TYPE_COMMA)) {
+                if ($this->match(Token::TYPE_COMMA)) {
                     $this->eat(Token::TYPE_COMMA);
                 }
             }

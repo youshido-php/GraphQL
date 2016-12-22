@@ -778,7 +778,7 @@ GRAPHQL;
         $parser = new Parser();
 
         $data = $parser->parse('
-            query StarWarsAppHomeRoute($names_0:[String]!, $query: String) {
+            query StarWarsAppHomeRoute($names_0:[String!]!, $query: String) {
               factions(names:$names_0, test: $query) {
                 id,
                 ...F2

@@ -34,7 +34,7 @@ class ResolveValidator implements ResolveValidatorInterface
     public function assertValidArguments(FieldInterface $field, AstFieldInterface $query, Request $request)
     {
         $requiredArguments = array_filter($field->getArguments(), function (InputField $argument) {
-            return $argument->getType()->getKind() == TypeMap::KIND_NON_NULL;
+            return $argument->getType()->getKind() === TypeMap::KIND_NON_NULL;
         });
 
         foreach ($query->getArguments() as $astArgument) {
@@ -73,7 +73,7 @@ class ResolveValidator implements ResolveValidatorInterface
 
     public function assertValidResolvedValueForField(FieldInterface $field, $resolvedValue)
     {
-        if ($field->getType()->getKind() == TypeMap::KIND_NON_NULL && is_null($resolvedValue)) {
+        if (null === $resolvedValue && $field->getType()->getKind() === TypeMap::KIND_NON_NULL) {
             throw new ResolveException(sprintf('Cannot return null for non-nullable field "%s"', $field->getName()));
         }
 
@@ -86,7 +86,7 @@ class ResolveValidator implements ResolveValidatorInterface
     {
         if ($type instanceof AbstractObjectType) {
             foreach ($type->getInterfaces() as $typeInterface) {
-                if ($typeInterface->getName() == $interface->getName()) {
+                if ($typeInterface->getName() === $interface->getName()) {
                     return;
                 }
             }
@@ -98,7 +98,7 @@ class ResolveValidator implements ResolveValidatorInterface
     public function assertTypeInUnionTypes(AbstractType $type, AbstractUnionType $unionType)
     {
         foreach ($unionType->getTypes() as $unionTypeItem) {
-            if ($unionTypeItem->getName() == $type->getName()) {
+            if ($unionTypeItem->getName() === $type->getName()) {
                 return;
             }
         }
