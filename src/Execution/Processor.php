@@ -246,7 +246,7 @@ class Processor
                 /** @var $argumentType AbstractInputObjectType */
                 $result = [];
                 if ($argumentValue instanceof AstInputObject) {
-                    foreach($argumentType->getFields() as $field) {
+                    foreach ($argumentType->getFields() as $field) {
                         /** @var $field Field */
                         if ($field->getConfig()->has('default')) {
                             $result[$field->getName()] = $field->getType()->getNullableType()->parseInputValue($field->getConfig()->get('default'));
@@ -283,18 +283,22 @@ class Processor
     private function getVariableReferenceArgumentValue(VariableReference $variableReference, AbstractType $argumentType, Request $request)
     {
         $variable = $variableReference->getVariable();
-        if ($argumentType->getKind() == TypeMap::KIND_LIST) {
-            if ($variable->getTypeName() != $argumentType->getNamedType()->getName() || !$variable->isArray()) {
-                throw new ResolveException(sprintf('Invalid variable "%s" type, allowed type is "%s"', $variable->getName(), $argumentType->getName()), $variable->getLocation());
+        if ($argumentType->getKind() === TypeMap::KIND_LIST) {
+            if (
+                !$variable->isArray() ||
+                ($variable->getTypeName() !== $argumentType->getNamedType()->getNullableType()->getName()) ||
+                ($argumentType->getNamedType()->getKind() === TypeMap::KIND_NON_NULL && $variable->isArrayElementNullable())
+            ) {
+                throw new ResolveException(sprintf('Invalid variable "%s" type, allowed type is "%s"', $variable->getName(), $argumentType->getNamedType()->getNullableType()->getName()), $variable->getLocation());
             }
         } else {
-            if ($variable->getTypeName() != $argumentType->getName()) {
+            if ($variable->getTypeName() !== $argumentType->getName()) {
                 throw new ResolveException(sprintf('Invalid variable "%s" type, allowed type is "%s"', $variable->getName(), $argumentType->getName()), $variable->getLocation());
             }
         }
 
         $requestValue = $request->getVariable($variable->getName());
-        if (!$request->hasVariable($variable->getName()) || (null === $requestValue && $variable->isNullable())) {
+        if ((null === $requestValue && $variable->isNullable()) && !$request->hasVariable($variable->getName())) {
             throw  new ResolveException(sprintf('Variable "%s" does not exist in request', $variable->getName()), $variable->getLocation());
         }
 
@@ -303,10 +307,9 @@ class Processor
 
     protected function resolveObject(FieldInterface $field, AstFieldInterface $ast, $parentValue, $fromUnion = false)
     {
+        $resolvedValue = $parentValue;
         if (!$fromUnion) {
             $resolvedValue = $this->doResolve($field, $ast, $parentValue);
-        } else {
-            $resolvedValue = $parentValue;
         }
 
         $this->resolveValidator->assertValidResolvedValueForField($field, $resolvedValue);

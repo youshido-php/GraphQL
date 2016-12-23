@@ -8,11 +8,64 @@ use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IdType;
-use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
 class VariablesTest extends \PHPUnit_Framework_TestCase
 {
+
+    public function testInvalidNullableList()
+    {
+        $schema = new Schema([
+            'query' => new ObjectType([
+                'name'   => 'RootQuery',
+                'fields' => [
+                    'list' => [
+                        'type'    => new StringType(),
+                        'args'    => [
+                            'ids' => new ListType(new NonNullType(new IdType()))
+                        ],
+                        'resolve' => function () {
+                            return 'item';
+                        }
+                    ],
+                ]
+            ])
+        ]);
+
+
+        $processor = new Processor($schema);
+        $processor->processPayload(
+            'query getList($ids: [ID!]) { list(ids: $ids) }',
+            [
+                'ids' => [1, 12, null]
+            ]
+        );
+        $this->assertEquals(['data' => ['list' => 'item']], $processor->getResponseData());
+
+        $processor->getExecutionContext()->clearErrors();
+        $processor->processPayload(
+            'query getList($ids: [ID]) { list(ids: $ids) }',
+            [
+                'ids' => [1, 12, null]
+            ]
+        );
+        $this->assertEquals(
+            [
+                'data'   => ['list' => null],
+                'errors' => [
+                    [
+                        'message'   => 'Invalid variable "ids" type, allowed type is "ID"',
+                        'locations' => [
+                            [
+                                'line'   => 1,
+                                'column' => 15
+                            ]
+                        ]
+                    ],
+                ]
+            ],
+            $processor->getResponseData());
+    }
 
     /**
      * @dataProvider queries
@@ -72,10 +125,10 @@ class VariablesTest extends \PHPUnit_Framework_TestCase
                 [
                     'errors' => [
                         [
-                            'message' => 'Fragment "someFragment" not defined in query',
+                            'message'   => 'Fragment "someFragment" not defined in query',
                             'locations' => [
                                 [
-                                    'line' => 3,
+                                    'line'   => 3,
                                     'column' => 24
                                 ]
                             ]

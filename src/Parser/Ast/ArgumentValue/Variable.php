@@ -32,21 +32,26 @@ class Variable extends AbstractAst implements ValueInterface
     /** @var bool */
     private $used = false;
 
+    /** @var bool */
+    private $arrayElementNullable = true;
+
     /**
      * @param string   $name
      * @param string   $type
      * @param bool     $nullable
      * @param bool     $isArray
      * @param Location $location
+     * @param bool     $arrayElementNullable
      */
-    public function __construct($name, $type, $nullable, $isArray, Location $location)
+    public function __construct($name, $type, $nullable, $isArray, Location $location, $arrayElementNullable = true)
     {
         parent::__construct($location);
 
-        $this->name     = $name;
-        $this->type     = $type;
-        $this->isArray  = $isArray;
-        $this->nullable = $nullable;
+        $this->name                 = $name;
+        $this->type                 = $type;
+        $this->isArray              = $isArray;
+        $this->nullable             = $nullable;
+        $this->arrayElementNullable = $arrayElementNullable;
     }
 
     /**
@@ -153,5 +158,21 @@ class Variable extends AbstractAst implements ValueInterface
         $this->used = $used;
 
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isArrayElementNullable()
+    {
+        return $this->arrayElementNullable;
+    }
+
+    /**
+     * @param bool $arrayElementNullable
+     */
+    public function setArrayElementNullable($arrayElementNullable)
+    {
+        $this->arrayElementNullable = $arrayElementNullable;
     }
 }
