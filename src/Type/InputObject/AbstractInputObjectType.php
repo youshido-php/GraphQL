@@ -45,6 +45,10 @@ abstract class AbstractInputObjectType extends AbstractType
             $value = $value->getValue();
         }
 
+        if (empty($value)) {
+            return true;
+        }
+
         if (!is_array($value)) {
             return false;
         }
