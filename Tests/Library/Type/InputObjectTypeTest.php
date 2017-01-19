@@ -98,6 +98,48 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function testNullableInputWithNonNull(){
+        $processor = new Processor(new Schema([
+            'query'    => new ObjectType([
+                'name'   => 'RootQuery',
+                'fields' => [
+                    'empty' => [
+                        'type'    => new StringType(),
+                        'resolve' => function () {
+                            return null;
+                        }
+                    ]
+                ]
+            ]),
+            'mutation' => new ObjectType([
+                'name'   => 'RootMutation',
+                'fields' => [
+                    'createAuthor' => [
+                        'args'    => [
+                            'author' => new InputObjectType([
+                                'name'   => 'AuthorInputType',
+                                'fields' => [
+                                    'name' => new NonNullType(new StringType()),
+                                ]
+                            ])
+                        ],
+                        'type'    => new BooleanType(),
+                        'resolve' => function ($object, $args) {
+                            return true;
+                        }
+                    ]
+                ]
+            ])
+        ]));
+        $processor->processPayload('mutation { createAuthor(author: null) }');
+        $this->assertEquals(
+            [
+                'data'   => ['createAuthor' => true],
+            ],
+            $processor->getResponseData()
+        );
+    }
+
     public function testListInsideInputObject()
     {
         $processor = new Processor(new Schema([
