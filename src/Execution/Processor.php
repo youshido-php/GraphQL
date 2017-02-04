@@ -261,6 +261,8 @@ class Processor
                     }
                 } else if ($argumentValue instanceof VariableReference) {
                     return $this->getVariableReferenceArgumentValue($argumentValue, $argumentType, $request);
+                } else if (is_array($argumentValue)) {
+                    return $argumentValue;
                 }
 
                 return $result;
