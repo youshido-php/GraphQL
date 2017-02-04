@@ -9,7 +9,6 @@
 namespace Youshido\GraphQL\Execution;
 
 use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
-use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Parser\Ast\Field;
 use Youshido\GraphQL\Type\AbstractType;
@@ -55,6 +54,24 @@ class ResolveInfo
     public function getField()
     {
         return $this->field;
+    }
+
+    /**
+     * @param string $fieldName
+     *
+     * @return null|Field
+     */
+    public function getFieldAST($fieldName)
+    {
+        $field = null;
+        foreach ($this->getFieldASTList() as $fieldAST) {
+            if ($fieldAST->getName() === $fieldName) {
+                $field = $fieldAST;
+                break;
+            }
+        }
+
+        return $field;
     }
 
     /**

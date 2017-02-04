@@ -30,13 +30,13 @@ class Field extends AbstractAst implements FieldInterface
      * @param array    $arguments
      * @param Location $location
      */
-    public function __construct($name, $alias, $arguments, Location $location)
+    public function __construct($name, $alias, array $arguments, Location $location)
     {
         parent::__construct($location);
 
         $this->name      = $name;
         $this->alias     = $alias;
-        $this->arguments = $arguments;
+        $this->setArguments($arguments);
     }
 
     /**
@@ -82,6 +82,32 @@ class Field extends AbstractAst implements FieldInterface
     public function getArguments()
     {
         return $this->arguments;
+    }
+
+    /**
+     * @param $name
+     *
+     * @return null|Argument
+     */
+    public function getArgument($name)
+    {
+        $argument = null;
+        if (isset($this->arguments[$name])) {
+            $argument = $this->arguments[$name];
+        }
+
+        return $argument;
+    }
+
+    /**
+     * @param $arguments Argument[]
+     */
+    public function setArguments(array $arguments)
+    {
+        $this->arguments = [];
+        foreach ($arguments as $argument) {
+            $this->addArgument($argument);
+        }
     }
 
     public function addArgument(Argument $argument)

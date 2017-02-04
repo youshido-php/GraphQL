@@ -41,8 +41,8 @@ class Query extends AbstractAst implements FieldInterface
 
         $this->name      = $name;
         $this->alias     = $alias;
-        $this->arguments = $arguments;
         $this->fields    = $fields;
+        $this->setArguments($arguments);
     }
 
     public function getName()
@@ -64,11 +64,29 @@ class Query extends AbstractAst implements FieldInterface
     }
 
     /**
+     * @param $name
+     *
+     * @return null|Argument
+     */
+    public function getArgument($name)
+    {
+        $argument = null;
+        if (isset($this->arguments[$name])) {
+            $argument = $this->arguments[$name];
+        }
+
+        return $argument;
+    }
+
+    /**
      * @param $arguments Argument[]
      */
-    public function setArguments($arguments)
+    public function setArguments(array $arguments)
     {
-        $this->arguments = $arguments;
+        $this->arguments = [];
+        foreach ($arguments as $argument) {
+            $this->addArgument($argument);
+        }
     }
 
     public function addArgument(Argument $argument)

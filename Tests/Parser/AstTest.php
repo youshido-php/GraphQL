@@ -120,7 +120,7 @@ class AstTest extends \PHPUnit_Framework_TestCase
     public function testQuery()
     {
         $arguments = [
-            new Argument('limit', new Literal('10', new Location(1,1)), new Location(1,1))
+            'limit' => new Argument('limit', new Literal('10', new Location(1,1)), new Location(1,1))
         ];
 
         $fields = [
