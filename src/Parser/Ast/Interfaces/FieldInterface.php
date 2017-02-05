@@ -38,4 +38,9 @@ interface FieldInterface extends LocatableInterface
      */
     public function hasFields();
 
+    /**
+     * @return array
+     */
+    public function getFields();
+
 }

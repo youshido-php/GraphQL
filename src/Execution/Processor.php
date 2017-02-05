@@ -289,9 +289,15 @@ class Processor
         }
     }
 
+    /**
+     * @param FieldInterface     $field
+     * @param AbstractObjectType $type
+     * @param AstFieldInterface $ast
+     * @param                    $resolvedValue
+     * @return array
+     */
     private function collectResult(FieldInterface $field, AbstractObjectType $type, $ast, $resolvedValue)
     {
-        /** @var AstQuery $ast */
         $result = [];
 
         foreach ($ast->getFields() as $astField) {

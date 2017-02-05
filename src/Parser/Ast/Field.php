@@ -73,4 +73,9 @@ class Field extends AbstractAst implements FieldInterface
         return false;
     }
 
+    public function getFields()
+    {
+        return [];
+    }
+
 }
