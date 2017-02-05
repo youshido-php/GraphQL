@@ -24,6 +24,7 @@ use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Interfaces\FieldInterface as AstFieldInterface;
 use Youshido\GraphQL\Parser\Ast\Mutation as AstMutation;
 use Youshido\GraphQL\Parser\Ast\Query as AstQuery;
+use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
 use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Schema\AbstractSchema;
@@ -92,47 +93,6 @@ class Processor
         }
 
         return $this;
-    }
-
-    public function getResponseData()
-    {
-        $result = [];
-
-        if (!empty($this->data)) {
-            $result['data'] = $this->data;
-        }
-
-        if ($this->executionContext->hasErrors()) {
-            $result['errors'] = $this->executionContext->getErrorsArray();
-        }
-
-        return $result;
-    }
-
-    /**
-     * You can access ExecutionContext to check errors and inject dependencies
-     *
-     * @return ExecutionContext
-     */
-    public function getExecutionContext()
-    {
-        return $this->executionContext;
-    }
-
-    /**
-     * @return int
-     */
-    public function getMaxComplexity()
-    {
-        return $this->maxComplexity;
-    }
-
-    /**
-     * @param int $maxComplexity
-     */
-    public function setMaxComplexity($maxComplexity)
-    {
-        $this->maxComplexity = $maxComplexity;
     }
 
     protected function resolveQuery(AstQuery $query)
@@ -301,7 +261,7 @@ class Processor
 
         $requestValue = $request->getVariable($variable->getName());
         if ((null === $requestValue && $variable->isNullable()) && !$request->hasVariable($variable->getName())) {
-            throw  new ResolveException(sprintf('Variable "%s" does not exist in request', $variable->getName()), $variable->getLocation());
+            throw new ResolveException(sprintf('Variable "%s" does not exist in request', $variable->getName()), $variable->getLocation());
         }
 
         return $requestValue;
@@ -550,6 +510,48 @@ class Processor
     protected function createResolveInfo(FieldInterface $field, array $astFields)
     {
         return new ResolveInfo($field, $astFields, $this->executionContext);
+    }
+
+
+    /**
+     * You can access ExecutionContext to check errors and inject dependencies
+     *
+     * @return ExecutionContext
+     */
+    public function getExecutionContext()
+    {
+        return $this->executionContext;
+    }
+
+    public function getResponseData()
+    {
+        $result = [];
+
+        if (!empty($this->data)) {
+            $result['data'] = $this->data;
+        }
+
+        if ($this->executionContext->hasErrors()) {
+            $result['errors'] = $this->executionContext->getErrorsArray();
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxComplexity()
+    {
+        return $this->maxComplexity;
+    }
+
+    /**
+     * @param int $maxComplexity
+     */
+    public function setMaxComplexity($maxComplexity)
+    {
+        $this->maxComplexity = $maxComplexity;
     }
 
 }

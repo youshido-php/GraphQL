@@ -8,6 +8,7 @@
 namespace Youshido\GraphQL\Execution;
 
 
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\VariableReference;
 use Youshido\GraphQL\Parser\Ast\Fragment;
@@ -30,7 +31,7 @@ class Request
     /** @var array */
     private $variables = [];
 
-    /** @var  array */
+    /** @var VariableReference[] */
     private $variableReferences = [];
 
     /** @var  array */
@@ -207,6 +208,17 @@ class Request
         }
 
         $this->variables = $variables;
+        foreach($this->variableReferences as $reference) {
+            /** invalid request with no variable */
+            if (!$reference->getVariable()) continue;
+            $variableName = $reference->getVariable()->getName();
+
+            /** no variable was set at the time */
+            if (!array_key_exists($variableName, $variables)) continue;
+
+            $reference->getVariable()->setValue($variables[$variableName]);
+            $reference->setValue($variables[$variableName]);
+        }
 
         return $this;
     }
