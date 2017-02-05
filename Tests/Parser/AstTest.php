@@ -120,7 +120,7 @@ class AstTest extends \PHPUnit_Framework_TestCase
     public function testQuery()
     {
         $arguments = [
-            'limit' => new Argument('limit', new Literal('10', new Location(1,1)), new Location(1,1))
+            new Argument('limit', new Literal('10', new Location(1,1)), new Location(1,1))
         ];
 
         $fields = [
@@ -131,7 +131,7 @@ class AstTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('ships', $query->getName());
         $this->assertEquals('lastShips', $query->getAlias());
-        $this->assertEquals($arguments, $query->getArguments());
+        $this->assertEquals(['limit' => $arguments[0]], $query->getArguments());
         $this->assertEquals(['limit' => '10'], $query->getKeyValueArguments());
         $this->assertEquals($fields, $query->getFields());
         $this->assertTrue($query->hasArguments());

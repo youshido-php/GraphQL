@@ -44,10 +44,8 @@ class Issue109Schema extends AbstractSchema
                             $internalArgs = [
                                 'comment_id' => 200
                             ];
-                            foreach ($info->getFieldASTList() as $field) {
-                                if ($field->getName() == 'comments' && $field->hasArguments()) {
-                                    $internalArgs = $field->getKeyValueArguments();
-                                }
+                            if ($field = $info->getFieldAST('comments')->hasArguments()) {
+                                $internalArgs['comment_id'] = $info->getFieldAST('comments')->getArgumentValue('comment_id');
                             }
 
                             return [

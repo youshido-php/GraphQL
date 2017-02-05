@@ -14,17 +14,16 @@ use Youshido\GraphQL\Parser\Location;
 class Query extends AbstractAst implements FieldInterface
 {
 
+    use AstArgumentsTrait;
+
     /** @var string */
     protected $name;
 
     /** @var string */
     protected $alias;
 
-    /** @var Argument[] */
-    protected $arguments;
-
     /** @var Field[]|Query[] */
-    protected $fields;
+    protected $fields = [];
 
     /**
      * Query constructor.
@@ -41,7 +40,7 @@ class Query extends AbstractAst implements FieldInterface
 
         $this->name      = $name;
         $this->alias     = $alias;
-        $this->fields    = $fields;
+        $this->setFields($fields);
         $this->setArguments($arguments);
     }
 
@@ -50,67 +49,12 @@ class Query extends AbstractAst implements FieldInterface
         return $this->name;
     }
 
-    public function hasArguments()
-    {
-        return (bool)count($this->arguments);
-    }
-
-    /**
-     * @return Argument[]
-     */
-    public function getArguments()
-    {
-        return $this->arguments;
-    }
-
-    /**
-     * @param $name
-     *
-     * @return null|Argument
-     */
-    public function getArgument($name)
-    {
-        $argument = null;
-        if (isset($this->arguments[$name])) {
-            $argument = $this->arguments[$name];
-        }
-
-        return $argument;
-    }
-
-    /**
-     * @param $arguments Argument[]
-     */
-    public function setArguments(array $arguments)
-    {
-        $this->arguments = [];
-        foreach ($arguments as $argument) {
-            $this->addArgument($argument);
-        }
-    }
-
-    public function addArgument(Argument $argument)
-    {
-        $this->arguments[$argument->getName()] = $argument;
-    }
-
-    public function getKeyValueArguments()
-    {
-        $arguments = [];
-
-        foreach ($this->getArguments() as $argument) {
-            $arguments[$argument->getName()] = $argument->getValue()->getValue();
-        }
-
-        return $arguments;
-    }
-
     /**
      * @return Field[]|Query[]|FragmentInterface[]
      */
     public function getFields()
     {
-        return $this->fields;
+        return array_values($this->fields);
     }
 
     /**
@@ -126,8 +70,11 @@ class Query extends AbstractAst implements FieldInterface
      */
     public function setFields($fields)
     {
+        /**
+         * we cannot store fields by name because of TypedFragments
+         */
         $this->fields = $fields;
-    }
+        }
 
     public function getAlias()
     {

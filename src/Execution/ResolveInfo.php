@@ -11,6 +11,7 @@ namespace Youshido\GraphQL\Execution;
 use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Parser\Ast\Field;
+use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Type\AbstractType;
 
 class ResolveInfo
@@ -59,7 +60,7 @@ class ResolveInfo
     /**
      * @param string $fieldName
      *
-     * @return null|Field
+     * @return null|Query|Field
      */
     public function getFieldAST($fieldName)
     {

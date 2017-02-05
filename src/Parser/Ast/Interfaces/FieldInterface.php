@@ -33,4 +33,9 @@ interface FieldInterface extends LocatableInterface
      */
     public function getArgument($name);
 
+    /**
+     * @return bool
+     */
+    public function hasFields();
+
 }
