@@ -196,7 +196,7 @@ TEXT;
                     'data' => [
                         '__schema' => [
                             'types' => [
-                                ['name' => 'TestSchemaQuery', 'fields' => [['name' => 'latest', 'args' => [['defaultValue' => '"test"'], ['defaultValue' => null]]]]],
+                                ['name' => 'TestSchemaQuery', 'fields' => [['name' => 'latest', 'args' => [['defaultValue' => 'test'], ['defaultValue' => null]]]]],
                                 ['name' => 'Int', 'fields' => null],
                                 ['name' => 'LatestType', 'fields' => [['name' => 'id', 'args' => []], ['name' => 'name', 'args' => []]]],
                                 ['name' => 'String', 'fields' => null],
@@ -206,7 +206,6 @@ TEXT;
                                 ['name' => 'Boolean', 'fields' => null],
                                 ['name' => '__EnumValue', 'fields' => [['name' => 'name', 'args' => []], ['name' => 'description', 'args' => []], ['name' => 'deprecationReason', 'args' => []], ['name' => 'isDeprecated', 'args' => []],]],
                                 ['name' => '__Field', 'fields' => [['name' => 'name', 'args' => []], ['name' => 'description', 'args' => []], ['name' => 'isDeprecated', 'args' => []], ['name' => 'deprecationReason', 'args' => []], ['name' => 'type', 'args' => []], ['name' => 'args', 'args' => []]]],
-                                ['name' => '__Subscription', 'fields' => [['name' => 'name', 'args' => []]]],
                                 ['name' => '__Directive', 'fields' => [['name' => 'name', 'args' => []], ['name' => 'description', 'args' => []], ['name' => 'args', 'args' => []], ['name' => 'onOperation', 'args' => []], ['name' => 'onFragment', 'args' => []], ['name' => 'onField', 'args' => []]]],
                             ]
                         ]

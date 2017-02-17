@@ -10,12 +10,14 @@ namespace Youshido\Tests\Library\Type;
 
 
 use Youshido\GraphQL\Execution\Processor;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputObject;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\InputObject\InputObjectType;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\BooleanType;
+use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\Tests\DataProvider\TestInputObjectType;
@@ -85,20 +87,21 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
             [
                 'data'   => ['createList' => null],
                 'errors' => [[
-                    'message' => 'Not valid type for argument "posts" in query "createList"',
-                    'locations' => [
-                        [
-                            'line' => 1,
-                            'column' => 23
-                        ]
-                    ]
-                ]]
+                                 'message'   => 'Not valid type for argument "posts" in query "createList"',
+                                 'locations' => [
+                                     [
+                                         'line'   => 1,
+                                         'column' => 23
+                                     ]
+                                 ]
+                             ]]
             ],
             $processor->getResponseData()
         );
     }
 
-    public function testNullableInputWithNonNull(){
+    public function testNullableInputWithNonNull()
+    {
         $processor = new Processor(new Schema([
             'query'    => new ObjectType([
                 'name'   => 'RootQuery',
@@ -134,7 +137,7 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('mutation { createAuthor(author: null) }');
         $this->assertEquals(
             [
-                'data'   => ['createAuthor' => true],
+                'data' => ['createAuthor' => true],
             ],
             $processor->getResponseData()
         );
@@ -182,19 +185,67 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals([
             'data'   => ['createList' => null],
             'errors' => [[
-                'message' => 'Not valid type for argument "topArgument" in query "createList"',
-                'locations' => [
-                    [
-                        'line' => 1,
-                        'column' => 23
-                    ]
-                ]
-            ]],
+                             'message'   => 'Not valid type for argument "topArgument" in query "createList"',
+                             'locations' => [
+                                 [
+                                     'line'   => 1,
+                                     'column' => 23
+                                 ]
+                             ]
+                         ]],
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
         $processor->processPayload('mutation { createList(topArgument:{
                                         postObject:[{title: "not empty"}] })}');
         $this->assertEquals(['data' => ['createList' => 'success message']], $processor->getResponseData());
     }
+
+    public function testInputObjectDefaultValue()
+    {
+        $processor = new Processor(new Schema([
+            'query'    => new ObjectType([
+                'name'   => 'RootQuery',
+                'fields' => [
+                    'cities' => [
+                        'type'    => new ListType(new StringType()),
+                        'args'    => [
+                            'paging' => [
+                                'type'         => new InputObjectType([
+                                    'name'   => 'paging',
+                                    'fields' => [
+                                        'limit'  => new IntType(),
+                                        'offset' => new IntType(),
+                                    ]
+                                ]),
+                                'defaultValue' => [
+                                    'limit'  => 10,
+                                    'offset' => 0,
+                                ],
+                            ],
+                        ],
+                        'resolve' => function ($source, $args) {
+                            return [
+                                'limit is ' . $args['paging']['limit'],
+                                'offset is ' . $args['paging']['offset'],
+                            ];
+                        }
+                    ],
+
+                ]
+            ]),
+        ]));
+        $processor->processPayload('{ cities }');
+        $response = $processor->getResponseData();
+        $this->assertEquals(
+            [
+                'data' => ['cities' => [
+                    'limit is 10',
+                    'offset is 0'
+                ]],
+            ],
+            $response
+        );
+    }
+
 
 }
