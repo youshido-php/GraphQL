@@ -208,8 +208,8 @@ class Processor
                 if ($argumentValue instanceof AstInputObject) {
                     foreach ($argumentType->getFields() as $field) {
                         /** @var $field Field */
-                        if ($field->getConfig()->has('default')) {
-                            $result[$field->getName()] = $field->getType()->getNullableType()->parseInputValue($field->getConfig()->get('default'));
+                        if ($field->getConfig()->has('defaultValue')) {
+                            $result[$field->getName()] = $field->getType()->getNullableType()->parseInputValue($field->getConfig()->get('defaultValue'));
                         }
                     }
                     foreach ($argumentValue->getValue() as $key => $item) {
@@ -489,7 +489,7 @@ class Processor
 
         foreach ($field->getArguments() as $argument) {
             /** @var $argument InputField */
-            if ($argument->getConfig()->has('default')) {
+            if ($argument->getConfig()->has('defaultValue')) {
                 $defaults[$argument->getName()] = $argument->getConfig()->getDefaultValue();
             }
         }

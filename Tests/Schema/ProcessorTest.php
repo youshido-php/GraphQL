@@ -168,8 +168,8 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                         },
                         'args'    => [
                             'upper' => [
-                                'type'    => new BooleanType(),
-                                'default' => false
+                                'type'         => new BooleanType(),
+                                'defaultValue' => false
                             ]
                         ]
                     ],
@@ -230,7 +230,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                 'args'    => [
                     'amount' => [
                         'type'    => new IntType(),
-                        'default' => 1
+                        'defaultValue' => 1
                     ]
                 ]
             ]))->addField(new Field([

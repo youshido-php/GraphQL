@@ -43,7 +43,7 @@ class InputObjectDefaultValuesTest extends \PHPUnit_Framework_TestCase
                                 'fields' => [
                                     'status' => [
                                         'type'    => $enumType,
-                                        'default' => 1
+                                        'defaultValue' => 1
                                     ],
                                     'level'  => new NonNullType(new IntType())
                                 ]

@@ -130,7 +130,7 @@ TEXT;
                 ],
             ]),
             'args'              => [
-                'id' => ['type' => TypeMap::TYPE_INT, 'default' => 'test'],
+                'id' => ['type' => TypeMap::TYPE_INT, 'defaultValue' => 'test'],
                 'id2' => ['type' => TypeMap::TYPE_INT]
             ],
             'description'       => 'latest description',

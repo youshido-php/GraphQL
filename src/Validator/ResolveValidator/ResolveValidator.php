@@ -61,7 +61,7 @@ class ResolveValidator implements ResolveValidatorInterface
 
             }
 
-            if (array_key_exists($astArgument->getName(), $requiredArguments) || $argument->getConfig()->get('default') !== null) {
+            if (array_key_exists($astArgument->getName(), $requiredArguments) || $argument->getConfig()->get('defaultValue') !== null) {
                 unset($requiredArguments[$astArgument->getName()]);
             }
         }

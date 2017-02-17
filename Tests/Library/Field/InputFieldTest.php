@@ -23,10 +23,10 @@ class InputFieldTest extends \PHPUnit_Framework_TestCase
     public function testInlineInputFieldCreation()
     {
         $field = new InputField([
-            'name'        => 'id',
-            'type'        => 'id',
-            'description' => 'description',
-            'default'     => 123
+            'name'         => 'id',
+            'type'         => 'id',
+            'description'  => 'description',
+            'defaultValue' => 123
         ]);
 
         $this->assertEquals('id', $field->getName());

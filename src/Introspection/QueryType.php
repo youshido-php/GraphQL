@@ -164,7 +164,7 @@ class QueryType extends AbstractObjectType
                 'args'    => [
                     'includeDeprecated' => [
                         'type'    => new BooleanType(),
-                        'default' => false
+                        'defaultValue' => false
                     ]
                 ],
                 'type'    => new ListType(new NonNullType(new EnumValueType())),
@@ -175,7 +175,7 @@ class QueryType extends AbstractObjectType
                 'args'    => [
                     'includeDeprecated' => [
                         'type'    => new BooleanType(),
-                        'default' => false
+                        'defaultValue' => false
                     ]
                 ],
                 'type'    => new ListType(new NonNullType(new FieldType())),
