@@ -12,6 +12,11 @@ namespace Youshido\GraphQL\Config\Field;
 use Youshido\GraphQL\Config\AbstractConfig;
 use Youshido\GraphQL\Type\TypeService;
 
+/**
+ * Class InputFieldConfig
+ * @package Youshido\GraphQL\Config\Field
+ * @method $this setDescription(string $description)
+ */
 class InputFieldConfig extends AbstractConfig
 {
 

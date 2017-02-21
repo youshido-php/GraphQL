@@ -16,6 +16,11 @@ use Youshido\GraphQL\Config\TypeConfigInterface;
 use Youshido\GraphQL\Exception\ConfigurationException;
 use Youshido\GraphQL\Type\TypeService;
 
+/**
+ * Class InterfaceTypeConfig
+ * @package Youshido\GraphQL\Config\Object
+ * @method $this setDescription(string $description)
+ */
 class InterfaceTypeConfig extends AbstractConfig implements TypeConfigInterface
 {
     use FieldsAwareConfigTrait, ArgumentsAwareConfigTrait;

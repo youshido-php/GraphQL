@@ -14,6 +14,12 @@ use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeService;
 
+/**
+ * Class FieldConfig
+ * @package Youshido\GraphQL\Config\Field
+ * @method $this setDescription(string $description)
+ * @method $this setCost(int $cost)
+ */
 class FieldConfig extends AbstractConfig
 {
 
