@@ -22,28 +22,6 @@ use Youshido\Tests\DataProvider\TestSchema;
 class SchemaTest extends \PHPUnit_Framework_TestCase
 {
 
-    public function testInlineSchema()
-    {
-        $queryType = new ObjectType([
-            'name'   => 'RootQueryType',
-            'fields' => [
-                'currentTime' => [
-                    'type'    => new StringType(),
-                    'resolve' => function ($value, $args, $type) {
-                        return 'May 5, 9:00am';
-                    },
-                    'args'    => [
-                        'gmt' => [
-                            'type'    => new IntType(),
-                            'default' => -5
-                        ],
-                    ],
-                ]
-            ]
-        ]);
-//        $this->assertEquals('May 5, 9:00am', $queryType->getField('currentTime')->resolve([], [],));
-    }
-
     public function testStandaloneEmptySchema()
     {
         $schema = new TestEmptySchema();
@@ -131,7 +109,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
                     }
                 }');
         $data = $processor->getResponseData();
-        $this->assertArraySubset([11 => ['name' => 'Author']], $data['data']['__schema']['types']);
+        $this->assertArraySubset([10 => ['name' => 'Author']], $data['data']['__schema']['types']);
 
         $processor->processPayload('{ user { name { } } }');
         $result = $processor->getResponseData();
