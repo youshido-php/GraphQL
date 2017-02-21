@@ -18,41 +18,75 @@ class ArrayConnection
         if (!is_array($data)) return null;
 
         $index = array_search($object, $data);
-        return $index === false ? null : self::offsetToCursor($index);
+        return $index === false ? null : (string) self::keyToCursor($index);
     }
 
     /**
      * @param $offset int
      * @return string
+     * @deprecated
+     *   Use keyToCursor instead.
      */
     public static function offsetToCursor($offset)
     {
-        return base64_encode(self::PREFIX . $offset);
+      return self::keyToCursor($offset);
+    }
+
+    public static function keyToCursor($key)
+    {
+      return base64_encode(self::PREFIX . $key);
     }
 
     /**
      * @param $cursor string
      *
      * @return int|null
+     * @deprecated Use cursorToKey instead.
      */
     public static function cursorToOffset($cursor)
     {
-        if ($decoded = base64_decode($cursor)) {
-            return (int)substr($decoded, strlen(self::PREFIX));
-        }
-
-        return null;
+        return self::cursorToKey($cursor);
     }
 
-    public static function cursorToOffsetWithDefault($cursor, $default)
+  /**
+   * Converts a cursor to its array key.
+   *
+   * @param $cursor
+   * @return null|string
+   */
+    public static function cursorToKey($cursor) {
+      if ($decoded = base64_decode($cursor)) {
+        return substr($decoded, strlen(self::PREFIX));
+      }
+      return null;
+    }
+
+  /**
+   * Converts a cursor to an array offset.
+   *
+   * @param $cursor
+   *   The cursor string.
+   * @param $default
+   *   The default value, in case the cursor is not given.
+   * @param array $array
+   *   The array to use in counting the offset. If empty, assumed to be an indexed array.
+   * @return int|null
+   */
+    public static function cursorToOffsetWithDefault($cursor, $default, $array = [])
     {
         if (!is_string($cursor)) {
             return $default;
         }
 
-        $offset = self::cursorToOffset($cursor);
+        $key = self::cursorToKey($cursor);
+        if (empty($array)) {
+          $offset = $key;
+        }
+        else {
+          $offset = array_search($key, array_keys($array));
+        }
 
-        return is_null($offset) ? $default : $offset;
+        return is_null($offset) ? $default : (int) $offset;
     }
 
     public static function connectionFromArray(array $data, array $args = [])
@@ -69,8 +103,8 @@ class ArrayConnection
 
         $sliceEnd = $sliceStart + count($data);
 
-        $beforeOffset = ArrayConnection::cursorToOffsetWithDefault($before, $arrayLength);
-        $afterOffset  = ArrayConnection::cursorToOffsetWithDefault($after, -1);
+        $beforeOffset = ArrayConnection::cursorToOffsetWithDefault($before, $arrayLength, $data);
+        $afterOffset  = ArrayConnection::cursorToOffsetWithDefault($after, -1, $data);
 
         $startOffset = max($sliceStart - 1, $afterOffset, -1) + 1;
         $endOffset   = min($sliceEnd, $beforeOffset, $arrayLength);
