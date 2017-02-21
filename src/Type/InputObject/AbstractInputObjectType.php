@@ -67,6 +67,9 @@ abstract class AbstractInputObjectType extends AbstractType
                 unset($requiredFields[$valueKey]);
             }
         }
+        if (count($requiredFields)) {
+            $this->lastError = sprintf('%s %s required on %s', implode(', ', array_keys($requiredFields)), count($requiredFields) > 1 ? 'are' : 'is', $typeConfig->getName());
+        }
 
         return !(count($requiredFields) > 0);
     }

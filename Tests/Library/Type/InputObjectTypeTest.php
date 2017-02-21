@@ -87,14 +87,14 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
             [
                 'data'   => ['createList' => null],
                 'errors' => [[
-                                 'message'   => 'Not valid type for argument "posts" in query "createList"',
-                                 'locations' => [
-                                     [
-                                         'line'   => 1,
-                                         'column' => 23
-                                     ]
-                                 ]
-                             ]]
+                    'message'   => 'Not valid type for argument "posts" in query "createList"',
+                    'locations' => [
+                        [
+                            'line'   => 1,
+                            'column' => 23
+                        ]
+                    ]
+                ]]
             ],
             $processor->getResponseData()
         );
@@ -185,14 +185,14 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals([
             'data'   => ['createList' => null],
             'errors' => [[
-                             'message'   => 'Not valid type for argument "topArgument" in query "createList"',
-                             'locations' => [
-                                 [
-                                     'line'   => 1,
-                                     'column' => 23
-                                 ]
-                             ]
-                         ]],
+                'message'   => 'Not valid type for argument "topArgument" in query "createList"',
+                'locations' => [
+                    [
+                        'line'   => 1,
+                        'column' => 23
+                    ]
+                ]
+            ]],
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
         $processor->processPayload('mutation { createList(topArgument:{
@@ -203,7 +203,7 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
     public function testInputObjectDefaultValue()
     {
         $processor = new Processor(new Schema([
-            'query'    => new ObjectType([
+            'query' => new ObjectType([
                 'name'   => 'RootQuery',
                 'fields' => [
                     'cities' => [
@@ -242,6 +242,53 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
                     'limit is 10',
                     'offset is 0'
                 ]],
+            ],
+            $response
+        );
+    }
+
+    public function testInvalidTypeErrors()
+    {
+        $processor = new Processor(new Schema([
+            'query' => new ObjectType([
+                'name' => 'RootQuery',
+                'fields' => [
+                    'hello' => new StringType(),
+                ]
+            ]),
+            'mutation' => new ObjectType([
+                'name'   => 'RootMutation',
+                'fields' => [
+                    'createPost' => [
+                        'type'    => new StringType(),
+                        'args'    => [
+                            'object' => new InputObjectType([
+                                'name'   => 'InputPostType',
+                                'fields' => [
+                                    'title'  => new NonNullType(new StringType()),
+                                    'userId' => new NonNullType(new IntType()),
+                                ]
+                            ]),
+                        ],
+                        'resolve' => function ($source, $args) {
+                            return sprintf('%s by %s', $args['title'], $args['userId']);
+                        }
+                    ],
+
+                ]
+            ]),
+        ]));
+        $processor->processPayload('mutation { createPost(object: {title: "Hello world"}) }');
+        $response = $processor->getResponseData();
+        $this->assertEquals(
+            [
+                'data' => ['createPost' => null],
+                'errors' => [[
+                    'message' => 'userId is required on InputPostType',
+                    'locations' => [
+                        ['line' => 1, 'column' => 23]
+                    ]
+                ]]
             ],
             $response
         );

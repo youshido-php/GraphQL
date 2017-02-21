@@ -14,6 +14,8 @@ use Youshido\GraphQL\Type\Object\AbstractObjectType;
 abstract class AbstractType implements TypeInterface
 {
 
+    protected $lastError = null;
+
     public function isCompositeType()
     {
         return false;
@@ -41,6 +43,11 @@ abstract class AbstractType implements TypeInterface
     public function getNullableType()
     {
         return $this;
+    }
+
+    public function getLastError()
+    {
+        return $this->lastError;
     }
 
     public function isValidValue($value)
