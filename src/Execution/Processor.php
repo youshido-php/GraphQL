@@ -196,8 +196,10 @@ class Processor
                     foreach ($list as $item) {
                         $result[] = $this->prepareArgumentValue($item, $argumentType->getItemType()->getNullableType(), $request);
                     }
-                } else if ($argumentValue instanceof VariableReference) {
-                    return $this->getVariableReferenceArgumentValue($argumentValue, $argumentType, $request);
+                } else {
+                    if ($argumentValue instanceof VariableReference) {
+                        return $this->getVariableReferenceArgumentValue($argumentValue, $argumentType, $request);
+                    }
                 }
 
                 return $result;
@@ -219,10 +221,14 @@ class Processor
                             $result[$key] = $item;
                         }
                     }
-                } else if ($argumentValue instanceof VariableReference) {
-                    return $this->getVariableReferenceArgumentValue($argumentValue, $argumentType, $request);
-                } else if (is_array($argumentValue)) {
-                    return $argumentValue;
+                } else {
+                    if ($argumentValue instanceof VariableReference) {
+                        return $this->getVariableReferenceArgumentValue($argumentValue, $argumentType, $request);
+                    } else {
+                        if (is_array($argumentValue)) {
+                            return $argumentValue;
+                        }
+                    }
                 }
 
                 return $result;
@@ -232,10 +238,12 @@ class Processor
                 /** @var $argumentValue AstLiteral|VariableReference */
                 if ($argumentValue instanceof VariableReference) {
                     return $this->getVariableReferenceArgumentValue($argumentValue, $argumentType, $request);
-                } else if ($argumentValue instanceof AstLiteral) {
-                    return $argumentValue->getValue();
                 } else {
-                    return $argumentValue;
+                    if ($argumentValue instanceof AstLiteral) {
+                        return $argumentValue->getValue();
+                    } else {
+                        return $argumentValue;
+                    }
                 }
         }
 
@@ -292,7 +300,7 @@ class Processor
     /**
      * @param FieldInterface     $field
      * @param AbstractObjectType $type
-     * @param AstFieldInterface $ast
+     * @param AstFieldInterface  $ast
      * @param                    $resolvedValue
      * @return array
      */
@@ -387,6 +395,7 @@ class Processor
         $fakeField = new Field([
             'name' => $field->getName(),
             'type' => $itemType,
+            'args' => $field->getArguments(),
         ]);
 
         $result = [];
@@ -454,6 +463,7 @@ class Processor
         $fakeField = new Field([
             'name' => $field->getName(),
             'type' => $resolvedType,
+            'args' => $field->getArguments(),
         ]);
 
         return $this->resolveObject($fakeField, $ast, $resolvedValue, true);
