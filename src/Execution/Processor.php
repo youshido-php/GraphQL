@@ -446,6 +446,10 @@ class Processor
 
         $this->resolveValidator->assertValidResolvedValueForField($field, $resolvedValue);
 
+        if (null === $resolvedValue) {
+            return null;
+        }
+
         /** @var AbstractUnionType $type */
         $type         = $field->getType()->getNullableType();
         $resolvedType = $type->resolveType($resolvedValue);
