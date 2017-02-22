@@ -9,6 +9,11 @@
 namespace Youshido\GraphQL\Type\Scalar;
 
 
+/**
+ * Class TimestampType
+ * @package Youshido\GraphQL\Type\Scalar
+ * @deprecated Should not be used, to be removed in 1.5
+ */
 class TimestampType extends AbstractScalarType
 {
 
@@ -41,7 +46,7 @@ class TimestampType extends AbstractScalarType
 
     public function getDescription()
     {
-        return 'A sequence of characters or encoded information identifying when a certain event occurred in seconds';
+        return 'DEPRECATED. Will be converted to a real timestamp';
     }
 
 }
