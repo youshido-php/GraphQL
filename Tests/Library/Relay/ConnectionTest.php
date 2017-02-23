@@ -10,6 +10,7 @@ namespace Youshido\Tests\Library\Relay;
 
 
 use Youshido\GraphQL\Relay\Connection\Connection;
+use Youshido\GraphQL\Relay\Type\PageInfoType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\Tests\DataProvider\TestObjectType;
@@ -30,7 +31,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     public function testPageInfoType()
     {
-        $type = Connection::getPageInfoType();
+        $type = new PageInfoType();
         $this->assertEquals('PageInfo', $type->getName());
         $this->assertEquals('Information about pagination in a connection.', $type->getDescription());
         $this->assertTrue($type->hasField('hasNextPage'));

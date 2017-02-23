@@ -8,6 +8,7 @@
 namespace Youshido\GraphQL\Relay\Connection;
 
 
+use Youshido\GraphQL\Relay\Type\PageInfoType;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\NonNullType;
@@ -88,7 +89,7 @@ class Connection
             'description' => 'A connection to a list of items.',
             'fields'      => array_merge([
                 'pageInfo' => [
-                    'type'        => new NonNullType(self::getPageInfoType()),
+                    'type'        => new NonNullType(new PageInfoType()),
                     'description' => 'Information to aid in pagination.',
                     'resolve'     => [__CLASS__, 'getPageInfo'],
                 ],
@@ -101,32 +102,6 @@ class Connection
         ]);
 
         return $connectionType;
-    }
-
-    public static function getPageInfoType()
-    {
-        return new ObjectType([
-            'name'        => 'PageInfo',
-            'description' => 'Information about pagination in a connection.',
-            'fields'      => [
-                'hasNextPage'     => [
-                    'type'        => new NonNullType(TypeMap::TYPE_BOOLEAN),
-                    'description' => 'When paginating forwards, are there more items?'
-                ],
-                'hasPreviousPage' => [
-                    'type'        => new NonNullType(TypeMap::TYPE_BOOLEAN),
-                    'description' => 'When paginating backwards, are there more items?'
-                ],
-                'startCursor'     => [
-                    'type'        => TypeMap::TYPE_STRING,
-                    'description' => 'When paginating backwards, the cursor to continue.'
-                ],
-                'endCursor'       => [
-                    'type'        => TypeMap::TYPE_STRING,
-                    'description' => 'When paginating forwards, the cursor to continue.'
-                ],
-            ]
-        ]);
     }
 
     public static function getEdges($value)
