@@ -10,6 +10,7 @@ namespace Youshido\GraphQL\Execution\Context;
 
 
 use Youshido\GraphQL\Execution\Container\ContainerInterface;
+use Youshido\GraphQL\Execution\Extension\ExtensionInterface;
 use Youshido\GraphQL\Execution\Request;
 use Youshido\GraphQL\Introspection\Field\SchemaField;
 use Youshido\GraphQL\Introspection\Field\TypeDefinitionField;
@@ -30,6 +31,8 @@ class ExecutionContext implements ExecutionContextInterface
 
     /** @var ContainerInterface */
     private $container;
+
+    private $extensions;
 
     /**
      * ExecutionContext constructor.
@@ -58,6 +61,29 @@ class ExecutionContext implements ExecutionContextInterface
         $schemaField = new SchemaField();
         $this->schema->addQueryField($schemaField);
         $this->schema->addQueryField(new TypeDefinitionField());
+    }
+
+    public function registerExtension(ExtensionInterface $extension)
+    {
+        $this->extensions[$extension->getName()] = $extension;
+        return $this;
+    }
+
+    public function unregisterExtension(ExtensionInterface $extension)
+    {
+        if (!empty($this->extensions[$extension->getName()])) {
+            unset($this->extensions[$extension->getName()]);
+        }
+    }
+
+    public function hasExtension(ExtensionInterface $extension)
+    {
+        return !empty($this->extensions[$extension->getName()]);
+    }
+
+    public function getExtensions()
+    {
+        return $this->extensions;
     }
 
     /**
