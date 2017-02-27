@@ -306,7 +306,7 @@ Next step would be to create a separate class for the latestPostField by extendi
 
 namespace Examples\Blog\Schema;
 
-use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
 use Youshido\GraphQL\Field\AbstractField;
 
 class LatestPostField extends AbstractField
@@ -316,7 +316,7 @@ class LatestPostField extends AbstractField
         return new PostType();
     }
 
-    public function resolve($value, array $args, ResolveInfo $info)
+    public function resolve($value, array $args, ResolveInfoInterface $info)
     {
         return [
             "title"   => "New approach in API has been revealed",
@@ -488,7 +488,7 @@ class PostType extends AbstractObjectType
 ```
 Secondly, modify `resolve` function in `LatestPostField`:
 ```php
-public function resolve($value, array $args, ResolveInfo $info)
+public function resolve($value, array $args, ResolveInfoInterface $info)
 {
     return [
         "title"      => "New approach in API has been revealed",
@@ -791,7 +791,7 @@ and update the resolve function inside latestPost field:
 
 namespace Examples\Blog\Schema;
 
-use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
 use Youshido\GraphQL\Field\AbstractField;
 
 class LatestPostField extends AbstractField
@@ -801,7 +801,7 @@ class LatestPostField extends AbstractField
         return new PostType();
     }
 
-    public function resolve($value, array $args, ResolveInfo $info)
+    public function resolve($value, array $args, ResolveInfoInterface $info)
     {
         return [
             "title"      => "New approach in API has been revealed",
@@ -1132,7 +1132,7 @@ $config->getMutation()->addFields([
             'post'   => new PostInputType(),
             'author' => new StringType()
         ],
-        'resolve' => function($value, array $args, ResolveInfo $info) {
+        'resolve' => function($value, array $args, ResolveInfoInterface $info) {
             // code for creating a new post goes here
             // we simple use our DataProvider for now
             $post = DataProvider::getPost(10);

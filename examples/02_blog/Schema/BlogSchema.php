@@ -6,7 +6,7 @@
 namespace Examples\Blog\Schema;
 
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
-use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Scalar\StringType;
@@ -18,7 +18,7 @@ class BlogSchema extends AbstractSchema
         $config->getQuery()->addFields([
             'latestPost'           => [
                 'type'    => new PostType(),
-                'resolve' => function ($value, array $args, ResolveInfo $info) {
+                'resolve' => function ($value, array $args, ResolveInfoInterface $info) {
                     return $info->getReturnType()->getOne(empty($args['id']) ? 1 : $args['id']);
                 }
             ],
@@ -49,7 +49,7 @@ class BlogSchema extends AbstractSchema
                     'post'   => new PostInputType(),
                     'author' => new StringType()
                 ],
-                'resolve' => function ($value, array $args, ResolveInfo $info) {
+                'resolve' => function ($value, array $args, ResolveInfoInterface $info) {
                     // code for creating a new post goes here
                     // we simple use our DataProvider for now
                     $post = DataProvider::getPost(10);

@@ -2,6 +2,7 @@
 
 namespace Youshido\Tests\Schema;
 
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\Enum\EnumType;
@@ -73,7 +74,7 @@ class InputObjectDefaultValuesTest extends \PHPUnit_Framework_TestCase
             ])
         ]);
 
-        $processor = new Processor($schema);
+        $processor = new Processor(new ExecutionContext($schema));
         $processor->processPayload('{ stringQuery(statObject: { level: 1 }) }');
         $result = $processor->getResponseData();
         $this->assertEquals(['data' => [

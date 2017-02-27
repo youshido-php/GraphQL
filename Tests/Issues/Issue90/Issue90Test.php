@@ -2,6 +2,7 @@
 
 namespace Youshido\Tests\Issues\Issue90;
 
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\Tests\Issues\Issue90\Issue90Schema;
 
@@ -16,7 +17,7 @@ class Issue90Test extends \PHPUnit_Framework_TestCase
     public function testQueryDateTimeTypeWithDateParameter()
     {
         $schema = new Issue90Schema();
-        $processor = new Processor($schema);
+        $processor = new Processor(new ExecutionContext($schema));
         $processor->processPayload("query{ echo(date: \"2016-11-25 09:53am\") }");
         $res = $processor->getResponseData();
 
@@ -29,7 +30,7 @@ class Issue90Test extends \PHPUnit_Framework_TestCase
 
     public function testQueryDateTimeTypeWithoutParameter()
     {
-        $processor = new Processor(new Issue90Schema());
+        $processor = new Processor(new ExecutionContext(new Issue90Schema()));
         $processor->processPayload("query{ echo }");
         $res = $processor->getResponseData();
 
@@ -40,7 +41,7 @@ class Issue90Test extends \PHPUnit_Framework_TestCase
 
     public function testQueryDateTimeTypeWithNullParameter()
     {
-        $processor = new Processor(new Issue90Schema());
+        $processor = new Processor(new ExecutionContext(new Issue90Schema()));
         $processor->processPayload("query{ echo(date: null) }");
         $res = $processor->getResponseData();
 
@@ -52,7 +53,7 @@ class Issue90Test extends \PHPUnit_Framework_TestCase
     public function testMutatingDateTimeWithParameter()
     {
         $schema = new Issue90Schema();
-        $processor = new Processor($schema);
+        $processor = new Processor(new ExecutionContext($schema));
         $processor->processPayload("mutation{ echo(date: \"2016-11-25 09:53am\") }");
         $res = $processor->getResponseData();
 
@@ -66,7 +67,7 @@ class Issue90Test extends \PHPUnit_Framework_TestCase
     public function testMutatingDateTimeWithExplicitNullParameter()
     {
         $schema = new Issue90Schema();
-        $processor = new Processor($schema);
+        $processor = new Processor(new ExecutionContext($schema));
         $processor->processPayload("mutation{ echo(date: null) }");
         $res = $processor->getResponseData();
 

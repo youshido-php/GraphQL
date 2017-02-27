@@ -2,6 +2,7 @@
 
 namespace Youshido\Tests\Issues\Issue99;
 
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 
 /**
@@ -16,7 +17,7 @@ class Issue99Test extends \PHPUnit_Framework_TestCase
     public function testQueryDateTimeTypeWithDateParameter()
     {
         $schema = new Issue99Schema();
-        $processor = new Processor($schema);
+        $processor = new Processor(new ExecutionContext($schema));
         $processor->processPayload(sprintf("{ items{id, custom(argX: {x: \"%s\"}){ value } } }", self::BUG_NOT_EXISTS_VALUE));
         $res = $processor->getResponseData();
 

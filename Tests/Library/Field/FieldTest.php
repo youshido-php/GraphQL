@@ -10,7 +10,7 @@ namespace Youshido\Tests\Library\Field;
 
 
 use Youshido\GraphQL\Config\Field\FieldConfig;
-use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Type\Scalar\IdType;
@@ -38,7 +38,7 @@ class FieldTest extends \PHPUnit_Framework_TestCase
         $fieldWithResolve = new Field([
             'name'    => 'title',
             'type'    => new StringType(),
-            'resolve' => function ($value, array $args, ResolveInfo $info) {
+            'resolve' => function ($value, array $args, ResolveInfoInterface $info) {
                 return $info->getReturnType()->serialize($value);
             }
         ]);

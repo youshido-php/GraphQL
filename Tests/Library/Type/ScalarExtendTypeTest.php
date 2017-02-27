@@ -9,6 +9,7 @@
 namespace Youshido\Tests\Library\Type;
 
 
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\Object\ObjectType;
@@ -27,7 +28,7 @@ class ScalarExtendTypeTest extends \PHPUnit_Framework_TestCase
                 'title' => new StringType(),
             ]
         ]);
-        $processor  = new Processor(new Schema([
+        $processor  = new Processor(new ExecutionContext(new Schema([
                 'query' => new ObjectType([
                     'name'   => 'RootQueryType',
                     'fields' => [
@@ -43,7 +44,7 @@ class ScalarExtendTypeTest extends \PHPUnit_Framework_TestCase
                     ]
                 ])
             ])
-        );
+        ));
 
         $processor->processPayload('{ latestReport { title, time} }');
         $this->assertEquals(['data' => ['latestReport' => ['title' => 'Accident #1', 'time' => '13:30:12']]], $processor->getResponseData());

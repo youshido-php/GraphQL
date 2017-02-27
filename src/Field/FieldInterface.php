@@ -8,11 +8,11 @@
 namespace Youshido\GraphQL\Field;
 
 
-use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
 
 interface FieldInterface extends InputFieldInterface
 {
-    public function resolve($value, array $args, ResolveInfo $info);
+    public function resolve($value, array $args, ResolveInfoInterface $info);
 
     public function getResolveFunction();
 }

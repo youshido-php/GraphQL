@@ -10,7 +10,7 @@ namespace Youshido\Tests\DataProvider;
 
 
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
-use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Scalar\IntType;
@@ -25,7 +25,7 @@ class TestSchema extends AbstractSchema
         $config->getQuery()->addFields([
             'me'     => [
                 'type'    => new TestObjectType(),
-                'resolve' => function ($value, $args, ResolveInfo $info) {
+                'resolve' => function ($value, $args, ResolveInfoInterface $info) {
                     return $info->getReturnType()->getData();
                 }
             ],

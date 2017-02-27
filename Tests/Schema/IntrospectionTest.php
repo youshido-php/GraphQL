@@ -9,6 +9,7 @@
 namespace Youshido\Tests\Schema;
 
 
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Type\Enum\EnumType;
@@ -104,7 +105,7 @@ TEXT;
 
     public function testIntrospectionDirectiveRequest()
     {
-        $processor = new Processor(new TestSchema());
+        $processor = new Processor(new ExecutionContext(new TestSchema()));
 
         $processor->processPayload($this->introspectionQuery, []);
 
@@ -144,7 +145,7 @@ TEXT;
             }
         ]));
 
-        $processor = new Processor($schema);
+        $processor = new Processor(new ExecutionContext($schema));
 
         $processor->processPayload($query);
         $responseData = $processor->getResponseData();
@@ -361,7 +362,7 @@ TEXT;
             }
         ]));
 
-        $processor = new Processor($schema);
+        $processor = new Processor(new ExecutionContext($schema));
 
         $processor->processPayload($this->introspectionQuery);
         $responseData = $processor->getResponseData();

@@ -10,7 +10,7 @@ namespace Youshido\Tests\Schema;
 
 
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
-use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfo;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Parser\Ast\Field as FieldAST;
 use Youshido\GraphQL\Parser\Location;

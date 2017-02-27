@@ -2,7 +2,7 @@
 namespace Youshido\Tests\Issues\Issue109;
 
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
-use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\ObjectType;
@@ -40,7 +40,7 @@ class Issue109Schema extends AbstractSchema
                                 ]
                             ]
                         ]),
-                        'resolve' => function ($source, array $args, ResolveInfo $info) {
+                        'resolve' => function ($source, array $args, ResolveInfoInterface $info) {
                             $internalArgs = [
                                 'comment_id' => 200
                             ];

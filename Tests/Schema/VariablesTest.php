@@ -2,6 +2,7 @@
 
 namespace Youshido\Tests\Schema;
 
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\ListType\ListType;
@@ -33,7 +34,7 @@ class VariablesTest extends \PHPUnit_Framework_TestCase
         ]);
 
 
-        $processor = new Processor($schema);
+        $processor = new Processor(new ExecutionContext($schema));
         $processor->processPayload(
             'query getList($ids: [ID!]) { list(ids: $ids) }',
             [
@@ -93,7 +94,7 @@ class VariablesTest extends \PHPUnit_Framework_TestCase
             ])
         ]);
 
-        $processor = new Processor($schema);
+        $processor = new Processor(new ExecutionContext($schema));
         $processor->processPayload($query, $variables);
         $result = $processor->getResponseData();
 

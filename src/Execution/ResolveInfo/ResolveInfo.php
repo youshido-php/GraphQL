@@ -6,7 +6,7 @@
 * created: 5/19/16 8:58 AM
 */
 
-namespace Youshido\GraphQL\Execution;
+namespace Youshido\GraphQL\Execution\ResolveInfo;
 
 use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Field\FieldInterface;
@@ -14,7 +14,7 @@ use Youshido\GraphQL\Parser\Ast\Field;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Type\AbstractType;
 
-class ResolveInfo
+class ResolveInfo implements ResolveInfoInterface
 {
     /** @var  FieldInterface */
     protected $field;

@@ -8,7 +8,7 @@
 namespace Youshido\GraphQL\Relay;
 
 
-use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Type\InputObject\InputObjectType;
@@ -57,7 +57,7 @@ class RelayMutation
                 ),
                 'name'   => ucfirst($name) . 'Payload'
             ]),
-            'resolve' => function ($value, $args, ResolveInfo $info) use ($resolveFunction) {
+            'resolve' => function ($value, $args, ResolveInfoInterface $info) use ($resolveFunction) {
                 $resolveValue = $resolveFunction($value, $args['input'], $args, $info);
 
                 if (is_object($resolveValue)) {

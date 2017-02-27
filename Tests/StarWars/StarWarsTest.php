@@ -8,6 +8,7 @@
 namespace Youshido\Tests\StarWars;
 
 
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\Tests\StarWars\Schema\StarWarsSchema;
 
@@ -23,7 +24,7 @@ class StarWarsTest extends \PHPUnit_Framework_TestCase
      */
     public function testSchema($query, $validResult, $variables)
     {
-        $processor = new Processor(new StarWarsSchema());
+        $processor = new Processor(new ExecutionContext(new StarWarsSchema()));
 
         $processor->processPayload($query, $variables);
 
@@ -33,7 +34,7 @@ class StarWarsTest extends \PHPUnit_Framework_TestCase
 
     public function testInvalidVariableType()
     {
-        $processor = new Processor(new StarWarsSchema());
+        $processor = new Processor(new ExecutionContext(new StarWarsSchema()));
 
         $processor->processPayload(
             'query($someId: Int){

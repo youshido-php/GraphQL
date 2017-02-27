@@ -2,6 +2,7 @@
 
 namespace Youshido\Tests\Issues\Issue116Test;
 
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\ListType\ListType;
@@ -60,7 +61,7 @@ class Issue116TestTest extends \PHPUnit_Framework_TestCase
                 ]
             ])
         ]);
-        $processor = new Processor($schema);
+        $processor = new Processor(new ExecutionContext($schema));
         $response  = $processor->processPayload('
 query ($size: Int) {
   connections(first: 0) {

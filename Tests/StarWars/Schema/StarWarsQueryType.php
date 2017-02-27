@@ -9,7 +9,6 @@ namespace Youshido\Tests\StarWars\Schema;
 
 
 use Youshido\GraphQL\Field\Field;
-use Youshido\GraphQL\Field\FieldFactory;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\IdType;
 

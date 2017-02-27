@@ -11,6 +11,8 @@ namespace Youshido\GraphQL\Execution;
 use Youshido\GraphQL\Exception\ResolveException;
 use Youshido\GraphQL\Execution\Container\Container;
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
+use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
+use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfo;
 use Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\FieldInterface;
@@ -57,13 +59,9 @@ class Processor
     /** @var int */
     protected $maxComplexity;
 
-    public function __construct(AbstractSchema $schema)
+    public function __construct(ExecutionContextInterface $executionContext)
     {
-        if (empty($this->executionContext)) {
-            $this->executionContext = new ExecutionContext($schema);
-            $this->executionContext->setContainer(new Container());
-        }
-
+        $this->executionContext = $executionContext;
         $this->resolveValidator = new ResolveValidator($this->executionContext);
     }
 

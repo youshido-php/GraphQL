@@ -8,7 +8,7 @@
 namespace Youshido\GraphQL\Introspection\Field;
 
 
-use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Introspection\QueryType;
 use Youshido\GraphQL\Introspection\Traits\TypeCollectorTrait;
@@ -34,7 +34,7 @@ class TypesField extends AbstractField
         return 'types';
     }
 
-    public function resolve($value, array $args, ResolveInfo $info)
+    public function resolve($value, array $args, ResolveInfoInterface $info)
     {
         /** @var $value AbstractSchema $a */
         $this->types = [];

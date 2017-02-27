@@ -10,7 +10,7 @@ namespace Examples\Blog\Schema;
 
 
 use BlogTest\PostType;
-use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
 use Youshido\GraphQL\Field\AbstractField;
 
 class LatestPostField extends AbstractField
@@ -20,7 +20,7 @@ class LatestPostField extends AbstractField
         return new PostType();
     }
 
-    public function resolve($value, array $args, ResolveInfo $info)
+    public function resolve($value, array $args, ResolveInfoInterface $info)
     {
         return [
             "title"   => "New approach in API has been revealed",

@@ -9,6 +9,7 @@
 namespace Youshido\Tests\Performance;
 
 
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\ListType\ListType;
@@ -53,7 +54,7 @@ class LoadTest extends \PHPUnit_Framework_TestCase
             ];
         }
 
-        $p = new Processor(new Schema([
+        $p = new Processor(new ExecutionContext(new Schema([
             'query' => new ObjectType([
                 'name' => 'RootQuery',
                 'fields' => [
@@ -65,7 +66,7 @@ class LoadTest extends \PHPUnit_Framework_TestCase
                     ]
                 ],
             ]),
-        ]));
+        ])));
         return true;
         $p->processPayload('{ posts { id, title, authors { name } } }');
         $res = $p->getResponseData();

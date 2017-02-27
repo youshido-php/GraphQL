@@ -7,7 +7,7 @@
 
 namespace Youshido\GraphQL\Introspection;
 
-use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Introspection\Traits\TypeCollectorTrait;
 use Youshido\GraphQL\Type\AbstractType;
@@ -113,7 +113,7 @@ class QueryType extends AbstractObjectType
         return null;
     }
 
-    public function resolvePossibleTypes($value, $args, ResolveInfo $info)
+    public function resolvePossibleTypes($value, $args, ResolveInfoInterface $info)
     {
         /** @var $value AbstractObjectType */
         if ($value->getKind() == TypeMap::KIND_INTERFACE) {

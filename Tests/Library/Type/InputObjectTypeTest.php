@@ -9,6 +9,7 @@
 namespace Youshido\Tests\Library\Type;
 
 
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputObject;
 use Youshido\GraphQL\Schema\Schema;
@@ -49,7 +50,7 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
 
     public function testListOfInputWithNonNull()
     {
-        $processor = new Processor(new Schema([
+        $processor = new Processor(new ExecutionContext(new Schema([
             'query'    => new ObjectType([
                 'name'   => 'RootQuery',
                 'fields' => [
@@ -80,7 +81,7 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
                     ]
                 ]
             ])
-        ]));
+        ])));
 
         $processor->processPayload('mutation { createList(posts: [{title: null }, {}]) }');
         $this->assertEquals(
@@ -102,7 +103,7 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
 
     public function testNullableInputWithNonNull()
     {
-        $processor = new Processor(new Schema([
+        $processor = new Processor(new ExecutionContext(new Schema([
             'query'    => new ObjectType([
                 'name'   => 'RootQuery',
                 'fields' => [
@@ -133,7 +134,7 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
                     ]
                 ]
             ])
-        ]));
+        ])));
         $processor->processPayload('mutation { createAuthor(author: null) }');
         $this->assertEquals(
             [
@@ -145,7 +146,7 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
 
     public function testListInsideInputObject()
     {
-        $processor = new Processor(new Schema([
+        $processor = new Processor(new ExecutionContext(new Schema([
             'query'    => new ObjectType([
                 'name'   => 'RootQueryType',
                 'fields' => [
@@ -180,7 +181,7 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
                     ]
                 ]
             ])
-        ]));
+        ])));
         $processor->processPayload('mutation { createList(topArgument: { postObject:[ { title: null } ] })}');
         $this->assertEquals([
             'data'   => ['createList' => null],
@@ -202,7 +203,7 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
 
     public function testInputObjectDefaultValue()
     {
-        $processor = new Processor(new Schema([
+        $processor = new Processor(new ExecutionContext(new Schema([
             'query' => new ObjectType([
                 'name'   => 'RootQuery',
                 'fields' => [
@@ -233,7 +234,7 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
 
                 ]
             ]),
-        ]));
+        ])));
         $processor->processPayload('{ cities }');
         $response = $processor->getResponseData();
         $this->assertEquals(
@@ -249,7 +250,7 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
 
     public function testInvalidTypeErrors()
     {
-        $processor = new Processor(new Schema([
+        $processor = new Processor(new ExecutionContext(new Schema([
             'query' => new ObjectType([
                 'name' => 'RootQuery',
                 'fields' => [
@@ -277,7 +278,7 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
 
                 ]
             ]),
-        ]));
+        ])));
         $processor->processPayload('mutation { createPost(object: {title: "Hello world"}) }');
         $response = $processor->getResponseData();
         $this->assertEquals(

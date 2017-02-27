@@ -7,6 +7,7 @@
 
 namespace Youshido\Tests\Schema;
 
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\ListType\ListType;
@@ -101,7 +102,7 @@ class NonNullableTest extends \PHPUnit_Framework_TestCase
             ])
         ]);
 
-        $processor = new Processor($schema);
+        $processor = new Processor(new ExecutionContext($schema));
         $processor->processPayload($query);
         $result = $processor->getResponseData();
 

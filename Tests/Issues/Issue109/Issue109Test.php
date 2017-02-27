@@ -2,6 +2,7 @@
 
 namespace Youshido\Tests\Issues\Issue109;
 
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 
 class Issue109Test extends \PHPUnit_Framework_TestCase
@@ -10,7 +11,7 @@ class Issue109Test extends \PHPUnit_Framework_TestCase
     public function testInternalVariableArgument()
     {
         $schema    = new Issue109Schema();
-        $processor = new Processor($schema);
+        $processor = new Processor(new ExecutionContext($schema));
         $response  = $processor->processPayload('
 query ($postId: Int, $commentId: Int) { 
     latestPost(id: $postId) { 

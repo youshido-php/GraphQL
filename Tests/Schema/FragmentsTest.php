@@ -4,6 +4,7 @@ namespace Youshido\Tests\Schema;
 
 use Youshido\GraphQL\Config\Object\InterfaceTypeConfig;
 use Youshido\GraphQL\Config\Object\ObjectTypeConfig;
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
@@ -135,7 +136,7 @@ class FragmentsTest extends \PHPUnit_Framework_TestCase
             ])
         ]);
 
-        $processor = new Processor($schema);
+        $processor = new Processor(new ExecutionContext($schema));
         $processor->processPayload($query, $variables);
         $result = $processor->getResponseData();
 
@@ -245,7 +246,7 @@ class FragmentsTest extends \PHPUnit_Framework_TestCase
             fullName
         }';
 
-        $processor = new Processor($schema);
+        $processor = new Processor(new ExecutionContext($schema));
         $processor->processPayload($query);
         $result = $processor->getResponseData();
 

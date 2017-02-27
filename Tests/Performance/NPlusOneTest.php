@@ -9,6 +9,7 @@
 namespace Youshido\Tests\Performance;
 
 
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\ListType\ListType;
@@ -62,7 +63,7 @@ class NPlusOneTest extends \PHPUnit_Framework_TestCase
             ]
         ]);
 
-        $processor = new Processor(new Schema([
+        $processor = new Processor(new ExecutionContext(new Schema([
             'query' => new ObjectType([
                 'fields' => [
                     'posts' => [
@@ -73,7 +74,7 @@ class NPlusOneTest extends \PHPUnit_Framework_TestCase
                     ]
                 ]
             ])
-        ]));
+        ])));
 
         $data = $processor->processPayload('{ posts { id, title, author { id, name } } }')->getResponseData();
         $this->assertNotEmpty($data['data']['posts'][0]['author']);
