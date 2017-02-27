@@ -212,7 +212,7 @@ $processor->processPayload($payload);
 echo json_encode($processor->getResponseData()) . "\n";
 ```
 
-To check if everything is working – execute index.php: `php index.php`
+To check if everything is working – execute inline-index.php: `php inline-index.php`
 You should see response as the json encoded object `latestPost` inside the `data` section:
  ```js
  {
