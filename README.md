@@ -461,7 +461,7 @@ Run `php index.php`, you should see a valid response:
 ```
 
 Now, let's make our `likePost` mutation to return the whole `Post` as a result.
-First, we'll add `likeCount` field to the `PostType`:
+First, we'll add `likesCount` field to the `PostType`:
 ```php
 <?php
 namespace Examples\Blog\Schema;
@@ -815,7 +815,7 @@ class LatestPostField extends AbstractField
 
 Request the `status` field in your query:
 ```php
-$payload  = '{ latestPost { title, status, likeCount } }';
+$payload  = '{ latestPost { title, status, likesCount } }';
 ```
 You should get a result similar to the following:
 ```js
@@ -894,7 +894,7 @@ class DataProvider
             "title"     => "Post " . $id . " title",
             "summary"   => "This new GraphQL library for PHP works really well",
             "status"    => 1,
-            "likeCount" => 2
+            "likesCount" => 2
         ];
     }
 
