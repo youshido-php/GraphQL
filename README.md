@@ -498,7 +498,7 @@ public function resolve($value, array $args, ResolveInfo $info)
 }
 ```
 
-Lastly, we're going to change `Mutation Type` from `IntType` to `PostType` and update the `resolve` function to be complaint with the the new type and update the request:
+Lastly, we're going to change `Mutation Type` from `IntType` to `PostType` and update the `resolve` function to be compliant with the the new type and update the request:
 ```php
 <?php
 // ...
