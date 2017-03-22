@@ -976,7 +976,7 @@ $processor->processPayload($payload);
 echo json_encode($processor->getResponseData()) . "\n";
 ```
 
-Due to the GraphQL syntax you have to specify fields for each type of object you're getting in the union request, if you're not familiar with it read more at [official documentation(https://facebook.github.io/graphql/#sec-Unions)]
+Due to the GraphQL syntax you have to specify fields for each type of object you're getting in the union request, if you're not familiar with it read more at [official documentation](https://facebook.github.io/graphql/#sec-Unions)
 If everything was done right you should see the following response:
 ```js
 {"data":{"pageContentUnion":[
@@ -1159,7 +1159,7 @@ result:
 
 ### Non Null
 
-`NonNullType` is really simple to use – consider it as a wrapper that can insure that your field / argument is required and being passed to the resolve function.
+`NonNullType` is really simple to use – consider it as a wrapper that can ensure that your field / argument is required and being passed to the resolve function.
 We have used `NonNullType` couple of times already so we'll just show you useful methods that that could be called on `NonNullType` objects:
 - `getNullableType()`
 - `getNamedType()`
@@ -1168,7 +1168,7 @@ These two can return you a type that was wrapped up in the `NonNullType` so you 
 
 ## Building your schema
 
-It's always a good idea to give your heads up about any possible errors as soon as possible, better on the development stage.
+It's always a good idea to give you a heads up about any possible errors as soon as possible, better on the development stage.
 For this purpose specifically we made a lot of Abstract classes that will force you to implement the right methods to reduce amount of errors or if you're lucky enough – to have no errors at all.
 
 ### Abstract type classes
