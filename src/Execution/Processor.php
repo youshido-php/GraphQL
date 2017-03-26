@@ -255,7 +255,7 @@ class Processor
         $variable = $variableReference->getVariable();
         if ($argumentType->getKind() === TypeMap::KIND_LIST) {
             if (
-                !$variable->isArray() ||
+                (!$variable->isArray() && !is_array($variable->getValue())) ||
                 ($variable->getTypeName() !== $argumentType->getNamedType()->getNullableType()->getName()) ||
                 ($argumentType->getNamedType()->getKind() === TypeMap::KIND_NON_NULL && $variable->isArrayElementNullable())
             ) {
