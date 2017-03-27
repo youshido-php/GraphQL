@@ -69,7 +69,7 @@ class DateTimeType extends AbstractScalarType
 
     public function getDescription()
     {
-        return "Representation of date and time in \"{$this->format}\" format";
+        return sprintf('Representation of date and time in "%s" format', $this->format);
     }
 
 }
