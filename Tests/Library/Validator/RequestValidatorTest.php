@@ -45,7 +45,7 @@ class RequestValidatorTest extends \PHPUnit_Framework_TestCase
                     'queries'            => [
                         new Query('test', null, [], [
                             new FragmentReference('reference', new Location(1, 1))
-                        ], new Location(1, 1))
+                        ], [], new Location(1, 1))
                     ],
                     'fragmentReferences' => [
                         new FragmentReference('reference', new Location(1, 1))
@@ -58,10 +58,10 @@ class RequestValidatorTest extends \PHPUnit_Framework_TestCase
                         new Query('test', null, [], [
                             new FragmentReference('reference', new Location(1, 1)),
                             new FragmentReference('reference2', new Location(1, 1)),
-                        ], new Location(1, 1))
+                        ], [], new Location(1, 1))
                     ],
                     'fragments'          => [
-                        new Fragment('reference', 'TestType', [], new Location(1, 1))
+                        new Fragment('reference', 'TestType', [], [], new Location(1, 1))
                     ],
                     'fragmentReferences' => [
                         new FragmentReference('reference', new Location(1, 1)),
@@ -74,11 +74,11 @@ class RequestValidatorTest extends \PHPUnit_Framework_TestCase
                     'queries'            => [
                         new Query('test', null, [], [
                             new FragmentReference('reference', new Location(1, 1)),
-                        ], new Location(1, 1))
+                        ], [], new Location(1, 1))
                     ],
                     'fragments'          => [
-                        new Fragment('reference', 'TestType', [], new Location(1, 1)),
-                        new Fragment('reference2', 'TestType', [], new Location(1, 1))
+                        new Fragment('reference', 'TestType', [], [], new Location(1, 1)),
+                        new Fragment('reference2', 'TestType', [], [], new Location(1, 1))
                     ],
                     'fragmentReferences' => [
                         new FragmentReference('reference', new Location(1, 1))
@@ -93,8 +93,9 @@ class RequestValidatorTest extends \PHPUnit_Framework_TestCase
                                 new Argument('test', new VariableReference('test', null, new Location(1, 1)), new Location(1, 1))
                             ],
                             [
-                                new Field('test', null, [], new Location(1, 1))
+                                new Field('test', null, [], [], new Location(1, 1))
                             ],
+                            [],
                             new Location(1, 1)
                         )
                     ],
@@ -110,8 +111,8 @@ class RequestValidatorTest extends \PHPUnit_Framework_TestCase
                             new Argument('test', new VariableReference('test', $variable1, new Location(1, 1)), new Location(1, 1)),
                             new Argument('test2', new VariableReference('test2', $variable2, new Location(1, 1)), new Location(1, 1)),
                         ], [
-                            new Field('test', null, [], new Location(1, 1))
-                        ], new Location(1,1))
+                            new Field('test', null, [], [], new Location(1, 1))
+                        ], [], new Location(1,1))
                     ],
                     'variables'          => [
                         $variable1,

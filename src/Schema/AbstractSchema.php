@@ -13,6 +13,7 @@ use Youshido\GraphQL\Config\Schema\SchemaConfig;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\SchemaTypesList;
 use Youshido\GraphQL\Type\TypeInterface;
+use Youshido\GraphQL\Type\SchemaDirectivesList;
 
 abstract class AbstractSchema
 {
@@ -65,6 +66,14 @@ abstract class AbstractSchema
     public function getTypesList()
     {
         return $this->config->getTypesList();
+    }
+
+    /**
+     * @return SchemaDirectivesList
+     */
+    public function getDirectiveList()
+    {
+        return $this->config->getDirectiveList();
     }
 
     public function getName()

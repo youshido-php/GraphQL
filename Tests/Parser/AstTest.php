@@ -39,7 +39,7 @@ class AstTest extends \PHPUnit_Framework_TestCase
 
     public function testField()
     {
-        $field = new Field('field', null, [], new Location(1,1));
+        $field = new Field('field', null, [], [], new Location(1,1));
 
         $this->assertEquals($field->getName(), 'field');
         $this->assertEmpty($field->getArguments());
@@ -58,10 +58,10 @@ class AstTest extends \PHPUnit_Framework_TestCase
     public function testFragment()
     {
         $fields = [
-            new Field('field', null, [], new Location(1,1))
+            new Field('field', null, [], [], new Location(1,1))
         ];
 
-        $fragment = new Fragment('shipInfo', 'Ship', $fields, new Location(1,1));
+        $fragment = new Fragment('shipInfo', 'Ship', [], $fields, new Location(1,1));
 
         $this->assertEquals('shipInfo', $fragment->getName());
         $this->assertEquals('Ship', $fragment->getModel());
@@ -74,7 +74,7 @@ class AstTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Boat', $fragment->getModel());
 
         $newField = [
-            new Field('id', null, [], new Location(1,1))
+            new Field('id', null, [], [], new Location(1,1))
         ];
         $fragment->setFields($newField);
         $this->assertEquals($newField, $fragment->getFields());
@@ -97,10 +97,10 @@ class AstTest extends \PHPUnit_Framework_TestCase
     public function testTypedFragmentReference()
     {
         $fields = [
-            new Field('id', null, [], new Location(1,1))
+            new Field('id', null, [], [], new Location(1,1))
         ];
 
-        $reference = new TypedFragmentReference('Ship', $fields, new Location(1,1));
+        $reference = new TypedFragmentReference('Ship', $fields, [], new Location(1,1));
 
         $this->assertEquals('Ship', $reference->getTypeName());
         $this->assertEquals($fields, $reference->getFields());
@@ -109,8 +109,8 @@ class AstTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('BigBoat', $reference->getTypeName());
 
         $newFields = [
-            new Field('name', null, [], new Location(1,1)),
-            new Field('id', null, [], new Location(1,1))
+            new Field('name', null, [], [], new Location(1,1)),
+            new Field('id', null, [], [], new Location(1,1))
         ];
 
         $reference->setFields($newFields);
@@ -124,10 +124,10 @@ class AstTest extends \PHPUnit_Framework_TestCase
         ];
 
         $fields = [
-            new Field('id', null, [], new Location(1,1))
+            new Field('id', null, [], [], new Location(1,1))
         ];
 
-        $query = new Query('ships', 'lastShips', $arguments, $fields, new Location(1,1));
+        $query = new Query('ships', 'lastShips', $arguments, $fields,[], new Location(1,1));
 
         $this->assertEquals('ships', $query->getName());
         $this->assertEquals('lastShips', $query->getAlias());

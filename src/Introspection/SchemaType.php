@@ -43,6 +43,13 @@ class SchemaType extends AbstractObjectType
         return null;
     }
 
+    public function resolveDirectives($value)
+    {
+        /** @var AbstractSchema|Field $value */
+        $dirs = $value->getDirectiveList()->getDirectives();
+        return $dirs;
+    }
+
     public function build($config)
     {
         $config
@@ -63,8 +70,9 @@ class SchemaType extends AbstractObjectType
             ]))
             ->addField(new TypesField())
             ->addField(new Field([
-                'name' => 'directives',
-                'type' => new ListType(new DirectiveType())
+                'name'    => 'directives',
+                'type'    => new ListType(new DirectiveType()),
+                'resolve' => [$this, 'resolveDirectives']
             ]));
     }
 }

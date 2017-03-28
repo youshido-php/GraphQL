@@ -112,6 +112,10 @@ class Tokenizer
                 ++$this->pos;
 
                 return new Token(Token::TYPE_REQUIRED, $this->getLine(), $this->getColumn());
+            case Token::TYPE_AT:
+                ++$this->pos;
+
+                return new Token(Token::TYPE_AT, $this->getLine(), $this->getColumn());
             case Token::TYPE_COLON:
                 ++$this->pos;
 

@@ -15,6 +15,7 @@ class Query extends AbstractAst implements FieldInterface
 {
 
     use AstArgumentsTrait;
+    use AstDirectivesTrait;
 
     /** @var string */
     protected $name;
@@ -32,9 +33,10 @@ class Query extends AbstractAst implements FieldInterface
      * @param string   $alias
      * @param array    $arguments
      * @param array    $fields
+     * @param array    $directives
      * @param Location $location
      */
-    public function __construct($name, $alias = '', array $arguments, array $fields, Location $location)
+    public function __construct($name, $alias = '', array $arguments, array $fields, array $directives, Location $location)
     {
         parent::__construct($location);
 
@@ -42,6 +44,7 @@ class Query extends AbstractAst implements FieldInterface
         $this->alias     = $alias;
         $this->setFields($fields);
         $this->setArguments($arguments);
+        $this->setDirectives($directives);
     }
 
     public function getName()
