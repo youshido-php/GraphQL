@@ -82,7 +82,6 @@ class Parser extends Tokenizer
     protected function parseBody($token = Token::TYPE_QUERY, $highLevel = true)
     {
         $fields = [];
-        $first  = true;
 
         if ($highLevel && $this->peek()->getType() === $token) {
             $this->lex();
@@ -96,12 +95,6 @@ class Parser extends Tokenizer
         $this->lex();
 
         while (!$this->match(Token::TYPE_RBRACE) && !$this->end()) {
-            if ($first) {
-                $first = false;
-            } else {
-                $this->eatMulti([Token::TYPE_COMMA]);
-            }
-
             if ($this->match(Token::TYPE_FRAGMENT_REFERENCE)) {
                 $this->lex();
 
@@ -122,16 +115,9 @@ class Parser extends Tokenizer
 
     protected function parseVariables()
     {
-        $first = true;
         $this->eat(Token::TYPE_LPAREN);
 
         while (!$this->match(Token::TYPE_RPAREN) && !$this->end()) {
-            if ($first) {
-                $first = false;
-            } else {
-                $this->expect(Token::TYPE_COMMA);
-            }
-
             $variableToken = $this->eat(Token::TYPE_VARIABLE);
             $nameToken     = $this->eatIdentifierToken();
             $this->eat(Token::TYPE_COLON);
@@ -278,19 +264,10 @@ class Parser extends Tokenizer
     protected function parseArgumentList()
     {
         $args  = [];
-        $first = true;
 
         $this->expect(Token::TYPE_LPAREN);
 
         while (!$this->match(Token::TYPE_RPAREN) && !$this->end()) {
-            if ($first) {
-                $first = false;
-            } else {
-                if ($this->match(Token::TYPE_COMMA)) {
-                    $this->eat(Token::TYPE_COMMA);
-                }
-            }
-
             $args[] = $this->parseArgument();
         }
 
@@ -346,10 +323,6 @@ class Parser extends Tokenizer
         $list = [];
         while (!$this->match(Token::TYPE_RSQUARE_BRACE) && !$this->end()) {
             $list[] = $this->parseListValue();
-
-            if ($this->lookAhead->getType() != Token::TYPE_RSQUARE_BRACE) {
-                $this->expect(Token::TYPE_COMMA);
-            }
         }
 
         $this->expect(Token::TYPE_RSQUARE_BRACE);
@@ -390,10 +363,6 @@ class Parser extends Tokenizer
             $key = $this->expectMulti([Token::TYPE_STRING, Token::TYPE_IDENTIFIER])->getData();
             $this->expect(Token::TYPE_COLON);
             $value = $this->parseListValue();
-
-            if ($this->peek()->getType() != Token::TYPE_RBRACE) {
-                $this->expect(Token::TYPE_COMMA);
-            }
 
             $object[$key] = $value;
         }

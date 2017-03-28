@@ -39,7 +39,7 @@ class Tokenizer
     {
         while ($this->pos < strlen($this->source)) {
             $ch = $this->source[$this->pos];
-            if ($ch === ' ' || $ch === "\t") {
+            if ($ch === ' ' || $ch === "\t" || $ch === ',') {
                 $this->pos++;
             } elseif ($ch === '#') {
                 $this->pos++;

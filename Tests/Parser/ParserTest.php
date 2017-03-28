@@ -352,14 +352,11 @@ GRAPHQL;
     public function wrongQueriesProvider()
     {
         return [
-            ['{ test { id,, asd } }'],
-            ['{ test { id,, } }'],
             ['{ test (a: "asd", b: <basd>) { id }'],
             ['{ test (asd: [..., asd]) { id } }'],
             ['{ test (asd: { "a": 4, "m": null, "asd": false  "b": 5, "c" : { a }}) { id } }'],
             ['asdasd'],
             ['mutation { test(asd: ... ){ ...,asd, asd } }'],
-            ['mutation { test( asd: $,as ){ ...,asd, asd } }'],
             ['mutation { test{ . test on Test { id } } }'],
             ['mutation { test( a: "asdd'],
             ['mutation { test( a: { "asd": 12 12'],
