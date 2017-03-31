@@ -64,7 +64,7 @@ trait ErrorContainerTrait
                         $error->getCode() ? ['code' => $error->getCode()] : []
                     );
                 } else {
-                    if ($this->container) {
+                    if (isset($this->container) && $this->container->has('logger')) {
                         $this->container->get('logger')->emerg($error);
                     }
 
