@@ -64,6 +64,10 @@ trait ErrorContainerTrait
                         $error->getCode() ? ['code' => $error->getCode()] : []
                     );
                 } else {
+                    if ($this->container) {
+                        $this->container->get('logger')->emerg($error);
+                    }
+
                     $errors[] = array_merge(
                         ['message' => $error->getMessage()],
                         $error->getCode() ? ['code' => $error->getCode()] : []
