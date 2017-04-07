@@ -117,7 +117,11 @@ class QueryType extends AbstractObjectType
     {
         /** @var $value AbstractObjectType */
         if ($value->getKind() == TypeMap::KIND_INTERFACE) {
-            $this->collectTypes($info->getExecutionContext()->getSchema()->getQueryType());
+            $schema = $info->getExecutionContext()->getSchema();
+            $this->collectTypes($schema->getQueryType());
+            foreach ($schema->getTypesList()->getTypes() as $type) {
+              $this->collectTypes($type);
+            }
 
             $possibleTypes = [];
             foreach ($this->types as $type) {
