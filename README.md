@@ -63,7 +63,7 @@ Add the following package to your `composer.json` (or simply create a new file w
  ```
  {
      "require": {
-         "youshido/graphql": "^1.2"
+         "youshido/graphql": "2.0.x-dev"
      }
  }
  ```
@@ -85,6 +85,7 @@ Create an `index.php` file with the following content:
 <?php
 namespace Sandbox;
 
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\Object\ObjectType;
@@ -92,7 +93,7 @@ use Youshido\GraphQL\Type\Scalar\StringType;
 
 require_once 'vendor/autoload.php';
 
-$processor = new Processor(new Schema([
+$processor = new Processor(new ExecutionContext(new Schema([
     'query' => new ObjectType([
         'name' => 'RootQueryType',
         'fields' => [
@@ -104,7 +105,7 @@ $processor = new Processor(new Schema([
             ]
         ]
     ])
-]));
+])));
 
 $processor->processPayload('{ currentTime }');
 echo json_encode($processor->getResponseData()) . "\n";
@@ -172,6 +173,7 @@ You can create `inline-index.php` file in your project folder and paste the foll
 <?php
 namespace InlineSchema;
 
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\Object\ObjectType;
@@ -181,7 +183,7 @@ use Youshido\GraphQL\Type\Scalar\StringType;
 require_once __DIR__ . '/vendor/autoload.php';
 
 // instantiating Processor and setting the schema
-$processor = new Processor(new Schema([
+$processor = new Processor(new ExecutionContext(new Schema([
     'query' => new ObjectType([
         // root query by convention has a name RootQueryType
         'name'   => 'RootQueryType',
@@ -203,7 +205,7 @@ $processor = new Processor(new Schema([
             ]
         ]
     ])
-]));
+])));
 
 // creating payload and running it through processor
 $payload = '{ latestPost { title, summary } }';
@@ -265,6 +267,7 @@ Now let's create the main entry point for this example – `index.php`:
 namespace Examples\Blog;
 
 use Examples\Blog\Schema\PostType;
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\Object\ObjectType;
@@ -288,9 +291,9 @@ $rootQueryType = new ObjectType([
     ]
 ]);
 
-$processor = new Processor(new Schema([
+$processor = new Processor(new ExecutionContext(new Schema([
     'query' => $rootQueryType
-]));
+])));
 $payload = '{ latestPost { title, summary } }';
 
 $processor->processPayload($payload);
@@ -332,6 +335,7 @@ And now we can update our `index.php`:
 namespace Examples\Blog;
 
 use Examples\Blog\Schema\LatestPostField;
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\Object\ObjectType;
@@ -347,9 +351,9 @@ $rootQueryType = new ObjectType([
     ]
 ]);
 
-$processor = new Processor(new Schema([
+$processor = new Processor(new ExecutionContext(new Schema([
     'query' => $rootQueryType
-]));
+])));
 $payload = '{ latestPost { title, summary } }';
 
 $processor->processPayload($payload);
@@ -409,6 +413,7 @@ Of course in real life you'll more likely have a response of type `Post` for suc
 namespace Examples\Blog;
 
 use Examples\Blog\Schema\LatestPostField;
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\NonNullType;
@@ -445,10 +450,10 @@ $rootMutationType = new ObjectType([
     ]
 ]);
 
-$processor = new Processor(new Schema([
+$processor = new Processor(new ExecutionContext(new Schema([
     'query'    => $rootQueryType,
     'mutation' => $rootMutationType
-]));
+])));
 $payload   = 'mutation { likePost(id: 5) }';
 
 $processor->processPayload($payload);
@@ -955,6 +960,7 @@ Having this separate schema file you should update your `index.php` to look like
 namespace Examples\Blog;
 
 use Examples\Blog\Schema\BlogSchema;
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 
 require_once __DIR__ . '/vendor/autoload.php';
@@ -968,7 +974,7 @@ require_once __DIR__ . '/Schema/ContentBlockUnion.php';
 require_once __DIR__ . '/Schema/BannerType.php';
 require_once __DIR__ . '/Schema/DataProvider.php';
 
-$processor = new Processor(new BlogSchema());
+$processor = new Processor(new ExecutionContext(new BlogSchema()));
 $payload  = '{ pageContentUnion { ... on Post { title } ... on Banner { title, imageLink } } }';
 
 
