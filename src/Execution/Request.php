@@ -7,8 +7,6 @@
 
 namespace Youshido\GraphQL\Execution;
 
-
-use function array_key_exists;
 use Youshido\GraphQL\Exception\Parser\InvalidRequestException;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
