@@ -105,6 +105,16 @@ GRAPHQL;
         $parser->parse($query);
     }
 
+    public function testCommas()
+    {
+        $parser = new Parser();
+        $data   = $parser->parse('{ foo,       ,,  , bar  }');
+        $this->assertEquals([
+            new Query('foo', '', [], [], new Location(1, 3)),
+            new Query('bar', '', [], [], new Location(1, 20)),
+        ], $data['queries']);
+    }
+
     public function testQueryWithNoFields()
     {
         $parser = new Parser();
