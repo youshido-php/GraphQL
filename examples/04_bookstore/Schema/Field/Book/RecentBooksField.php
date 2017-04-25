@@ -13,9 +13,7 @@ use Examples\BookStore\DataProvider;
 use Examples\BookStore\Schema\Type\BookType;
 use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Field\AbstractField;
-use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\ListType\ListType;
-use Youshido\GraphQL\Type\Object\AbstractObjectType;
 
 class RecentBooksField extends AbstractField
 {

@@ -8,6 +8,7 @@
 namespace Youshido\GraphQL\Execution;
 
 
+use function is_array;
 use Youshido\GraphQL\Exception\ResolveException;
 use Youshido\GraphQL\Execution\Container\Container;
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
@@ -57,6 +58,9 @@ class Processor
     /** @var int */
     protected $maxComplexity;
 
+    /** @var bool */
+    protected $hasDeferredResults = false;
+
     public function __construct(AbstractSchema $schema)
     {
         if (empty($this->executionContext)) {
@@ -88,11 +92,28 @@ class Processor
                     $this->data = array_merge($this->data, $operationResult);
                 };
             }
+            if (!empty($this->data)) {
+                $this->data = $this->resolveDeferred($this->data);
+            }
         } catch (\Exception $e) {
             $this->executionContext->addError($e);
         }
 
         return $this;
+    }
+
+    protected function resolveDeferred($data) {
+        if (!is_array($data)) return $data;
+
+        foreach($data as $key=>$item) {
+            if ($item instanceof DeferredResolver) {
+                $data[$key] = $item->resolve();
+            }
+            if (!empty($data[$key])) {
+                $data[$key] = $this->resolveDeferred($data[$key]);
+            }
+        }
+        return $data;
     }
 
     protected function resolveQuery(AstQuery $query)
@@ -275,27 +296,6 @@ class Processor
         return $requestValue;
     }
 
-    protected function resolveObject(FieldInterface $field, AstFieldInterface $ast, $parentValue, $fromUnion = false)
-    {
-        $resolvedValue = $parentValue;
-        if (!$fromUnion) {
-            $resolvedValue = $this->doResolve($field, $ast, $parentValue);
-        }
-
-        $this->resolveValidator->assertValidResolvedValueForField($field, $resolvedValue);
-
-        if (null === $resolvedValue) {
-            return null;
-        }
-        /** @var AbstractObjectType $type */
-        $type = $field->getType()->getNullableType();
-
-        try {
-            return $this->collectResult($field, $type, $ast, $resolvedValue);
-        } catch (\Exception $e) {
-            return null;
-        }
-    }
 
     /**
      * @param FieldInterface     $field
@@ -363,7 +363,9 @@ class Processor
     protected function resolveScalar(FieldInterface $field, AstFieldInterface $ast, $parentValue)
     {
         $resolvedValue = $this->doResolve($field, $ast, $parentValue);
-
+        if ($resolvedValue instanceof DeferredResolver) {
+            return $resolvedValue;
+        }
         $this->resolveValidator->assertValidResolvedValueForField($field, $resolvedValue);
 
         /** @var AbstractScalarType $type */
@@ -377,6 +379,9 @@ class Processor
         /** @var AstQuery $ast */
         $resolvedValue = $this->doResolve($field, $ast, $parentValue);
 
+        if ($resolvedValue instanceof DeferredResolver) {
+            return $resolvedValue;
+        }
         $this->resolveValidator->assertValidResolvedValueForField($field, $resolvedValue);
 
         if (null === $resolvedValue) {
@@ -439,11 +444,37 @@ class Processor
         return $result;
     }
 
+    protected function resolveObject(FieldInterface $field, AstFieldInterface $ast, $parentValue, $fromUnion = false)
+    {
+        $resolvedValue = $parentValue;
+        if (!$fromUnion) {
+            $resolvedValue = $this->doResolve($field, $ast, $parentValue);
+        }
+        if ($resolvedValue instanceof DeferredResolver) {
+            return $resolvedValue;
+        }
+        $this->resolveValidator->assertValidResolvedValueForField($field, $resolvedValue);
+
+        if (null === $resolvedValue) {
+            return null;
+        }
+        /** @var AbstractObjectType $type */
+        $type = $field->getType()->getNullableType();
+
+        try {
+            return $this->collectResult($field, $type, $ast, $resolvedValue);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
     protected function resolveComposite(FieldInterface $field, AstFieldInterface $ast, $parentValue)
     {
         /** @var AstQuery $ast */
         $resolvedValue = $this->doResolve($field, $ast, $parentValue);
-
+        if ($resolvedValue instanceof DeferredResolver) {
+            return $resolvedValue;
+        }
         $this->resolveValidator->assertValidResolvedValueForField($field, $resolvedValue);
 
         if (null === $resolvedValue) {
