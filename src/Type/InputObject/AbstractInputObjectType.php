@@ -23,6 +23,18 @@ abstract class AbstractInputObjectType extends AbstractType
 
     use AutoNameTrait, FieldsAwareObjectTrait;
 
+    protected $isBuilt = false;
+
+    public function getConfig()
+    {
+        if (!$this->isBuilt) {
+            $this->isBuilt = true;
+            $this->build($this->config);
+        }
+
+        return $this->config;
+    }
+
     public function __construct($config = [])
     {
         if (empty($config)) {
@@ -31,7 +43,6 @@ abstract class AbstractInputObjectType extends AbstractType
             ];
         }
         $this->config = new InputObjectTypeConfig($config, $this);
-        $this->build($this->config);
     }
 
     /**
