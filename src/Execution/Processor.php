@@ -11,6 +11,8 @@ namespace Youshido\GraphQL\Execution;
 use Youshido\GraphQL\Exception\ResolveException;
 use Youshido\GraphQL\Execution\Container\Container;
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
+use Youshido\GraphQL\Execution\ErrorHandler\ErrorHandler;
+use Youshido\GraphQL\Execution\ErrorHandler\Plugin\AddToErrorList;
 use Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\FieldInterface;
@@ -57,7 +59,10 @@ class Processor
     /** @var int */
     protected $maxComplexity;
 
-    public function __construct(AbstractSchema $schema)
+    /** @var ErrorHandler  */
+    protected $errorHandler;
+
+    public function __construct(AbstractSchema $schema, ErrorHandler $errorHandler = null)
     {
         if (empty($this->executionContext)) {
             $this->executionContext = new ExecutionContext($schema);
@@ -65,6 +70,13 @@ class Processor
         }
 
         $this->resolveValidator = new ResolveValidator($this->executionContext);
+
+        if (null === $errorHandler) {
+            $errorHandler = new ErrorHandler([
+                new AddToErrorList()
+            ]);
+        }
+        $this->errorHandler = $errorHandler;
     }
 
     public function processPayload($payload, $variables = [], $reducers = [])
@@ -89,7 +101,7 @@ class Processor
                 };
             }
         } catch (\Exception $e) {
-            $this->executionContext->addError($e);
+            $this->errorHandler->handle($e, $this->executionContext);
         }
 
         return $this;
@@ -164,7 +176,7 @@ class Processor
                     throw new ResolveException(sprintf('Resolving type with kind "%s" not supported', $kind));
             }
         } catch (\Exception $e) {
-            $this->executionContext->addError($e);
+            $this->errorHandler->handle($e, $this->executionContext);
 
             if ($fromObject) {
                 throw $e;
