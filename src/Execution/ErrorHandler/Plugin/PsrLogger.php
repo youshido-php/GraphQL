@@ -11,14 +11,17 @@ class PsrLogger implements ErrorHandlerMiddlewareInterface
     /** @var LoggerInterface  */
     private $logger;
 
-    public function __construct(LoggerInterface $logger)
+    private $logLevel;
+
+    public function __construct(LoggerInterface $logger, $logLevel)
     {
         $this->logger = $logger;
+        $this->logLevel = $logLevel;
     }
 
     public function execute($error, ExecutionContext $executionContext, callable $next)
     {
-        $this->logger->error($error);
+        $this->logger->log($this->logLevel, $error);
 
         return $next($next, $executionContext);
     }
