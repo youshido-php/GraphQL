@@ -2,38 +2,39 @@
 
 namespace Youshido\GraphQL\Execution\ErrorHandler;
 
-use Youshido\GraphQL\Exception\InvalidErrorHandlerMiddlewareException;
+use Youshido\GraphQL\Exception\InvalidErrorHandlerPluginException;
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
+use Youshido\GraphQL\Execution\ErrorHandler\Plugin\ErrorHandlerPluginInterface;
 
 class ErrorHandler
 {
     /**
      * @var callable
      */
-    private $middlewareChain;
+    private $pluginChain;
     /**
-     * @param ErrorHandlerMiddlewareInterface[] $middleware
+     * @param ErrorHandlerPluginInterface[] $plugins
      */
-    public function __construct(array $middleware)
+    public function __construct(array $plugins)
     {
-        $this->middlewareChain = $this->createExecutionChain($middleware);
+        $this->pluginChain = $this->createPluginChain($plugins);
     }
 
     public function handle($error, ExecutionContext $executionContext)
     {
-        $middlewareChain = $this->middlewareChain;
-        return $middlewareChain($error, $executionContext);
+        $pluginChain = $this->pluginChain;
+        return $pluginChain($error, $executionContext);
     }
 
-    private function createExecutionChain($middlewareList)
+    private function createPluginChain($pluginList)
     {
         $lastCallable = function () {}; // Last callable is a NO-OP
-        while ($middleware = array_pop($middlewareList)) {
-            if (! $middleware instanceof ErrorHandlerMiddlewareInterface) {
-                throw InvalidErrorHandlerMiddlewareException::forMiddleware($middleware);
+        while ($plugin = array_pop($pluginList)) {
+            if (! $plugin instanceof ErrorHandlerPluginInterface) {
+                throw InvalidErrorHandlerPluginException::forPlugin($plugin);
             }
-            $lastCallable = function ($error, ExecutionContext $executionContext) use ($middleware, $lastCallable) {
-                return $middleware->execute($error, $executionContext, $lastCallable);
+            $lastCallable = function ($error, ExecutionContext $executionContext) use ($plugin, $lastCallable) {
+                return $plugin->execute($error, $executionContext, $lastCallable);
             };
         }
         return $lastCallable;

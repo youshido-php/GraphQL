@@ -3,9 +3,8 @@
 namespace Youshido\GraphQL\Execution\ErrorHandler\Plugin;
 
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
-use Youshido\GraphQL\Execution\ErrorHandler\ErrorHandlerMiddlewareInterface;
 
-class Filter implements ErrorHandlerMiddlewareInterface
+class Filter implements ErrorHandlerPluginInterface
 {
     /** @var callable  */
     private $filter;
