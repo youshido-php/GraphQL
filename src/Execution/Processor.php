@@ -12,7 +12,7 @@ use Youshido\GraphQL\Exception\ResolveException;
 use Youshido\GraphQL\Execution\Container\Container;
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\ErrorHandler\ErrorHandler;
-use Youshido\GraphQL\Execution\ErrorHandler\Plugin\AddToErrorList;
+use Youshido\GraphQL\Execution\ErrorHandler\Plugin\DefaultErrorHandler;
 use Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\FieldInterface;
@@ -73,7 +73,7 @@ class Processor
 
         if (null === $errorHandler) {
             $errorHandler = new ErrorHandler([
-                new AddToErrorList()
+                new DefaultErrorHandler()
             ]);
         }
         $this->errorHandler = $errorHandler;

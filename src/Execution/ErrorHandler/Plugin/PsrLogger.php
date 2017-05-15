@@ -6,7 +6,7 @@ use Psr\Log\LoggerInterface;
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\ErrorHandler\ErrorHandlerMiddlewareInterface;
 
-class Logger implements ErrorHandlerMiddlewareInterface
+class PsrLogger implements ErrorHandlerMiddlewareInterface
 {
     /** @var LoggerInterface  */
     private $logger;

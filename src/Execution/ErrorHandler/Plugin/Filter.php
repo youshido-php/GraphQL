@@ -2,7 +2,6 @@
 
 namespace Youshido\GraphQL\Execution\ErrorHandler\Plugin;
 
-use Psr\Log\LoggerInterface;
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\ErrorHandler\ErrorHandlerMiddlewareInterface;
 
