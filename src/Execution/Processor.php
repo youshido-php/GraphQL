@@ -440,7 +440,7 @@ class Processor
                         $value = null;
                 }
             } catch (\Exception $e) {
-                $this->executionContext->addError($e);
+                $this->errorHandler->handle($e, $this->executionContext);
 
                 $value = null;
             }
