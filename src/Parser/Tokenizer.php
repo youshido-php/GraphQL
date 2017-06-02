@@ -117,6 +117,11 @@ class Tokenizer
 
                 return new Token(Token::TYPE_COLON, $this->getLine(), $this->getColumn());
 
+            case Token::TYPE_EQUAL:
+                ++$this->pos;
+
+                return new Token(Token::TYPE_EQUAL, $this->getLine(), $this->getColumn());
+
             case Token::TYPE_POINT:
                 if ($this->checkFragment()) {
                     return new Token(Token::TYPE_FRAGMENT_REFERENCE, $this->getLine(), $this->getColumn());

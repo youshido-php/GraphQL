@@ -33,6 +33,7 @@ class Token
     const TYPE_VARIABLE      = '$';
     const TYPE_POINT         = '.';
     const TYPE_REQUIRED      = '!';
+    const TYPE_EQUAL         = '=';
 
     const TYPE_NULL  = 'null';
     const TYPE_TRUE  = 'true';
