@@ -823,4 +823,21 @@ GRAPHQL;
         $this->assertArrayNotHasKey('errors', $data);
     }
 
+    public function testVariableDefaultValue()
+    {
+        $parser          = new Parser();
+        $parsedStructure = $parser->parse('
+            query ($format: String = "small"){
+              user {
+                avatar(format: $format)
+              }
+            }
+        ');
+        /** @var Variable $var */
+        $var = $parsedStructure['variables'][0];
+        $this->assertTrue($var->hasDefaultValue());
+        $this->assertEquals('small', $var->getDefaultValue()->getValue());
+        $this->assertEquals('small', $var->getValue()->getValue());
+    }
+
 }
