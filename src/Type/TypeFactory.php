@@ -57,6 +57,7 @@ class TypeFactory
             TypeMap::TYPE_ID,
             TypeMap::TYPE_DATETIME,
             TypeMap::TYPE_DATE,
+            TypeMap::TYPE_TIME,
             TypeMap::TYPE_TIMESTAMP,
             TypeMap::TYPE_DATETIMETZ,
         ];
