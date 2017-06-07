@@ -107,6 +107,7 @@ class Processor
 
         foreach($data as $key=>$item) {
             if ($item instanceof DeferredResolver) {
+                // todo: apply validation
                 $data[$key] = $item->resolve();
             }
             if (!empty($data[$key])) {

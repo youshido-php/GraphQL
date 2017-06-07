@@ -24,15 +24,21 @@ class CategoriesField extends AbstractField
 
     public function resolve($value, array $args, ResolveInfo $info)
     {
-        return new DeferredResolver(function() use ($value) {
+        return new DeferredResolver(function () use ($value) {
             $id = empty($value['id']) ? "1" : $value['id'] . ".1";
+
             return [
                 'id'       => $id,
                 'title'    => 'Category ' . $id,
+                'authors'  => [
+                    [
+                        'id'        => 'author1',
+                        'firstName' => 'John',
+                        'lastName'  => 'Doe',
+                    ],
+                ],
                 'children' => [],
             ];
         });
     }
-
-
 }

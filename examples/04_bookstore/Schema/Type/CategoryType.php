@@ -19,11 +19,10 @@ class CategoryType extends AbstractObjectType
     public function build($config)
     {
         $config->addFields([
-            'id'       => new IdType(),
-            'title'    => new StringType(),
+            'id'      => new IdType(),
+            'title'   => new StringType(),
+            'authors' => new ListType(new AuthorType()),
             new CategoriesField(),
         ]);
     }
-
-
 }
