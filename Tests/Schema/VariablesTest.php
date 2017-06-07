@@ -37,10 +37,26 @@ class VariablesTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload(
             'query getList($ids: [ID!]) { list(ids: $ids) }',
             [
-                'ids' => [1, 12, null]
+                'ids' => [1, 12]
             ]
         );
         $this->assertEquals(['data' => ['list' => 'item']], $processor->getResponseData());
+
+        $processor->getExecutionContext()->clearErrors();
+        $processor->processPayload(
+            'query getList($ids: [ID!]) { list(ids: $ids) }',
+            [
+                'ids' => [1, 12, null]
+            ]
+        );
+        $this->assertEquals(['data' => ['list' => null], 'errors' => [
+            [
+                'message' => 'Not valid type for argument "ids" in query "list"',
+                'locations' => [
+                    ['line' => 1, 'column' => 35]
+                ]
+            ],
+        ]], $processor->getResponseData());
 
         $processor->getExecutionContext()->clearErrors();
         $processor->processPayload(
