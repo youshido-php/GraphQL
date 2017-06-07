@@ -130,6 +130,12 @@ class TypeService
             $getter = $path;
             if (substr($path, 0, 2) != 'is') {
                 $getter = 'get' . self::classify($path);
+                if (!is_callable([$data, $getter])) {
+                    $getter = 'is' . self::classify($path);
+                }
+                if (!is_callable([$data, $getter])) {
+                    $getter = self::classify($path);
+                }
             }
 
             return is_callable([$data, $getter]) ? $data->$getter() : (isset($data->$path) ? $data->$path : null);

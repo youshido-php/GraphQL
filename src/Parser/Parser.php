@@ -147,7 +147,7 @@ class Parser extends Tokenizer
                 $this->eat(Token::TYPE_REQUIRED);
             }
 
-            $this->data['variables'][] = new Variable(
+             $variable = new Variable(
                 $nameToken->getData(),
                 $type,
                 $required,
@@ -155,6 +155,13 @@ class Parser extends Tokenizer
                 new Location($variableToken->getLine(), $variableToken->getColumn()),
                 $arrayElementNullable
             );
+
+            if ($this->match(Token::TYPE_EQUAL)) {
+                $this->eat(Token::TYPE_EQUAL);
+                $variable->setDefaultValue($this->parseValue());
+            }
+
+            $this->data['variables'][] = $variable;
         }
 
         $this->expect(Token::TYPE_RPAREN);

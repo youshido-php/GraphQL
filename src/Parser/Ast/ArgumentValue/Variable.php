@@ -35,6 +35,12 @@ class Variable extends AbstractAst implements ValueInterface
     /** @var bool */
     private $arrayElementNullable = true;
 
+    /** @var bool */
+    private $hasDefaultValue = false;
+
+    /** @var mixed */
+    private $defaultValue = null;
+
     /**
      * @param string   $name
      * @param string   $type
@@ -62,6 +68,9 @@ class Variable extends AbstractAst implements ValueInterface
     public function getValue()
     {
         if (null === $this->value) {
+            if ($this->hasDefaultValue()) {
+                return $this->defaultValue;
+            }
             throw new \LogicException('Value is not set for variable "' . $this->name . '"');
         }
 
@@ -138,6 +147,32 @@ class Variable extends AbstractAst implements ValueInterface
     public function setNullable($nullable)
     {
         $this->nullable = $nullable;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasDefaultValue()
+    {
+        return $this->hasDefaultValue;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultValue()
+    {
+        return $this->defaultValue;
+    }
+
+    /**
+     * @param mixed $defaultValue
+     */
+    public function setDefaultValue($defaultValue)
+    {
+        $this->hasDefaultValue = true;
+
+        $this->defaultValue = $defaultValue;
     }
 
     /**
