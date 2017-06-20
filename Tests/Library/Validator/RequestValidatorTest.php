@@ -23,7 +23,7 @@ class RequestValidatorTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
-     * @expectedException Youshido\GraphQL\Exception\Parser\InvalidRequestException
+     * @expectedException \Youshido\GraphQL\Exception\Parser\InvalidRequestException
      * @dataProvider invalidRequestProvider
      *
      * @param Request $request
@@ -102,7 +102,7 @@ class RequestValidatorTest extends \PHPUnit_Framework_TestCase
                     'variableReferences' => [
                         new VariableReference('test', null, new Location(1, 1))
                     ]
-                ])
+                ], ['test' => 1])
             ],
             [
                 new Request([
@@ -123,7 +123,7 @@ class RequestValidatorTest extends \PHPUnit_Framework_TestCase
                         new VariableReference('test', $variable1, new Location(1, 1)),
                         new VariableReference('test2', $variable2, new Location(1, 1))
                     ]
-                ])
+                ], ['test' => 1, 'test2' => 2])
             ]
         ];
     }

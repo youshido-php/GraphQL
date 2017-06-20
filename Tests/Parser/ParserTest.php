@@ -105,6 +105,16 @@ GRAPHQL;
         $parser->parse($query);
     }
 
+    public function testCommas()
+    {
+        $parser = new Parser();
+        $data   = $parser->parse('{ foo,       ,,  , bar  }');
+        $this->assertEquals([
+            new Query('foo', '', [], [], new Location(1, 3)),
+            new Query('bar', '', [], [], new Location(1, 20)),
+        ], $data['queries']);
+    }
+
     public function testQueryWithNoFields()
     {
         $parser = new Parser();
@@ -352,14 +362,11 @@ GRAPHQL;
     public function wrongQueriesProvider()
     {
         return [
-            ['{ test { id,, asd } }'],
-            ['{ test { id,, } }'],
             ['{ test (a: "asd", b: <basd>) { id }'],
             ['{ test (asd: [..., asd]) { id } }'],
             ['{ test (asd: { "a": 4, "m": null, "asd": false  "b": 5, "c" : { a }}) { id } }'],
             ['asdasd'],
             ['mutation { test(asd: ... ){ ...,asd, asd } }'],
-            ['mutation { test( asd: $,as ){ ...,asd, asd } }'],
             ['mutation { test{ . test on Test { id } } }'],
             ['mutation { test( a: "asdd'],
             ['mutation { test( a: { "asd": 12 12'],
@@ -820,6 +827,23 @@ GRAPHQL;
         ');
 
         $this->assertArrayNotHasKey('errors', $data);
+    }
+
+    public function testVariableDefaultValue()
+    {
+        $parser          = new Parser();
+        $parsedStructure = $parser->parse('
+            query ($format: String = "small"){
+              user {
+                avatar(format: $format)
+              }
+            }
+        ');
+        /** @var Variable $var */
+        $var = $parsedStructure['variables'][0];
+        $this->assertTrue($var->hasDefaultValue());
+        $this->assertEquals('small', $var->getDefaultValue()->getValue());
+        $this->assertEquals('small', $var->getValue()->getValue());
     }
 
 }

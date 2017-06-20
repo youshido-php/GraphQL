@@ -29,6 +29,48 @@ class VariableTest extends \PHPUnit_Framework_TestCase
         $var->getValue();
     }
 
+    public function testGetValueReturnsDefaultValueIfNoValueSet()
+    {
+        $var = new Variable('foo', 'bar', false, false, new Location(1,1));
+        $var->setDefaultValue('default-value');
+
+        $this->assertEquals(
+            'default-value',
+            $var->getValue()
+        );
+    }
+
+    public function testGetValueReturnsSetValueEvenWithDefaultValue()
+    {
+        $var = new Variable('foo', 'bar', false, false, new Location(1,1));
+        $var->setValue('real-value');
+        $var->setDefaultValue('default-value');
+
+        $this->assertEquals(
+            'real-value',
+            $var->getValue()
+        );
+    }
+
+    public function testIndicatesDefaultValuePresent()
+    {
+        $var = new Variable('foo', 'bar', false, false, new Location(1,1));
+        $var->setDefaultValue('default-value');
+
+        $this->assertTrue(
+            $var->hasDefaultValue()
+        );
+    }
+
+    public function testHasNoDefaultValue()
+    {
+        $var = new Variable('foo', 'bar', false, false, new Location(1,1));
+
+        $this->assertFalse(
+            $var->hasDefaultValue()
+        );
+    }
+
     /**
      * @return array Array of <mixed: value to set, mixed: expected value>
      */

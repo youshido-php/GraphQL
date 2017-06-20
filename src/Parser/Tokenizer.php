@@ -39,7 +39,7 @@ class Tokenizer
     {
         while ($this->pos < strlen($this->source)) {
             $ch = $this->source[$this->pos];
-            if ($ch === ' ' || $ch === "\t") {
+            if ($ch === ' ' || $ch === "\t" || $ch === ',') {
                 $this->pos++;
             } elseif ($ch === '#') {
                 $this->pos++;
@@ -120,6 +120,11 @@ class Tokenizer
                 ++$this->pos;
 
                 return new Token(Token::TYPE_COLON, $this->getLine(), $this->getColumn());
+
+            case Token::TYPE_EQUAL:
+                ++$this->pos;
+
+                return new Token(Token::TYPE_EQUAL, $this->getLine(), $this->getColumn());
 
             case Token::TYPE_POINT:
                 if ($this->checkFragment()) {
