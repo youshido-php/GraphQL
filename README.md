@@ -78,7 +78,7 @@ composer require youshido/graphql
 
 Now you're ready to create your `GraphQL Schema` and check if everything works fine.
 Your first GraphQL app will be able to receive `currentTime` request and response with a formatted time string.
-> you can find this example in the examples directory – [01_sandbox](https://github.com/Youshido/GraphQL/examples/01_sandbox).
+> you can find this example in the examples directory – [01_sandbox](https://github.com/Youshido/GraphQL/tree/master/examples/01_sandbox).
 
 Create an `index.php` file with the following content:
 ```php
@@ -123,13 +123,13 @@ If you're having any troubles – here're some troubleshooting points:
 * make sure your `index.php` file has been created in the same directory that you have `vendor` folder in (presumably it's `graphql-test` folder)
 * last but not least, check that you have php-cli installed and running and it's version >= 5.5 (`php -v`)
 
-Also, you can always check if script from the [examples folder](https://github.com/Youshido/GraphQL/examples/01_sandbox) work.
+Also, you can always check if script from the [examples folder](https://github.com/Youshido/GraphQL/tree/master/examples/01_sandbox) work.
 
 ## Tutorial – Creating Blog Schema
 
 For our learning example we'll architect a GraphQL Schema for a Blog.
 You'll probably be using our package along with your favorite framework (we have a Symfony version [here](http://github.com/Youshido/GraphqlBundle)), but for the purpose of this tutorial we're keeping it all examples as plain php code.
->> (Complete example of the Blog schema available by the following link https://github.com/Youshido/GraphQL/examples/02_Blog)
+>> (Complete example of the Blog schema available by the following link https://github.com/Youshido/GraphQL/tree/master/examples/02_blog)
 
 Our Blog will have `Users` who can write `Posts` and leave `Comments`. Also, there will be a `LikePost` operation that could be performed by anyone.
 Let's start with `Post`. Take a look at the query that returns `title` and `summary` of the latest Post:
