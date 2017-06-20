@@ -88,6 +88,20 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayNotHasKey('errors', $processor->getResponseData());
     }
 
+    public function testNullListVariable()
+    {
+        $processor = new Processor(new TestSchema());
+        $processor->processPayload(
+            'mutation ($list: [Int], $status: TestEnum) { updateStatus(list: $list, newStatus: $status) }',
+            [
+                'list'   => null,
+                'status' => null,
+            ]
+        );
+
+        $this->assertArrayNotHasKey('errors', $processor->getResponseData());
+    }
+
     public function testListNullResponse()
     {
         $processor = new Processor(new Schema([
