@@ -14,7 +14,8 @@ class Issue109Test extends \PHPUnit_Framework_TestCase
         $response  = $processor->processPayload('
 query ($postId: Int, $commentId: Int) { 
     latestPost(id: $postId) { 
-        id(comment_id: $commentId), comments(comment_id: $commentId) {
+        id(comment_id: $commentId),
+        comments(comment_id: $commentId) {
             comment_id
         } 
     } 

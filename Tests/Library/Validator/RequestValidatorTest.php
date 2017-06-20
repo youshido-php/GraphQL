@@ -35,9 +35,9 @@ class RequestValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function invalidRequestProvider()
     {
-        $variable1 = (new Variable('test', 'Int', false, false, new Location(1, 1)))->setUsed(true);
-        $variable2 = (new Variable('test2', 'Int', false, false, new Location(1, 1)))->setUsed(true);
-        $variable3 = (new Variable('test3', 'Int', false, false, new Location(1, 1)))->setUsed(false);
+        $variable1 = (new Variable('test', 'Int', false, false, true, new Location(1, 1)))->setUsed(true);
+        $variable2 = (new Variable('test2', 'Int', false, false, true, new Location(1, 1)))->setUsed(true);
+        $variable3 = (new Variable('test3', 'Int', false, false, true, new Location(1, 1)))->setUsed(false);
 
         return [
             [

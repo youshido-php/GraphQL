@@ -46,10 +46,10 @@ class Variable extends AbstractAst implements ValueInterface
      * @param string   $type
      * @param bool     $nullable
      * @param bool     $isArray
-     * @param Location $location
      * @param bool     $arrayElementNullable
+     * @param Location $location
      */
-    public function __construct($name, $type, $nullable, $isArray, Location $location, $arrayElementNullable = true)
+    public function __construct($name, $type, $nullable, $isArray, $arrayElementNullable = true, Location $location)
     {
         parent::__construct($location);
 

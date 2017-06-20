@@ -171,7 +171,7 @@ class AstTest extends \PHPUnit_Framework_TestCase
 
     public function testVariable()
     {
-        $variable = new Variable('id', 'int', false, false, new Location(1,1));
+        $variable = new Variable('id', 'int', false, false, true, new Location(1,1));
 
         $this->assertEquals('id', $variable->getName());
         $this->assertEquals('int', $variable->getTypeName());
@@ -199,7 +199,7 @@ class AstTest extends \PHPUnit_Framework_TestCase
      */
     public function testVariableLogicException()
     {
-        $variable = new Variable('id', 'int', false, false, new Location(1,1));
+        $variable = new Variable('id', 'int', false, false, true, new Location(1,1));
         $variable->getValue();
     }
 }
