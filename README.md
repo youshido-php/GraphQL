@@ -8,7 +8,7 @@
 
 This is a pure PHP realization of the GraphQL protocol based on the working draft of the official GraphQL Specification located on http://facebook.github.io/graphql/.
 
-GraphQL is a query-language that operates over a single HTTP endpoint. Pioneered by Faceebook, GraphQL has focus on making the smallest possible over-the-wire responses to any request. GraphQL ignores many of the concepts that have made "REST over HTTP" so popular since 2000, creating its own conventions to solve many problems trying to make APIs flexible enough for a multitude of different clients, whilst keeping them performant.
+GraphQL is a query-language that operates over a single HTTP endpoint. Pioneered by Facebook, GraphQL has focus on making the smallest possible over-the-wire responses to any request. GraphQL ignores many of the concepts that have made "REST over HTTP" so popular since 2000, creating its own conventions to solve many problems trying to make APIs flexible enough for a multitude of different clients, whilst keeping them performant.
 
 [GraphQL differs in many ways to REST](https://philsturgeon.uk/api/2017/01/24/graphql-vs-rest-overview/
 ) and has fundamental improvements for APIs with requirements that have outgrown it:
