@@ -8,16 +8,17 @@
 
 This is a pure PHP realization of the GraphQL protocol based on the working draft of the official GraphQL Specification located on http://facebook.github.io/graphql/.
 
-GraphQL is a modern replacement of the almost obsolete REST approach to present API. It's been almost 16 years since the REST idea was found in 2000 by Roy Fielding. With all credit to everything we accomplished using REST it's time to change for something better.
-GraphQL advanced in many ways and has fundamental improvements over the old good REST:
+GraphQL is a query-language that operates over a single HTTP endpoint. Pioneered by Facebook, GraphQL has focus on making the smallest possible over-the-wire responses to any request. GraphQL ignores many of the concepts that have made "REST over HTTP" so popular since 2000, creating its own conventions to solve many problems trying to make APIs flexible enough for a multitude of different clients, whilst keeping them performant.
 
- - self-checks embedded on the ground level of your backend architecture
- - reusable API for different client versions and devices, i.e. no more need in maintaining "/v1" and "/v2"
- - a complete new level of distinguishing of the backend and frontend logic
+[GraphQL differs in many ways to REST](https://philsturgeon.uk/api/2017/01/24/graphql-vs-rest-overview/
+) and has fundamental improvements for APIs with requirements that have outgrown it:
+
+ - the tempation to version in the URL is gone, forcing evolution as a tactic
+ - its possible to track which fields are required by various clients, expediating the deprecation aspect of evolution
+ - bulk requests and responses to avoiding waiting for multiple HTTP handshakes
  - easily generated documentation and incredibly intuitive way to explore created API
- - once your architecture is complete – most client-based changes does not require backend modifications
+ - clients will be much less likely to require backend changes
 
-It could be hard to believe but give it a try and you'll be rewarded with much better architecture and so much easier to support code.
 
 > Current package is and will be trying to be kept up to date with the latest revision of the official GraphQL Specification which is now of April 2016.
 
