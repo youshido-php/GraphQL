@@ -9,7 +9,7 @@
 This is a pure PHP realization of the GraphQL protocol based on the working draft of the official GraphQL Specification located on http://facebook.github.io/graphql/.
 
 GraphQL is a query language for APIs. It brings a new paradigm to the world of client-server communication and delivers a much more predictable behavior and smallest posisble over-the-wire responses to any request. 
-GraphQL advanced in many ways and has fundamental quiality improvements:
+GraphQL advanced in many ways and has fundamental quality improvements:
 
  - strongly typed communication protocol makes both client and server predictable and more stable
  - encourages you to build a constantly evolving APIs and not use versions in the endpoints
