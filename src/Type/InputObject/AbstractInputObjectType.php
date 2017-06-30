@@ -71,7 +71,7 @@ abstract class AbstractInputObjectType extends AbstractType
 
         foreach ($value as $valueKey => $valueItem) {
             if (!$typeConfig->hasField($valueKey)) {
-                $this->lastError = sprintf('Field "%s" does not exist for input type "%s"', $valueKey, $this->getName());
+                // Schema validation will generate the error message for us.
                 return false;
             }
 
