@@ -59,7 +59,7 @@ final class NonNullType extends AbstractType implements CompositeTypeInterface
             return false;
         }
         else {
-          $this->lastError = null;
+            $this->lastError = null;
         }
 
         return $this->getNullableType()->isValidValue($value);
