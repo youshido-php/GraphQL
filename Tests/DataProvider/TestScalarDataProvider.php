@@ -103,33 +103,37 @@ class TestScalarDataProvider
 
     public static function getDatetimeTestData()
     {
+        $time = time();
         return [
             [null, null, true],
-            [new \DateTime('now'), date('Y-m-d H:i:s'), true],
+            [(new \DateTime())->setTimestamp($time), date('Y-m-d H:i:s', $time), true],
         ];
     }
 
     public static function getDatetimetzTestData()
     {
+        $time = time();
         return [
             [null, null, true],
-            [new \DateTime('now'), date('r'), true],
+            [(new \DateTime())->setTimestamp($time), date('r', $time), true],
         ];
     }
 
     public static function getDateTestData()
     {
+        $time = time();
         return [
             [null, null, true],
-            [new \DateTime('now'), date('Y-m-d'), true],
+            [(new \DateTime())->setTimestamp($time), date('Y-m-d', $time), true],
         ];
     }
 
 
     public static function getTimestampTestData()
     {
+        $time = time();
         return [
-            [new \DateTime('now'), time(), true],
+            [(new \DateTime())->setTimestamp($time), $time, true],
             [null, null, true],
         ];
     }
