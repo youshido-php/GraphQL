@@ -87,7 +87,7 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
             [
                 'data'   => ['createList' => null],
                 'errors' => [[
-                    'message'   => 'Not valid type for argument "posts" in query "createList": Not valid type for field "title" in input type "PostInputType": Field "" must not be NULL',
+                    'message'   => 'Not valid type for argument "posts" in query "createList": Not valid type for field "title" in input type "PostInputType": Field must not be NULL',
                     'locations' => [
                         [
                             'line'   => 1,
@@ -185,7 +185,7 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals([
             'data'   => ['createList' => null],
             'errors' => [[
-                'message'   => 'Not valid type for argument "topArgument" in query "createList": Not valid type for field "postObject" in input type "topArgument": Not valid type for field "title" in input type "postObject": Field "" must not be NULL',
+                'message'   => 'Not valid type for argument "topArgument" in query "createList": Not valid type for field "postObject" in input type "topArgument": Not valid type for field "title" in input type "postObject": Field must not be NULL',
                 'locations' => [
                     [
                         'line'   => 1,
