@@ -27,7 +27,10 @@ class ResolveValidator implements ResolveValidatorInterface
     {
         /** @var AbstractObjectType $objectType */
         if (!(TypeService::isObjectType($objectType) || TypeService::isInputObjectType($objectType)) || !$objectType->hasField($ast->getName())) {
-            throw new ResolveException(sprintf('Field "%s" not found in type "%s"', $ast->getName(), $objectType->getNamedType()->getName()), $ast->getLocation());
+          $availableFieldNames = implode(', ', array_map(function (FieldInterface $field): string {
+            return sprintf('"%s"', $field->getName());
+          }, $objectType->getFields()));
+          throw new ResolveException(sprintf('Field "%s" not found in type "%s". Available fields are: %s', $ast->getName(), $objectType->getNamedType()->getName(), $availableFieldNames), $ast->getLocation());
         }
     }
 

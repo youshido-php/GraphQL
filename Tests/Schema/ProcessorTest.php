@@ -265,7 +265,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $processor->processPayload('mutation { invalidMutation }');
         $this->assertEquals(['errors' => [[
-            'message'   => 'Field "invalidMutation" not found in type "RootSchemaMutation"',
+            'message'   => 'Field "invalidMutation" not found in type "RootSchemaMutation". Available fields are: "increaseCounter", "invalidResolveTypeMutation", "interfacedMutation"',
             'locations' => [
                 [
                     'line'   => 1,
@@ -307,7 +307,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $processor->processPayload('{ invalidQuery }');
         $this->assertEquals(['errors' => [[
-            'message'   => 'Field "invalidQuery" not found in type "RootQuery"',
+            'message'   => 'Field "invalidQuery" not found in type "RootQuery". Available fields are: "me", "randomUser", "invalidValueQuery", "labels", "__schema", "__type"',
             'locations' => [
                 [
                     'line'   => 1,
@@ -325,7 +325,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals([
             'data'   => ['me' => null],
             'errors' => [[
-                'message'   => 'Field "middle" not found in type "User"',
+                'message'   => 'Field "middle" not found in type "User". Available fields are: "firstName", "id_alias", "lastName", "code"',
                 'locations' => [
                     [
                         'line'   => 1,
@@ -624,7 +624,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             ],
             'errors' => [
                 [
-                    'message'   => 'Field "name" not found in type "Object1"',
+                    'message'   => 'Field "name" not found in type "Object1". Available fields are: "id"',
                     'locations' => [
                         [
                             'line'   => 1,
@@ -775,7 +775,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         // don't let complexity reducer affect query errors
         $processor->processPayload('{ me { badfield } }');
-        $this->assertArraySubset(['errors' => [['message' => 'Field "badfield" not found in type "User"']]], $processor->getResponseData());
+        $this->assertArraySubset(['errors' => [['message' => 'Field "badfield" not found in type "User". Available fields are: "firstName", "lastName", "code", "likes"']]], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
         foreach (range(1, 5) as $cost_multiplier) {
