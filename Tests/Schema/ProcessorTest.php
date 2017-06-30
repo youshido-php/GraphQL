@@ -414,7 +414,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals([
             'data'   => ['alias' => null],
             'errors' => [[
-                'message'   => 'Not valid type for argument "argument1" in query "test"',
+                'message'   => 'Not valid type for argument "argument1" in query "test": (no details available)',
                 'locations' => [
                     [
                         'line'   => 1,

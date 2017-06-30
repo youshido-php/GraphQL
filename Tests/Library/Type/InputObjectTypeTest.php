@@ -87,7 +87,7 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
             [
                 'data'   => ['createList' => null],
                 'errors' => [[
-                    'message'   => 'Not valid type for argument "posts" in query "createList"',
+                    'message'   => 'Not valid type for argument "posts" in query "createList": (no details available)',
                     'locations' => [
                         [
                             'line'   => 1,
@@ -185,7 +185,7 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals([
             'data'   => ['createList' => null],
             'errors' => [[
-                'message'   => 'Not valid type for argument "topArgument" in query "createList"',
+                'message'   => 'Not valid type for argument "topArgument" in query "createList": Not valid type for field "postObject" in input type "topArgument": (no details available)',
                 'locations' => [
                     [
                         'line'   => 1,
@@ -284,7 +284,7 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
             [
                 'data' => ['createPost' => null],
                 'errors' => [[
-                    'message' => 'userId is required on InputPostType',
+                    'message' => 'Not valid type for argument "object" in query "createPost": userId is required on InputPostType',
                     'locations' => [
                         ['line' => 1, 'column' => 23]
                     ]

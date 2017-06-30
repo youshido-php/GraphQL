@@ -70,7 +70,15 @@ abstract class AbstractInputObjectType extends AbstractType
         });
 
         foreach ($value as $valueKey => $valueItem) {
-            if (!$typeConfig->hasField($valueKey) || !$typeConfig->getField($valueKey)->getType()->isValidValue($valueItem)) {
+            if (!$typeConfig->hasField($valueKey)) {
+                $this->lastError = sprintf('Field "%s" does not exist for input type "%s"', $valueKey, $this->getName());
+                return false;
+            }
+
+            $field = $typeConfig->getField($valueKey);
+            if (!$field->getType()->isValidValue($valueItem)) {
+                $error = $field->getType()->getLastError() ?: '(no details available)';
+                $this->lastError = sprintf('Not valid type for field "%s" in input type "%s": %s', $field->getName(), $this->getName(), $error);
                 return false;
             }
 

@@ -50,7 +50,7 @@ class VariablesTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertEquals(['data' => ['list' => null], 'errors' => [
             [
-                'message'   => 'Not valid type for argument "ids" in query "list"',
+                'message'   => 'Not valid type for argument "ids" in query "list": (no details available)',
                 'locations' => [
                     ['line' => 1, 'column' => 35],
                 ],

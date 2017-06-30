@@ -127,7 +127,7 @@ class NonNullableTest extends \PHPUnit_Framework_TestCase
                     ],
                     'errors' => [
                         [
-                            'message' => 'Not valid type for argument "ids" in query "nonNullArgument2"',
+                            'message' => 'Not valid type for argument "ids" in query "nonNullArgument2": (no details available)',
                             'locations' => [['line' => 1, 'column' => 25]]
                         ]
                     ]
