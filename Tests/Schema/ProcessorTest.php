@@ -318,7 +318,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('{ invalidValueQuery { id } }');
-        $this->assertEquals(['errors' => [['message' => 'Not valid resolved type for field "invalidValueQuery"']], 'data' => ['invalidValueQuery' => null]], $processor->getResponseData());
+        $this->assertEquals(['errors' => [['message' => 'Not valid resolved type for field "invalidValueQuery": (no details available)']], 'data' => ['invalidValueQuery' => null]], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('{ me { firstName(shorten: true), middle }}');
@@ -502,21 +502,21 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('{ listQuery }');
         $this->assertEquals([
             'data'   => ['listQuery' => null],
-            'errors' => [['message' => 'Not valid resolved type for field "listQuery"']]
+            'errors' => [['message' => 'Not valid resolved type for field "listQuery": The value is not an iterable.']]
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('{ listEnumQuery }');
         $this->assertEquals([
             'data'   => ['listEnumQuery' => [null]],
-            'errors' => [['message' => 'Not valid resolved type for field "listEnumQuery"']]
+            'errors' => [['message' => 'Not valid resolved type for field "listEnumQuery": (no details available)']]
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('{ invalidEnumQuery }');
         $this->assertEquals([
             'data'   => ['invalidEnumQuery' => null],
-            'errors' => [['message' => 'Not valid resolved type for field "invalidEnumQuery"']],
+            'errors' => [['message' => 'Not valid resolved type for field "invalidEnumQuery": (no details available)']],
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
@@ -533,7 +533,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('{ invalidNonNullInsideQuery }');
         $this->assertEquals([
             'data'   => ['invalidNonNullInsideQuery' => null],
-            'errors' => [['message' => 'Not valid resolved type for field "invalidNonNullInsideQuery"']],
+            'errors' => [['message' => 'Not valid resolved type for field "invalidNonNullInsideQuery": (no details available)']],
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 

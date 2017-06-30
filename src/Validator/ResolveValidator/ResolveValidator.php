@@ -81,8 +81,11 @@ class ResolveValidator implements ResolveValidatorInterface
             throw new ResolveException(sprintf('Cannot return null for non-nullable field "%s"', $field->getName()));
         }
 
-        if (!$field->getType()->getNullableType()->isValidValue($resolvedValue)) {
-            throw new ResolveException(sprintf('Not valid resolved type for field "%s"', $field->getName()));
+        $nullableFieldType = $field->getType()->getNullableType();
+        if (!$nullableFieldType->isValidValue($resolvedValue)) {
+            $error = $nullableFieldType->getLastError() ?: '(no details available)';
+            throw new ResolveException(sprintf('Not valid resolved type for field "%s": %s', $field->getName(),
+                $error));
         }
     }
 
