@@ -414,7 +414,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals([
             'data'   => ['alias' => null],
             'errors' => [[
-                'message'   => 'Not valid type for argument "argument1" in query "test": (no details available)',
+                'message'   => 'Not valid type for argument "argument1" in query "test": Value must be one of the allowed ones: VALUE1 (val1), VALUE2 (val2)',
                 'locations' => [
                     [
                         'line'   => 1,
@@ -509,14 +509,14 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('{ listEnumQuery }');
         $this->assertEquals([
             'data'   => ['listEnumQuery' => [null]],
-            'errors' => [['message' => 'Not valid resolved type for field "listEnumQuery": (no details available)']]
+            'errors' => [['message' => 'Not valid resolved type for field "listEnumQuery": Value must be one of the allowed ones: FINISHED (1), NEW (0)']]
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('{ invalidEnumQuery }');
         $this->assertEquals([
             'data'   => ['invalidEnumQuery' => null],
-            'errors' => [['message' => 'Not valid resolved type for field "invalidEnumQuery": (no details available)']],
+            'errors' => [['message' => 'Not valid resolved type for field "invalidEnumQuery": Value must be one of the allowed ones: FINISHED (1), NEW (0)']],
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 

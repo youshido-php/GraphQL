@@ -51,10 +51,15 @@ abstract class AbstractEnumType extends AbstractType
         if (is_null($value)) return true;
         foreach ($this->getConfig()->get('values') as $item) {
             if ($value === $item['name'] || $value === $item['value']) {
+                $this->lastError = null;
                 return true;
             }
         }
 
+        $allowedValues = array_map(function (array $value) {
+            return sprintf('%s (%s)', $value['name'], $value['value']);
+        }, $this->getConfig()->get('values'));
+        $this->lastError = sprintf('Value must be one of the allowed ones: %s', implode(', ', $allowedValues));
         return false;
     }
 
