@@ -265,7 +265,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $processor->processPayload('mutation { invalidMutation }');
         $this->assertEquals(['errors' => [[
-            'message'   => 'Field "invalidMutation" not found in type "RootSchemaMutation"',
+            'message'   => 'Field "invalidMutation" not found in type "RootSchemaMutation". Available fields are: "increaseCounter", "invalidResolveTypeMutation", "interfacedMutation"',
             'locations' => [
                 [
                     'line'   => 1,
@@ -307,7 +307,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $processor->processPayload('{ invalidQuery }');
         $this->assertEquals(['errors' => [[
-            'message'   => 'Field "invalidQuery" not found in type "RootQuery"',
+            'message'   => 'Field "invalidQuery" not found in type "RootQuery". Available fields are: "me", "randomUser", "invalidValueQuery", "labels", "__schema", "__type"',
             'locations' => [
                 [
                     'line'   => 1,
@@ -318,14 +318,14 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('{ invalidValueQuery { id } }');
-        $this->assertEquals(['errors' => [['message' => 'Not valid resolved type for field "invalidValueQuery"']], 'data' => ['invalidValueQuery' => null]], $processor->getResponseData());
+        $this->assertEquals(['errors' => [['message' => 'Not valid resolved type for field "invalidValueQuery": (no details available)']], 'data' => ['invalidValueQuery' => null]], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('{ me { firstName(shorten: true), middle }}');
         $this->assertEquals([
             'data'   => ['me' => null],
             'errors' => [[
-                'message'   => 'Field "middle" not found in type "User"',
+                'message'   => 'Field "middle" not found in type "User". Available fields are: "firstName", "id_alias", "lastName", "code"',
                 'locations' => [
                     [
                         'line'   => 1,
@@ -414,7 +414,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals([
             'data'   => ['alias' => null],
             'errors' => [[
-                'message'   => 'Not valid type for argument "argument1" in query "test"',
+                'message'   => 'Not valid type for argument "argument1" in query "test": Value must be one of the allowed ones: VALUE1 (val1), VALUE2 (val2)',
                 'locations' => [
                     [
                         'line'   => 1,
@@ -502,21 +502,21 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('{ listQuery }');
         $this->assertEquals([
             'data'   => ['listQuery' => null],
-            'errors' => [['message' => 'Not valid resolved type for field "listQuery"']]
+            'errors' => [['message' => 'Not valid resolved type for field "listQuery": The value is not an iterable.']]
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('{ listEnumQuery }');
         $this->assertEquals([
             'data'   => ['listEnumQuery' => [null]],
-            'errors' => [['message' => 'Not valid resolved type for field "listEnumQuery"']]
+            'errors' => [['message' => 'Not valid resolved type for field "listEnumQuery": Value must be one of the allowed ones: FINISHED (1), NEW (0)']]
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('{ invalidEnumQuery }');
         $this->assertEquals([
             'data'   => ['invalidEnumQuery' => null],
-            'errors' => [['message' => 'Not valid resolved type for field "invalidEnumQuery"']],
+            'errors' => [['message' => 'Not valid resolved type for field "invalidEnumQuery": Value must be one of the allowed ones: FINISHED (1), NEW (0)']],
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
@@ -533,7 +533,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('{ invalidNonNullInsideQuery }');
         $this->assertEquals([
             'data'   => ['invalidNonNullInsideQuery' => null],
-            'errors' => [['message' => 'Not valid resolved type for field "invalidNonNullInsideQuery"']],
+            'errors' => [['message' => 'Not valid resolved type for field "invalidNonNullInsideQuery": (no details available)']],
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
@@ -624,7 +624,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             ],
             'errors' => [
                 [
-                    'message'   => 'Field "name" not found in type "Object1"',
+                    'message'   => 'Field "name" not found in type "Object1". Available fields are: "id"',
                     'locations' => [
                         [
                             'line'   => 1,
@@ -775,7 +775,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         // don't let complexity reducer affect query errors
         $processor->processPayload('{ me { badfield } }');
-        $this->assertArraySubset(['errors' => [['message' => 'Field "badfield" not found in type "User"']]], $processor->getResponseData());
+        $this->assertArraySubset(['errors' => [['message' => 'Field "badfield" not found in type "User". Available fields are: "firstName", "lastName", "code", "likes"']]], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
         foreach (range(1, 5) as $cost_multiplier) {

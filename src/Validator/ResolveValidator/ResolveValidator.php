@@ -27,7 +27,10 @@ class ResolveValidator implements ResolveValidatorInterface
     {
         /** @var AbstractObjectType $objectType */
         if (!(TypeService::isObjectType($objectType) || TypeService::isInputObjectType($objectType)) || !$objectType->hasField($ast->getName())) {
-            throw new ResolveException(sprintf('Field "%s" not found in type "%s"', $ast->getName(), $objectType->getNamedType()->getName()), $ast->getLocation());
+            $availableFieldNames = implode(', ', array_map(function (FieldInterface $field) {
+              return sprintf('"%s"', $field->getName());
+            }, $objectType->getFields()));
+            throw new ResolveException(sprintf('Field "%s" not found in type "%s". Available fields are: %s', $ast->getName(), $objectType->getNamedType()->getName(), $availableFieldNames), $ast->getLocation());
         }
     }
 
@@ -51,8 +54,8 @@ class ResolveValidator implements ResolveValidatorInterface
                 case TypeMap::KIND_INPUT_OBJECT:
                 case TypeMap::KIND_LIST:
                     if (!$argument->getType()->isValidValue($astArgument->getValue())) {
-                        $error = $argument->getType()->getLastError();
-                        throw new ResolveException($error ? $error : sprintf('Not valid type for argument "%s" in query "%s"', $astArgument->getName(), $field->getName()), $astArgument->getLocation());
+                        $error = $argument->getType()->getLastError() ?: '(no details available)';
+                        throw new ResolveException(sprintf('Not valid type for argument "%s" in query "%s": %s', $astArgument->getName(), $field->getName(), $error), $astArgument->getLocation());
                     }
 
                     break;
@@ -78,8 +81,11 @@ class ResolveValidator implements ResolveValidatorInterface
             throw new ResolveException(sprintf('Cannot return null for non-nullable field "%s"', $field->getName()));
         }
 
-        if (!$field->getType()->getNullableType()->isValidValue($resolvedValue)) {
-            throw new ResolveException(sprintf('Not valid resolved type for field "%s"', $field->getName()));
+        $nullableFieldType = $field->getType()->getNullableType();
+        if (!$nullableFieldType->isValidValue($resolvedValue)) {
+            $error = $nullableFieldType->getLastError() ?: '(no details available)';
+            throw new ResolveException(sprintf('Not valid resolved type for field "%s": %s', $field->getName(),
+                $error));
         }
     }
 
