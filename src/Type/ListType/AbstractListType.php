@@ -77,7 +77,7 @@ abstract class AbstractListType extends AbstractObjectType implements CompositeT
 
     public function parseValue($value)
     {
-        foreach ($value as $keyValue => $valueItem) {
+        foreach ((array) $value as $keyValue => $valueItem) {
             $value[$keyValue] = $this->getItemType()->parseValue($valueItem);
         }
 
