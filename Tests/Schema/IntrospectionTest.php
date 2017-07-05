@@ -206,7 +206,8 @@ TEXT;
                                 ['name' => 'Boolean', 'fields' => null],
                                 ['name' => '__EnumValue', 'fields' => [['name' => 'name', 'args' => []], ['name' => 'description', 'args' => []], ['name' => 'deprecationReason', 'args' => []], ['name' => 'isDeprecated', 'args' => []],]],
                                 ['name' => '__Field', 'fields' => [['name' => 'name', 'args' => []], ['name' => 'description', 'args' => []], ['name' => 'isDeprecated', 'args' => []], ['name' => 'deprecationReason', 'args' => []], ['name' => 'type', 'args' => []], ['name' => 'args', 'args' => []]]],
-                                ['name' => '__Directive', 'fields' => [['name' => 'name', 'args' => []], ['name' => 'description', 'args' => []], ['name' => 'args', 'args' => []], ['name' => 'onOperation', 'args' => []], ['name' => 'onFragment', 'args' => []], ['name' => 'onField', 'args' => []]]],
+                                ['name' => '__Directive', 'fields' => [['name' => 'name', 'args' => []], ['name' => 'description', 'args' => []], ['name' => 'args', 'args' => []], ['name' => 'locations', 'args' => []]]],
+                                ['name' => '__DirectiveLocation', 'fields' => null],
                             ]
                         ]
                     ]

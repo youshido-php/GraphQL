@@ -18,8 +18,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
     public function testMethods()
     {
-        $fragment1     = new Fragment('fragmentName1', 'test', [], new Location(1,1));
-        $fragment2     = new Fragment('fragmentName2', 'test', [], new Location(1,1));
+        $fragment1     = new Fragment('fragmentName1', 'test', [], [], new Location(1,1));
+        $fragment2     = new Fragment('fragmentName2', 'test', [], [], new Location(1,1));
         $queriesData   = ['query1', 'query2'];
         $mutationsData = ['mutation1', 'mutation2'];
         $fragmentsData = [$fragment1];

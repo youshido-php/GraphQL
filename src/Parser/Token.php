@@ -34,6 +34,7 @@ class Token
     const TYPE_POINT         = '.';
     const TYPE_REQUIRED      = '!';
     const TYPE_EQUAL         = '=';
+    const TYPE_AT            = '@';
 
     const TYPE_NULL  = 'null';
     const TYPE_TRUE  = 'true';
@@ -107,6 +108,7 @@ class Token
             self::TYPE_TRUE               => 'TRUE',
             self::TYPE_FALSE              => 'FALSE',
             self::TYPE_REQUIRED           => 'REQUIRED',
+            self::TYPE_AT                 => 'AT',
         ][$tokenType];
     }
 

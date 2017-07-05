@@ -13,6 +13,8 @@ use Youshido\GraphQL\Parser\Location;
 class Fragment extends AbstractAst
 {
 
+    use AstDirectivesTrait;
+
     protected $name;
 
     protected $model;
@@ -26,16 +28,18 @@ class Fragment extends AbstractAst
     /**
      * @param string          $name
      * @param string          $model
+     * @param array           $directives
      * @param Field[]|Query[] $fields
      * @param Location        $location
      */
-    public function __construct($name, $model, array $fields, Location $location)
+    public function __construct($name, $model, array $directives, array $fields, Location $location)
     {
         parent::__construct($location);
 
         $this->name   = $name;
         $this->model  = $model;
         $this->fields = $fields;
+        $this->setDirectives($directives);
     }
 
     /**

@@ -14,7 +14,7 @@ class VariableTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetValue($actual, $expected)
     {
-        $var = new Variable('foo', 'bar', false, false, new Location(1,1));
+        $var = new Variable('foo', 'bar', false, false, true, new Location(1,1));
         $var->setValue($actual);
         $this->assertEquals($var->getValue(), $expected);
     }
@@ -25,13 +25,13 @@ class VariableTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetNullValueException()
     {
-        $var = new Variable('foo', 'bar', false, false, new Location(1,1));
+        $var = new Variable('foo', 'bar', false, false, true, new Location(1,1));
         $var->getValue();
     }
 
     public function testGetValueReturnsDefaultValueIfNoValueSet()
     {
-        $var = new Variable('foo', 'bar', false, false, new Location(1,1));
+        $var = new Variable('foo', 'bar', false, false, true, new Location(1,1));
         $var->setDefaultValue('default-value');
 
         $this->assertEquals(
@@ -42,7 +42,7 @@ class VariableTest extends \PHPUnit_Framework_TestCase
 
     public function testGetValueReturnsSetValueEvenWithDefaultValue()
     {
-        $var = new Variable('foo', 'bar', false, false, new Location(1,1));
+        $var = new Variable('foo', 'bar', false, false, true, new Location(1,1));
         $var->setValue('real-value');
         $var->setDefaultValue('default-value');
 
@@ -54,7 +54,7 @@ class VariableTest extends \PHPUnit_Framework_TestCase
 
     public function testIndicatesDefaultValuePresent()
     {
-        $var = new Variable('foo', 'bar', false, false, new Location(1,1));
+        $var = new Variable('foo', 'bar', false, false, true, new Location(1,1));
         $var->setDefaultValue('default-value');
 
         $this->assertTrue(
@@ -64,7 +64,7 @@ class VariableTest extends \PHPUnit_Framework_TestCase
 
     public function testHasNoDefaultValue()
     {
-        $var = new Variable('foo', 'bar', false, false, new Location(1,1));
+        $var = new Variable('foo', 'bar', false, false, true, new Location(1,1));
 
         $this->assertFalse(
             $var->hasDefaultValue()
