@@ -77,8 +77,8 @@ abstract class AbstractInputObjectType extends AbstractType
 
             $field = $typeConfig->getField($valueKey);
             if (!$field->getType()->isValidValue($valueItem)) {
-                $error = $field->getType()->getLastError() ?: '(no details available)';
-                $this->lastError = sprintf('Not valid type for field "%s" in input type "%s": %s', $field->getName(), $this->getName(), $error);
+                $error                     = $field->getType()->getValidationError($valueItem) ?: '(no details available)';
+                $this->lastValidationError = sprintf('Not valid type for field "%s" in input type "%s": %s', $field->getName(), $this->getName(), $error);
                 return false;
             }
 
@@ -87,7 +87,7 @@ abstract class AbstractInputObjectType extends AbstractType
             }
         }
         if (count($requiredFields)) {
-            $this->lastError = sprintf('%s %s required on %s', implode(', ', array_keys($requiredFields)), count($requiredFields) > 1 ? 'are' : 'is', $typeConfig->getName());
+            $this->lastValidationError = sprintf('%s %s required on %s', implode(', ', array_keys($requiredFields)), count($requiredFields) > 1 ? 'are' : 'is', $typeConfig->getName());
         }
 
         return !(count($requiredFields) > 0);
