@@ -80,6 +80,6 @@ abstract class AbstractSchema
     {
         $defaultName = 'RootSchema';
 
-        return isset($config["name"]) : $defaultName;
+        return isset($config["name"])? $config["name"] : $defaultName;
     }
 }
