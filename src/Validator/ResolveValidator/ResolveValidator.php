@@ -41,6 +41,10 @@ class ResolveValidator implements ResolveValidatorInterface
     public function assetTypeHasField(AbstractType $objectType, AstFieldInterface $ast)
     {
         /** @var AbstractObjectType $objectType */
+        if ($this->executionContext->getField($objectType, $ast->getName()) !== null) {
+            return;
+        }
+        
         if (!(TypeService::isObjectType($objectType) || TypeService::isInputObjectType($objectType)) || !$objectType->hasField($ast->getName())) {
             $availableFieldNames = implode(', ', array_map(function (FieldInterface $field) {
                 return sprintf('"%s"', $field->getName());

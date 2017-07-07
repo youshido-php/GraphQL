@@ -167,7 +167,7 @@ class Processor
 
             $this->resolveValidator->assetTypeHasField($nonNullType, $ast);
 
-            $targetField = $nonNullType->getField($ast->getName());
+            $targetField = $this->executionContext->getField($nonNullType, $ast->getName());
 
             $this->prepareAstArguments($targetField, $ast, $this->executionContext->getRequest());
             $this->resolveValidator->assertValidArguments($targetField, $ast, $this->executionContext->getRequest());
