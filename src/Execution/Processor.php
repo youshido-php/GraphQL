@@ -513,12 +513,7 @@ class Processor
 
             /** @var AbstractUnionType $type */
             $type         = $field->getType()->getNullableType();
-            $resolveInfo = new ResolveInfo(
-              $field,
-              $ast instanceof AstQuery ? $ast->getFields() : [],
-              $this->executionContext
-            );
-            $resolvedType = $type->resolveType($resolvedValue, $resolveInfo);
+            $resolvedType = $type->resolveType($resolvedValue);
 
             if (!$resolvedType) {
                 throw new ResolveException('Resolving function must return type');
