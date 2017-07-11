@@ -21,7 +21,7 @@ trait ConfigCallTrait
 {
     use ConfigAwareTrait;
 
-    public function getField(string $fieldName)
+    public function getField($fieldName)
     {
         return $this->getConfig()->getField($fieldName);
     }
