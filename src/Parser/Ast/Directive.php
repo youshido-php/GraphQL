@@ -8,7 +8,6 @@
 namespace Youshido\GraphQL\Parser\Ast;
 
 
-use Youshido\GraphQL\Parser\Ast\Interfaces\ValueInterface;
 use Youshido\GraphQL\Parser\Location;
 
 class Directive extends AbstractAst

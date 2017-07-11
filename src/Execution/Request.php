@@ -8,14 +8,12 @@
 namespace Youshido\GraphQL\Execution;
 
 use Youshido\GraphQL\Exception\Parser\InvalidRequestException;
-use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\VariableReference;
 use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
-use Youshido\GraphQL\Parser\Location;
 
 class Request
 {

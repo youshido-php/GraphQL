@@ -9,7 +9,6 @@
 namespace Youshido\GraphQL\Relay\Type;
 
 
-use Youshido\GraphQL\Config\Object\ObjectTypeConfig;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\BooleanType;
