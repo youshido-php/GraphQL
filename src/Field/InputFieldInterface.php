@@ -32,12 +32,16 @@ interface InputFieldInterface
     public function getArguments();
 
     /**
+     * @param string $argumentName
+     *
      * @return AbstractType
      */
     public function getArgument($argumentName);
 
     /**
-     * @return boolean
+     * @param string $argumentName
+     *
+     * @return bool
      */
     public function hasArgument($argumentName);
 

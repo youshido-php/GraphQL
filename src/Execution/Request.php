@@ -210,7 +210,7 @@ class Request
     }
 
     /**
-     * @param array $variables
+     * @param array|string $variables
      *
      * @return $this
      */
