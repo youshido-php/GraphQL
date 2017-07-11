@@ -69,7 +69,7 @@ class Container implements ContainerInterface
     private function assertIdentifierSet($id)
     {
         if (!$this->has($id)) {
-            throw new \RuntimeException(sprintf('Container item "%s" was not set'));
+            throw new \RuntimeException(sprintf('Container item "%s" was not set', $id));
         }
     }
 }
