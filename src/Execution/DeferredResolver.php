@@ -15,12 +15,27 @@ class DeferredResolver
     /** @var callable */
     private $resolver;
 
+    /** @var callable */
+    private $callback;
+
+    /** @var $mixed */
+    public $result;
+
     public function __construct($resolver)
     {
         $this->resolver = $resolver;
     }
 
+    /**
+     * Add a callback that will be applied when the result is fetched.
+     *
+     * @param $callback
+     */
+    public function setCallback($callback) {
+        $this->callback = $callback;
+    }
+
     public function resolve() {
-        return ($this->resolver)();
+        $this->result = ($this->callback)(($this->resolver)());
     }
 }
