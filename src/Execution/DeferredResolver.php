@@ -36,6 +36,7 @@ class DeferredResolver
     }
 
     public function resolve() {
-        $this->result = ($this->callback)(($this->resolver)());
+        $result =($this->resolver)();
+        $this->result = ($this->callback)($result);
     }
 }
