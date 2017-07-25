@@ -56,11 +56,8 @@ class Processor
     /** @var int */
     protected $maxComplexity;
 
-    /** @var bool */
-    protected $hasDeferredResults = false;
-
     /** @var array DeferredResolver[] */
-    protected $deferredResolvers = [];
+    protected $deferredResults = [];
 
     public function __construct(AbstractSchema $schema)
     {
@@ -94,13 +91,14 @@ class Processor
                 };
             }
 
-            // If the processor found deferred resolvers, resolve them now.
-            if (!empty($this->data) && $this->deferredResolvers) {
-                while ($deferredResolver = array_shift($this->deferredResolvers)) {
+            // If the processor found any deferred results, resolve them now.
+            if (!empty($this->data) && $this->deferredResults) {
+                while ($deferredResolver = array_shift($this->deferredResults)) {
                     $deferredResolver->resolve();
                 }
                 $this->data = static::unpackDeferredResolvers($this->data);
             }
+
         } catch (\Exception $e) {
             $this->executionContext->addError($e);
         }
@@ -119,13 +117,13 @@ class Processor
      */
     public static function unpackDeferredResolvers($result)
     {
-        while ($result instanceof DeferredResolver) {
+        while ($result instanceof DeferredResult) {
             $result = $result->result;
         }
 
         if (is_array($result)) {
             foreach ($result as $key => $value) {
-                $result[$key] = static::unpack($value);
+                $result[$key] = static::unpackDeferredResolvers($value);
             }
         }
 
@@ -379,15 +377,13 @@ class Processor
     /**
      * Apply post-process callbacks to all deferred resolvers.
      */
-    protected function deferredResolve($resolvedValue, $callback) {
+    protected function deferredResolve($resolvedValue, callable $callback) {
         if ($resolvedValue instanceof DeferredResolver) {
+            $deferredResult = new DeferredResult($resolvedValue, $callback);
             // Whenever we stumble upon a deferred resolver, append it to the
             // queue to be resolved later.
-            $this->deferredResolvers[] = $resolvedValue;
-
-            // Add the callback to the deferred resolver and return it.
-            $resolvedValue->setCallback($callback);
-            return $resolvedValue;
+            $this->deferredResults[] = $deferredResult;
+            return $deferredResult;
         }
         // For simple values, invoke the callback immediately.
         return $callback($resolvedValue);
