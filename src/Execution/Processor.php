@@ -56,7 +56,7 @@ class Processor
     /** @var int */
     protected $maxComplexity;
 
-    /** @var array DeferredResolver[] */
+    /** @var array DeferredResult[] */
     protected $deferredResults = [];
 
     public function __construct(AbstractSchema $schema)
@@ -96,7 +96,7 @@ class Processor
                 while ($deferredResolver = array_shift($this->deferredResults)) {
                     $deferredResolver->resolve();
                 }
-                $this->data = static::unpackDeferredResolvers($this->data);
+                $this->data = static::unpackDeferredResults($this->data);
             }
 
         } catch (\Exception $e) {
@@ -115,7 +115,7 @@ class Processor
      * @return mixed
      *   The unpacked result.
      */
-    public static function unpackDeferredResolvers($result)
+    public static function unpackDeferredResults($result)
     {
         while ($result instanceof DeferredResult) {
             $result = $result->result;
@@ -123,7 +123,7 @@ class Processor
 
         if (is_array($result)) {
             foreach ($result as $key => $value) {
-                $result[$key] = static::unpackDeferredResolvers($value);
+                $result[$key] = static::unpackDeferredResults($value);
             }
         }
 
@@ -378,7 +378,7 @@ class Processor
      * Apply post-process callbacks to all deferred resolvers.
      */
     protected function deferredResolve($resolvedValue, callable $callback) {
-        if ($resolvedValue instanceof DeferredResolver) {
+        if ($resolvedValue instanceof DeferredResolverInterface) {
             $deferredResult = new DeferredResult($resolvedValue, $callback);
             // Whenever we stumble upon a deferred resolver, append it to the
             // queue to be resolved later.

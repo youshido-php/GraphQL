@@ -2,8 +2,8 @@
 /**
  * This file is a part of GraphQL project.
  *
- * @author Alexandr Viniychuk <a@viniychuk.com>
- * created: 4/24/17 11:50 PM
+ * @author Philipp Melab <philipp.melab@amazee.com>
+ * created: 7/25/17 12:34 PM
  */
 
 namespace Youshido\GraphQL\Execution;
