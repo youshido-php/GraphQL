@@ -59,6 +59,9 @@ class Processor
     /** @var bool */
     protected $hasDeferredResults = false;
 
+    /** @var array DeferredResolver[] */
+    protected $deferredResolvers = [];
+
     public function __construct(AbstractSchema $schema)
     {
         if (empty($this->executionContext)) {
@@ -90,14 +93,43 @@ class Processor
                     $this->data = array_merge($this->data, $operationResult);
                 };
             }
-            if (!empty($this->data)) {
-                $this->data = (new DeferredResult($this->data))->resolve();
+
+            // If the processor found deferred resolvers, resolve them now.
+            if (!empty($this->data) && $this->deferredResolvers) {
+                while ($deferredResolver = array_shift($this->deferredResolvers)) {
+                    $deferredResolver->resolve();
+                }
+                $this->data = static::unpackDeferredResolvers($this->data);
             }
         } catch (\Exception $e) {
             $this->executionContext->addError($e);
         }
 
         return $this;
+    }
+
+    /**
+     * Unpack results stored inside deferred resolvers.
+     *
+     * @param mixed $result
+     *   The result ree.
+     *
+     * @return mixed
+     *   The unpacked result.
+     */
+    public static function unpackDeferredResolvers($result)
+    {
+        while ($result instanceof DeferredResolver) {
+            $result = $result->result;
+        }
+
+        if (is_array($result)) {
+            foreach ($result as $key => $value) {
+                $result[$key] = static::unpack($value);
+            }
+        }
+
+        return $result;
     }
 
     protected function resolveQuery(AstQuery $query)
@@ -349,6 +381,10 @@ class Processor
      */
     protected function deferredResolve($resolvedValue, $callback) {
         if ($resolvedValue instanceof DeferredResolver) {
+            // Whenever we stumble upon a deferred resolver, append it to the
+            // queue to be resolved later.
+            $this->deferredResolvers[] = $resolvedValue;
+
             // Add the callback to the deferred resolver and return it.
             $resolvedValue->setCallback($callback);
             return $resolvedValue;
