@@ -56,8 +56,8 @@ class Processor
     /** @var int */
     protected $maxComplexity;
 
-    /** @var bool */
-    protected $hasDeferredResults = false;
+    /** @var array DeferredResult[] */
+    protected $deferredResults = [];
 
     public function __construct(AbstractSchema $schema)
     {
@@ -90,9 +90,15 @@ class Processor
                     $this->data = array_merge($this->data, $operationResult);
                 };
             }
-            if (!empty($this->data)) {
-                $this->data = $this->resolveDeferred($this->data);
+
+            // If the processor found any deferred results, resolve them now.
+            if (!empty($this->data) && $this->deferredResults) {
+                while ($deferredResolver = array_shift($this->deferredResults)) {
+                    $deferredResolver->resolve();
+                }
+                $this->data = static::unpackDeferredResults($this->data);
             }
+
         } catch (\Exception $e) {
             $this->executionContext->addError($e);
         }
@@ -100,19 +106,28 @@ class Processor
         return $this;
     }
 
-    protected function resolveDeferred($data) {
-        if (!is_array($data)) return $data;
+    /**
+     * Unpack results stored inside deferred resolvers.
+     *
+     * @param mixed $result
+     *   The result ree.
+     *
+     * @return mixed
+     *   The unpacked result.
+     */
+    public static function unpackDeferredResults($result)
+    {
+        while ($result instanceof DeferredResult) {
+            $result = $result->result;
+        }
 
-        foreach($data as $key=>$item) {
-            if ($item instanceof DeferredResolver) {
-                // todo: apply validation
-                $data[$key] = $item->resolve();
-            }
-            if (!empty($data[$key])) {
-                $data[$key] = $this->resolveDeferred($data[$key]);
+        if (is_array($result)) {
+            foreach ($result as $key => $value) {
+                $result[$key] = static::unpackDeferredResults($value);
             }
         }
-        return $data;
+
+        return $result;
     }
 
     protected function resolveQuery(AstQuery $query)
@@ -359,18 +374,32 @@ class Processor
         return $result;
     }
 
+    /**
+     * Apply post-process callbacks to all deferred resolvers.
+     */
+    protected function deferredResolve($resolvedValue, callable $callback) {
+        if ($resolvedValue instanceof DeferredResolverInterface) {
+            $deferredResult = new DeferredResult($resolvedValue, $callback);
+            // Whenever we stumble upon a deferred resolver, append it to the
+            // queue to be resolved later.
+            $this->deferredResults[] = $deferredResult;
+            return $deferredResult;
+        }
+        // For simple values, invoke the callback immediately.
+        return $callback($resolvedValue);
+    }
+
     protected function resolveScalar(FieldInterface $field, AstFieldInterface $ast, $parentValue)
     {
         $resolvedValue = $this->doResolve($field, $ast, $parentValue);
-        if ($resolvedValue instanceof DeferredResolver) {
-            return $resolvedValue;
-        }
-        $this->resolveValidator->assertValidResolvedValueForField($field, $resolvedValue);
+        return $this->deferredResolve($resolvedValue, function($resolvedValue) use ($field, $ast, $parentValue) {
+            $this->resolveValidator->assertValidResolvedValueForField($field, $resolvedValue);
 
-        /** @var AbstractScalarType $type */
-        $type = $field->getType()->getNullableType();
+            /** @var AbstractScalarType $type */
+            $type = $field->getType()->getNullableType();
 
-        return $type->serialize($resolvedValue);
+            return $type->serialize($resolvedValue);
+        });
     }
 
     protected function resolveList(FieldInterface $field, AstFieldInterface $ast, $parentValue)
@@ -378,69 +407,68 @@ class Processor
         /** @var AstQuery $ast */
         $resolvedValue = $this->doResolve($field, $ast, $parentValue);
 
-        if ($resolvedValue instanceof DeferredResolver) {
-            return $resolvedValue;
-        }
-        $this->resolveValidator->assertValidResolvedValueForField($field, $resolvedValue);
+        return $this->deferredResolve($resolvedValue, function ($resolvedValue) use ($field, $ast, $parentValue) {
+            $this->resolveValidator->assertValidResolvedValueForField($field, $resolvedValue);
 
-        if (null === $resolvedValue) {
-            return null;
-        }
-
-        /** @var AbstractListType $type */
-        $type     = $field->getType()->getNullableType();
-        $itemType = $type->getNamedType();
-
-        $fakeAst = clone $ast;
-        if ($fakeAst instanceof AstQuery) {
-            $fakeAst->setArguments([]);
-        }
-
-        $fakeField = new Field([
-            'name' => $field->getName(),
-            'type' => $itemType,
-            'args' => $field->getArguments(),
-        ]);
-
-        $result = [];
-        foreach ($resolvedValue as $resolvedValueItem) {
-            try {
-                $fakeField->getConfig()->set('resolve', function () use ($resolvedValueItem) {
-                    return $resolvedValueItem;
-                });
-
-                switch ($itemType->getNullableType()->getKind()) {
-                    case TypeMap::KIND_ENUM:
-                    case TypeMap::KIND_SCALAR:
-                        $value = $this->resolveScalar($fakeField, $fakeAst, $resolvedValueItem);
-
-                        break;
-
-
-                    case TypeMap::KIND_OBJECT:
-                        $value = $this->resolveObject($fakeField, $fakeAst, $resolvedValueItem);
-
-                        break;
-
-                    case TypeMap::KIND_UNION:
-                    case TypeMap::KIND_INTERFACE:
-                        $value = $this->resolveComposite($fakeField, $fakeAst, $resolvedValueItem);
-
-                        break;
-
-                    default:
-                        $value = null;
-                }
-            } catch (\Exception $e) {
-                $this->executionContext->addError($e);
-
-                $value = null;
+            if (null === $resolvedValue) {
+                return null;
             }
 
-            $result[] = $value;
-        }
+            /** @var AbstractListType $type */
+            $type     = $field->getType()->getNullableType();
+            $itemType = $type->getNamedType();
 
-        return $result;
+            $fakeAst = clone $ast;
+            if ($fakeAst instanceof AstQuery) {
+                $fakeAst->setArguments([]);
+            }
+
+            $fakeField = new Field([
+              'name' => $field->getName(),
+              'type' => $itemType,
+              'args' => $field->getArguments(),
+            ]);
+
+            $result = [];
+            foreach ($resolvedValue as $resolvedValueItem) {
+                try {
+                    $fakeField->getConfig()->set('resolve', function () use ($resolvedValueItem) {
+                        return $resolvedValueItem;
+                    });
+
+                    switch ($itemType->getNullableType()->getKind()) {
+                        case TypeMap::KIND_ENUM:
+                        case TypeMap::KIND_SCALAR:
+                            $value = $this->resolveScalar($fakeField, $fakeAst, $resolvedValueItem);
+
+                            break;
+
+
+                        case TypeMap::KIND_OBJECT:
+                            $value = $this->resolveObject($fakeField, $fakeAst, $resolvedValueItem);
+
+                            break;
+
+                        case TypeMap::KIND_UNION:
+                        case TypeMap::KIND_INTERFACE:
+                            $value = $this->resolveComposite($fakeField, $fakeAst, $resolvedValueItem);
+
+                            break;
+
+                        default:
+                            $value = null;
+                    }
+                } catch (\Exception $e) {
+                    $this->executionContext->addError($e);
+
+                    $value = null;
+                }
+
+                $result[] = $value;
+            }
+
+            return $result;
+        });
     }
 
     protected function resolveObject(FieldInterface $field, AstFieldInterface $ast, $parentValue, $fromUnion = false)
@@ -449,63 +477,62 @@ class Processor
         if (!$fromUnion) {
             $resolvedValue = $this->doResolve($field, $ast, $parentValue);
         }
-        if ($resolvedValue instanceof DeferredResolver) {
-            return $resolvedValue;
-        }
-        $this->resolveValidator->assertValidResolvedValueForField($field, $resolvedValue);
 
-        if (null === $resolvedValue) {
-            return null;
-        }
-        /** @var AbstractObjectType $type */
-        $type = $field->getType()->getNullableType();
+        return $this->deferredResolve($resolvedValue, function ($resolvedValue) use ($field, $ast, $parentValue) {
+            $this->resolveValidator->assertValidResolvedValueForField($field, $resolvedValue);
 
-        try {
-            return $this->collectResult($field, $type, $ast, $resolvedValue);
-        } catch (\Exception $e) {
-            return null;
-        }
+            if (null === $resolvedValue) {
+                return null;
+            }
+            /** @var AbstractObjectType $type */
+            $type = $field->getType()->getNullableType();
+
+            try {
+                return $this->collectResult($field, $type, $ast, $resolvedValue);
+            } catch (\Exception $e) {
+                return null;
+            }
+        });
     }
 
     protected function resolveComposite(FieldInterface $field, AstFieldInterface $ast, $parentValue)
     {
         /** @var AstQuery $ast */
         $resolvedValue = $this->doResolve($field, $ast, $parentValue);
-        if ($resolvedValue instanceof DeferredResolver) {
-            return $resolvedValue;
-        }
-        $this->resolveValidator->assertValidResolvedValueForField($field, $resolvedValue);
+        return $this->deferredResolve($resolvedValue, function ($resolvedValue) use ($field, $ast, $parentValue) {
+            $this->resolveValidator->assertValidResolvedValueForField($field, $resolvedValue);
 
-        if (null === $resolvedValue) {
-            return null;
-        }
+            if (null === $resolvedValue) {
+                return null;
+            }
 
-        /** @var AbstractUnionType $type */
-        $type         = $field->getType()->getNullableType();
-        $resolveInfo = new ResolveInfo(
-            $field,
-            $ast instanceof AstQuery ? $ast->getFields() : [],
-            $this->executionContext
-        );
-        $resolvedType = $type->resolveType($resolvedValue, $resolveInfo);
+            /** @var AbstractUnionType $type */
+            $type         = $field->getType()->getNullableType();
+            $resolveInfo = new ResolveInfo(
+              $field,
+              $ast instanceof AstQuery ? $ast->getFields() : [],
+              $this->executionContext
+            );
+            $resolvedType = $type->resolveType($resolvedValue, $resolveInfo);
 
-        if (!$resolvedType) {
-            throw new ResolveException('Resolving function must return type');
-        }
+            if (!$resolvedType) {
+                throw new ResolveException('Resolving function must return type');
+            }
 
-        if ($type instanceof AbstractInterfaceType) {
-            $this->resolveValidator->assertTypeImplementsInterface($resolvedType, $type);
-        } else {
-            $this->resolveValidator->assertTypeInUnionTypes($resolvedType, $type);
-        }
+            if ($type instanceof AbstractInterfaceType) {
+                $this->resolveValidator->assertTypeImplementsInterface($resolvedType, $type);
+            } else {
+                $this->resolveValidator->assertTypeInUnionTypes($resolvedType, $type);
+            }
 
-        $fakeField = new Field([
-            'name' => $field->getName(),
-            'type' => $resolvedType,
-            'args' => $field->getArguments(),
-        ]);
+            $fakeField = new Field([
+              'name' => $field->getName(),
+              'type' => $resolvedType,
+              'args' => $field->getArguments(),
+            ]);
 
-        return $this->resolveObject($fakeField, $ast, $resolvedValue, true);
+            return $this->resolveObject($fakeField, $ast, $resolvedValue, true);
+        });
     }
 
     protected function parseAndCreateRequest($payload, $variables = [])

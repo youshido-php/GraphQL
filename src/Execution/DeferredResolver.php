@@ -9,8 +9,12 @@
 namespace Youshido\GraphQL\Execution;
 
 
-class DeferredResolver
-{
+/**
+ * Default implementation of DeferredResolverInterface
+ *
+ * @package Youshido\GraphQL\Execution
+ */
+class DeferredResolver implements DeferredResolverInterface {
 
     /** @var callable */
     private $resolver;
@@ -21,6 +25,6 @@ class DeferredResolver
     }
 
     public function resolve() {
-        return ($this->resolver)();
+      return call_user_func($this->resolver);
     }
 }
