@@ -3,24 +3,26 @@
  * This file is a part of GraphQL project.
  *
  * @author Alexandr Viniychuk <a@viniychuk.com>
- * created: 4/23/17 11:05 PM
+ * created: 4/24/17 11:40 PM
  */
 
 namespace Examples\BookStore\Schema\Type;
 
-use Youshido\GraphQL\Type\NonNullType;
+use Examples\BookStore\Schema\Field\CategoriesField;
+use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\IdType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
-class AuthorType extends AbstractObjectType
+class CategoryType extends AbstractObjectType
 {
     public function build($config)
     {
         $config->addFields([
-            'id'        => new NonNullType(new IdType()),
-            'firstName' => new StringType(),
-            'lastName'  => new StringType(),
+            'id'      => new IdType(),
+            'title'   => new StringType(),
+            'authors' => new ListType(new AuthorType()),
+            new CategoriesField(),
         ]);
     }
 }
