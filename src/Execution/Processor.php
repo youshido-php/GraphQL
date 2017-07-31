@@ -93,10 +93,15 @@ class Processor
 
             // If the processor found any deferred results, resolve them now.
             if (!empty($this->data) && $this->deferredResults) {
-                while ($deferredResolver = array_shift($this->deferredResults)) {
-                    $deferredResolver->resolve();
-                }
-                $this->data = static::unpackDeferredResults($this->data);
+              try {
+                  while ($deferredResolver = array_shift($this->deferredResults)) {
+                      $deferredResolver->resolve();
+                  }
+              } catch (\Exception $e) {
+                  $this->executionContext->addError($e);
+              } finally {
+                  $this->data = static::unpackDeferredResults($this->data);
+              }
             }
 
         } catch (\Exception $e) {
