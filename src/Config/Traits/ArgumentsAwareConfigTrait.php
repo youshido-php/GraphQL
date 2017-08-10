@@ -18,7 +18,9 @@ trait ArgumentsAwareConfigTrait
 
     public function buildArguments()
     {
-        if ($this->_isArgumentsBuilt) return true;
+        if ($this->_isArgumentsBuilt) {
+            return;
+        }
 
         if (!empty($this->data['args'])) {
             $this->addArguments($this->data['args']);

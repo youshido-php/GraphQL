@@ -12,8 +12,6 @@ use Youshido\GraphQL\Introspection\Field\TypesField;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
-use Youshido\GraphQL\Type\Object\ObjectType;
-use Youshido\GraphQL\Type\TypeMap;
 
 class SchemaType extends AbstractObjectType
 {

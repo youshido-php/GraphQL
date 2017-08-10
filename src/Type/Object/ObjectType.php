@@ -19,6 +19,8 @@ final class ObjectType extends AbstractObjectType
     }
 
     /**
+     * @inheritdoc
+     * 
      * @codeCoverageIgnore
      */
     public function build($config) { }

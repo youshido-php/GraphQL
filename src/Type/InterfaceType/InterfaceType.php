@@ -19,6 +19,8 @@ final class InterfaceType extends AbstractInterfaceType
     }
 
     /**
+     * @inheritdoc
+     * 
      * @codeCoverageIgnore
      */
     public function build($config)

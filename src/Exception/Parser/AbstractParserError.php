@@ -8,7 +8,6 @@
 namespace Youshido\GraphQL\Exception\Parser;
 
 
-use Exception;
 use Youshido\GraphQL\Exception\Interfaces\LocationableExceptionInterface;
 use Youshido\GraphQL\Parser\Location;
 

@@ -18,7 +18,9 @@ trait DirectivesAwareConfigTrait
 
     public function buildDirectives()
     {
-        if ($this->_isDirectivesBuilt) return true;
+        if ($this->_isDirectivesBuilt) {
+            return;
+        }
 
         if (!empty($this->data['directives'])) {
             $this->addDirectives($this->data['directives']);

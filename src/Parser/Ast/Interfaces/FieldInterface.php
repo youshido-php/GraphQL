@@ -29,6 +29,8 @@ interface FieldInterface extends LocatableInterface
     public function getArguments();
 
     /**
+     * @param string $name
+     *
      * @return Argument
      */
     public function getArgument($name);
