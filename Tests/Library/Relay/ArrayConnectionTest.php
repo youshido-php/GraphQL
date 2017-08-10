@@ -16,11 +16,11 @@ class ArrayConnectionTest extends \PHPUnit_Framework_TestCase
     {
         $offset = 3;
         $data   = ['a', 'b', 'c', 'd', 'e'];
-        $cursor = ArrayConnection::offsetToCursor($offset);
+        $cursor = ArrayConnection::keyToCursor($offset);
 
-        $this->assertEquals($offset, ArrayConnection::cursorToOffset($cursor));
+        $this->assertEquals($offset, ArrayConnection::cursorToKey($cursor));
         $this->assertEquals($cursor, ArrayConnection::cursorForObjectInConnection($data, 'd'));
-        $this->assertNull(null, ArrayConnection::cursorToOffset(null));
+        $this->assertNull(null, ArrayConnection::cursorToKey(null));
 
         $this->assertEquals($offset, ArrayConnection::cursorToOffsetWithDefault($cursor, 2));
         $this->assertEquals(2, ArrayConnection::cursorToOffsetWithDefault(null, 2));

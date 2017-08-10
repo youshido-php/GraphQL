@@ -65,8 +65,6 @@ class SchemaValidator
      * @param Field                 $objField
      * @param AbstractInterfaceType $interface
      *
-     * @return bool
-     *
      * @throws ConfigurationException
      */
     protected function assertFieldsIdentical($intField, $objField, AbstractInterfaceType $interface)

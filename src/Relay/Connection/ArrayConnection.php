@@ -142,7 +142,7 @@ class ArrayConnection
     public static function edgeForObjectWithIndex($object, $index)
     {
         return [
-            'cursor' => ArrayConnection::offsetToCursor($index),
+            'cursor' => ArrayConnection::keyToCursor($index),
             'node'   => $object
         ];
     }

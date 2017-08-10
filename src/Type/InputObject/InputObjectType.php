@@ -19,6 +19,8 @@ final class InputObjectType extends AbstractInputObjectType
     }
 
     /**
+     * @inheritdoc
+     * 
      * @codeCoverageIgnore
      */
     public function build($config)

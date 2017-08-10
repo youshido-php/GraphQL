@@ -9,7 +9,6 @@
 namespace Youshido\GraphQL\Validator\ConfigValidator\Rules;
 
 
-use Youshido\GraphQL\Field\AbstractInputField;
 use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Field\InputFieldInterface;
 use Youshido\GraphQL\Type\AbstractType;

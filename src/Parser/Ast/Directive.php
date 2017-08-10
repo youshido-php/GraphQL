@@ -8,7 +8,6 @@
 namespace Youshido\GraphQL\Parser\Ast;
 
 
-use Youshido\GraphQL\Parser\Ast\Interfaces\ValueInterface;
 use Youshido\GraphQL\Parser\Location;
 
 class Directive extends AbstractAst
@@ -20,9 +19,9 @@ class Directive extends AbstractAst
 
 
     /**
-     * @param string         $name
-     * @param ValueInterface $value
-     * @param Location       $location
+     * @param string   $name
+     * @param array    $arguments
+     * @param Location $location
      */
     public function __construct($name, array $arguments, Location $location)
     {
