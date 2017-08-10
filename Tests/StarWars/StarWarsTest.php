@@ -58,6 +58,30 @@ class StarWarsTest extends \PHPUnit_Framework_TestCase
                 ]
             ]
         ]);
+    }    
+	
+	public function testMultipleRootFields()
+    {
+        $processor = new Processor(new StarWarsSchema());
+
+        $processor->processPayload(
+            'query(){
+                q1: human(id: "1000") {
+                    name
+                }
+                q2: human(id: "1001") {
+                    name
+                }
+            }', []
+        );
+
+        $data = $processor->getResponseData();
+        $this->assertEquals($data, [
+            'data'   => [
+				'q1' => ['name' => 'Luke Skywalker'],
+				'q2' => ['name' => 'Darth Vader'],
+			],
+        ]);
     }
 
 
