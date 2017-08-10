@@ -45,16 +45,16 @@ class Parser extends Tokenizer
 
                     break;
                 case Token::TYPE_QUERY:
-                    $query = $this->parseOperation(Token::TYPE_QUERY);
-                    if ($query instanceof Query) {
+                    $queries = $this->parseOperation(Token::TYPE_QUERY);
+                    foreach ($queries as $query) {
                         $this->data['queries'][] = $query;
                     }
 
                     break;
                 case Token::TYPE_MUTATION:
-                    $mutation = $this->parseOperation(Token::TYPE_MUTATION);
-                    if ($mutation instanceof Mutation) {
-                        $this->data['mutations'][] = $mutation;
+                    $mutations = $this->parseOperation(Token::TYPE_MUTATION);
+                    foreach ($mutations as $query) {
+                        $this->data['mutations'][] = $query;
                     }
 
                     break;
@@ -108,15 +108,20 @@ class Parser extends Tokenizer
 
         $this->lex();
 
-        if (!$this->match(Token::TYPE_RBRACE)) {
+        $fields = [];
+
+        while (!$this->match(Token::TYPE_RBRACE) && !$this->end()) {
+            $this->eatMulti([Token::TYPE_COMMA]);
+
             $operation = $this->parseBodyItem($type, true);
             $operation->setDirectives($directives);
+
+            $fields[] = $operation;
         }
 
         $this->expect(Token::TYPE_RBRACE);
 
-
-        return $operation;
+        return $fields;
     }
 
     protected function parseBody($token = Token::TYPE_QUERY, $highLevel = true)
