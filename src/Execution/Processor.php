@@ -336,7 +336,7 @@ class Processor
                     if ($typeName !== $astName) {
                         foreach ($type->getInterfaces() as $interface) {
                             if ($interface->getName() === $astName) {
-                                $result = array_merge($result, $this->collectResult($field, $type, $astField, $resolvedValue));
+                                $result = array_replace_recursive($result, $this->collectResult($field, $type, $astField, $resolvedValue));
 
                                 break;
                             }
@@ -345,7 +345,7 @@ class Processor
                         continue;
                     }
 
-                    $result = array_merge($result, $this->collectResult($field, $type, $astField, $resolvedValue));
+                    $result = array_replace_recursive($result, $this->collectResult($field, $type, $astField, $resolvedValue));
 
                     break;
 
@@ -357,7 +357,7 @@ class Processor
                     if ($typeName !== $astFragmentModel) {
                         foreach ($type->getInterfaces() as $interface) {
                             if ($interface->getName() === $astFragmentModel) {
-                                $result = array_merge($result, $this->collectResult($field, $type, $astFragment, $resolvedValue));
+                                $result = array_replace_recursive($result, $this->collectResult($field, $type, $astFragment, $resolvedValue));
 
                                 break;
                             }
@@ -367,12 +367,12 @@ class Processor
                         continue;
                     }
 
-                    $result = array_merge($result, $this->collectResult($field, $type, $astFragment, $resolvedValue));
+                    $result = array_replace_recursive($result, $this->collectResult($field, $type, $astFragment, $resolvedValue));
 
                     break;
 
                 default:
-                    $result[$this->getAlias($astField)] = $this->resolveField($field, $astField, $resolvedValue, true);
+                    $result = array_replace_recursive($result, [$this->getAlias($astField) => $this->resolveField($field, $astField, $resolvedValue, true)]);
             }
         }
 
