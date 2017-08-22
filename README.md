@@ -56,16 +56,7 @@ On the other hand, we prepared a step-by-step guide for those who wants to get u
 ### Installation
 
 Install GraphQL package using composer. If you're not familiar with it, you should check out their [manual](https://getcomposer.org/doc/00-intro.md).
-Add the following package to your `composer.json` (or simply create a new file with this content):
-
- ```
- {
-     "require": {
-         "youshido/graphql": "^1.2"
-     }
- }
- ```
-Run `composer update`.
+Run `composer require youshido/graphql`.
 
 Alternatively you can run the following commands:
 ```sh
