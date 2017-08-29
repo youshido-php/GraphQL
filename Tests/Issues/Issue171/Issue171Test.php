@@ -5,7 +5,29 @@ use Youshido\GraphQL\Execution\Processor;
 
 class Issue171Test extends \PHPUnit_Framework_TestCase
 {
-    private $introspectionQuery = <<<TEXT
+    public function testItSetsDeprecationReasonToNullByDefault()
+    {
+        $schema = new Issue171Schema();
+        $processor = new Processor($schema);
+
+        $processor->processPayload($this->getIntrospectionQuery(), []);
+        $resp = $processor->getResponseData();
+
+        $enumTypes = array_filter($resp['data']['__schema']['types'], function($type){
+            return ($type['kind'] === 'ENUM');
+        });
+
+        foreach ($enumTypes as $enumType) {
+            foreach ($enumType['enumValues'] as $value) {
+                $this->assertFalse($value['isDeprecated']);
+                $this->assertNull($value['deprecationReason'], "deprecationReason should have been null");
+            }
+        }
+    }
+
+    private function getIntrospectionQuery()
+    {
+        return  <<<TEXT
 query IntrospectionQuery {
                 __schema {
                     queryType { name }
@@ -83,24 +105,5 @@ query IntrospectionQuery {
                 }
             }
 TEXT;
-
-    public function testItSetsDeprecationReasonToNullByDefault()
-    {
-        $schema = new Issue171Schema();
-        $processor = new Processor($schema);
-
-        $processor->processPayload($this->introspectionQuery, []);
-        $resp = $processor->getResponseData();
-
-        $enumTypes = array_filter($resp['data']['__schema']['types'], function($type){
-            return ($type['kind'] === 'ENUM');
-        });
-
-        foreach ($enumTypes as $enumType) {
-            foreach ($enumType['enumValues'] as $value) {
-                $this->assertFalse($value['isDeprecated']);
-                $this->assertNull($value['deprecationReason'], "deprecationReason should have been null");
-            }
-        }
     }
 }
