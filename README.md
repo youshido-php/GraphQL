@@ -1178,6 +1178,17 @@ You can create a mutation by extending `AbstractObjectType` or by creating a new
 It is crucial for the class to have a `getType` method returning the actual OutputType of your mutation but it couldn't be implemented as abstract method, so we created a wrapper class called `AbstractMutationObjectType`.
 This abstract class can help you to not forget about `OutputType` by forcing you to implement a method `getOutputType` that will eventually be used by internal `getType` method.
 
+### Error handling
+
+By default, the library will catch any exception and bundle the exception message in the JSON message returned.
+It can be convenient to disable this feature (particularly while developing) in order to have a full stack trace displayed.
+
+To disable, error handling, you need to modify the execution context:
+
+```php
+$processor->getExecutionContext()->setCatchExceptions(false);
+```
+
 ## Useful information
 
 This section will be updating on a regular basis with the useful links and references that might help you to quicker become a better GraphQL developer.

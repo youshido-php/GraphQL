@@ -17,8 +17,14 @@ trait ErrorContainerTrait
     /** @var \Exception[] */
     protected $errors = [];
 
+    /** @var bool */
+    protected $catchExceptions  = true;
+
     public function addError(\Exception $exception)
     {
+        if (!$this->catchExceptions && !$exception instanceof DatableExceptionInterface && !$exception instanceof LocationableExceptionInterface) {
+            throw $exception;
+        }
         $this->errors[] = $exception;
 
         return $this;
@@ -32,6 +38,11 @@ trait ErrorContainerTrait
     public function getErrors()
     {
         return $this->errors;
+    }
+
+    public function setCatchExceptions($catchExceptions)
+    {
+        $this->catchExceptions = $catchExceptions;
     }
 
     public function mergeErrors(ErrorContainerInterface $errorContainer)

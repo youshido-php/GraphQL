@@ -59,11 +59,13 @@ class Processor
     /** @var array DeferredResult[] */
     protected $deferredResults = [];
 
-    public function __construct(AbstractSchema $schema)
+    public function __construct(AbstractSchema $schema, ExecutionContext $executionContext = null)
     {
-        if (empty($this->executionContext)) {
+        if ($executionContext === null) {
             $this->executionContext = new ExecutionContext($schema);
             $this->executionContext->setContainer(new Container());
+        } else {
+            $this->executionContext = $executionContext;
         }
 
         $this->resolveValidator = new ResolveValidator($this->executionContext);
