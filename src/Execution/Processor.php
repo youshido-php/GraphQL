@@ -342,7 +342,7 @@ class Processor
                             }
                         }
 
-                        continue;
+                        continue 2;
                     }
 
                     $result = array_replace_recursive($result, $this->collectResult($field, $type, $astField, $resolvedValue));
@@ -354,17 +354,16 @@ class Processor
                     $astFragmentModel = $astFragment->getModel();
                     $typeName         = $type->getName();
 
-                    if ($typeName !== $astFragmentModel) {
+                    if ($typeName !== $astFragmentModel && $type->getInterfaces()) {
                         foreach ($type->getInterfaces() as $interface) {
                             if ($interface->getName() === $astFragmentModel) {
                                 $result = array_replace_recursive($result, $this->collectResult($field, $type, $astFragment, $resolvedValue));
 
                                 break;
                             }
-
                         }
 
-                        continue;
+                        continue 2;
                     }
 
                     $result = array_replace_recursive($result, $this->collectResult($field, $type, $astFragment, $resolvedValue));
