@@ -56,7 +56,7 @@ class ScalarTypeTest extends \PHPUnit_Framework_TestCase
     public function testDateTimeType()
     {
         $dateType = new DateTimeType('Y/m/d H:i:s');
-        $this->assertEquals('2016/05/31 12:00:00', $dateType->serialize(new \DateTime('2016-05-31 12:00pm')));
+        $this->assertEquals('2016/05/31 12:00:00', $dateType->serialize(new \DateTimeImmutable('2016-05-31 12:00pm')));
     }
 
     private function assertSerialization(AbstractScalarType $object, $input, $expected)

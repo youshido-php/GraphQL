@@ -18,7 +18,7 @@ class DateTimeTzType extends AbstractScalarType
     }
     public function isValidValue($value)
     {
-        if ((is_object($value) && $value instanceof \DateTime) || is_null($value)) {
+        if ((is_object($value) && $value instanceof \DateTimeInterface) || is_null($value)) {
             return true;
         } else if (is_string($value)) {
             $date = $this->createFromFormat($value);
@@ -35,7 +35,7 @@ class DateTimeTzType extends AbstractScalarType
 
         if (is_string($value)) {
             $date = $this->createFromFormat($value);
-        } elseif ($value instanceof \DateTime) {
+        } elseif ($value instanceof \DateTimeInterface) {
             $date = $value;
         }
 
@@ -46,7 +46,7 @@ class DateTimeTzType extends AbstractScalarType
     {
         if (is_string($value)) {
             $date = $this->createFromFormat($value);
-        } elseif ($value instanceof \DateTime) {
+        } elseif ($value instanceof \DateTimeInterface) {
             $date = $value;
         } else {
             $date = false;
