@@ -87,7 +87,7 @@ class Processor
 
             foreach ($this->executionContext->getRequest()->getAllOperations() as $query) {
                 if ($operationResult = $this->resolveQuery($query)) {
-                    $this->data = array_merge($this->data, $operationResult);
+                    $this->data = array_replace_recursive($this->data, $operationResult);
                 };
             }
 
