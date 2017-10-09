@@ -327,14 +327,17 @@ class Processor
     {
         $result = [];
 
-        foreach ($ast->getFields() as $astField) {
+        $astFields = $ast->getFields();
+
+        foreach ($astFields as $astField) {
             switch (true) {
                 case $astField instanceof TypedFragmentReference:
                     $astName  = $astField->getTypeName();
                     $typeName = $type->getName();
 
                     if ($typeName !== $astName) {
-                        foreach ($type->getInterfaces() as $interface) {
+                        $interfaces = $type->getInterfaces();
+                        foreach ($interfaces as $interface) {
                             if ($interface->getName() === $astName) {
                                 $result = array_replace_recursive($result, $this->collectResult($field, $type, $astField, $resolvedValue));
 
@@ -353,9 +356,10 @@ class Processor
                     $astFragment      = $this->executionContext->getRequest()->getFragment($astField->getName());
                     $astFragmentModel = $astFragment->getModel();
                     $typeName         = $type->getName();
+                    $interfaces       = $type->getInterfaces();
 
-                    if ($typeName !== $astFragmentModel && $type->getInterfaces()) {
-                        foreach ($type->getInterfaces() as $interface) {
+                    if ($typeName !== $astFragmentModel && $interfaces) {
+                        foreach ($interfaces as $interface) {
                             if ($interface->getName() === $astFragmentModel) {
                                 $result = array_replace_recursive($result, $this->collectResult($field, $type, $astFragment, $resolvedValue));
 
