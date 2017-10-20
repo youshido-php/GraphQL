@@ -19,7 +19,7 @@ class TestEmptySchema extends AbstractSchema
     }
 
 
-    public function getName()
+    public function getName($config)
     {
         return 'TestSchema';
     }
