@@ -19,6 +19,10 @@ class IdType extends AbstractScalarType
 
     public function serialize($value)
     {
+        if (null === $value) {
+            return null;
+        }
+
         return (string)$value;
     }
 
