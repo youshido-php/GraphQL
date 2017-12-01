@@ -383,7 +383,10 @@ class Processor
      */
     protected function deferredResolve($resolvedValue, callable $callback) {
         if ($resolvedValue instanceof DeferredResolverInterface) {
-            $deferredResult = new DeferredResult($resolvedValue, $callback);
+            $deferredResult = new DeferredResult($resolvedValue, function ($resolvedValue) {
+                // Allow nested deferred resolvers.
+                return $this->deferredResolve($resolvedValue, $callback);
+            });
             // Whenever we stumble upon a deferred resolver, append it to the
             // queue to be resolved later.
             $this->deferredResults[] = $deferredResult;
