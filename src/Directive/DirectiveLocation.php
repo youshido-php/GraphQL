@@ -10,7 +10,6 @@ namespace Youshido\GraphQL\Directive;
 
 class DirectiveLocation
 {
-
     const QUERY = 'QUERY';
     const MUTATION = 'MUTATION';
     const FIELD = 'FIELD';

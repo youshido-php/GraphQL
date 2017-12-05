@@ -8,10 +8,10 @@
 
 namespace Youshido\GraphQL\Schema;
 
-
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
-use Youshido\GraphQL\Type\SchemaTypesList;
+use Youshido\GraphQL\Directive\DefaultDirectiveBuilder;
 use Youshido\GraphQL\Type\SchemaDirectivesList;
+use Youshido\GraphQL\Type\SchemaTypesList;
 
 abstract class AbstractSchema
 {
@@ -28,7 +28,11 @@ abstract class AbstractSchema
             $config['mutation'] = new InternalSchemaMutationObject(['name' => $this->getName($config) . 'Mutation']);
         }
         if (!array_key_exists('types', $config)) {
-          $config['types'] = [];
+            $config['types'] = [];
+        }
+
+        if (!array_key_exists('directives', $config)) {
+            $config['directives'] = DefaultDirectiveBuilder::build();
         }
 
         $this->config = new SchemaConfig($config, $this);
@@ -78,6 +82,6 @@ abstract class AbstractSchema
     {
         $defaultName = 'RootSchema';
 
-        return isset($config["name"])? $config["name"] : $defaultName;
+        return isset($config["name"]) ? $config["name"] : $defaultName;
     }
 }

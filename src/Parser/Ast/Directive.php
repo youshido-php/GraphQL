@@ -1,22 +1,18 @@
 <?php
-/**
- * Date: 3/17/17
- *
- * @author Volodymyr Rashchepkin <rashepkin@gmail.com>
- */
 
 namespace Youshido\GraphQL\Parser\Ast;
 
-
 use Youshido\GraphQL\Parser\Location;
 
+/**
+ * Class Directive
+ */
 class Directive extends AbstractAst
 {
     use AstArgumentsTrait;
 
     /** @var string */
     private $name;
-
 
     /**
      * @param string   $name
@@ -32,7 +28,7 @@ class Directive extends AbstractAst
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getName()
     {
@@ -40,11 +36,10 @@ class Directive extends AbstractAst
     }
 
     /**
-     * @param mixed $name
+     * @param string $name
      */
     public function setName($name)
     {
         $this->name = $name;
     }
-
 }

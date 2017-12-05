@@ -1,22 +1,20 @@
 <?php
-/**
- * Date: 23.11.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Parser\Ast;
 
-
 use Youshido\GraphQL\Parser\Location;
 
+/**
+ * Class Fragment
+ */
 class Fragment extends AbstractAst
 {
-
     use AstDirectivesTrait;
 
+    /** @var string */
     protected $name;
 
+    /** @var string */
     protected $model;
 
     /** @var Field[]|Query[] */
@@ -59,7 +57,7 @@ class Fragment extends AbstractAst
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getName()
     {
@@ -67,7 +65,7 @@ class Fragment extends AbstractAst
     }
 
     /**
-     * @param mixed $name
+     * @param string $name
      */
     public function setName($name)
     {
@@ -75,7 +73,7 @@ class Fragment extends AbstractAst
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getModel()
     {
@@ -83,7 +81,7 @@ class Fragment extends AbstractAst
     }
 
     /**
-     * @param mixed $model
+     * @param string $model
      */
     public function setModel($model)
     {

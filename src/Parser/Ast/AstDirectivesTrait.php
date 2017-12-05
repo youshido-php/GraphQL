@@ -1,27 +1,31 @@
 <?php
-/**
- * Date: 3/17/17
- *
- * @author Volodymyr Rashchepkin <rashepkin@gmail.com>
- */
 
 namespace Youshido\GraphQL\Parser\Ast;
 
-
+/**
+ * Trait AstDirectivesTrait
+ */
 trait AstDirectivesTrait
 {
-
     /** @var Directive[] */
     protected $directives;
 
-    private $directivesCache = null;
+    /** @var null|mixed */
+    private $directivesCache;
 
-
+    /**
+     * @return bool
+     */
     public function hasDirectives()
     {
-        return (bool)count($this->directives);
+        return (bool) count($this->directives);
     }
 
+    /**
+     * @param string $name
+     *
+     * @return bool
+     */
     public function hasDirective($name)
     {
         return array_key_exists($name, $this->directives);
@@ -63,6 +67,9 @@ trait AstDirectivesTrait
         }
     }
 
+    /**
+     * @param Directive $directive
+     */
     public function addDirective(Directive $directive)
     {
         $this->directives[$directive->getName()] = $directive;

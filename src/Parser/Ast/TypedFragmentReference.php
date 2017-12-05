@@ -1,16 +1,13 @@
 <?php
-/**
- * Date: 23.11.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Parser\Ast;
-
 
 use Youshido\GraphQL\Parser\Ast\Interfaces\FragmentInterface;
 use Youshido\GraphQL\Parser\Location;
 
+/**
+ * Class TypedFragmentReference
+ */
 class TypedFragmentReference extends AbstractAst implements FragmentInterface
 {
     use AstDirectivesTrait;
@@ -67,5 +64,4 @@ class TypedFragmentReference extends AbstractAst implements FragmentInterface
     {
         $this->typeName = $typeName;
     }
-
 }

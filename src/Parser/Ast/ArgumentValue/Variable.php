@@ -1,9 +1,4 @@
 <?php
-/**
- * Date: 23.11.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Parser\Ast\ArgumentValue;
 
@@ -11,9 +6,11 @@ use Youshido\GraphQL\Parser\Ast\AbstractAst;
 use Youshido\GraphQL\Parser\Ast\Interfaces\ValueInterface;
 use Youshido\GraphQL\Parser\Location;
 
+/**
+ * Class Variable
+ */
 class Variable extends AbstractAst implements ValueInterface
 {
-
     /** @var  string */
     private $name;
 
@@ -24,16 +21,16 @@ class Variable extends AbstractAst implements ValueInterface
     private $type;
 
     /** @var bool */
-    private $nullable = false;
+    private $nullable;
 
     /** @var bool */
-    private $isArray = false;
+    private $isArray;
 
     /** @var bool */
     private $used = false;
 
     /** @var bool */
-    private $arrayElementNullable = true;
+    private $arrayElementNullable;
 
     /** @var bool */
     private $hasDefaultValue = false;

@@ -1,22 +1,24 @@
 <?php
-/**
- * Date: 16.11.16
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Parser;
 
-
+/**
+ * Class Location
+ */
 class Location
 {
-
-    /** @var  integer */
+    /** @var  int */
     private $line;
 
-    /** @var  integer */
+    /** @var  int */
     private $column;
 
+    /**
+     * Location constructor.
+     *
+     * @param int $line
+     * @param int $column
+     */
     public function __construct($line, $column)
     {
         $this->line   = $line;
@@ -39,13 +41,30 @@ class Location
         return $this->column;
     }
 
+    /**
+     * @param int $line
+     */
+    public function setLine($line)
+    {
+        $this->line = $line;
+    }
 
+    /**
+     * @param int $column
+     */
+    public function setColumn($column)
+    {
+        $this->column = $column;
+    }
+
+    /**
+     * @return array
+     */
     public function toArray()
     {
         return [
             'line'   => $this->getLine(),
-            'column' => $this->getColumn()
+            'column' => $this->getColumn(),
         ];
     }
-
 }

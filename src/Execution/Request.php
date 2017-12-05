@@ -1,9 +1,4 @@
 <?php
-/**
- * Date: 23.11.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Execution;
 
@@ -14,10 +9,13 @@ use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
+use Youshido\GraphQL\Parser\ParseResult;
 
+/**
+ * Class Request
+ */
 class Request
 {
-
     /** @var  Query[] */
     private $queries = [];
 
@@ -39,47 +37,42 @@ class Request
     /** @var array */
     private $fragmentReferences = [];
 
-    public function __construct($data = [], $variables = [])
+    /**
+     * Request constructor.
+     *
+     * @param ParseResult $parseResult
+     * @param array       $variables
+     *
+     * @throws InvalidRequestException
+     */
+    public function __construct(ParseResult $parseResult, array $variables = [])
     {
-        if (array_key_exists('queries', $data)) {
-            $this->addQueries($data['queries']);
-        }
+        $this->addQueries($parseResult->getQueries());
+        $this->addMutations($parseResult->getMutations());
+        $this->addFragments($parseResult->getFragments());
+        $this->addFragmentReferences($parseResult->getFragmentReferences());
+        $this->addQueryVariables($parseResult->getVariables());
+        $this->addVariableReferences($parseResult->getVariableReferences());
 
-        if (array_key_exists('mutations', $data)) {
-            $this->addMutations($data['mutations']);
-        }
-
-        if (array_key_exists('fragments', $data)) {
-            $this->addFragments($data['fragments']);
-        }
-
-        if (array_key_exists('fragmentReferences', $data)) {
-            $this->addFragmentReferences($data['fragmentReferences']);
-        }
-
-        if (array_key_exists('variables', $data)) {
-            $this->addQueryVariables($data['variables']);
-        }
-
-        if (array_key_exists('variableReferences', $data)) {
-            foreach ($data['variableReferences'] as $ref) {
-                if (!array_key_exists($ref->getName(), $variables)) {
-                    /** @var Variable $variable */
-                    $variable = $ref->getVariable();
-                    if ($variable->hasDefaultValue()) {
-                        $variables[$variable->getName()] = $variable->getDefaultValue()->getValue();
-                        continue;
-                    }
-                    throw new InvalidRequestException(sprintf("Variable %s hasn't been submitted", $ref->getName()), $ref->getLocation());
+        foreach ($parseResult->getVariableReferences() as $ref) {
+            if (!isset($variables[$ref->getName()])) {
+                /** @var Variable $variable */
+                $variable = $ref->getVariable();
+                if ($variable->hasDefaultValue()) {
+                    $variables[$variable->getName()] = $variable->getDefaultValue()->getValue();
+                    continue;
                 }
-            }
 
-            $this->addVariableReferences($data['variableReferences']);
+                throw new InvalidRequestException(sprintf("Variable %s hasn't been submitted", $ref->getName()), $ref->getLocation());
+            }
         }
 
         $this->setVariables($variables);
     }
 
+    /**
+     * @param Query[] $queries
+     */
     public function addQueries($queries)
     {
         foreach ($queries as $query) {
@@ -87,6 +80,9 @@ class Request
         }
     }
 
+    /**
+     * @param Mutation[] $mutations
+     */
     public function addMutations($mutations)
     {
         foreach ($mutations as $mutation) {
@@ -94,6 +90,9 @@ class Request
         }
     }
 
+    /**
+     * @param Variable[] $queryVariables
+     */
     public function addQueryVariables($queryVariables)
     {
         foreach ($queryVariables as $queryVariable) {
@@ -101,6 +100,9 @@ class Request
         }
     }
 
+    /**
+     * @param VariableReference[] $variableReferences
+     */
     public function addVariableReferences($variableReferences)
     {
         foreach ($variableReferences as $variableReference) {
@@ -108,6 +110,9 @@ class Request
         }
     }
 
+    /**
+     * @param FragmentReference[] $fragmentReferences
+     */
     public function addFragmentReferences($fragmentReferences)
     {
         foreach ($fragmentReferences as $fragmentReference) {
@@ -115,6 +120,9 @@ class Request
         }
     }
 
+    /**
+     * @param Fragment[] $fragments
+     */
     public function addFragments($fragments)
     {
         foreach ($fragments as $fragment) {
@@ -146,20 +154,23 @@ class Request
         return $this->fragments;
     }
 
+    /**
+     * @param Fragment $fragment
+     */
     public function addFragment(Fragment $fragment)
     {
         $this->fragments[] = $fragment;
     }
 
     /**
-     * @param $name
+     * @param string $name
      *
      * @return null|Fragment
      */
     public function getFragment($name)
     {
         foreach ($this->fragments as $fragment) {
-            if ($fragment->getName() == $name) {
+            if ($fragment->getName() === $name) {
                 return $fragment;
             }
         }
@@ -180,7 +191,7 @@ class Request
      */
     public function hasQueries()
     {
-        return (bool)count($this->queries);
+        return (bool) count($this->queries);
     }
 
     /**
@@ -188,7 +199,7 @@ class Request
      */
     public function hasMutations()
     {
-        return (bool)count($this->mutations);
+        return (bool) count($this->mutations);
     }
 
     /**
@@ -196,7 +207,7 @@ class Request
      */
     public function hasFragments()
     {
-        return (bool)count($this->fragments);
+        return (bool) count($this->fragments);
     }
 
     /**
@@ -209,8 +220,6 @@ class Request
 
     /**
      * @param array|string $variables
-     *
-     * @return $this
      */
     public function setVariables($variables)
     {
@@ -221,27 +230,39 @@ class Request
         $this->variables = $variables;
         foreach ($this->variableReferences as $reference) {
             /** invalid request with no variable */
-            if (!$reference->getVariable()) continue;
-            $variableName = $reference->getVariable()->getName();
+            if (!$reference->getVariable()) {
+                continue;
+            }
 
+            $variableName = $reference->getVariable()->getName();
             /** no variable was set at the time */
-            if (!array_key_exists($variableName, $variables)) continue;
+            if (!isset($this->variables[$variableName])) {
+                continue;
+            }
 
             $reference->getVariable()->setValue($variables[$variableName]);
             $reference->setValue($variables[$variableName]);
         }
-
-        return $this;
     }
 
+    /**
+     * @param string $name
+     *
+     * @return array|mixed|null
+     */
     public function getVariable($name)
     {
         return $this->hasVariable($name) ? $this->variables[$name] : null;
     }
 
+    /**
+     * @param string $name
+     *
+     * @return bool
+     */
     public function hasVariable($name)
     {
-        return array_key_exists($name, $this->variables);
+        return isset($this->variables[$name]);
     }
 
     /**

@@ -1,28 +1,31 @@
 <?php
-/*
-* This file is a part of GraphQL project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 2/5/17 11:31 AM
-*/
 
 namespace Youshido\GraphQL\Parser\Ast;
 
-
+/**
+ * Trait AstArgumentsTrait
+ */
 trait AstArgumentsTrait
 {
-
     /** @var Argument[] */
     protected $arguments;
 
-    private $argumentsCache = null;
+    /** @var null|mixed */
+    private $argumentsCache;
 
-
+    /**
+     * @return bool
+     */
     public function hasArguments()
     {
-        return (bool)count($this->arguments);
+        return (bool) count($this->arguments);
     }
 
+    /**
+     * @param string $name
+     *
+     * @return bool
+     */
     public function hasArgument($name)
     {
         return array_key_exists($name, $this->arguments);
@@ -37,7 +40,7 @@ trait AstArgumentsTrait
     }
 
     /**
-     * @param $name
+     * @param string $name
      *
      * @return null|Argument
      */
@@ -51,6 +54,11 @@ trait AstArgumentsTrait
         return $argument;
     }
 
+    /**
+     * @param string $name
+     *
+     * @return mixed|null
+     */
     public function getArgumentValue($name)
     {
         $argument = $this->getArgument($name);
@@ -63,7 +71,7 @@ trait AstArgumentsTrait
      */
     public function setArguments(array $arguments)
     {
-        $this->arguments = [];
+        $this->arguments      = [];
         $this->argumentsCache = null;
 
         foreach ($arguments as $argument) {
@@ -71,11 +79,17 @@ trait AstArgumentsTrait
         }
     }
 
+    /**
+     * @param Argument $argument
+     */
     public function addArgument(Argument $argument)
     {
         $this->arguments[$argument->getName()] = $argument;
     }
 
+    /**
+     * @return array|mixed|null
+     */
     public function getKeyValueArguments()
     {
         if ($this->argumentsCache !== null) {

@@ -1,18 +1,14 @@
 <?php
-/**
- * Date: 03.11.16
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Parser\Ast\Interfaces;
 
-
 use Youshido\GraphQL\Parser\Ast\Argument;
 
+/**
+ * Interface FieldInterface
+ */
 interface FieldInterface extends LocatableInterface
 {
-
     /**
      * @return string
      */
@@ -44,5 +40,4 @@ interface FieldInterface extends LocatableInterface
      * @return array
      */
     public function getFields();
-
 }

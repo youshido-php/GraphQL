@@ -1,16 +1,13 @@
 <?php
-/**
- * Date: 23.11.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Parser\Ast;
-
 
 use Youshido\GraphQL\Parser\Ast\Interfaces\FieldInterface;
 use Youshido\GraphQL\Parser\Location;
 
+/**
+ * Class Field
+ */
 class Field extends AbstractAst implements FieldInterface
 {
     use AstArgumentsTrait;
@@ -20,7 +17,7 @@ class Field extends AbstractAst implements FieldInterface
     private $name;
 
     /** @var null|string */
-    private $alias = null;
+    private $alias;
 
     /**
      * @param string   $name
@@ -33,8 +30,8 @@ class Field extends AbstractAst implements FieldInterface
     {
         parent::__construct($location);
 
-        $this->name      = $name;
-        $this->alias     = $alias;
+        $this->name  = $name;
+        $this->alias = $alias;
         $this->setArguments($arguments);
         $this->setDirectives($directives);
     }
@@ -71,14 +68,19 @@ class Field extends AbstractAst implements FieldInterface
         $this->alias = $alias;
     }
 
+    /**
+     * @return bool
+     */
     public function hasFields()
     {
         return false;
     }
 
+    /**
+     * @return array
+     */
     public function getFields()
     {
         return [];
     }
-
 }

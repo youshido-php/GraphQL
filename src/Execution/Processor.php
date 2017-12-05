@@ -1,12 +1,6 @@
 <?php
-/**
- * Date: 03.11.16
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Execution;
-
 
 use Youshido\GraphQL\Exception\ResolveException;
 use Youshido\GraphQL\Execution\Container\Container;
@@ -88,20 +82,20 @@ class Processor
             foreach ($this->executionContext->getRequest()->getAllOperations() as $query) {
                 if ($operationResult = $this->resolveQuery($query)) {
                     $this->data = array_replace_recursive($this->data, $operationResult);
-                };
+                }
             }
 
             // If the processor found any deferred results, resolve them now.
             if (!empty($this->data) && $this->deferredResults) {
-              try {
-                  while ($deferredResolver = array_shift($this->deferredResults)) {
-                      $deferredResolver->resolve();
-                  }
-              } catch (\Exception $e) {
-                  $this->executionContext->addError($e);
-              } finally {
-                  $this->data = static::unpackDeferredResults($this->data);
-              }
+                try {
+                    while ($deferredResolver = array_shift($this->deferredResults)) {
+                        $deferredResolver->resolve();
+                    }
+                } catch (\Exception $e) {
+                    $this->executionContext->addError($e);
+                } finally {
+                    $this->data = static::unpackDeferredResults($this->data);
+                }
             }
 
         } catch (\Exception $e) {
@@ -141,10 +135,10 @@ class Processor
         $type   = $query instanceof AstMutation ? $schema->getMutationType() : $schema->getQueryType();
         $field  = new Field([
             'name' => $query instanceof AstMutation ? 'mutation' : 'query',
-            'type' => $type
+            'type' => $type,
         ]);
 
-        if (self::TYPE_NAME_QUERY == $query->getName()) {
+        if (self::TYPE_NAME_QUERY === $query->getName()) {
             return [$this->getAlias($query) => $type->getName()];
         }
 
@@ -161,7 +155,7 @@ class Processor
             $type        = $field->getType();
             $nonNullType = $type->getNullableType();
 
-            if (self::TYPE_NAME_QUERY == $ast->getName()) {
+            if (self::TYPE_NAME_QUERY === $ast->getName()) {
                 return $nonNullType->getName();
             }
 
@@ -321,6 +315,7 @@ class Processor
      * @param AbstractObjectType $type
      * @param AstFieldInterface  $ast
      * @param                    $resolvedValue
+     *
      * @return array
      */
     private function collectResult(FieldInterface $field, AbstractObjectType $type, $ast, $resolvedValue)
@@ -381,14 +376,17 @@ class Processor
     /**
      * Apply post-process callbacks to all deferred resolvers.
      */
-    protected function deferredResolve($resolvedValue, callable $callback) {
+    protected function deferredResolve($resolvedValue, callable $callback)
+    {
         if ($resolvedValue instanceof DeferredResolverInterface) {
             $deferredResult = new DeferredResult($resolvedValue, $callback);
             // Whenever we stumble upon a deferred resolver, append it to the
             // queue to be resolved later.
             $this->deferredResults[] = $deferredResult;
+
             return $deferredResult;
         }
+
         // For simple values, invoke the callback immediately.
         return $callback($resolvedValue);
     }
@@ -396,7 +394,8 @@ class Processor
     protected function resolveScalar(FieldInterface $field, AstFieldInterface $ast, $parentValue)
     {
         $resolvedValue = $this->doResolve($field, $ast, $parentValue);
-        return $this->deferredResolve($resolvedValue, function($resolvedValue) use ($field, $ast, $parentValue) {
+
+        return $this->deferredResolve($resolvedValue, function ($resolvedValue) use ($field, $ast, $parentValue) {
             $this->resolveValidator->assertValidResolvedValueForField($field, $resolvedValue);
 
             /** @var AbstractScalarType $type */
@@ -428,9 +427,9 @@ class Processor
             }
 
             $fakeField = new Field([
-              'name' => $field->getName(),
-              'type' => $itemType,
-              'args' => $field->getArguments(),
+                'name' => $field->getName(),
+                'type' => $itemType,
+                'args' => $field->getArguments(),
             ]);
 
             $result = [];
@@ -503,6 +502,7 @@ class Processor
     {
         /** @var AstQuery $ast */
         $resolvedValue = $this->doResolve($field, $ast, $parentValue);
+
         return $this->deferredResolve($resolvedValue, function ($resolvedValue) use ($field, $ast, $parentValue) {
             $this->resolveValidator->assertValidResolvedValueForField($field, $resolvedValue);
 
@@ -512,7 +512,7 @@ class Processor
 
             /** @var AbstractUnionType $type */
             $type         = $field->getType()->getNullableType();
-            $resolveInfo = new ResolveInfo(
+            $resolveInfo  = new ResolveInfo(
                 $field,
                 $ast instanceof AstQuery ? $ast->getFields() : [],
                 $this->executionContext
@@ -530,9 +530,9 @@ class Processor
             }
 
             $fakeField = new Field([
-              'name' => $field->getName(),
-              'type' => $resolvedType,
-              'args' => $field->getArguments(),
+                'name' => $field->getName(),
+                'type' => $resolvedType,
+                'args' => $field->getArguments(),
             ]);
 
             return $this->resolveObject($fakeField, $ast, $resolvedValue, true);
