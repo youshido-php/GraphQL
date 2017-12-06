@@ -1,10 +1,4 @@
 <?php
-/*
-* This file is a part of graphql-youshido project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 11/30/15 1:30 AM
-*/
 
 namespace Youshido\GraphQL\Config\Field;
 
@@ -16,13 +10,12 @@ use Youshido\GraphQL\Type\TypeService;
 
 /**
  * Class FieldConfig
- * @package Youshido\GraphQL\Config\Field
+ *
  * @method $this setDescription(string $description)
  * @method $this setCost(int $cost)
  */
 class FieldConfig extends AbstractConfig
 {
-
     use ArgumentsAwareConfigTrait;
 
     public function getRules()
@@ -35,10 +28,13 @@ class FieldConfig extends AbstractConfig
             'resolve'           => ['type' => TypeService::TYPE_CALLABLE],
             'isDeprecated'      => ['type' => TypeService::TYPE_BOOLEAN],
             'deprecationReason' => ['type' => TypeService::TYPE_STRING],
-            'cost'              => ['type' => TypeService::TYPE_ANY]
+            'cost'              => ['type' => TypeService::TYPE_ANY],
         ];
     }
 
+    /**
+     * Configure class properties
+     */
     protected function build()
     {
         $this->buildArguments();
@@ -51,5 +47,4 @@ class FieldConfig extends AbstractConfig
     {
         return $this->data['type'];
     }
-
 }

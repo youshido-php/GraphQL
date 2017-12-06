@@ -32,7 +32,9 @@ class SchemaConfig extends AbstractConfig
         parent::__construct($configData, $contextObject, $finalClass);
     }
 
-
+    /**
+     * @return array
+     */
     public function getRules()
     {
         return [
@@ -43,18 +45,6 @@ class SchemaConfig extends AbstractConfig
             'name'       => ['type' => TypeService::TYPE_STRING],
         ];
     }
-
-    protected function build()
-    {
-        parent::build();
-        if (!empty($this->data['types'])) {
-            $this->types->addMany($this->data['types']);
-        }
-        if (!empty($this->data['directives'])) {
-            $this->directives->addMany($this->data['directives']);
-        }
-    }
-
 
     /**
      * @return AbstractObjectType
@@ -115,5 +105,16 @@ class SchemaConfig extends AbstractConfig
     public function getDirectives()
     {
         return $this->directives;
+    }
+
+    protected function build()
+    {
+        parent::build();
+        if (!empty($this->data['types'])) {
+            $this->types->addMany($this->data['types']);
+        }
+        if (!empty($this->data['directives'])) {
+            $this->directives->addMany($this->data['directives']);
+        }
     }
 }

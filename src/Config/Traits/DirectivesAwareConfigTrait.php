@@ -1,21 +1,22 @@
 <?php
-/**
- * Date: 03/17/2017
- *
- * @author Volodymyr Rashchepkin <rashepkin@gmail.com>
- */
 
 namespace Youshido\GraphQL\Config\Traits;
 
-
 use Youshido\GraphQL\Directive\Directive;
+use Youshido\GraphQL\Directive\DirectiveInterface;
 use Youshido\GraphQL\Field\InputField;
 
+/**
+ * Trait DirectivesAwareConfigTrait
+ */
 trait DirectivesAwareConfigTrait
 {
     protected $directives = [];
     protected $_isDirectivesBuilt;
 
+    /**
+     * Configure class properties
+     */
     public function buildDirectives()
     {
         if ($this->_isDirectivesBuilt) {
@@ -28,24 +29,35 @@ trait DirectivesAwareConfigTrait
         $this->_isDirectivesBuilt = true;
     }
 
-    public function addDirectives($directiveList)
+    /**
+     * @param array $directives
+     *
+     * @return $this
+     */
+    public function addDirectives($directives)
     {
-        foreach ($directiveList as $directiveName => $directiveInfo) {
+        foreach ($directives as $directiveName => $directiveInfo) {
             if ($directiveInfo instanceof Directive) {
                 $this->directives[$directiveInfo->getName()] = $directiveInfo;
                 continue;
-            } else {
-                $this->addDirective($directiveName, $this->buildConfig($directiveName, $directiveInfo));
             }
+
+            $this->addDirective($directiveName, $this->buildConfig($directiveName, $directiveInfo));
         }
 
         return $this;
     }
 
-    public function addDirective($directive, $directiveInfo = null)
+    /**
+     * @param string|DirectiveInterface $directive
+     * @param array|null                $info
+     *
+     * @return $this
+     */
+    public function addDirective($directive, $info = null)
     {
         if (!($directive instanceof Directive)) {
-            $directive = new Directive($this->buildConfig($directive, $directiveInfo));
+            $directive = new Directive($this->buildConfig($directive, $info));
         }
         $this->directives[$directive->getName()] = $directive;
 
@@ -63,7 +75,7 @@ trait DirectivesAwareConfigTrait
     }
 
     /**
-     * @param $name
+     * @param string $name
      *
      * @return bool
      */
@@ -72,6 +84,9 @@ trait DirectivesAwareConfigTrait
         return array_key_exists($name, $this->directives);
     }
 
+    /**
+     * @return bool
+     */
     public function hasDirectives()
     {
         return !empty($this->directives);
@@ -85,6 +100,11 @@ trait DirectivesAwareConfigTrait
         return $this->directives;
     }
 
+    /**
+     * @param string $name
+     *
+     * @return $this
+     */
     public function removeDirective($name)
     {
         if ($this->hasDirective($name)) {
@@ -93,5 +113,4 @@ trait DirectivesAwareConfigTrait
 
         return $this;
     }
-
 }

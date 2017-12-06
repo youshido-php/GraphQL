@@ -1,13 +1,6 @@
 <?php
-/*
-* This file is a part of GraphQL project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 12/5/15 12:18 AM
-*/
 
 namespace Youshido\GraphQL\Config\Object;
-
 
 use Youshido\GraphQL\Config\AbstractConfig;
 use Youshido\GraphQL\Config\Traits\ArgumentsAwareConfigTrait;
@@ -15,10 +8,16 @@ use Youshido\GraphQL\Config\Traits\FieldsAwareConfigTrait;
 use Youshido\GraphQL\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\TypeService;
 
+/**
+ * Class EnumTypeConfig
+ */
 class EnumTypeConfig extends AbstractConfig implements TypeConfigInterface
 {
     use FieldsAwareConfigTrait, ArgumentsAwareConfigTrait;
 
+    /**
+     * @return array
+     */
     public function getRules()
     {
         return [
@@ -28,9 +27,11 @@ class EnumTypeConfig extends AbstractConfig implements TypeConfigInterface
         ];
     }
 
+    /**
+     * @return array
+     */
     public function getValues()
     {
         return $this->get('values', []);
     }
-
 }

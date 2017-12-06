@@ -1,10 +1,4 @@
 <?php
-/*
-* This file is a part of graphql-youshido project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 11/27/15 2:32 AM
-*/
 
 namespace Youshido\GraphQL\Config\Object;
 
@@ -16,25 +10,30 @@ use Youshido\GraphQL\Type\TypeService;
 
 /**
  * Class ObjectTypeConfig
- * @package Youshido\GraphQL\Config\Object
+ *
  * @method setDescription(string $description)
  * @method string getDescription()
  */
 class ObjectTypeConfig extends AbstractConfig implements TypeConfigInterface
 {
-
     use FieldsAwareConfigTrait;
 
+    /**
+     * @return array
+     */
     public function getRules()
     {
         return [
             'name'        => ['type' => TypeService::TYPE_STRING, 'required' => true],
             'description' => ['type' => TypeService::TYPE_STRING],
             'fields'      => ['type' => TypeService::TYPE_ARRAY_OF_FIELDS_CONFIG, 'final' => true],
-            'interfaces'  => ['type' => TypeService::TYPE_ARRAY_OF_INTERFACES]
+            'interfaces'  => ['type' => TypeService::TYPE_ARRAY_OF_INTERFACES],
         ];
     }
 
+    /**
+     * Configure class properties
+     */
     protected function build()
     {
         $this->buildFields();
@@ -47,5 +46,4 @@ class ObjectTypeConfig extends AbstractConfig implements TypeConfigInterface
     {
         return $this->get('interfaces', []);
     }
-
 }

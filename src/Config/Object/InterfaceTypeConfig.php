@@ -1,13 +1,6 @@
 <?php
-/*
-* This file is a part of GraphQL project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 12/5/15 12:18 AM
-*/
 
 namespace Youshido\GraphQL\Config\Object;
-
 
 use Youshido\GraphQL\Config\AbstractConfig;
 use Youshido\GraphQL\Config\Traits\ArgumentsAwareConfigTrait;
@@ -18,13 +11,16 @@ use Youshido\GraphQL\Type\TypeService;
 
 /**
  * Class InterfaceTypeConfig
- * @package Youshido\GraphQL\Config\Object
+ *
  * @method $this setDescription(string $description)
  */
 class InterfaceTypeConfig extends AbstractConfig implements TypeConfigInterface
 {
     use FieldsAwareConfigTrait, ArgumentsAwareConfigTrait;
 
+    /**
+     * @return array
+     */
     public function getRules()
     {
         return [
@@ -35,18 +31,28 @@ class InterfaceTypeConfig extends AbstractConfig implements TypeConfigInterface
         ];
     }
 
+    /**
+     * Configure class properties
+     */
     protected function build()
     {
         $this->buildFields();
     }
 
+    /**
+     * @param mixed $object
+     *
+     * @return mixed
+     * @throws ConfigurationException
+     */
     public function resolveType($object)
     {
         $callable = $this->get('resolveType');
 
         if ($callable && is_callable($callable)) {
-            return call_user_func_array($callable, [$object]);
-        } elseif (is_callable([$this->contextObject, 'resolveType'])) {
+            return $callable($object);
+        }
+        if (is_callable([$this->contextObject, 'resolveType'])) {
             return $this->contextObject->resolveType($object);
         }
 

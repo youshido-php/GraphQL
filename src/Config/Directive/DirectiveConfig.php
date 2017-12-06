@@ -1,12 +1,6 @@
 <?php
-/**
- * Date: 03/17/2017
- *
- * @author Volodymyr Rashchepkin <rashepkin@gmail.com>
- */
 
 namespace Youshido\GraphQL\Config\Directive;
-
 
 use Youshido\GraphQL\Config\AbstractConfig;
 use Youshido\GraphQL\Config\Traits\ArgumentsAwareConfigTrait;
@@ -14,16 +8,19 @@ use Youshido\GraphQL\Type\TypeService;
 
 /**
  * Class DirectiveConfig
- *
- * @package Youshido\GraphQL\Config\Directive
  */
 class DirectiveConfig extends AbstractConfig
 {
-
     use ArgumentsAwareConfigTrait;
 
+    /**
+     * @var array
+     */
     protected $locations = [];
 
+    /**
+     * @return array
+     */
     public function getRules()
     {
         return [
@@ -34,11 +31,17 @@ class DirectiveConfig extends AbstractConfig
         ];
     }
 
+    /**
+     * @return array
+     */
     public function getLocations()
     {
         return $this->locations;
     }
 
+    /**
+     * Configure class properties
+     */
     public function build()
     {
         $this->buildArguments();
@@ -49,5 +52,4 @@ class DirectiveConfig extends AbstractConfig
             }
         }
     }
-
 }

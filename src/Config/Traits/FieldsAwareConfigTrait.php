@@ -1,13 +1,6 @@
 <?php
-/*
-* This file is a part of graphql-youshido project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 12/1/15 11:05 PM
-*/
 
 namespace Youshido\GraphQL\Config\Traits;
-
 
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\FieldInterface;
@@ -16,13 +9,14 @@ use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 
 /**
  * Class FieldsAwareTrait
- *
- * @package Youshido\GraphQL\Config\Traits
  */
 trait FieldsAwareConfigTrait
 {
     protected $fields = [];
 
+    /**
+     * Configure object fields
+     */
     public function buildFields()
     {
         if (!empty($this->data['fields'])) {
@@ -52,16 +46,17 @@ trait FieldsAwareConfigTrait
     public function addFields($fieldsList)
     {
         foreach ($fieldsList as $fieldName => $fieldConfig) {
-
             if ($fieldConfig instanceof FieldInterface) {
                 $this->fields[$fieldConfig->getName()] = $fieldConfig;
                 continue;
-            } elseif ($fieldConfig instanceof InputFieldInterface) {
+            }
+
+            if ($fieldConfig instanceof InputFieldInterface) {
                 $this->fields[$fieldConfig->getName()] = $fieldConfig;
                 continue;
-            } else {
-                $this->addField($fieldName, $this->buildFieldConfig($fieldName, $fieldConfig));
             }
+
+            $this->addField($fieldName, $this->buildFieldConfig($fieldName, $fieldConfig));
         }
 
         return $this;
@@ -84,20 +79,6 @@ trait FieldsAwareConfigTrait
         return $this;
     }
 
-    protected function buildFieldConfig($name, $info = null)
-    {
-        if (!is_array($info)) {
-            $info = [
-                'type' => $info,
-                'name' => $name,
-            ];
-        } elseif (empty($info['name'])) {
-            $info['name'] = $name;
-        }
-
-        return $info;
-    }
-
     /**
      * @param $name
      *
@@ -118,19 +99,27 @@ trait FieldsAwareConfigTrait
         return array_key_exists($name, $this->fields);
     }
 
+    /**
+     * @return bool
+     */
     public function hasFields()
     {
         return !empty($this->fields);
     }
 
     /**
-     * @return Field[]
+     * @return FieldInterface[]
      */
     public function getFields()
     {
         return $this->fields;
     }
 
+    /**
+     * @param string $name
+     *
+     * @return $this
+     */
     public function removeField($name)
     {
         if ($this->hasField($name)) {
@@ -138,5 +127,16 @@ trait FieldsAwareConfigTrait
         }
 
         return $this;
+    }
+
+    protected function buildFieldConfig($name, $info = null)
+    {
+        if (!is_array($info)) {
+            $info = ['type' => $info, 'name' => $name,];
+        } elseif (empty($info['name'])) {
+            $info['name'] = $name;
+        }
+
+        return $info;
     }
 }

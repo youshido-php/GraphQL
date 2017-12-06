@@ -12,6 +12,9 @@ trait ArgumentsAwareConfigTrait
     protected $arguments = [];
     protected $_isArgumentsBuilt;
 
+    /**
+     * Build object arguments
+     */
     public function buildArguments()
     {
         if ($this->_isArgumentsBuilt) {
@@ -24,6 +27,11 @@ trait ArgumentsAwareConfigTrait
         $this->_isArgumentsBuilt = true;
     }
 
+    /**
+     * @param array $arguments
+     *
+     * @return $this
+     */
     public function addArguments($arguments)
     {
         foreach ((array) $arguments as $argumentName => $argumentInfo) {
@@ -75,7 +83,7 @@ trait ArgumentsAwareConfigTrait
     }
 
     /**
-     * @param $name
+     * @param string $name
      *
      * @return InputField
      */
@@ -85,7 +93,7 @@ trait ArgumentsAwareConfigTrait
     }
 
     /**
-     * @param $name
+     * @param string $name
      *
      * @return bool
      */
@@ -94,6 +102,9 @@ trait ArgumentsAwareConfigTrait
         return array_key_exists($name, $this->arguments);
     }
 
+    /**
+     * @return bool
+     */
     public function hasArguments()
     {
         return !empty($this->arguments);
@@ -107,6 +118,11 @@ trait ArgumentsAwareConfigTrait
         return $this->arguments;
     }
 
+    /**
+     * @param string $name
+     *
+     * @return $this
+     */
     public function removeArgument($name)
     {
         if ($this->hasArgument($name)) {
