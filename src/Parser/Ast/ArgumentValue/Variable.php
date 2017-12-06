@@ -2,6 +2,8 @@
 
 namespace Youshido\GraphQL\Parser\Ast\ArgumentValue;
 
+use Youshido\GraphQL\Exception\GraphQLException;
+use Youshido\GraphQL\Exception\LogicException;
 use Youshido\GraphQL\Parser\Ast\AbstractAst;
 use Youshido\GraphQL\Parser\Ast\Interfaces\ValueInterface;
 use Youshido\GraphQL\Parser\Location;
@@ -36,7 +38,7 @@ class Variable extends AbstractAst implements ValueInterface
     private $hasDefaultValue = false;
 
     /** @var mixed */
-    private $defaultValue = null;
+    private $defaultValue;
 
     /**
      * @param string   $name
@@ -60,7 +62,7 @@ class Variable extends AbstractAst implements ValueInterface
     /**
      * @return mixed
      *
-     * @throws \LogicException
+     * @throws LogicException
      */
     public function getValue()
     {
@@ -68,7 +70,8 @@ class Variable extends AbstractAst implements ValueInterface
             if ($this->hasDefaultValue()) {
                 return $this->defaultValue;
             }
-            throw new \LogicException('Value is not set for variable "' . $this->name . '"');
+
+            throw new LogicException(sprintf('Value is not set for variable "%s"', $this->name));
         }
 
         return $this->value;

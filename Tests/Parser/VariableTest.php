@@ -20,7 +20,7 @@ class VariableTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \LogicException
+     * @expectedException Youshido\GraphQL\Exception\LogicException
      * @expectedExceptionMessage Value is not set for variable "foo"
      */
     public function testGetNullValueException()

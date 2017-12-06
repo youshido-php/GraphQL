@@ -1,20 +1,24 @@
 <?php
-/**
- * Date: 22.12.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Exception;
 
 use Youshido\GraphQL\Exception\Interfaces\DatableExceptionInterface;
 
-class DatableResolveException extends \Exception implements DatableExceptionInterface
+/**
+ * Class DatableResolveException
+ */
+class DatableResolveException extends GraphQLException implements DatableExceptionInterface
 {
-
     /** @var  array */
     protected $data;
 
+    /**
+     * DatableResolveException constructor.
+     *
+     * @param string $message
+     * @param int    $code
+     * @param array  $data
+     */
     public function __construct($message, $code = 0, $data = [])
     {
         parent::__construct($message, $code);
@@ -37,5 +41,4 @@ class DatableResolveException extends \Exception implements DatableExceptionInte
     {
         $this->data = $data;
     }
-
 }

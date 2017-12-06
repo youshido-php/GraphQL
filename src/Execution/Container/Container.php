@@ -8,16 +8,19 @@
 
 namespace Youshido\GraphQL\Execution\Container;
 
+use Youshido\GraphQL\Exception\RuntimeException;
+
 class Container implements ContainerInterface
 {
 
-    private $keyset   = [];
-    private $values   = [];
+    private $keyset = [];
+    private $values = [];
     private $services = [];
 
 
     /**
      * @param $id
+     *
      * @return mixed
      * @throws \Exception if there was no value set under specified id
      */
@@ -27,6 +30,7 @@ class Container implements ContainerInterface
         if (isset($this->services['id'])) {
             return $this->services['id']($this);
         }
+
         return $this->values[$id];
     }
 
@@ -34,20 +38,21 @@ class Container implements ContainerInterface
     {
         $this->values[$id] = $value;
         $this->keyset[$id] = true;
+
         return $this;
     }
 
     protected function setAsService($id, $service)
     {
         if (!is_object($service)) {
-            throw new \RuntimeException(sprintf('Service %s has to be an object', $id));
+            throw new RuntimeException(sprintf('Service %s has to be an object', $id));
         }
 
         $this->services[$id] = $service;
         if (isset($this->values[$id])) {
             unset($this->values[$id]);
         }
-        $this->keyset[$id]   = true;
+        $this->keyset[$id] = true;
     }
 
     public function remove($id)
@@ -69,7 +74,7 @@ class Container implements ContainerInterface
     private function assertIdentifierSet($id)
     {
         if (!$this->has($id)) {
-            throw new \RuntimeException(sprintf('Container item "%s" was not set', $id));
+            throw new RuntimeException(sprintf('Container item "%s" was not set', $id));
         }
     }
 }

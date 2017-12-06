@@ -77,9 +77,9 @@ class ConfigValidator implements ConfigValidatorInterface
     }
 
 
-    public function validate($data, $rules = [], $extraFieldsAllowed = null)
+    public function validate($data, $rules = [], $extraFieldsAllowed = false)
     {
-        if ($extraFieldsAllowed !== null) $this->setExtraFieldsAllowed($extraFieldsAllowed);
+        $this->setExtraFieldsAllowed($extraFieldsAllowed);
 
         $processedFields = [];
         foreach ($rules as $fieldName => $fieldRules) {

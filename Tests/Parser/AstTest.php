@@ -195,7 +195,7 @@ class AstTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \LogicException
+     * @expectedException Youshido\GraphQL\Exception\LogicException
      */
     public function testVariableLogicException()
     {

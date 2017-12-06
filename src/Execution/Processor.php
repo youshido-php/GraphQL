@@ -4,6 +4,7 @@ namespace Youshido\GraphQL\Execution;
 
 use Youshido\GraphQL\Directive\IncludeDirective;
 use Youshido\GraphQL\Directive\SkipDirective;
+use Youshido\GraphQL\Exception\GraphQLException;
 use Youshido\GraphQL\Exception\ResolveException;
 use Youshido\GraphQL\Execution\Container\Container;
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
@@ -576,7 +577,7 @@ class Processor
     protected function parseAndCreateRequest($payload, $variables = [])
     {
         if (empty($payload)) {
-            throw new \InvalidArgumentException('Must provide an operation.');
+            throw new GraphQLException('Must provide an operation.');
         }
 
         $parser  = new Parser();

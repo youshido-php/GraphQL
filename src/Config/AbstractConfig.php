@@ -1,13 +1,6 @@
 <?php
-/*
-* This file is a part of graphql-youshido project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 11/27/15 2:31 AM
-*/
 
 namespace Youshido\GraphQL\Config;
-
 
 use Youshido\GraphQL\Exception\ConfigurationException;
 use Youshido\GraphQL\Exception\ValidationException;
@@ -20,7 +13,6 @@ use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
  */
 abstract class AbstractConfig
 {
-
     /**
      * @var array
      */
@@ -30,7 +22,7 @@ abstract class AbstractConfig
 
     protected $finalClass = false;
 
-    protected $extraFieldsAllowed = null;
+    protected $extraFieldsAllowed = false;
 
     /**
      * TypeConfig constructor.
@@ -55,6 +47,14 @@ abstract class AbstractConfig
         $this->build();
     }
 
+    /**
+     * @return array
+     */
+    abstract public function getRules();
+
+    /**
+     * @throws ConfigurationException
+     */
     public function validate()
     {
         $validator = ConfigValidator::getInstance();
@@ -64,6 +64,9 @@ abstract class AbstractConfig
         }
     }
 
+    /**
+     * @return mixed
+     */
     public function getContextRules()
     {
         $rules = $this->getRules();
@@ -78,18 +81,25 @@ abstract class AbstractConfig
         return $rules;
     }
 
-    abstract public function getRules();
-
+    /**
+     * @return string
+     */
     public function getName()
     {
         return $this->get('name');
     }
 
+    /**
+     * @return string
+     */
     public function getType()
     {
         return $this->get('type');
     }
 
+    /**
+     * @return array
+     */
     public function getData()
     {
         return $this->data;
@@ -100,16 +110,21 @@ abstract class AbstractConfig
         return $this->contextObject;
     }
 
+    /**
+     * @return bool
+     */
     public function isFinalClass()
     {
         return $this->finalClass;
     }
 
+    /**
+     * @return bool
+     */
     public function isExtraFieldsAllowed()
     {
         return $this->extraFieldsAllowed;
     }
-
 
     /**
      * @return null|callable
@@ -119,13 +134,9 @@ abstract class AbstractConfig
         return $this->get('resolve', null);
     }
 
-    protected function build()
-    {
-    }
-
     /**
-     * @param      $key
-     * @param null $defaultValue
+     * @param string $key
+     * @param null   $defaultValue
      *
      * @return mixed|null|callable
      */
@@ -134,6 +145,12 @@ abstract class AbstractConfig
         return $this->has($key) ? $this->data[$key] : $defaultValue;
     }
 
+    /**
+     * @param string $key
+     * @param mixed  $value
+     *
+     * @return $this
+     */
     public function set($key, $value)
     {
         $this->data[$key] = $value;
@@ -141,28 +158,42 @@ abstract class AbstractConfig
         return $this;
     }
 
+    /**
+     * @param string $key
+     *
+     * @return bool
+     */
     public function has($key)
     {
         return array_key_exists($key, $this->data);
     }
 
+    /**
+     * @param string $method
+     * @param  array $arguments
+     *
+     * @return $this|callable|mixed|null
+     * @throws \Exception
+     */
     public function __call($method, $arguments)
     {
-        if (substr($method, 0, 3) == 'get') {
+        if (0 === strpos($method, 'get')) {
             $propertyName = lcfirst(substr($method, 3));
-        } elseif (substr($method, 0, 3) == 'set') {
+        } elseif (0 === strpos($method, 'set')) {
             $propertyName = lcfirst(substr($method, 3));
             $this->set($propertyName, $arguments[0]);
 
             return $this;
-        } elseif (substr($method, 0, 2) == 'is') {
+        } elseif (0 === strpos($method, 'is')) {
             $propertyName = lcfirst(substr($method, 2));
         } else {
-            throw new \Exception('Call to undefined method ' . $method);
+            throw new ConfigurationException('Call to undefined method ' . $method);
         }
 
         return $this->get($propertyName);
     }
 
-
+    protected function build()
+    {
+    }
 }

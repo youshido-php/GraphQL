@@ -10,6 +10,7 @@ namespace Youshido\GraphQL\Type\Object;
 
 
 use Youshido\GraphQL\Config\Object\ObjectTypeConfig;
+use Youshido\GraphQL\Exception\LogicException;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
@@ -18,6 +19,7 @@ use Youshido\GraphQL\Type\TypeMap;
 
 /**
  * Class AbstractObjectType
+ *
  * @package Youshido\GraphQL\Type\Object
  */
 abstract class AbstractObjectType extends AbstractType
@@ -26,18 +28,9 @@ abstract class AbstractObjectType extends AbstractType
 
     protected $isBuilt = false;
 
-    public function getConfig()
-    {
-        if (!$this->isBuilt) {
-            $this->isBuilt = true;
-            $this->build($this->config);
-        }
-
-        return $this->config;
-    }
-
     /**
      * ObjectType constructor.
+     *
      * @param $config
      */
     public function __construct(array $config = [])
@@ -50,21 +43,49 @@ abstract class AbstractObjectType extends AbstractType
         $this->config = new ObjectTypeConfig($config, $this);
     }
 
-    final public function serialize($value)
+    /**
+     * @return ObjectTypeConfig
+     */
+    public function getConfig()
     {
-        throw new \InvalidArgumentException('You can not serialize object value directly');
+        if (!$this->isBuilt) {
+            $this->isBuilt = true;
+            $this->build($this->config);
+        }
+
+        return $this->config;
     }
 
+    /**
+     * @param mixed $value
+     *
+     * @return null
+     * @throws LogicException
+     */
+    final public function serialize($value)
+    {
+        throw new LogicException('You can not serialize object value directly');
+    }
+
+    /**
+     * @return string
+     */
     public function getKind()
     {
         return TypeMap::KIND_OBJECT;
     }
 
+    /**
+     * @return array
+     */
     public function getType()
     {
         return $this->getConfigValue('type', $this);
     }
 
+    /**
+     * @return $this
+     */
     public function getNamedType()
     {
         return $this;
@@ -83,9 +104,13 @@ abstract class AbstractObjectType extends AbstractType
         return $this->getConfigValue('interfaces', []);
     }
 
+    /**
+     * @param mixed $value
+     *
+     * @return bool
+     */
     public function isValidValue($value)
     {
-        return is_array($value) || is_null($value) || is_object($value);
+        return is_array($value) || null === $value || is_object($value);
     }
-
 }
