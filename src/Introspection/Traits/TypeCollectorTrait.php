@@ -1,9 +1,4 @@
 <?php
-/**
- * Date: 04.12.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Introspection\Traits;
 
@@ -13,14 +8,24 @@ use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\Union\AbstractUnionType;
 
+/**
+ * Trait TypeCollectorTrait
+ */
 trait TypeCollectorTrait
 {
-
+    /**
+     * @var array
+     */
     protected $types = [];
 
+    /**
+     * @param AbstractType $type
+     */
     protected function collectTypes(AbstractType $type)
     {
-        if (is_object($type) && array_key_exists($type->getName(), $this->types)) return;
+        if (is_object($type) && array_key_exists($type->getName(), $this->types)) {
+            return;
+        }
 
         switch ($type->getKind()) {
             case TypeMap::KIND_INTERFACE:
@@ -29,7 +34,7 @@ trait TypeCollectorTrait
             case TypeMap::KIND_SCALAR:
                 $this->insertType($type->getName(), $type);
 
-                if ($type->getKind() == TypeMap::KIND_UNION) {
+                if ($type->getKind() === TypeMap::KIND_UNION) {
                     /** @var AbstractUnionType $type */
                     foreach ($type->getTypes() as $subType) {
                         $this->collectTypes($subType);
@@ -61,9 +66,12 @@ trait TypeCollectorTrait
         }
     }
 
+    /**
+     * @param $type AbstractObjectType
+     */
     private function checkAndInsertInterfaces($type)
     {
-        foreach ((array)$type->getConfig()->getInterfaces() as $interface) {
+        foreach ((array) $type->getConfig()->getInterfaces() as $interface) {
             /** @var AbstractInterfaceType $interface */
             $this->insertType($interface->getName(), $interface);
         }
@@ -87,6 +95,12 @@ trait TypeCollectorTrait
         }
     }
 
+    /**
+     * @param string       $name
+     * @param AbstractType $type
+     *
+     * @return bool
+     */
     private function insertType($name, $type)
     {
         if (!array_key_exists($name, $this->types)) {
@@ -97,5 +111,4 @@ trait TypeCollectorTrait
 
         return false;
     }
-
 }

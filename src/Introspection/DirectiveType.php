@@ -15,7 +15,6 @@ use Youshido\GraphQL\Type\TypeMap;
  */
 class DirectiveType extends AbstractObjectType
 {
-
     /**
      * @return String type name
      */

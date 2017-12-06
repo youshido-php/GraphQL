@@ -21,9 +21,15 @@ trait FieldsArgumentsAwareObjectTrait
         return $this->getConfig()->removeArgument($name);
     }
 
-    public function addArgument($argument, $ArgumentInfo = null)
+    /**
+     * @param array|string      $argument
+     * @param null|array|string $info
+     *
+     * @return $this
+     */
+    public function addArgument($argument, $info = null)
     {
-        return $this->getConfig()->addArgument($argument, $ArgumentInfo);
+        return $this->getConfig()->addArgument($argument, $info);
     }
 
     public function getArguments()

@@ -33,6 +33,11 @@ class IncludeDirective
         ]);
     }
 
+    /**
+     * @param DirectivesContainerInterface $field
+     *
+     * @return bool
+     */
     public static function check(DirectivesContainerInterface $field)
     {
         if ($directive = $field->getDirective('include')) {

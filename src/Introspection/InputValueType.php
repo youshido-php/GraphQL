@@ -1,9 +1,4 @@
 <?php
-/**
- * Date: 03.12.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Introspection;
 
@@ -14,6 +9,9 @@ use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 
+/**
+ * Class InputValueType
+ */
 class InputValueType extends AbstractObjectType
 {
     /**
@@ -30,15 +28,17 @@ class InputValueType extends AbstractObjectType
      * @param AbstractSchema|Field $value
      *
      * @return string|null
-     *
-     * //todo implement value printer
      */
     public function resolveDefaultValue($value)
     {
         $resolvedValue = $value->getConfig()->getDefaultValue();
+
         return $resolvedValue === null ? $resolvedValue : str_replace('"', '', json_encode($resolvedValue));
     }
 
+    /**
+     * @param \Youshido\GraphQL\Config\Object\ObjectTypeConfig $config
+     */
     public function build($config)
     {
         $config
@@ -49,11 +49,11 @@ class InputValueType extends AbstractObjectType
             ->addField(new Field([
                 'name'    => 'type',
                 'type'    => new NonNullType(new QueryType()),
-                'resolve' => [$this, 'resolveType']
+                'resolve' => [$this, 'resolveType'],
             ]))
             ->addField('defaultValue', [
-                'type' => TypeMap::TYPE_STRING,
-                'resolve' => [$this, 'resolveDefaultValue']
+                'type'    => TypeMap::TYPE_STRING,
+                'resolve' => [$this, 'resolveDefaultValue'],
             ]);
     }
 

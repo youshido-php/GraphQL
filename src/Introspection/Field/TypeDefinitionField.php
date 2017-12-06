@@ -1,9 +1,4 @@
 <?php
-/**
- * Date: 03.12.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Introspection\Field;
 
@@ -17,11 +12,20 @@ use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
+/**
+ * Class TypeDefinitionField
+ */
 class TypeDefinitionField extends AbstractField
 {
-
     use TypeCollectorTrait;
 
+    /**
+     * @param null        $value
+     * @param array       $args
+     * @param ResolveInfo $info
+     *
+     * @return null|ResolveInfo
+     */
     public function resolve($value = null, array $args, ResolveInfo $info)
     {
         $schema = $info->getExecutionContext()->getSchema();
@@ -32,23 +36,25 @@ class TypeDefinitionField extends AbstractField
             $this->collectTypes($type);
         }
 
-        foreach ($this->types as $name => $info) {
-            if ($name == $args['name']) {
-                return $info;
+        foreach ($this->types as $name => $typeInfo) {
+            if ($name === $args['name']) {
+                return $typeInfo;
             }
         }
 
         return null;
     }
 
+    /**
+     * @param FieldConfig $config
+     */
     public function build(FieldConfig $config)
     {
         $config->addArgument(new InputField([
             'name' => 'name',
-            'type' => new NonNullType(new StringType())
+            'type' => new NonNullType(new StringType()),
         ]));
     }
-
 
     /**
      * @return String type name

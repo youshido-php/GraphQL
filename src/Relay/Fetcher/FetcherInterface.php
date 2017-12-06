@@ -1,16 +1,12 @@
 <?php
-/**
- * Date: 17.05.16
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Relay\Fetcher;
 
-
+/**
+ * Interface FetcherInterface
+ */
 interface FetcherInterface
 {
-
     /**
      * Resolve node
      *
@@ -23,8 +19,8 @@ interface FetcherInterface
 
     /**
      * @param $object
+     *
      * @return mixed
      */
     public function resolveType($object);
-
 }

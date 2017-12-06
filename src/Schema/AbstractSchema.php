@@ -57,11 +57,17 @@ abstract class AbstractSchema
         $this->getMutationType()->addField($field, $fieldInfo);
     }
 
+    /**
+     * @return \Youshido\GraphQL\Type\Object\AbstractObjectType
+     */
     final public function getQueryType()
     {
         return $this->config->getQuery();
     }
 
+    /**
+     * @return \Youshido\GraphQL\Type\Object\ObjectType
+     */
     final public function getMutationType()
     {
         return $this->config->getMutation();
@@ -83,6 +89,11 @@ abstract class AbstractSchema
         return $this->config->getDirectives();
     }
 
+    /**
+     * @param array $config
+     *
+     * @return string
+     */
     public function getName($config)
     {
         $defaultName = 'RootSchema';

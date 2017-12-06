@@ -1,20 +1,18 @@
 <?php
-/*
-* This file is a part of GraphQL project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 5/14/16 9:28 AM
-*/
 
 namespace Youshido\GraphQL\Schema;
 
-
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 
+/**
+ * Class InternalSchemaQueryObject
+ */
 class InternalSchemaQueryObject extends AbstractObjectType
 {
+    /**
+     * @param \Youshido\GraphQL\Config\Object\ObjectTypeConfig $config
+     */
     public function build($config)
     {
     }
-
 }

@@ -37,16 +37,28 @@ trait ArgumentsAwareConfigTrait
         return $this;
     }
 
-    public function addArgument($argument, $argumentInfo = null)
+    /**
+     * @param array|string      $argument
+     * @param null|array|string $info
+     *
+     * @return $this
+     */
+    public function addArgument($argument, $info = null)
     {
         if (!($argument instanceof InputField)) {
-            $argument = new InputField($this->buildConfig($argument, $argumentInfo));
+            $argument = new InputField($this->buildConfig($argument, $info));
         }
         $this->arguments[$argument->getName()] = $argument;
 
         return $this;
     }
 
+    /**
+     * @param array|string      $name
+     * @param null|array|string $info
+     *
+     * @return array
+     */
     protected function buildConfig($name, $info = null)
     {
         if (!is_array($info)) {

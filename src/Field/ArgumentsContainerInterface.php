@@ -19,7 +19,13 @@ interface ArgumentsContainerInterface
      */
     public function removeArgument($name);
 
-    public function addArgument($argument, $ArgumentInfo = null);
+    /**
+     * @param array|string      $argument
+     * @param null|array|string $info
+     *
+     * @return $this
+     */
+    public function addArgument($argument, $info = null);
 
     /**
      * @return AbstractType[]

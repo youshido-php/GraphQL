@@ -1,12 +1,6 @@
 <?php
-/**
- * Date: 13.05.16
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Field;
-
 
 use Youshido\GraphQL\Config\Field\InputFieldConfig;
 use Youshido\GraphQL\Type\InputTypeInterface;
@@ -15,13 +9,21 @@ use Youshido\GraphQL\Type\Traits\FieldsArgumentsAwareObjectTrait;
 use Youshido\GraphQL\Type\TypeFactory;
 use Youshido\GraphQL\Type\TypeService;
 
+/**
+ * Class AbstractInputField
+ */
 abstract class AbstractInputField implements InputFieldInterface
 {
-
     use FieldsArgumentsAwareObjectTrait, AutoNameTrait;
 
+    /** @var bool */
     protected $isFinal = false;
 
+    /**
+     * AbstractInputField constructor.
+     *
+     * @param array $config
+     */
     public function __construct(array $config = [])
     {
         if (empty($config['type'])) {
@@ -37,9 +39,11 @@ abstract class AbstractInputField implements InputFieldInterface
         $this->build($this->config);
     }
 
+    /**
+     * @param InputFieldConfig $config
+     */
     public function build(InputFieldConfig $config)
     {
-
     }
 
     /**
@@ -47,11 +51,11 @@ abstract class AbstractInputField implements InputFieldInterface
      */
     abstract public function getType();
 
+    /**
+     * @return callable|mixed|null
+     */
     public function getDefaultValue()
     {
         return $this->config->getDefaultValue();
     }
-
-    //todo: think about serialize, parseValue methods
-
 }

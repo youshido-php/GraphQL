@@ -16,7 +16,6 @@ use Youshido\GraphQL\Type\Object\AbstractObjectType;
  */
 final class Field extends AbstractField
 {
-
     protected $isFinal = true;
 
     protected $_typeCache = null;

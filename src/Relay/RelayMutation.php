@@ -1,12 +1,6 @@
 <?php
-/**
- * Date: 17.05.16
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Relay;
-
 
 use Youshido\GraphQL\Exception\GraphQLException;
 use Youshido\GraphQL\Exception\LogicException;
@@ -19,9 +13,11 @@ use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
+/**
+ * Class RelayMutation
+ */
 class RelayMutation
 {
-
     /**
      * @param string                   $name
      * @param array                    $args
@@ -72,5 +68,4 @@ class RelayMutation
             },
         ]);
     }
-
 }

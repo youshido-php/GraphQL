@@ -1,12 +1,6 @@
 <?php
-/**
- * Date: 16.05.16
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Introspection\Field;
-
 
 use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Field\AbstractField;
@@ -16,9 +10,11 @@ use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 
+/**
+ * Class TypesField
+ */
 class TypesField extends AbstractField
 {
-
     use TypeCollectorTrait;
 
     /**
@@ -29,11 +25,21 @@ class TypesField extends AbstractField
         return new ListType(new QueryType());
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return 'types';
     }
 
+    /**
+     * @param mixed       $value
+     * @param array       $args
+     * @param ResolveInfo $info
+     *
+     * @return array
+     */
     public function resolve($value, array $args, ResolveInfo $info)
     {
         /** @var $value AbstractSchema $a */
@@ -45,10 +51,9 @@ class TypesField extends AbstractField
         }
 
         foreach ($value->getTypes()->all() as $type) {
-          $this->collectTypes($type);
+            $this->collectTypes($type);
         }
 
         return array_values($this->types);
     }
-
 }

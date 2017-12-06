@@ -1,22 +1,24 @@
 <?php
-/**
- * Date: 17.05.16
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Relay\Fetcher;
 
-
+/**
+ * Class CallableFetcher
+ */
 class CallableFetcher implements FetcherInterface
 {
-
     /** @var  callable */
     protected $resolveNodeCallable;
 
     /** @var  callable */
     protected $resolveTypeCallable;
 
+    /**
+     * CallableFetcher constructor.
+     *
+     * @param callable $resolveNode
+     * @param callable $resolveType
+     */
     public function __construct(callable $resolveNode, callable $resolveType)
     {
         $this->resolveNodeCallable = $resolveNode;

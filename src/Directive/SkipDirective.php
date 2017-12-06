@@ -33,10 +33,15 @@ class SkipDirective
         ]);
     }
 
+    /**
+     * @param DirectivesContainerInterface $field
+     *
+     * @return bool
+     */
     public static function check(DirectivesContainerInterface $field)
     {
         if ($directive = $field->getDirective('skip')) {
-            return $directive->getArgument('if')->getValue();
+            return (bool) $directive->getArgument('if')->getValue();
         }
 
         return false;

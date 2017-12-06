@@ -1,24 +1,21 @@
 <?php
-/**
- * Date: 3/24/17
- *
- * @author Volodymyr Rashchepkin <rashepkin@gmail.com>
- */
 
 namespace Youshido\GraphQL\Introspection;
 
 use Youshido\GraphQL\Directive\DirectiveLocation;
 use Youshido\GraphQL\Type\Enum\AbstractEnumType;
 
+/**
+ * Class DirectiveLocationType
+ */
 class DirectiveLocationType extends AbstractEnumType
 {
-
-    const QUERY = DirectiveLocation::QUERY;
-    const MUTATION = DirectiveLocation::MUTATION;
-    const FIELD = DirectiveLocation::FIELD;
+    const QUERY               = DirectiveLocation::QUERY;
+    const MUTATION            = DirectiveLocation::MUTATION;
+    const FIELD               = DirectiveLocation::FIELD;
     const FRAGMENT_DEFINITION = DirectiveLocation::FRAGMENT_DEFINITION;
-    const FRAGMENT_SPREAD = DirectiveLocation::FRAGMENT_SPREAD;
-    const INLINE_FRAGMENT = DirectiveLocation::INLINE_FRAGMENT;
+    const FRAGMENT_SPREAD     = DirectiveLocation::FRAGMENT_SPREAD;
+    const INLINE_FRAGMENT     = DirectiveLocation::INLINE_FRAGMENT;
 
     public function getName()
     {
@@ -36,5 +33,4 @@ class DirectiveLocationType extends AbstractEnumType
             ['name' => 'INLINE_FRAGMENT', 'value' => self::INLINE_FRAGMENT],
         ];
     }
-
 }

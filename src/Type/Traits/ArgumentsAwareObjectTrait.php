@@ -22,9 +22,15 @@ trait ArgumentsAwareObjectTrait
 {
     use ConfigAwareTrait;
 
-    public function addArgument($argument, $argumentInfo = null)
+    /**
+     * @param      $argument
+     * @param null $info
+     *
+     * @return $this
+     */
+    public function addArgument($argument, $info = null)
     {
-        return $this->getConfig()->addArgument($argument, $argumentInfo);
+        return $this->getConfig()->addArgument($argument, $info);
     }
 
     public function removeArgument($argumentName)
