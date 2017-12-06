@@ -16,6 +16,7 @@ use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 
 /**
  * Class FieldsAwareTrait
+ *
  * @package Youshido\GraphQL\Config\Traits
  */
 trait FieldsAwareConfigTrait
@@ -31,7 +32,9 @@ trait FieldsAwareConfigTrait
 
     /**
      * Add fields from passed interface
+     *
      * @param AbstractInterfaceType $interfaceType
+     *
      * @return $this
      */
     public function applyInterface(AbstractInterfaceType $interfaceType)
@@ -43,6 +46,7 @@ trait FieldsAwareConfigTrait
 
     /**
      * @param array $fieldsList
+     *
      * @return $this
      */
     public function addFields($fieldsList)
@@ -52,7 +56,7 @@ trait FieldsAwareConfigTrait
             if ($fieldConfig instanceof FieldInterface) {
                 $this->fields[$fieldConfig->getName()] = $fieldConfig;
                 continue;
-            } elseif($fieldConfig instanceof InputFieldInterface) {
+            } elseif ($fieldConfig instanceof InputFieldInterface) {
                 $this->fields[$fieldConfig->getName()] = $fieldConfig;
                 continue;
             } else {
@@ -64,14 +68,15 @@ trait FieldsAwareConfigTrait
     }
 
     /**
-     * @param FieldInterface|string $field     Field name or Field Object
-     * @param mixed                $fieldInfo Field Type or Field Config array
+     * @param FieldInterface|string $field Field name or Field Object
+     * @param mixed                 $info  Field Type or Field Config array
+     *
      * @return $this
      */
-    public function addField($field, $fieldInfo = null)
+    public function addField($field, $info = null)
     {
         if (!($field instanceof FieldInterface)) {
-            $field = new Field($this->buildFieldConfig($field, $fieldInfo));
+            $field = new Field($this->buildFieldConfig($field, $info));
         }
 
         $this->fields[$field->getName()] = $field;

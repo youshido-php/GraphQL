@@ -1,10 +1,4 @@
 <?php
-/*
-* This file is a part of graphql-youshido project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 11/27/15 1:00 AM
-*/
 
 namespace Youshido\GraphQL\Type\Scalar;
 
@@ -12,10 +6,16 @@ use Youshido\GraphQL\Config\Traits\ConfigAwareTrait;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\TypeMap;
 
+/**
+ * Class AbstractScalarType
+ */
 abstract class AbstractScalarType extends AbstractType
 {
     use ConfigAwareTrait;
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         $className = get_class($this);
@@ -23,20 +23,29 @@ abstract class AbstractScalarType extends AbstractType
         return substr($className, strrpos($className, '\\') + 1, -4);
     }
 
+    /**
+     * @return string
+     */
     final public function getKind()
     {
         return TypeMap::KIND_SCALAR;
     }
 
+    /**
+     * @param mixed $value
+     *
+     * @return mixed
+     */
     public function parseValue($value)
     {
         return $this->serialize($value);
     }
 
+    /**
+     * @return bool
+     */
     public function isInputType()
     {
         return true;
     }
-
-
 }

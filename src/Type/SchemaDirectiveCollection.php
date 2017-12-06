@@ -4,6 +4,9 @@ namespace Youshido\GraphQL\Type;
 
 use Youshido\GraphQL\Directive\DirectiveInterface;
 
+/**
+ * Class SchemaDirectiveCollection
+ */
 class SchemaDirectiveCollection
 {
     /** @var DirectiveInterface[] */

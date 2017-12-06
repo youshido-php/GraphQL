@@ -1,16 +1,12 @@
 <?php
-/*
-* This file is a part of graphql-youshido project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 11/30/15 12:36 AM
-*/
 
 namespace Youshido\GraphQL\Type;
 
+/**
+ * Class TypeMap
+ */
 class TypeMap
 {
-
     const KIND_SCALAR       = 'SCALAR';
     const KIND_OBJECT       = 'OBJECT';
     const KIND_INTERFACE    = 'INTERFACE';
@@ -29,6 +25,4 @@ class TypeMap
     const TYPE_DATETIMETZ = 'datetimetz';
     const TYPE_DATE       = 'date';
     const TYPE_TIMESTAMP  = 'timestamp';
-
-
 }

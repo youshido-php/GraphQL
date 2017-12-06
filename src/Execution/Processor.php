@@ -148,7 +148,7 @@ class Processor
             return [$this->getAlias($query) => $type->getName()];
         }
 
-        if ($this->skipCollection($query)) {
+        if ($this->skipCollecting($query)) {
             return [];
         }
 
@@ -318,7 +318,7 @@ class Processor
         return $requestValue;
     }
 
-    private function skipCollection(DirectivesContainerInterface $ast)
+    private function skipCollecting(DirectivesContainerInterface $ast)
     {
         if ($ast->hasDirective('skip') || $ast->hasDirective('include')) {
             $directiveAst = $ast->hasDirective('skip') ? $ast->getDirective('skip') : $ast->getDirective('include');
@@ -346,7 +346,7 @@ class Processor
         $result = [];
 
         foreach ($ast->getFields() as $astField) {
-            if ($this->skipCollection($astField)) {
+            if ($this->skipCollecting($astField)) {
                 continue;
             }
 
@@ -526,7 +526,7 @@ class Processor
             try {
                 return $this->collectResult($field, $type, $ast, $resolvedValue);
             } catch (\Exception $e) {
-                $this->executionContext->addError($e); //todo talk about this
+                $this->executionContext->addError($e);
 
                 return null;
             }

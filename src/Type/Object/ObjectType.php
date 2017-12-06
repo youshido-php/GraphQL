@@ -1,18 +1,19 @@
 <?php
-/*
-* This file is a part of graphql-youshido project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 11/27/15 1:24 AM
-*/
 
 namespace Youshido\GraphQL\Type\Object;
 
 use Youshido\GraphQL\Config\Object\ObjectTypeConfig;
 
+/**
+ * Class ObjectType
+ */
 final class ObjectType extends AbstractObjectType
 {
-
+    /**
+     * ObjectType constructor.
+     *
+     * @param array $config
+     */
     public function __construct(array $config)
     {
         $this->config = new ObjectTypeConfig($config, $this, true);
@@ -20,11 +21,16 @@ final class ObjectType extends AbstractObjectType
 
     /**
      * @inheritdoc
-     * 
+     *
      * @codeCoverageIgnore
      */
-    public function build($config) { }
+    public function build($config)
+    {
+    }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return $this->getConfigValue('name');

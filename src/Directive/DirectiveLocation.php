@@ -13,5 +13,4 @@ class DirectiveLocation
     const FRAGMENT_DEFINITION = 'FRAGMENT_DEFINITION';
     const FRAGMENT_SPREAD     = 'FRAGMENT_SPREAD';
     const INLINE_FRAGMENT     = 'INLINE_FRAGMENT';
-
 }

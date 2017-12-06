@@ -1,13 +1,6 @@
 <?php
-/*
-* This file is a part of graphql-youshido project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 12/2/15 8:57 PM
-*/
 
 namespace Youshido\GraphQL\Type\Object;
-
 
 use Youshido\GraphQL\Config\Object\ObjectTypeConfig;
 use Youshido\GraphQL\Exception\LogicException;
@@ -19,8 +12,6 @@ use Youshido\GraphQL\Type\TypeMap;
 
 /**
  * Class AbstractObjectType
- *
- * @package Youshido\GraphQL\Type\Object
  */
 abstract class AbstractObjectType extends AbstractType
 {

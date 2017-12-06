@@ -22,9 +22,9 @@ trait FieldsAwareObjectTrait
         return $this;
     }
 
-    public function addField($field, $fieldInfo = null)
+    public function addField($field, $info = null)
     {
-        $this->getConfig()->addField($field, $fieldInfo);
+        $this->getConfig()->addField($field, $info);
 
         return $this;
     }

@@ -32,6 +32,12 @@ class TypeService
     const TYPE_ANY_OBJECT             = 'any_object';
     const TYPE_ANY_INPUT              = 'any_input';
 
+    /**
+     * @param mixed $object
+     *
+     * @return null|AbstractType|StringType
+     * @throws RuntimeException
+     */
     public static function resolveNamedType($object)
     {
         if (is_object($object)) {
@@ -75,6 +81,11 @@ class TypeService
         return in_array($type->getKind(), [TypeMap::KIND_INTERFACE, TypeMap::KIND_UNION], false);
     }
 
+    /**
+     * @param mixed $type
+     *
+     * @return bool
+     */
     public static function isScalarType($type)
     {
         if (is_object($type)) {
@@ -84,16 +95,31 @@ class TypeService
         return in_array(strtolower($type), TypeFactory::getScalarTypesNames(), false);
     }
 
+    /**
+     * @param mixed $type
+     *
+     * @return bool
+     */
     public static function isGraphQLType($type)
     {
         return $type instanceof AbstractType || TypeService::isScalarType($type);
     }
 
+    /**
+     * @param mixed $type
+     *
+     * @return bool
+     */
     public static function isLeafType($type)
     {
         return $type instanceof AbstractEnumType || TypeService::isScalarType($type);
     }
 
+    /**
+     * @param mixed $type
+     *
+     * @return bool
+     */
     public static function isObjectType($type)
     {
         return $type instanceof AbstractObjectType;
@@ -118,11 +144,22 @@ class TypeService
         return TypeService::isScalarType($type);
     }
 
+    /**
+     * @param mixed $type
+     *
+     * @return bool
+     */
     public static function isInputObjectType($type)
     {
         return $type instanceof AbstractInputObjectType;
     }
 
+    /**
+     * @param mixed  $data
+     * @param string $path
+     *
+     * @return mixed|null
+     */
     public static function getPropertyValue($data, $path)
     {
         if (is_object($data)) {

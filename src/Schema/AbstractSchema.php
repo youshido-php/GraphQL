@@ -47,14 +47,14 @@ abstract class AbstractSchema
 
     abstract public function build(SchemaConfig $config);
 
-    public function addQueryField($field, $fieldInfo = null)
+    public function addQueryField($field, $info = null)
     {
-        $this->getQueryType()->addField($field, $fieldInfo);
+        $this->getQueryType()->addField($field, $info);
     }
 
-    public function addMutationField($field, $fieldInfo = null)
+    public function addMutationField($field, $info = null)
     {
-        $this->getMutationType()->addField($field, $fieldInfo);
+        $this->getMutationType()->addField($field, $info);
     }
 
     /**
