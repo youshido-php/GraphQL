@@ -1,10 +1,4 @@
 <?php
-/*
-* This file is a part of GraphQL project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 9/22/16 7:00 PM
-*/
 
 namespace Youshido\GraphQL\Execution\Container;
 

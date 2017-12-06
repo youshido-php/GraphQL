@@ -1,12 +1,6 @@
 <?php
-/**
- * Date: 5/20/16
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Execution\Context;
-
 
 use Youshido\GraphQL\Execution\Container\ContainerInterface;
 use Youshido\GraphQL\Execution\Request;
@@ -15,7 +9,6 @@ use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerInterface;
 
 interface ExecutionContextInterface extends ErrorContainerInterface
 {
-
     /**
      * @return AbstractSchema
      */
@@ -50,5 +43,4 @@ interface ExecutionContextInterface extends ErrorContainerInterface
      * @return mixed
      */
     public function setContainer(ContainerInterface $container);
-
 }

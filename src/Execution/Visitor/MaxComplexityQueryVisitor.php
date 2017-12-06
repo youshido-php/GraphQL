@@ -10,7 +10,6 @@ use Youshido\GraphQL\Exception\GraphQLException;
  */
 class MaxComplexityQueryVisitor extends AbstractQueryVisitor
 {
-
     /**
      * @var int max score allowed before throwing an exception (causing processing to stop)
      */

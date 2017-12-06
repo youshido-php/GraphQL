@@ -1,10 +1,4 @@
 <?php
-/*
-* This file is a part of GraphQL project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 5/19/16 8:58 AM
-*/
 
 namespace Youshido\GraphQL\Execution;
 
@@ -14,6 +8,9 @@ use Youshido\GraphQL\Parser\Ast\Field;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Type\AbstractType;
 
+/**
+ * Class ResolveInfo
+ */
 class ResolveInfo
 {
     /** @var  FieldInterface */
@@ -34,6 +31,13 @@ class ResolveInfo
      */
     protected $container;
 
+    /**
+     * ResolveInfo constructor.
+     *
+     * @param FieldInterface            $field
+     * @param array                     $fieldASTList
+     * @param ExecutionContextInterface $executionContext
+     */
     public function __construct(FieldInterface $field, array $fieldASTList, ExecutionContextInterface $executionContext)
     {
         $this->field            = $field;
@@ -91,10 +95,11 @@ class ResolveInfo
         return $this->field->getType();
     }
 
+    /**
+     * @return Container\ContainerInterface
+     */
     public function getContainer()
     {
         return $this->executionContext->getContainer();
     }
-
-
 }

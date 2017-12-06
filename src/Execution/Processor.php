@@ -39,9 +39,11 @@ use Youshido\GraphQL\Validator\RequestValidator\RequestValidator;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator;
 use Youshido\GraphQL\Validator\ResolveValidator\ResolveValidatorInterface;
 
+/**
+ * Class Processor
+ */
 class Processor
 {
-
     const TYPE_NAME_QUERY = '__typename';
 
     /** @var ExecutionContext */
@@ -59,9 +61,14 @@ class Processor
     /** @var array DeferredResult[] */
     protected $deferredResults = [];
 
+    /**
+     * Processor constructor.
+     *
+     * @param AbstractSchema $schema
+     */
     public function __construct(AbstractSchema $schema)
     {
-        if (empty($this->executionContext)) {
+        if (null === $this->executionContext) {
             $this->executionContext = new ExecutionContext($schema);
             $this->executionContext->setContainer(new Container());
         }
@@ -69,6 +76,13 @@ class Processor
         $this->resolveValidator = new ResolveValidator($this->executionContext);
     }
 
+    /**
+     * @param string $payload
+     * @param array  $variables
+     * @param array  $reducers
+     *
+     * @return $this
+     */
     public function processPayload($payload, $variables = [], $reducers = [])
     {
         $this->data = [];
@@ -100,7 +114,7 @@ class Processor
                 } catch (\Exception $e) {
                     $this->executionContext->addError($e);
                 } finally {
-                    $this->data = static::unpackDeferredResults($this->data);
+                    $this->data = $this->unpackDeferredResults($this->data);
                 }
             }
 
@@ -112,6 +126,50 @@ class Processor
     }
 
     /**
+     * You can access ExecutionContext to check errors and inject dependencies
+     *
+     * @return ExecutionContext
+     */
+    public function getExecutionContext()
+    {
+        return $this->executionContext;
+    }
+
+    /**
+     * @return array
+     */
+    public function getResponseData()
+    {
+        $result = [];
+
+        if (!empty($this->data)) {
+            $result['data'] = $this->data;
+        }
+
+        if ($this->executionContext->hasErrors()) {
+            $result['errors'] = $this->executionContext->getErrorsArray();
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxComplexity()
+    {
+        return $this->maxComplexity;
+    }
+
+    /**
+     * @param int $maxComplexity
+     */
+    public function setMaxComplexity($maxComplexity)
+    {
+        $this->maxComplexity = $maxComplexity;
+    }
+
+    /**
      * Unpack results stored inside deferred resolvers.
      *
      * @param mixed $result
@@ -120,7 +178,7 @@ class Processor
      * @return mixed
      *   The unpacked result.
      */
-    public static function unpackDeferredResults($result)
+    protected function unpackDeferredResults($result)
     {
         while ($result instanceof DeferredResult) {
             $result = $result->result;
@@ -128,7 +186,7 @@ class Processor
 
         if (is_array($result)) {
             foreach ($result as $key => $value) {
-                $result[$key] = static::unpackDeferredResults($value);
+                $result[$key] = $this->unpackDeferredResults($value);
             }
         }
 
@@ -623,58 +681,13 @@ class Processor
         return array_merge($values, $defaults);
     }
 
-    private function getAlias(AstFieldInterface $ast)
-    {
-        return $ast->getAlias() ?: $ast->getName();
-    }
-
     protected function createResolveInfo(FieldInterface $field, array $astFields)
     {
         return new ResolveInfo($field, $astFields, $this->executionContext);
     }
 
-
-    /**
-     * You can access ExecutionContext to check errors and inject dependencies
-     *
-     * @return ExecutionContext
-     */
-    public function getExecutionContext()
+    private function getAlias(AstFieldInterface $ast)
     {
-        return $this->executionContext;
-    }
-
-    /**
-     * @return array
-     */
-    public function getResponseData()
-    {
-        $result = [];
-
-        if (!empty($this->data)) {
-            $result['data'] = $this->data;
-        }
-
-        if ($this->executionContext->hasErrors()) {
-            $result['errors'] = $this->executionContext->getErrorsArray();
-        }
-
-        return $result;
-    }
-
-    /**
-     * @return int
-     */
-    public function getMaxComplexity()
-    {
-        return $this->maxComplexity;
-    }
-
-    /**
-     * @param int $maxComplexity
-     */
-    public function setMaxComplexity($maxComplexity)
-    {
-        $this->maxComplexity = $maxComplexity;
+        return $ast->getAlias() ?: $ast->getName();
     }
 }
