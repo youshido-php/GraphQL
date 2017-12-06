@@ -525,7 +525,7 @@ class Processor
             try {
                 return $this->collectResult($field, $type, $ast, $resolvedValue);
             } catch (\Exception $e) {
-                $this->executionContext->addError($e); //todo check this
+                $this->executionContext->addError($e); //todo talk about this
 
                 return null;
             }

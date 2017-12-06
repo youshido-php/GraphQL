@@ -5,7 +5,6 @@ namespace Youshido\GraphQL\Exception\Parser;
 /**
  * Class SyntaxErrorException
  */
-class SyntaxErrorException extends AbstractParserError
+class SyntaxErrorException extends AbstractParserException
 {
-
 }

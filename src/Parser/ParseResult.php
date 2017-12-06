@@ -34,7 +34,7 @@ class ParseResult
     private $variableReferences = [];
 
     /** @var  Directive[] */
-    private $directives;
+    private $directives = [];
 
     /**
      * @return Query[]

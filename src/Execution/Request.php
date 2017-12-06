@@ -40,30 +40,32 @@ class Request
     /**
      * Request constructor.
      *
-     * @param ParseResult $parseResult
-     * @param array       $variables
+     * @param ParseResult  $parseResult
+     * @param array|string $variables
      *
      * @throws InvalidRequestException
      */
-    public function __construct(ParseResult $parseResult, array $variables = [])
+    public function __construct(ParseResult $parseResult = null, $variables = [])
     {
-        $this->addQueries($parseResult->getQueries());
-        $this->addMutations($parseResult->getMutations());
-        $this->addFragments($parseResult->getFragments());
-        $this->addFragmentReferences($parseResult->getFragmentReferences());
-        $this->addQueryVariables($parseResult->getVariables());
-        $this->addVariableReferences($parseResult->getVariableReferences());
+        if ($parseResult) {
+            $this->addQueries($parseResult->getQueries());
+            $this->addMutations($parseResult->getMutations());
+            $this->addFragments($parseResult->getFragments());
+            $this->addFragmentReferences($parseResult->getFragmentReferences());
+            $this->addQueryVariables($parseResult->getVariables());
+            $this->addVariableReferences($parseResult->getVariableReferences());
 
-        foreach ($parseResult->getVariableReferences() as $ref) {
-            if (!isset($variables[$ref->getName()])) {
-                /** @var Variable $variable */
-                $variable = $ref->getVariable();
-                if ($variable->hasDefaultValue()) {
-                    $variables[$variable->getName()] = $variable->getDefaultValue()->getValue();
-                    continue;
+            foreach ($parseResult->getVariableReferences() as $ref) {
+                if (!array_key_exists($ref->getName(), $variables)) {
+                    /** @var Variable $variable */
+                    $variable = $ref->getVariable();
+                    if ($variable->hasDefaultValue()) {
+                        $variables[$variable->getName()] = $variable->getDefaultValue()->getValue();
+                        continue;
+                    }
+
+                    throw new InvalidRequestException(sprintf("Variable %s hasn't been submitted", $ref->getName()), $ref->getLocation());
                 }
-
-                throw new InvalidRequestException(sprintf("Variable %s hasn't been submitted", $ref->getName()), $ref->getLocation());
             }
         }
 

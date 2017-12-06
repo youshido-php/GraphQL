@@ -1,9 +1,4 @@
 <?php
-/**
- * Date: 16.12.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Introspection;
 
@@ -15,6 +10,9 @@ use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 
+/**
+ * Class DirectiveType
+ */
 class DirectiveType extends AbstractObjectType
 {
 
@@ -26,6 +24,11 @@ class DirectiveType extends AbstractObjectType
         return '__Directive';
     }
 
+    /**
+     * @param DirectiveInterface $value
+     *
+     * @return array|\Youshido\GraphQL\Type\AbstractType[]
+     */
     public function resolveArgs(DirectiveInterface $value)
     {
         if ($value->hasArguments()) {
@@ -45,11 +48,12 @@ class DirectiveType extends AbstractObjectType
         /** @var DirectiveConfig $directiveConfig */
         $directiveConfig = $value->getConfig();
 
-        $locations = $directiveConfig->getLocations();
-
-        return $locations;
+        return $directiveConfig->getLocations();
     }
 
+    /**
+     * @param \Youshido\GraphQL\Config\Object\ObjectTypeConfig $config
+     */
     public function build($config)
     {
         $config
@@ -59,8 +63,8 @@ class DirectiveType extends AbstractObjectType
                 'type'    => new NonNullType(new ListType(new NonNullType(new InputValueType()))),
                 'resolve' => [$this, 'resolveArgs'],
             ])
-            ->addField('locations',[
-                'type'  =>  new NonNullType(new ListType(new NonNullType(new DirectiveLocationType()))),
+            ->addField('locations', [
+                'type'    => new NonNullType(new ListType(new NonNullType(new DirectiveLocationType()))),
                 'resolve' => [$this, 'resolveLocations'],
             ]);
     }

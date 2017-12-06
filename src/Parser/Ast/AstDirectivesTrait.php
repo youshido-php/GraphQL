@@ -8,7 +8,7 @@ namespace Youshido\GraphQL\Parser\Ast;
 trait AstDirectivesTrait
 {
     /** @var Directive[] */
-    protected $directives;
+    protected $directives = [];
 
     /** @var null|mixed */
     private $directivesCache;
