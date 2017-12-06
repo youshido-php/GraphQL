@@ -1,24 +1,26 @@
 <?php
-/*
-* This file is a part of GraphQL project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 5/5/16 9:24 PM
-*/
 
 namespace Youshido\GraphQL\Schema;
 
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
-use Youshido\GraphQL\Directive\DefaultDirectiveBuilder;
-use Youshido\GraphQL\Type\SchemaDirectivesList;
-use Youshido\GraphQL\Type\SchemaTypesList;
+use Youshido\GraphQL\Directive\IncludeDirective;
+use Youshido\GraphQL\Directive\SkipDirective;
+use Youshido\GraphQL\Type\SchemaDirectiveCollection;
+use Youshido\GraphQL\Type\SchemaTypesCollection;
 
+/**
+ * Class AbstractSchema
+ */
 abstract class AbstractSchema
 {
-
     /** @var SchemaConfig */
     protected $config;
 
+    /**
+     * AbstractSchema constructor.
+     *
+     * @param array $config
+     */
     public function __construct($config = [])
     {
         if (!array_key_exists('query', $config)) {
@@ -32,7 +34,10 @@ abstract class AbstractSchema
         }
 
         if (!array_key_exists('directives', $config)) {
-            $config['directives'] = DefaultDirectiveBuilder::build();
+            $config['directives'] = [
+                SkipDirective::build(),
+                IncludeDirective::build(),
+            ];
         }
 
         $this->config = new SchemaConfig($config, $this);
@@ -63,25 +68,25 @@ abstract class AbstractSchema
     }
 
     /**
-     * @return SchemaTypesList
+     * @return SchemaTypesCollection
      */
-    public function getTypesList()
+    public function getTypes()
     {
-        return $this->config->getTypesList();
+        return $this->config->getTypes();
     }
 
     /**
-     * @return SchemaDirectivesList
+     * @return SchemaDirectiveCollection
      */
-    public function getDirectiveList()
+    public function getDirectives()
     {
-        return $this->config->getDirectiveList();
+        return $this->config->getDirectives();
     }
 
     public function getName($config)
     {
         $defaultName = 'RootSchema';
 
-        return isset($config["name"]) ? $config["name"] : $defaultName;
+        return isset($config['name']) ? $config['name'] : $defaultName;
     }
 }

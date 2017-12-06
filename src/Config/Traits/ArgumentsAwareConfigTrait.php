@@ -1,16 +1,12 @@
 <?php
-/*
-* This file is a part of graphql-youshido project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 12/1/15 11:07 PM
-*/
 
 namespace Youshido\GraphQL\Config\Traits;
 
-
 use Youshido\GraphQL\Field\InputField;
 
+/**
+ * Trait ArgumentsAwareConfigTrait
+ */
 trait ArgumentsAwareConfigTrait
 {
     protected $arguments = [];
@@ -28,15 +24,14 @@ trait ArgumentsAwareConfigTrait
         $this->_isArgumentsBuilt = true;
     }
 
-    public function addArguments($argsList)
+    public function addArguments($arguments)
     {
-        foreach ($argsList as $argumentName => $argumentInfo) {
+        foreach ((array) $arguments as $argumentName => $argumentInfo) {
             if ($argumentInfo instanceof InputField) {
                 $this->arguments[$argumentInfo->getName()] = $argumentInfo;
                 continue;
-            } else {
-                $this->addArgument($argumentName, $this->buildConfig($argumentName, $argumentInfo));
             }
+            $this->addArgument($argumentName, $this->buildConfig($argumentName, $argumentInfo));
         }
 
         return $this;
@@ -57,7 +52,7 @@ trait ArgumentsAwareConfigTrait
         if (!is_array($info)) {
             return [
                 'type' => $info,
-                'name' => $name
+                'name' => $name,
             ];
         }
         if (empty($info['name'])) {
@@ -108,5 +103,4 @@ trait ArgumentsAwareConfigTrait
 
         return $this;
     }
-
 }

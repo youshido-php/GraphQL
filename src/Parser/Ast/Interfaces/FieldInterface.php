@@ -2,12 +2,10 @@
 
 namespace Youshido\GraphQL\Parser\Ast\Interfaces;
 
-use Youshido\GraphQL\Parser\Ast\Argument;
-
 /**
  * Interface FieldInterface
  */
-interface FieldInterface extends LocatableInterface
+interface FieldInterface extends LocatableInterface, DirectivesContainerInterface, ArgumentsContainerInterface
 {
     /**
      * @return string
@@ -20,24 +18,12 @@ interface FieldInterface extends LocatableInterface
     public function getAlias();
 
     /**
-     * @return Argument[]
-     */
-    public function getArguments();
-
-    /**
-     * @param string $name
-     *
-     * @return Argument
-     */
-    public function getArgument($name);
-
-    /**
      * @return bool
      */
     public function hasFields();
 
     /**
-     * @return array
+     * @return FieldInterface[]
      */
     public function getFields();
 }

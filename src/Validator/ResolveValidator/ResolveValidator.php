@@ -1,17 +1,13 @@
 <?php
-/**
- * Date: 03.11.16
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Validator\ResolveValidator;
 
-
 use Youshido\GraphQL\Exception\ResolveException;
 use Youshido\GraphQL\Execution\Request;
+use Youshido\GraphQL\Field\ArgumentsContainerInterface;
 use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Field\InputField;
+use Youshido\GraphQL\Parser\Ast\Interfaces\ArgumentsContainerInterface as AstArgumentsContainerInterface;
 use Youshido\GraphQL\Parser\Ast\Interfaces\FieldInterface as AstFieldInterface;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
@@ -20,6 +16,9 @@ use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
 use Youshido\GraphQL\Type\Union\AbstractUnionType;
 
+/**
+ * Class ResolveValidator
+ */
 class ResolveValidator implements ResolveValidatorInterface
 {
     public function assetTypeHasField(AbstractType $objectType, AstFieldInterface $ast)
@@ -33,7 +32,7 @@ class ResolveValidator implements ResolveValidatorInterface
         }
     }
 
-    public function assertValidArguments(FieldInterface $field, AstFieldInterface $query, Request $request)
+    public function assertValidArguments(ArgumentsContainerInterface $field, AstArgumentsContainerInterface $query, Request $request)
     {
         $requiredArguments = array_filter($field->getArguments(), function (InputField $argument) {
             return $argument->getType()->getKind() === TypeMap::KIND_NON_NULL;

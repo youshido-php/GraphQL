@@ -105,7 +105,7 @@ class QueryType extends AbstractObjectType
     public function resolveInterfaces($value)
     {
         /** @var $value AbstractType */
-        if ($value->getKind() == TypeMap::KIND_OBJECT) {
+        if ($value->getKind() === TypeMap::KIND_OBJECT) {
             /** @var $value AbstractObjectType */
             return $value->getConfig()->getInterfaces() ?: [];
         }
@@ -116,22 +116,22 @@ class QueryType extends AbstractObjectType
     public function resolvePossibleTypes($value, $args, ResolveInfo $info)
     {
         /** @var $value AbstractObjectType */
-        if ($value->getKind() == TypeMap::KIND_INTERFACE) {
+        if ($value->getKind() === TypeMap::KIND_INTERFACE) {
             $schema = $info->getExecutionContext()->getSchema();
             $this->collectTypes($schema->getQueryType());
-            foreach ($schema->getTypesList()->getTypes() as $type) {
+            foreach ($schema->getTypes()->all() as $type) {
               $this->collectTypes($type);
             }
 
             $possibleTypes = [];
             foreach ($this->types as $type) {
                 /** @var $type AbstractObjectType */
-                if ($type->getKind() == TypeMap::KIND_OBJECT) {
+                if ($type->getKind() === TypeMap::KIND_OBJECT) {
                     $interfaces = $type->getConfig()->getInterfaces();
 
                     if ($interfaces) {
                         foreach ($interfaces as $interface) {
-                            if ($interface->getName() == $value->getName()) {
+                            if ($interface->getName() === $value->getName()) {
                                 $possibleTypes[] = $type;
                             }
                         }
@@ -140,7 +140,8 @@ class QueryType extends AbstractObjectType
             }
 
             return $possibleTypes;
-        } elseif ($value->getKind() == TypeMap::KIND_UNION) {
+        }
+        if ($value->getKind() === TypeMap::KIND_UNION) {
             /** @var $value AbstractUnionType */
             return $value->getTypes();
         }

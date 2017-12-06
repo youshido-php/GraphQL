@@ -2,12 +2,13 @@
 
 namespace Youshido\GraphQL\Parser\Ast;
 
+use Youshido\GraphQL\Parser\Ast\Interfaces\DirectivesContainerInterface;
 use Youshido\GraphQL\Parser\Location;
 
 /**
  * Class Fragment
  */
-class Fragment extends AbstractAst
+class Fragment extends AbstractAst implements DirectivesContainerInterface
 {
     use AstDirectivesTrait;
 

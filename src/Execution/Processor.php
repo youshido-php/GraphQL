@@ -2,10 +2,13 @@
 
 namespace Youshido\GraphQL\Execution;
 
+use Youshido\GraphQL\Directive\IncludeDirective;
+use Youshido\GraphQL\Directive\SkipDirective;
 use Youshido\GraphQL\Exception\ResolveException;
 use Youshido\GraphQL\Execution\Container\Container;
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor;
+use Youshido\GraphQL\Field\ArgumentsContainerInterface;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Field\InputField;
@@ -15,6 +18,8 @@ use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal as AstLiteral;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\VariableReference;
 use Youshido\GraphQL\Parser\Ast\Field as AstField;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
+use Youshido\GraphQL\Parser\Ast\Interfaces\ArgumentsContainerInterface as AstArgumentsContainerInterface;
+use Youshido\GraphQL\Parser\Ast\Interfaces\DirectivesContainerInterface;
 use Youshido\GraphQL\Parser\Ast\Interfaces\FieldInterface as AstFieldInterface;
 use Youshido\GraphQL\Parser\Ast\Mutation as AstMutation;
 use Youshido\GraphQL\Parser\Ast\Query as AstQuery;
@@ -142,6 +147,10 @@ class Processor
             return [$this->getAlias($query) => $type->getName()];
         }
 
+        if ($this->skipCollection($query)) {
+            return [];
+        }
+
         $this->resolveValidator->assetTypeHasField($type, $query);
         $value = $this->resolveField($field, $query);
 
@@ -208,7 +217,7 @@ class Processor
         }
     }
 
-    private function prepareAstArguments(FieldInterface $field, AstFieldInterface $query, Request $request)
+    private function prepareAstArguments(ArgumentsContainerInterface $field, AstArgumentsContainerInterface $query, Request $request)
     {
         foreach ($query->getArguments() as $astArgument) {
             if ($field->hasArgument($astArgument->getName())) {
@@ -258,10 +267,10 @@ class Processor
                 } else {
                     if ($argumentValue instanceof VariableReference) {
                         return $this->getVariableReferenceArgumentValue($argumentValue, $argumentType, $request);
-                    } else {
-                        if (is_array($argumentValue)) {
-                            return $argumentValue;
-                        }
+                    }
+
+                    if (is_array($argumentValue)) {
+                        return $argumentValue;
                     }
                 }
 
@@ -272,13 +281,12 @@ class Processor
                 /** @var $argumentValue AstLiteral|VariableReference */
                 if ($argumentValue instanceof VariableReference) {
                     return $this->getVariableReferenceArgumentValue($argumentValue, $argumentType, $request);
-                } else {
-                    if ($argumentValue instanceof AstLiteral) {
-                        return $argumentValue->getValue();
-                    } else {
-                        return $argumentValue;
-                    }
                 }
+                if ($argumentValue instanceof AstLiteral) {
+                    return $argumentValue->getValue();
+                }
+
+                return $argumentValue;
         }
 
         throw new ResolveException('Argument type not supported');
@@ -309,6 +317,20 @@ class Processor
         return $requestValue;
     }
 
+    private function skipCollection(DirectivesContainerInterface $ast)
+    {
+        if ($ast->hasDirective('skip') || $ast->hasDirective('include')) {
+            $directiveAst = $ast->hasDirective('skip') ? $ast->getDirective('skip') : $ast->getDirective('include');
+
+            $directive = $this->getExecutionContext()->getSchema()->getDirectives()->get($directiveAst->getName());
+            $this->prepareAstArguments($directive, $directiveAst, $this->executionContext->getRequest());
+            $this->resolveValidator->assertValidArguments($directive, $directiveAst, $this->executionContext->getRequest());
+
+            return SkipDirective::check($ast) || IncludeDirective::check($ast);
+        }
+
+        return false;
+    }
 
     /**
      * @param FieldInterface     $field
@@ -323,6 +345,10 @@ class Processor
         $result = [];
 
         foreach ($ast->getFields() as $astField) {
+            if ($this->skipCollection($astField)) {
+                continue;
+            }
+
             switch (true) {
                 case $astField instanceof TypedFragmentReference:
                     $astName  = $astField->getTypeName();
@@ -375,6 +401,11 @@ class Processor
 
     /**
      * Apply post-process callbacks to all deferred resolvers.
+     *
+     * @param mixed    $resolvedValue
+     * @param callable $callback
+     *
+     * @return DeferredResult
      */
     protected function deferredResolve($resolvedValue, callable $callback)
     {
@@ -487,12 +518,15 @@ class Processor
             if (null === $resolvedValue) {
                 return null;
             }
+
             /** @var AbstractObjectType $type */
             $type = $field->getType()->getNullableType();
 
             try {
                 return $this->collectResult($field, $type, $ast, $resolvedValue);
             } catch (\Exception $e) {
+                $this->executionContext->addError($e); //todo check this
+
                 return null;
             }
         });
@@ -609,6 +643,9 @@ class Processor
         return $this->executionContext;
     }
 
+    /**
+     * @return array
+     */
     public function getResponseData()
     {
         $result = [];
@@ -639,5 +676,4 @@ class Processor
     {
         $this->maxComplexity = $maxComplexity;
     }
-
 }

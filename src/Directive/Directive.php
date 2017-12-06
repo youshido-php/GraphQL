@@ -1,9 +1,4 @@
 <?php
-/**
- * Date: 3/17/17
- *
- * @author Volodymyr Rashchepkin <rashepkin@gmail.com>
- */
 
 namespace Youshido\GraphQL\Directive;
 
@@ -11,14 +6,21 @@ use Youshido\GraphQL\Config\Directive\DirectiveConfig;
 use Youshido\GraphQL\Type\Traits\ArgumentsAwareObjectTrait;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 
+/**
+ * Class Directive
+ */
 class Directive implements DirectiveInterface
 {
-
     use ArgumentsAwareObjectTrait;
     use AutoNameTrait;
 
     protected $isFinal = false;
 
+    /**
+     * Directive constructor.
+     *
+     * @param array $config
+     */
     public function __construct(array $config = [])
     {
         if (empty($config['name'])) {
@@ -29,14 +31,18 @@ class Directive implements DirectiveInterface
         $this->build($this->config);
     }
 
+    /**
+     * @param DirectiveConfig $config
+     */
     public function build(DirectiveConfig $config)
     {
-
     }
 
-    public function addArguments($argumentsList)
+    /**
+     * @param \Youshido\GraphQL\Type\AbstractType[] $arguments
+     */
+    public function addArguments($arguments)
     {
-        return $this->getConfig()->addArguments($argumentsList);
+        $this->getConfig()->addArguments($arguments);
     }
-
 }

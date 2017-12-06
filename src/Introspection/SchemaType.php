@@ -44,7 +44,7 @@ class SchemaType extends AbstractObjectType
     public function resolveDirectives($value)
     {
         /** @var AbstractSchema|Field $value */
-        $dirs = $value->getDirectiveList()->getDirectives();
+        $dirs = $value->getDirectives()->all();
         return $dirs;
     }
 

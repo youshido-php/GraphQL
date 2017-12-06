@@ -1,37 +1,34 @@
 <?php
-/*
-* This file is a part of graphql-youshido project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 11/28/15 3:53 PM
-*/
 
 namespace Youshido\GraphQL\Config\Schema;
-
 
 use Youshido\GraphQL\Config\AbstractConfig;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
-use Youshido\GraphQL\Type\SchemaDirectivesList;
-use Youshido\GraphQL\Type\SchemaTypesList;
+use Youshido\GraphQL\Type\SchemaDirectiveCollection;
+use Youshido\GraphQL\Type\SchemaTypesCollection;
 use Youshido\GraphQL\Type\TypeService;
 
+/**
+ * Class SchemaConfig
+ */
 class SchemaConfig extends AbstractConfig
 {
+    /**
+     * @var SchemaTypesCollection
+     */
+    private $types;
 
     /**
-     * @var SchemaTypesList
+     * @var SchemaDirectiveCollection;
      */
-    private $typesList;
-    /**
-     * @var SchemaDirectivesList;
-     */
-    private $directiveList;
+    private $directives;
 
     public function __construct(array $configData, $contextObject = null, $finalClass = false)
     {
-        $this->typesList = new SchemaTypesList();
-        $this->directiveList = new SchemaDirectivesList();
+        $this->types      = new SchemaTypesCollection();
+        $this->directives = new SchemaDirectiveCollection();
+
         parent::__construct($configData, $contextObject, $finalClass);
     }
 
@@ -51,10 +48,10 @@ class SchemaConfig extends AbstractConfig
     {
         parent::build();
         if (!empty($this->data['types'])) {
-            $this->typesList->addTypes($this->data['types']);
+            $this->types->addMany($this->data['types']);
         }
         if (!empty($this->data['directives'])) {
-            $this->directiveList->addDirectives($this->data['directives']);
+            $this->directives->addMany($this->data['directives']);
         }
     }
 
@@ -104,14 +101,19 @@ class SchemaConfig extends AbstractConfig
         return $this->get('name', 'RootSchema');
     }
 
-    public function getTypesList()
+    /**
+     * @return SchemaTypesCollection
+     */
+    public function getTypes()
     {
-        return $this->typesList;
+        return $this->types;
     }
 
-    public function getDirectiveList()
+    /**
+     * @return SchemaDirectiveCollection
+     */
+    public function getDirectives()
     {
-        return $this->directiveList;
+        return $this->directives;
     }
-
 }

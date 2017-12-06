@@ -96,7 +96,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
                 ]
             ])
         ]);
-        $schema->getTypesList()->addType($authorType);
+        $schema->getTypes()->add($authorType);
         $processor = new Processor($schema);
         $processor->processPayload('{ user { name } }');
         $this->assertEquals(['data' => ['user' => ['name' => 'Alex']]], $processor->getResponseData());

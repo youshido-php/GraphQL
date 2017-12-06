@@ -210,7 +210,14 @@ class Parser
     {
         $nameToken = $this->eatIdentifierToken();
 
+        $directives = [];
+        if ($this->tokenizer->match(Token::TYPE_AT)) {
+            $directives = $this->parseDirectiveList();
+        }
+
         $fragmentReference = new FragmentReference($nameToken->getData(), $nameToken->getLocation());
+        $fragmentReference->setDirectives($directives);
+
         $this->parseResult->addFragmentReference($fragmentReference);
 
         return $fragmentReference;
