@@ -770,7 +770,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
 
         $processor->processPayload('{ me { firstName, likes } }');
-        $this->assertEquals(['errors' => [['message' => 'query exceeded max allowed complexity of 10']]], $processor->getResponseData());
+        $this->assertEquals(['errors' => [['message' => 'Query exceeded max allowed complexity of 10']]], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
         // don't let complexity reducer affect query errors

@@ -1,13 +1,6 @@
 <?php
-/*
-* This file is a part of graphql-youshido project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 11/28/15 2:25 AM
-*/
 
 namespace Youshido\GraphQL\Validator\ConfigValidator;
-
 
 use Youshido\GraphQL\Config\AbstractConfig;
 use Youshido\GraphQL\Exception\ConfigurationException;
@@ -16,9 +9,11 @@ use Youshido\GraphQL\Validator\ConfigValidator\Rules\TypeValidationRule;
 use Youshido\GraphQL\Validator\ConfigValidator\Rules\ValidationRuleInterface;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
 
+/**
+ * Class ConfigValidator
+ */
 class ConfigValidator implements ConfigValidatorInterface
 {
-
     use ErrorContainerTrait;
 
     protected $rules = [];
@@ -41,7 +36,7 @@ class ConfigValidator implements ConfigValidatorInterface
      */
     public static function getInstance()
     {
-        if (empty(self::$instance)) {
+        if (null === self::$instance) {
             self::$instance = new self();
         }
 
@@ -115,7 +110,7 @@ class ConfigValidator implements ConfigValidatorInterface
 
         if (!$this->isExtraFieldsAllowed()) {
             foreach (array_keys($data) as $fieldName) {
-                if (!in_array($fieldName, $processedFields)) {
+                if (!in_array($fieldName, $processedFields, false)) {
                     $this->addError(new ValidationException(sprintf('Field "%s" is not expected', $fieldName)));
                 }
             }
@@ -159,5 +154,4 @@ class ConfigValidator implements ConfigValidatorInterface
 
         return $this;
     }
-
 }

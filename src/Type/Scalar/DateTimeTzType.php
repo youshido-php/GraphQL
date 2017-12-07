@@ -25,7 +25,7 @@ class DateTimeTzType extends AbstractScalarType
      */
     public function isValidValue($value)
     {
-        if ((is_object($value) && $value instanceof \DateTimeInterface) || is_null($value)) {
+        if (null === $value || (is_object($value) && $value instanceof \DateTimeInterface)) {
             return true;
         }
 

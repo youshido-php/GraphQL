@@ -11,5 +11,11 @@ namespace Youshido\GraphQL\Validator\ConfigValidator\Rules;
 
 interface ValidationRuleInterface
 {
+    /**
+     * @param mixed  $data
+     * @param string $ruleInfo
+     *
+     * @return bool
+     */
     public function validate($data, $ruleInfo);
 }
