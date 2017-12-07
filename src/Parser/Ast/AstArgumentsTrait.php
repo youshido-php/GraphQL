@@ -2,6 +2,8 @@
 
 namespace Youshido\GraphQL\Parser\Ast;
 
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal;
+
 /**
  * Trait AstArgumentsTrait
  */
@@ -63,7 +65,7 @@ trait AstArgumentsTrait
     {
         $argument = $this->getArgument($name);
 
-        return $argument ? $argument->getValue()->getValue() : null;
+        return $argument ? $argument->getValue() : null;
     }
 
     /**
@@ -99,7 +101,7 @@ trait AstArgumentsTrait
         $this->argumentsCache = [];
 
         foreach ($this->getArguments() as $argument) {
-            $this->argumentsCache[$argument->getName()] = $argument->getValue()->getValue();
+            $this->argumentsCache[$argument->getName()] = $argument->getValue() instanceof Literal ? $argument->getValue()->getValue() : $argument->getValue();
         }
 
         return $this->argumentsCache;

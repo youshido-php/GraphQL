@@ -29,9 +29,9 @@ class TypeDefinitionField extends AbstractField
         $collector = TypeCollector::getInstance();
         $collector->addSchema($info->getExecutionContext()->getSchema());
 
-        foreach ($collector->getTypes() as $name => $typeInfo) {
-            if ($name === $args['name']) {
-                return $typeInfo;
+        foreach ($collector->getTypes() as $type) {
+            if ($type->getName() === $args['name']) {
+                return $type;
             }
         }
 

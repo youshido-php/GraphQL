@@ -23,6 +23,7 @@ use Youshido\GraphQL\Parser\Ast\Interfaces\FieldInterface as AstFieldInterface;
 use Youshido\GraphQL\Parser\Ast\Interfaces\NamedFieldInterface;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query as AstQuery;
+use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
 use Youshido\GraphQL\Parser\Ast\TypedFragmentReference as AstTypedFragmentReference;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\AbstractType;
@@ -75,6 +76,10 @@ class RequestConformityValidator implements RequestValidatorInterface
         $targetType = $type->getNullableType();
 
         if ($checkSubField) {
+            if ($ast->getName() === '__typename') {
+                return;
+            }
+
             $this->assetTypeHasField($type, $ast);
 
             /** @var AbstractField $targetField */
@@ -103,7 +108,7 @@ class RequestConformityValidator implements RequestValidatorInterface
 
             case TypeMap::KIND_OBJECT:
                 /** @var $type AbstractObjectType */
-                if ((!$ast instanceof AstQuery && !$ast instanceof AstFragment) || !$ast->getFields()) {
+                if ((!$ast instanceof AstQuery && !$ast instanceof AstFragment && !$ast instanceof TypedFragmentReference) || !$ast->getFields()) {
                     throw new ResolveException(sprintf('You have to specify fields for "%s"', $ast->getName()), $ast->getLocation());
                 }
 
@@ -124,7 +129,7 @@ class RequestConformityValidator implements RequestValidatorInterface
                     throw new ResolveException(sprintf('You have to specify fields for "%s"', $ast->getName()), $ast->getLocation());
                 }
 
-                if (!$ast instanceof AstField && in_array($type->getKind(), [TypeMap::KIND_ENUM, TypeMap::KIND_SCALAR], false)) {
+                if ((!$ast instanceof AstField && $ast->getFields()) && in_array($type->getKind(), [TypeMap::KIND_ENUM, TypeMap::KIND_SCALAR], false)) {
                     throw new ResolveException('You can\'t specify fields for scalars or enums', $ast->getLocation());
                 }
 
@@ -136,38 +141,31 @@ class RequestConformityValidator implements RequestValidatorInterface
 
             case TypeMap::KIND_UNION:
             case TypeMap::KIND_INTERFACE:
-                if (!$ast instanceof AstQuery) {
+                if (!$ast instanceof AstQuery && !$ast instanceof TypedFragmentReference) {
                     throw new ResolveException(sprintf('You have to specify fields for "%s"', $ast->getName()), $ast->getLocation());
                 }
 
                 foreach ($ast->getFields() as $field) {
                     if ($field instanceof AstTypedFragmentReference || $field instanceof FragmentReference) {
-                        $fragment       = $field instanceof FragmentReference ? $this->request->getFragment($field->getName()) : $field;
-                        $isTypePossible = false;
-                        $subType        = null;
-                        $typeName       = $field instanceof FragmentReference ? $fragment->getModel() : $field->getTypeName();
+                        $fragment = $field instanceof FragmentReference ? $this->request->getFragment($field->getName()) : $field;
+                        $typeName = $field instanceof FragmentReference ? $fragment->getModel() : $field->getTypeName();
 
-
-                        /** @var AbstractUnionType|AbstractInterfaceType $targetType */
-                        if ($targetType->getKind() === TypeMap::KIND_UNION) {
-                            $possibleTypes = $targetType->getTypes();
-                        } else {
-                            $collector = TypeCollector::getInstance();
-                            $collector->addSchema($this->schema);
-                            $possibleTypes = $collector->getInterfacePossibleTypes($targetType->getName());
-                        }
-
-                        foreach ($possibleTypes as $possibleType) {
-                            if ($possibleType->getNullableType()->getName() === $typeName) {
-                                $isTypePossible = true;
-                                $subType        = $possibleType;
-
-                                break;
-                            }
-                        }
+                        list($isTypePossible, $subType) = $this->getSubTypeData($targetType, $typeName);
 
                         if ($isTypePossible) {
                             foreach ($fragment->getFields() as $subField) {
+                                if ($subField instanceof TypedFragmentReference) {
+                                    list($isTypePossible, $subType) = $this->getSubTypeData($targetType, $subField->getTypeName());
+
+                                    if (!$isTypePossible) {
+                                        throw new ResolveException(sprintf('Type "%s" not found in possible types of composite type "%s"', $typeName, $targetType->getName()), $field->getLocation());
+                                    }
+
+                                    $this->assertAstConformity($subType, $subField, false);
+
+                                    continue;
+                                }
+
                                 $this->assertAstConformity($subType, $subField);
                             }
 
@@ -193,6 +191,37 @@ class RequestConformityValidator implements RequestValidatorInterface
             default:
                 throw new ResolveException(sprintf('Resolving type with kind "%s" not supported', $kind));
         }
+    }
+
+    private function getSubTypeData($targetType, $typeName)
+    {
+        $isTypePossible = false;
+        $subType        = null;
+
+        /** @var AbstractUnionType|AbstractInterfaceType $targetType */
+        if ($targetType->getKind() === TypeMap::KIND_UNION) {
+            $possibleTypes = $targetType->getTypes();
+        } else {
+            $collector = TypeCollector::getInstance();
+            $collector->addSchema($this->schema);
+            $possibleTypes = $collector->getInterfacePossibleTypes($targetType->getName());
+        }
+
+        if ($targetType->getKind() === TypeMap::KIND_INTERFACE && $targetType->getName() === $typeName) {
+            $isTypePossible = true;
+            $subType        = $targetType;
+        } else {
+            foreach ($possibleTypes as $possibleType) {
+                if ($possibleType->getNullableType()->getName() === $typeName) {
+                    $isTypePossible = true;
+                    $subType        = $possibleType;
+
+                    break;
+                }
+            }
+        }
+
+        return [$isTypePossible, $subType];
     }
 
     private function prepareAstArguments(ArgumentsContainerInterface $field, AstArgumentsContainerInterface $query, Request $request)

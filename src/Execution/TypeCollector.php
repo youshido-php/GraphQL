@@ -57,7 +57,6 @@ class TypeCollector
             $this->addType($schema->getMutationType());
         }
 
-
         foreach ($schema->getTypes()->all() as $type) {
             $this->addType($type);
         }

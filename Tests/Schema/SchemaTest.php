@@ -10,6 +10,7 @@ namespace Youshido\Tests\Schema;
 
 
 use Youshido\GraphQL\Execution\Processor;
+use Youshido\GraphQL\Execution\TypeCollector;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\ObjectType;
@@ -97,6 +98,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
             ])
         ]);
         $schema->getTypes()->add($authorType);
+        TypeCollector::getInstance()->clear();
         $processor = new Processor($schema);
         $processor->processPayload('{ user { name } }');
         $this->assertEquals(['data' => ['user' => ['name' => 'Alex']]], $processor->getResponseData());
@@ -128,7 +130,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('{ user { name { invalidSelection } } }');
         $result = $processor->getResponseData();
 
-        $this->assertEquals(['data' => ['user' => null], 'errors' => [[
+        $this->assertEquals(['errors' => [[
             'message'   => 'You can\'t specify fields for scalar type "String"',
             'locations' => [
                 [

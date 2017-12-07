@@ -10,6 +10,7 @@ namespace Youshido\Tests\Schema;
 
 
 use Youshido\GraphQL\Execution\Processor;
+use Youshido\GraphQL\Execution\TypeCollector;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Type\Enum\EnumType;
 use Youshido\GraphQL\Type\InterfaceType\InterfaceType;
@@ -142,6 +143,7 @@ TEXT;
             }
         ]));
 
+        TypeCollector::getInstance()->clear();
         $processor = new Processor($schema);
 
         $processor->processPayload($query);
@@ -156,7 +158,6 @@ TEXT;
             [
                 '{ __type { name } }',
                 [
-                    'data'   => ['__type' => null],
                     'errors' => [['message' => 'Require "name" arguments to query "__type"']]
                 ]
             ],

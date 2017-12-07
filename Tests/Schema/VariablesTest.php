@@ -48,14 +48,15 @@ class VariablesTest extends \PHPUnit_Framework_TestCase
                 'ids' => [1, 12, null],
             ]
         );
-        $this->assertEquals(['data' => ['list' => null], 'errors' => [
-            [
-                'message'   => 'Not valid type for argument "ids" in query "list": Field must not be NULL',
-                'locations' => [
-                    ['line' => 1, 'column' => 35],
+        $this->assertEquals([
+            'errors' => [
+                [
+                    'message'   => 'Not valid type for argument "ids" in query "list": Field must not be NULL',
+                    'locations' => [
+                        ['line' => 1, 'column' => 35],
+                    ],
                 ],
-            ],
-        ]], $processor->getResponseData());
+            ]], $processor->getResponseData());
 
         $processor->getExecutionContext()->clearErrors();
         $processor->processPayload(
@@ -66,7 +67,6 @@ class VariablesTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertEquals(
             [
-                'data'   => ['list' => null],
                 'errors' => [
                     [
                         'message'   => 'Invalid variable "ids" type, allowed type is "ID"',

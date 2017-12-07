@@ -277,7 +277,6 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $processor->processPayload('mutation { increaseCounter(noArg: 2) }');
         $this->assertEquals([
-            'data'   => ['increaseCounter' => null],
             'errors' => [[
                 'message'   => 'Unknown argument "noArg" on field "increaseCounter"',
                 'locations' => [
@@ -299,7 +298,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                     'column' => 12
                 ]
             ]
-        ]], 'data'                    => ['increaseCounter' => null]], $processor->getResponseData());
+        ]]], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('mutation { increaseCounter(amount: 2) }');
@@ -323,7 +322,6 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $processor->processPayload('{ me { firstName(shorten: true), middle }}');
         $this->assertEquals([
-            'data'   => ['me' => null],
             'errors' => [[
                 'message'   => 'Field "middle" not found in type "User". Available fields are: "firstName", "id_alias", "lastName", "code"',
                 'locations' => [
@@ -338,7 +336,6 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $processor->processPayload('{ randomUser { region }}');
         $this->assertEquals([
-            'data'   => ['randomUser' => null],
             'errors' => [[
                 'message'   => 'You have to specify fields for "region"',
                 'locations' => [
@@ -396,7 +393,6 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('{ test }');
         $response = $processor->getResponseData();
         $this->assertEquals([
-            'data'   => ['test' => null],
             'errors' => [['message' => 'Require "argument1" arguments to query "test"']]
         ], $response);
         $processor->getExecutionContext()->clearErrors();
@@ -404,7 +400,6 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('{ alias: test() }');
         $response = $processor->getResponseData();
         $this->assertEquals([
-            'data'   => ['alias' => null],
             'errors' => [['message' => 'Require "argument1" arguments to query "test"']]
         ], $response);
         $processor->getExecutionContext()->clearErrors();
@@ -412,7 +407,6 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('{ alias: test(argument1: VALUE4) }');
         $response = $processor->getResponseData();
         $this->assertEquals([
-            'data'   => ['alias' => null],
             'errors' => [[
                 'message'   => 'Not valid type for argument "argument1" in query "test": Value must be one of the allowed ones: VALUE1 (val1), VALUE2 (val2)',
                 'locations' => [
@@ -615,13 +609,25 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             ])
         ]));
         $processor->processPayload('{ union(type: "object1") { ... on Object2 { id } } }');
-        $this->assertEquals(['data' => ['union' => []]], $processor->getResponseData());
-
-        $processor->processPayload('{ union(type: "object1") { ... on Object1 { name } } }');
+        $data = $processor->getResponseData();
         $this->assertEquals([
-            'data'   => [
-                'union' => null
-            ],
+            'errors' => [
+                [
+                    'message' => 'Field "id" not found in type "Object2". Available fields are: "name"',
+                    'locations' => [
+                        [
+                            'line' => 1,
+                            'column' => 45
+                        ]
+                    ]
+                ]
+            ]
+        ], $data);
+
+        $processor->getExecutionContext()->clearErrors();
+        $processor->processPayload('{ union(type: "object1") { ... on Object1 { name } } }');
+        $data = $processor->getResponseData();
+        $this->assertEquals([
             'errors' => [
                 [
                     'message'   => 'Field "name" not found in type "Object1". Available fields are: "id"',
@@ -633,7 +639,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                     ]
                 ]
             ]
-        ], $processor->getResponseData());
+        ], $data);
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('{ union(type: "object1") { ... on Object1 { id } } }');
