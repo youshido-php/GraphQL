@@ -13,6 +13,7 @@ use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Parser\Ast\AbstractAst;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputList as AstInputList;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputObject as AstInputObject;
+use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal as AstLiteral;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\VariableReference;
 use Youshido\GraphQL\Parser\Ast\Field as AstField;
@@ -323,6 +324,10 @@ class RequestConformityValidator implements RequestValidatorInterface
                     if (is_array($argumentValue)) {
                         return $argumentValue;
                     }
+
+                    if ($argumentValue instanceof Literal) {
+                        return $argumentValue->getValue();
+                    }
                 }
 
                 return $result;
@@ -370,7 +375,7 @@ class RequestConformityValidator implements RequestValidatorInterface
 
     /**
      * @param AbstractType|AbstractObjectType $objectType
-     * @param NamedFieldInterface             $ast
+     * @param NamedFieldInterface|AbstractAst $ast
      *
      * @throws ResolveException
      */
