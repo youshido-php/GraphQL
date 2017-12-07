@@ -75,7 +75,7 @@ abstract class AbstractObjectType extends AbstractType
     }
 
     /**
-     * @return $this
+     * @return AbstractType
      */
     public function getNamedType()
     {

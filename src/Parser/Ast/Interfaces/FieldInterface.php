@@ -5,13 +5,8 @@ namespace Youshido\GraphQL\Parser\Ast\Interfaces;
 /**
  * Interface FieldInterface
  */
-interface FieldInterface extends LocatableInterface, DirectivesContainerInterface, ArgumentsContainerInterface
+interface FieldInterface extends LocatableInterface, DirectivesContainerInterface, ArgumentsContainerInterface, NamedFieldInterface
 {
-    /**
-     * @return string
-     */
-    public function getName();
-
     /**
      * @return string
      */

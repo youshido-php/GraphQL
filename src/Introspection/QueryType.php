@@ -3,6 +3,7 @@
 namespace Youshido\GraphQL\Introspection;
 
 use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQL\Execution\TypeCollector;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Introspection\Traits\TypeCollectorTrait;
 use Youshido\GraphQL\Type\AbstractType;
@@ -21,8 +22,6 @@ use Youshido\GraphQL\Type\Union\AbstractUnionType;
  */
 class QueryType extends AbstractObjectType
 {
-    use TypeCollectorTrait;
-
     /**
      * @return String type name
      */
@@ -141,29 +140,10 @@ class QueryType extends AbstractObjectType
     public function resolvePossibleTypes($value, $args, ResolveInfo $info)
     {
         if ($value->getKind() === TypeMap::KIND_INTERFACE) {
-            $schema = $info->getExecutionContext()->getSchema();
-            $this->collectTypes($schema->getQueryType());
-            foreach ($schema->getTypes()->all() as $type) {
-                $this->collectTypes($type);
-            }
+            $collector = TypeCollector::getInstance();
+            $collector->addSchema($info->getExecutionContext()->getSchema());
 
-            $possibleTypes = [];
-            foreach ($this->types as $type) {
-                /** @var $type AbstractObjectType */
-                if ($type->getKind() === TypeMap::KIND_OBJECT) {
-                    $interfaces = $type->getConfig()->getInterfaces();
-
-                    if ($interfaces) {
-                        foreach ($interfaces as $interface) {
-                            if ($interface->getName() === $value->getName()) {
-                                $possibleTypes[] = $type;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return $possibleTypes;
+            return $collector->getInterfacePossibleTypes($value->getName());
         }
         if ($value->getKind() === TypeMap::KIND_UNION) {
             /** @var $value AbstractUnionType */

@@ -3,9 +3,9 @@
 namespace Youshido\GraphQL\Introspection\Field;
 
 use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQL\Execution\TypeCollector;
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Introspection\QueryType;
-use Youshido\GraphQL\Introspection\Traits\TypeCollectorTrait;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
@@ -15,8 +15,6 @@ use Youshido\GraphQL\Type\Object\AbstractObjectType;
  */
 class TypesField extends AbstractField
 {
-    use TypeCollectorTrait;
-
     /**
      * @return AbstractObjectType
      */
@@ -43,17 +41,9 @@ class TypesField extends AbstractField
     public function resolve($value, array $args, ResolveInfo $info)
     {
         /** @var $value AbstractSchema $a */
-        $this->types = [];
-        $this->collectTypes($value->getQueryType());
+        $collector = TypeCollector::getInstance();
+        $collector->addSchema($value);
 
-        if ($value->getMutationType()->hasFields()) {
-            $this->collectTypes($value->getMutationType());
-        }
-
-        foreach ($value->getTypes()->all() as $type) {
-            $this->collectTypes($type);
-        }
-
-        return array_values($this->types);
+        return $collector->getTypes();
     }
 }

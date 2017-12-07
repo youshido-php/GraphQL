@@ -19,6 +19,11 @@ use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Location;
 use Youshido\GraphQL\Parser\ParseResult;
 use Youshido\GraphQL\Validator\RequestValidator\RequestValidator;
+use Youshido\GraphQL\Validator\RequestValidator\Validator\FragmentsValidator;
+use Youshido\GraphQL\Validator\RequestValidator\Validator\RequestConformityValidator;
+use Youshido\GraphQL\Validator\RequestValidator\Validator\VariablesValidator;
+use Youshido\Tests\Schema\SchemaTest;
+use Youshido\Tests\StarWars\Schema\StarWarsSchema;
 
 class RequestValidatorTest extends \PHPUnit_Framework_TestCase
 {
@@ -50,7 +55,10 @@ class RequestValidatorTest extends \PHPUnit_Framework_TestCase
 
         $request = new Request($parserResult, isset($data['requestVariables']) ? $data['requestVariables'] : []);
 
-        (new RequestValidator())->validate($request);
+        (new RequestValidator([
+            new FragmentsValidator(),
+            new VariablesValidator(),
+        ]))->validate($request, new StarWarsSchema());
     }
 
     public function invalidRequestProvider()

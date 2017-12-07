@@ -2,13 +2,14 @@
 
 namespace Youshido\GraphQL\Parser\Ast;
 
+use Youshido\GraphQL\Parser\Ast\Interfaces\NamedFieldInterface;
 use Youshido\GraphQL\Parser\Ast\Interfaces\ValueInterface;
 use Youshido\GraphQL\Parser\Location;
 
 /**
  * Class Argument
  */
-class Argument extends AbstractAst
+class Argument extends AbstractAst implements NamedFieldInterface
 {
     /** @var string */
     private $name;

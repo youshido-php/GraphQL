@@ -4,10 +4,10 @@ namespace Youshido\GraphQL\Introspection\Field;
 
 use Youshido\GraphQL\Config\Field\FieldConfig;
 use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQL\Execution\TypeCollector;
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Introspection\QueryType;
-use Youshido\GraphQL\Introspection\Traits\TypeCollectorTrait;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\StringType;
@@ -17,8 +17,6 @@ use Youshido\GraphQL\Type\Scalar\StringType;
  */
 class TypeDefinitionField extends AbstractField
 {
-    use TypeCollectorTrait;
-
     /**
      * @param null        $value
      * @param array       $args
@@ -28,15 +26,10 @@ class TypeDefinitionField extends AbstractField
      */
     public function resolve($value = null, array $args, ResolveInfo $info)
     {
-        $schema = $info->getExecutionContext()->getSchema();
-        $this->collectTypes($schema->getQueryType());
-        $this->collectTypes($schema->getMutationType());
+        $collector = TypeCollector::getInstance();
+        $collector->addSchema($info->getExecutionContext()->getSchema());
 
-        foreach ($schema->getTypes()->all() as $type) {
-            $this->collectTypes($type);
-        }
-
-        foreach ($this->types as $name => $typeInfo) {
+        foreach ($collector->getTypes() as $name => $typeInfo) {
             if ($name === $args['name']) {
                 return $typeInfo;
             }
