@@ -11,6 +11,7 @@ namespace Youshido\Tests\Schema;
 
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
+use Youshido\GraphQL\Execution\TypeCollector;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\ObjectType;
@@ -97,6 +98,8 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
                 ]
             ])
         ]);
+        $schema->getTypes()->add($authorType);
+        TypeCollector::getInstance()->clear();
         $schema->getTypesList()->addType($authorType);
         $processor = new Processor(new ExecutionContext($schema));
         $processor->processPayload('{ user { name } }');
@@ -110,7 +113,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
                     }
                 }');
         $data = $processor->getResponseData();
-        $this->assertArraySubset([10 => ['name' => 'Author']], $data['data']['__schema']['types']);
+        $this->assertArraySubset([11 => ['name' => 'Author']], $data['data']['__schema']['types']);
 
         $processor->processPayload('{ user { name { } } }');
         $result = $processor->getResponseData();
@@ -129,7 +132,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('{ user { name { invalidSelection } } }');
         $result = $processor->getResponseData();
 
-        $this->assertEquals(['data' => ['user' => null], 'errors' => [[
+        $this->assertEquals(['errors' => [[
             'message'   => 'You can\'t specify fields for scalar type "String"',
             'locations' => [
                 [

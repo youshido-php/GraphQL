@@ -1,30 +1,39 @@
 <?php
-/**
- * Date: 17.12.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Config;
 
+use Youshido\GraphQL\Field\FieldInterface;
 
-use Youshido\GraphQL\Field\Field;
-
+/**
+ * Interface TypeConfigInterface
+ */
 interface TypeConfigInterface
 {
+    /**
+     * @param FieldInterface|string $field
+     * @param array                 $info
+     */
+    public function addField($field, $info = null);
 
     /**
-     * @param Field|string $field
-     * @param array        $fieldInfo
+     * @param string $name
+     *
+     * @return FieldInterface
      */
-    public function addField($field, $fieldInfo = null);
-
     public function getField($name);
 
+    /**
+     * @param string $name
+     */
     public function removeField($name);
 
+    /**
+     * @param string $name
+     */
     public function hasField($name);
 
+    /**
+     * @return FieldInterface[]
+     */
     public function getFields();
-
 }

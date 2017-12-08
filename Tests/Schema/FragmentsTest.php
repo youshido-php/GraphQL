@@ -6,6 +6,7 @@ use Youshido\GraphQL\Config\Object\InterfaceTypeConfig;
 use Youshido\GraphQL\Config\Object\ObjectTypeConfig;
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
+use Youshido\GraphQL\Execution\TypeCollector;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\InterfaceType\InterfaceType;
@@ -133,8 +134,11 @@ class FragmentsTest extends \PHPUnit_Framework_TestCase
                         },
                     ],
                 ]
-            ])
+            ]),
+            'types' => [new ClassReservation(), new ReservationInterface(), new CourtReservation()]
         ]);
+
+        TypeCollector::getInstance()->clear();
 
         $processor = new Processor(new ExecutionContext($schema));
         $processor->processPayload($query, $variables);

@@ -1,15 +1,7 @@
 <?php
-/*
-* This file is a part of graphql-youshido project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 11/28/15 6:07 PM
-*/
 
 namespace Youshido\GraphQL\Validator\ConfigValidator\Rules;
 
-
-use Youshido\GraphQL\Field\AbstractInputField;
 use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Field\InputFieldInterface;
 use Youshido\GraphQL\Type\AbstractType;
@@ -17,19 +9,35 @@ use Youshido\GraphQL\Type\TypeFactory;
 use Youshido\GraphQL\Type\TypeService;
 use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
 
+/**
+ * Class TypeValidationRule
+ */
 class TypeValidationRule implements ValidationRuleInterface
 {
-
+    /** @var ConfigValidator */
     private $configValidator;
 
+    /**
+     * TypeValidationRule constructor.
+     *
+     * @param ConfigValidator $validator
+     */
     public function __construct(ConfigValidator $validator)
     {
         $this->configValidator = $validator;
     }
 
+    /**
+     * @param $data
+     * @param $ruleInfo
+     *
+     * @return bool
+     */
     public function validate($data, $ruleInfo)
     {
-        if (!is_string($ruleInfo)) return false;
+        if (!is_string($ruleInfo)) {
+            return false;
+        }
 
         switch ($ruleInfo) {
             case TypeService::TYPE_ANY:
@@ -116,7 +124,9 @@ class TypeValidationRule implements ValidationRuleInterface
 
     private static function isArrayOfInterfaces($data)
     {
-        if (!is_array($data)) return false;
+        if (!is_array($data)) {
+            return false;
+        }
 
         foreach ($data as $item) {
             if (!TypeService::isInterface($item)) {
@@ -129,10 +139,14 @@ class TypeValidationRule implements ValidationRuleInterface
 
     private function isArrayOfFields($data)
     {
-        if (!is_array($data) || empty($data)) return false;
+        if (!is_array($data) || empty($data)) {
+            return false;
+        }
 
         foreach ($data as $name => $item) {
-            if (!$this->isField($item, $name)) return false;
+            if (!$this->isField($item, $name)) {
+                return false;
+            }
         }
 
         return true;
@@ -143,9 +157,9 @@ class TypeValidationRule implements ValidationRuleInterface
         if (is_object($data)) {
             if (($data instanceof FieldInterface) || ($data instanceof AbstractType)) {
                 return !$data->getConfig() || ($data->getConfig() && $this->configValidator->isValidConfig($data->getConfig()));
-            } else {
-                return false;
             }
+
+            return false;
         }
         if (!is_array($data)) {
             $data = [
@@ -155,6 +169,7 @@ class TypeValidationRule implements ValidationRuleInterface
         } elseif (empty($data['name'])) {
             $data['name'] = $name;
         }
+
         $this->configValidator->validate($data, $this->getFieldConfigRules());
 
         return $this->configValidator->isValid();
@@ -162,10 +177,14 @@ class TypeValidationRule implements ValidationRuleInterface
 
     private function isArrayOfInputFields($data)
     {
-        if (!is_array($data)) return false;
+        if (!is_array($data)) {
+            return false;
+        }
 
         foreach ($data as $name => $item) {
-            if (!$this->isInputField($item)) return false;
+            if (!$this->isInputField($item)) {
+                return false;
+            }
         }
 
         return true;
@@ -176,20 +195,21 @@ class TypeValidationRule implements ValidationRuleInterface
         if (is_object($data)) {
             if ($data instanceof InputFieldInterface) {
                 return true;
-            } else {
-                return TypeService::isInputType($data);
-            }
-        } else {
-            if (!isset($data['type'])) {
-                return false;
             }
 
-            return TypeService::isInputType($data['type']);
+            return TypeService::isInputType($data);
         }
+
+        if (!isset($data['type'])) {
+            return false;
+        }
+
+        return TypeService::isInputType($data['type']);
     }
 
     /**
      * Exists for the performance
+     *
      * @return array
      */
     private function getFieldConfigRules()
@@ -202,8 +222,7 @@ class TypeValidationRule implements ValidationRuleInterface
             'resolve'           => ['type' => TypeService::TYPE_CALLABLE],
             'isDeprecated'      => ['type' => TypeService::TYPE_BOOLEAN],
             'deprecationReason' => ['type' => TypeService::TYPE_STRING],
-            'cost'              => ['type' => TypeService::TYPE_ANY]
+            'cost'              => ['type' => TypeService::TYPE_ANY],
         ];
     }
-
 }

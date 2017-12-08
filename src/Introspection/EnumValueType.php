@@ -1,20 +1,19 @@
 <?php
-/**
- * Date: 03.12.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Introspection;
-
 
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 
+/**
+ * Class EnumValueType
+ */
 class EnumValueType extends AbstractObjectType
 {
-
+    /**
+     * @param \Youshido\GraphQL\Config\Object\ObjectTypeConfig $config
+     */
     public function build($config)
     {
         $config

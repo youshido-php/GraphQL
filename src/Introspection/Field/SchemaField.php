@@ -1,18 +1,15 @@
 <?php
-/**
- * Date: 16.05.16
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Introspection\Field;
-
 
 use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Introspection\SchemaType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 
+/**
+ * Class SchemaField
+ */
 class SchemaField extends AbstractField
 {
     /**
@@ -23,15 +20,23 @@ class SchemaField extends AbstractField
         return new SchemaType();
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return '__schema';
     }
 
+    /**
+     * @param mixed       $value
+     * @param array       $args
+     * @param ResolveInfoInterface $info
+     *
+     * @return \Youshido\GraphQL\Schema\AbstractSchema
+     */
     public function resolve($value, array $args, ResolveInfoInterface $info)
     {
         return $info->getExecutionContext()->getSchema();
     }
-
-
 }

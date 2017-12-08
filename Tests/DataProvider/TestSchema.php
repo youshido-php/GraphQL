@@ -12,9 +12,8 @@ namespace Youshido\Tests\DataProvider;
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
 use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
 use Youshido\GraphQL\Schema\AbstractSchema;
-use Youshido\GraphQL\Type\NonNullType;
+use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Scalar\IntType;
-use Youshido\GraphQL\Type\Scalar\StringType;
 
 class TestSchema extends AbstractSchema
 {
@@ -43,7 +42,8 @@ class TestSchema extends AbstractSchema
                     return $this->testStatusValue;
                 },
                 'args'    => [
-                    'newStatus' => new TestEnumType()
+                    'newStatus' => new TestEnumType(),
+                    'list' => new ListType(new IntType())
                 ]
             ]
         ]);

@@ -1,19 +1,18 @@
 <?php
-/**
- * Date: 23.11.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Parser\Ast\ArgumentValue;
 
+use Youshido\GraphQL\Exception\GraphQLException;
+use Youshido\GraphQL\Exception\LogicException;
 use Youshido\GraphQL\Parser\Ast\AbstractAst;
 use Youshido\GraphQL\Parser\Ast\Interfaces\ValueInterface;
 use Youshido\GraphQL\Parser\Location;
 
+/**
+ * Class Variable
+ */
 class Variable extends AbstractAst implements ValueInterface
 {
-
     /** @var  string */
     private $name;
 
@@ -24,26 +23,32 @@ class Variable extends AbstractAst implements ValueInterface
     private $type;
 
     /** @var bool */
-    private $nullable = false;
+    private $nullable;
 
     /** @var bool */
-    private $isArray = false;
+    private $isArray;
 
     /** @var bool */
     private $used = false;
 
     /** @var bool */
-    private $arrayElementNullable = true;
+    private $arrayElementNullable;
+
+    /** @var bool */
+    private $hasDefaultValue = false;
+
+    /** @var mixed */
+    private $defaultValue;
 
     /**
      * @param string   $name
      * @param string   $type
      * @param bool     $nullable
      * @param bool     $isArray
-     * @param Location $location
      * @param bool     $arrayElementNullable
+     * @param Location $location
      */
-    public function __construct($name, $type, $nullable, $isArray, Location $location, $arrayElementNullable = true)
+    public function __construct($name, $type, $nullable, $isArray, $arrayElementNullable = true, Location $location)
     {
         parent::__construct($location);
 
@@ -57,12 +62,16 @@ class Variable extends AbstractAst implements ValueInterface
     /**
      * @return mixed
      *
-     * @throws \LogicException
+     * @throws LogicException
      */
     public function getValue()
     {
         if (null === $this->value) {
-            throw new \LogicException('Value is not set for variable "' . $this->name . '"');
+            if ($this->hasDefaultValue()) {
+                return $this->defaultValue;
+            }
+
+            throw new LogicException(sprintf('Value is not set for variable "%s"', $this->name));
         }
 
         return $this->value;
@@ -138,6 +147,32 @@ class Variable extends AbstractAst implements ValueInterface
     public function setNullable($nullable)
     {
         $this->nullable = $nullable;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasDefaultValue()
+    {
+        return $this->hasDefaultValue;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultValue()
+    {
+        return $this->defaultValue;
+    }
+
+    /**
+     * @param mixed $defaultValue
+     */
+    public function setDefaultValue($defaultValue)
+    {
+        $this->hasDefaultValue = true;
+
+        $this->defaultValue = $defaultValue;
     }
 
     /**

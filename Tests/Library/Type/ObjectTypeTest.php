@@ -53,7 +53,7 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \InvalidArgumentException
+     * @expectedException Youshido\GraphQL\Exception\LogicException
      */
     public function testSerialize()
     {

@@ -1,19 +1,12 @@
 <?php
-/**
- * Date: 01.12.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Validator\ErrorContainer;
-
 
 use Youshido\GraphQL\Exception\Interfaces\DatableExceptionInterface;
 use Youshido\GraphQL\Exception\Interfaces\LocationableExceptionInterface;
 
 trait ErrorContainerTrait
 {
-
     /** @var \Exception[] */
     protected $errors = [];
 
@@ -83,5 +76,4 @@ trait ErrorContainerTrait
 
         return $this;
     }
-
 }

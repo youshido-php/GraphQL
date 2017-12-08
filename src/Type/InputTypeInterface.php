@@ -1,16 +1,12 @@
 <?php
-/*
-* This file is a part of GraphQL project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 9/29/16 10:41 PM
-*/
 
 namespace Youshido\GraphQL\Type;
 
-
 use Youshido\GraphQL\Config\AbstractConfig;
 
+/**
+ * Interface InputTypeInterface
+ */
 interface InputTypeInterface
 {
     /**
@@ -32,6 +28,7 @@ interface InputTypeInterface
      * Coercing value received as input to current type
      *
      * @param $value
+     *
      * @return mixed
      */
     public function parseValue($value);
@@ -40,6 +37,7 @@ interface InputTypeInterface
      * Coercing result to current type
      *
      * @param $value
+     *
      * @return mixed
      */
     public function serialize($value);

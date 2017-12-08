@@ -1,24 +1,25 @@
 <?php
-/*
-* This file is a part of graphql-youshido project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 12/1/15 11:07 PM
-*/
 
 namespace Youshido\GraphQL\Config\Traits;
 
-
 use Youshido\GraphQL\Field\InputField;
 
+/**
+ * Trait ArgumentsAwareConfigTrait
+ */
 trait ArgumentsAwareConfigTrait
 {
     protected $arguments = [];
     protected $_isArgumentsBuilt;
 
+    /**
+     * Build object arguments
+     */
     public function buildArguments()
     {
-        if ($this->_isArgumentsBuilt) return true;
+        if ($this->_isArgumentsBuilt) {
+            return;
+        }
 
         if (!empty($this->data['args'])) {
             $this->addArguments($this->data['args']);
@@ -26,36 +27,52 @@ trait ArgumentsAwareConfigTrait
         $this->_isArgumentsBuilt = true;
     }
 
-    public function addArguments($argsList)
+    /**
+     * @param array $arguments
+     *
+     * @return $this
+     */
+    public function addArguments($arguments)
     {
-        foreach ($argsList as $argumentName => $argumentInfo) {
+        foreach ((array) $arguments as $argumentName => $argumentInfo) {
             if ($argumentInfo instanceof InputField) {
                 $this->arguments[$argumentInfo->getName()] = $argumentInfo;
                 continue;
-            } else {
-                $this->addArgument($argumentName, $this->buildConfig($argumentName, $argumentInfo));
             }
+            $this->addArgument($argumentName, $this->buildConfig($argumentName, $argumentInfo));
         }
 
         return $this;
     }
 
-    public function addArgument($argument, $argumentInfo = null)
+    /**
+     * @param array|string      $argument
+     * @param null|array|string $info
+     *
+     * @return $this
+     */
+    public function addArgument($argument, $info = null)
     {
         if (!($argument instanceof InputField)) {
-            $argument = new InputField($this->buildConfig($argument, $argumentInfo));
+            $argument = new InputField($this->buildConfig($argument, $info));
         }
         $this->arguments[$argument->getName()] = $argument;
 
         return $this;
     }
 
+    /**
+     * @param array|string      $name
+     * @param null|array|string $info
+     *
+     * @return array
+     */
     protected function buildConfig($name, $info = null)
     {
         if (!is_array($info)) {
             return [
                 'type' => $info,
-                'name' => $name
+                'name' => $name,
             ];
         }
         if (empty($info['name'])) {
@@ -66,7 +83,7 @@ trait ArgumentsAwareConfigTrait
     }
 
     /**
-     * @param $name
+     * @param string $name
      *
      * @return InputField
      */
@@ -76,7 +93,7 @@ trait ArgumentsAwareConfigTrait
     }
 
     /**
-     * @param $name
+     * @param string $name
      *
      * @return bool
      */
@@ -85,6 +102,9 @@ trait ArgumentsAwareConfigTrait
         return array_key_exists($name, $this->arguments);
     }
 
+    /**
+     * @return bool
+     */
     public function hasArguments()
     {
         return !empty($this->arguments);
@@ -98,6 +118,11 @@ trait ArgumentsAwareConfigTrait
         return $this->arguments;
     }
 
+    /**
+     * @param string $name
+     *
+     * @return $this
+     */
     public function removeArgument($name)
     {
         if ($this->hasArgument($name)) {
@@ -106,5 +131,4 @@ trait ArgumentsAwareConfigTrait
 
         return $this;
     }
-
 }

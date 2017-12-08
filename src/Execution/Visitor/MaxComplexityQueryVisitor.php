@@ -1,22 +1,15 @@
 <?php
-/*
-* Concrete implementation of query visitor.
-*
-* Enforces maximum complexity on a query, computed from "cost" functions on
-* the fields touched by that query.
-*
-* @author Ben Roberts <bjr.roberts@gmail.com>
-* created: 7/11/16 11:05 AM
-*/
 
 namespace Youshido\GraphQL\Execution\Visitor;
 
-
 use Youshido\GraphQL\Config\Field\FieldConfig;
+use Youshido\GraphQL\Exception\GraphQLException;
 
+/**
+ * Class MaxComplexityQueryVisitor
+ */
 class MaxComplexityQueryVisitor extends AbstractQueryVisitor
 {
-
     /**
      * @var int max score allowed before throwing an exception (causing processing to stop)
      */
@@ -44,16 +37,16 @@ class MaxComplexityQueryVisitor extends AbstractQueryVisitor
      */
     public function visit(array $args, FieldConfig $fieldConfig, $childScore = 0)
     {
-        $cost = $fieldConfig->get('cost');
+        $cost = $fieldConfig->get('cost', null);
         if (is_callable($cost)) {
             $cost = $cost($args, $fieldConfig, $childScore);
         }
 
-        $cost = $cost ?: $this->defaultScore;
+        $cost       = null === $cost ? $this->defaultScore : $cost;
         $this->memo += $cost;
 
         if ($this->memo > $this->maxScore) {
-            throw new \Exception('query exceeded max allowed complexity of ' . $this->maxScore);
+            throw new GraphQLException(sprintf('Query exceeded max allowed complexity of %s', $this->maxScore));
         }
 
         return $cost;

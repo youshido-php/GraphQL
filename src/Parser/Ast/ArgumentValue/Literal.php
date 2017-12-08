@@ -1,24 +1,21 @@
 <?php
-/**
- * Date: 23.11.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Parser\Ast\ArgumentValue;
-
 
 use Youshido\GraphQL\Parser\Ast\AbstractAst;
 use Youshido\GraphQL\Parser\Ast\Interfaces\ValueInterface;
 use Youshido\GraphQL\Parser\Location;
 
+/**
+ * Class Literal
+ */
 class Literal extends AbstractAst implements ValueInterface
 {
-
+    /** @var mixed */
     private $value;
 
     /**
-     * @param mixed $value
+     * @param mixed    $value
      * @param Location $location
      */
     public function __construct($value, Location $location)
@@ -28,6 +25,9 @@ class Literal extends AbstractAst implements ValueInterface
         $this->value = $value;
     }
 
+    /**
+     * @return mixed
+     */
     public function getValue()
     {
         return $this->value;

@@ -12,14 +12,15 @@ namespace Youshido\Tests\Parser;
 use Youshido\GraphQL\Execution\Request;
 use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Location;
+use Youshido\GraphQL\Parser\ParseResult;
 
 class RequestTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testMethods()
     {
-        $fragment1     = new Fragment('fragmentName1', 'test', [], new Location(1,1));
-        $fragment2     = new Fragment('fragmentName2', 'test', [], new Location(1,1));
+        $fragment1     = new Fragment('fragmentName1', 'test', [], [], new Location(1,1));
+        $fragment2     = new Fragment('fragmentName2', 'test', [], [], new Location(1,1));
         $queriesData   = ['query1', 'query2'];
         $mutationsData = ['mutation1', 'mutation2'];
         $fragmentsData = [$fragment1];
@@ -27,11 +28,11 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             'page' => 2
         ];
 
-        $request = new Request([
-            'queries'   => $queriesData,
-            'mutations' => $mutationsData,
-            'fragments' => $fragmentsData,
-        ]);
+        $parsedResult = new ParseResult();
+        $parsedResult->setQueries($queriesData);
+        $parsedResult->setMutations($mutationsData);
+        $parsedResult->setFragments($fragmentsData);
+        $request = new Request($parsedResult);
         $request->setVariables($variables);
 
         $this->assertEquals($queriesData, $request->getQueries());
@@ -56,7 +57,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $variables = '{"foo": "bar"}';
         $expectedVariableArray = [ 'foo' => 'bar' ];
 
-        $request = new Request([], $variables);
+        $request = new Request(null, $variables);
         $this->assertEquals($expectedVariableArray, $request->getVariables());
 
         $request = new Request();

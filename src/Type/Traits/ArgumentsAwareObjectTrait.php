@@ -1,13 +1,6 @@
 <?php
-/*
- * This file is a part of GraphQL project.
- *
- * @author Alexandr Viniychuk <a@viniychuk.com>
- * created: 5:07 PM 5/14/16
- */
 
 namespace Youshido\GraphQL\Type\Traits;
-
 
 use Youshido\GraphQL\Config\Traits\ConfigAwareTrait;
 
@@ -22,9 +15,15 @@ trait ArgumentsAwareObjectTrait
 {
     use ConfigAwareTrait;
 
-    public function addArgument($argument, $argumentInfo = null)
+    /**
+     * @param      $argument
+     * @param null $info
+     *
+     * @return $this
+     */
+    public function addArgument($argument, $info = null)
     {
-        return $this->getConfig()->addArgument($argument, $argumentInfo);
+        return $this->getConfig()->addArgument($argument, $info);
     }
 
     public function removeArgument($argumentName)
@@ -51,5 +50,4 @@ trait ArgumentsAwareObjectTrait
     {
         return $this->getConfig()->hasArguments();
     }
-
 }

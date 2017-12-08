@@ -1,34 +1,40 @@
 <?php
-/*
-* This file is a part of GraphQL project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 5/10/16 11:32 PM
-*/
 
 namespace Youshido\GraphQL\Relay;
-
 
 use Youshido\GraphQL\Relay\Fetcher\FetcherInterface;
 use Youshido\GraphQL\Relay\Field\GlobalIdField;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 
+/**
+ * Class NodeInterfaceType
+ */
 class NodeInterfaceType extends AbstractInterfaceType
 {
-
-    /** @var  FetcherInterface */ //todo: maybe there are better solution
+    /** @var  FetcherInterface */
     protected $fetcher;
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return 'NodeInterface';
     }
 
+    /**
+     * @param \Youshido\GraphQL\Config\Object\InterfaceTypeConfig $config
+     */
     public function build($config)
     {
         $config->addField(new GlobalIdField('NodeInterface'));
     }
 
+    /**
+     * @param mixed $object
+     *
+     * @return mixed|null
+     */
     public function resolveType($object)
     {
         if ($this->fetcher) {

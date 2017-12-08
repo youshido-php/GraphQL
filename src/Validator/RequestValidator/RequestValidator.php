@@ -1,64 +1,52 @@
 <?php
-/**
- * Date: 10/24/16
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Validator\RequestValidator;
 
-
-use Youshido\GraphQL\Exception\Parser\InvalidRequestException;
 use Youshido\GraphQL\Execution\Request;
+use Youshido\GraphQL\Schema\AbstractSchema;
 
+/**
+ * Class RequestValidator
+ */
 class RequestValidator implements RequestValidatorInterface
 {
+    /** @var  RequestValidatorInterface[] */
+    private $validators = [];
 
-    public function validate(Request $request)
+    /**
+     * RequestValidator constructor.
+     *
+     * @param RequestValidatorInterface[] $validators
+     */
+    public function __construct(array $validators)
     {
-        $this->assertFragmentReferencesValid($request);
-        $this->assetFragmentsUsed($request);
-        $this->assertAllVariablesExists($request);
-        $this->assertAllVariablesUsed($request);
+        $this->validators = $validators;
     }
 
-    private function assetFragmentsUsed(Request $request)
+    /**
+     * @param Request        $request
+     * @param AbstractSchema $schema
+     */
+    public function validate(Request $request, AbstractSchema $schema)
     {
-        foreach ($request->getFragmentReferences() as $fragmentReference) {
-            $request->getFragment($fragmentReference->getName())->setUsed(true);
-        }
-
-        foreach ($request->getFragments() as $fragment) {
-            if (!$fragment->isUsed()) {
-                throw new InvalidRequestException(sprintf('Fragment "%s" not used', $fragment->getName()), $fragment->getLocation());
-            }
-        }
-    }
-
-    private function assertFragmentReferencesValid(Request $request)
-    {
-        foreach ($request->getFragmentReferences() as $fragmentReference) {
-            if (!$request->getFragment($fragmentReference->getName())) {
-                throw new InvalidRequestException(sprintf('Fragment "%s" not defined in query', $fragmentReference->getName()), $fragmentReference->getLocation());
-            }
+        foreach ($this->validators as $validator) {
+            $validator->validate($request, $schema);
         }
     }
 
-    private function assertAllVariablesExists(Request $request)
+    /**
+     * @return RequestValidatorInterface[]
+     */
+    public function getValidators()
     {
-        foreach ($request->getVariableReferences() as $variableReference) {
-            if (!$variableReference->getVariable()) {
-                throw new InvalidRequestException(sprintf('Variable "%s" not exists', $variableReference->getName()), $variableReference->getLocation());
-            }
-        }
+        return $this->validators;
     }
 
-    private function assertAllVariablesUsed(Request $request)
+    /**
+     * @param RequestValidatorInterface[] $validators
+     */
+    public function setValidators($validators)
     {
-        foreach ($request->getQueryVariables() as $queryVariable) {
-            if (!$queryVariable->isUsed()) {
-                throw new InvalidRequestException(sprintf('Variable "%s" not used', $queryVariable->getName()), $queryVariable->getLocation());
-            }
-        }
+        $this->validators = $validators;
     }
 }

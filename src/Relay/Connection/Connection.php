@@ -1,12 +1,6 @@
 <?php
-/**
- * Date: 10.05.16
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Relay\Connection;
-
 
 use Youshido\GraphQL\Relay\Type\PageInfoType;
 use Youshido\GraphQL\Type\AbstractType;
@@ -15,27 +9,38 @@ use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 
+/**
+ * Class Connection
+ */
 class Connection
 {
-
+    /**
+     * @return array
+     */
     public static function connectionArgs()
     {
         return array_merge(self::forwardArgs(), self::backwardArgs());
     }
 
+    /**
+     * @return array
+     */
     public static function forwardArgs()
     {
         return [
             'after' => ['type' => TypeMap::TYPE_STRING],
-            'first' => ['type' => TypeMap::TYPE_INT]
+            'first' => ['type' => TypeMap::TYPE_INT],
         ];
     }
 
+    /**
+     * @return array
+     */
     public static function backwardArgs()
     {
         return [
             'before' => ['type' => TypeMap::TYPE_STRING],
-            'last'   => ['type' => TypeMap::TYPE_INT]
+            'last'   => ['type' => TypeMap::TYPE_INT],
         ];
     }
 
@@ -43,6 +48,7 @@ class Connection
      * @param AbstractType $type
      * @param null|string  $name
      * @param array        $config
+     *
      * @option string  edgeFields
      *
      * @return ObjectType
@@ -63,9 +69,9 @@ class Connection
                 ],
                 'cursor' => [
                     'type'        => TypeMap::TYPE_STRING,
-                    'description' => 'A cursor for use in pagination'
-                ]
-            ], $edgeFields)
+                    'description' => 'A cursor for use in pagination',
+                ],
+            ], $edgeFields),
         ]);
 
         return $edgeType;
@@ -75,6 +81,7 @@ class Connection
      * @param AbstractType $type
      * @param null|string  $name
      * @param array        $config
+     *
      * @option string  connectionFields
      *
      * @return ObjectType
@@ -97,23 +104,38 @@ class Connection
                     'type'        => new ListType(self::edgeDefinition($type, $name, $config)),
                     'description' => 'A list of edges.',
                     'resolve'     => [__CLASS__, 'getEdges'],
-                ]
-            ], $connectionFields)
+                ],
+            ], $connectionFields),
         ]);
 
         return $connectionType;
     }
 
+    /**
+     * @param array $value
+     *
+     * @return null
+     */
     public static function getEdges($value)
     {
         return isset($value['edges']) ? $value['edges'] : null;
     }
 
+    /**
+     * @param array $value
+     *
+     * @return null
+     */
     public static function getPageInfo($value)
     {
         return isset($value['pageInfo']) ? $value['pageInfo'] : null;
     }
 
+    /**
+     * @param array $value
+     *
+     * @return null
+     */
     public static function getNode($value)
     {
         return isset($value['node']) ? $value['node'] : null;

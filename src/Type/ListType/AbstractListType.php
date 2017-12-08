@@ -1,18 +1,16 @@
 <?php
-/**
- * Date: 03.12.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Type\ListType;
 
-
 use Youshido\GraphQL\Config\Object\ListTypeConfig;
+use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\CompositeTypeInterface;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 
+/**
+ * Class AbstractListType
+ */
 abstract class AbstractListType extends AbstractObjectType implements CompositeTypeInterface
 {
     /**
@@ -20,32 +18,52 @@ abstract class AbstractListType extends AbstractObjectType implements CompositeT
      */
     protected $config;
 
+    /**
+     * AbstractListType constructor.
+     */
     public function __construct()
     {
         $this->config = new ListTypeConfig(['itemType' => $this->getItemType()], $this);
     }
 
     /**
-     * @return AbstractObjectType
+     * @return AbstractType
      */
     abstract public function getItemType();
 
+    /**
+     * @param mixed $value
+     *
+     * @return bool
+     */
     public function isValidValue($value)
     {
-        $isValid  = is_null($value) || is_array($value) || ($value instanceof \Traversable);
+        if (!$this->isIterable($value)) {
+            return false;
+        }
+
+        return $this->validList($value);
+    }
+
+    /**
+     * @param      $value
+     * @param bool $returnValue
+     *
+     * @return bool
+     */
+    protected function validList($value, $returnValue = false)
+    {
         $itemType = $this->config->get('itemType');
 
-        if ($isValid && $value && $itemType->isInputType()) {
+        if ($value && $itemType->isInputType()) {
             foreach ($value as $item) {
-                $isValid = $itemType->isValidValue($item);
-
-                if (!$isValid) {
-                    break;
+                if (!$itemType->isValidValue($item)) {
+                    return $returnValue ? $item : false;
                 }
             }
         }
 
-        return $isValid;
+        return true;
     }
 
     /**
@@ -55,33 +73,73 @@ abstract class AbstractListType extends AbstractObjectType implements CompositeT
     {
     }
 
+    /**
+     * @return bool
+     */
     public function isCompositeType()
     {
         return true;
     }
 
+    /**
+     * @return AbstractType
+     */
     public function getNamedType()
     {
         return $this->getItemType();
     }
 
+    /**
+     * @return string
+     */
     final public function getKind()
     {
         return TypeMap::KIND_LIST;
     }
 
+    /**
+     * @return AbstractType
+     */
     public function getTypeOf()
     {
         return $this->getNamedType();
     }
 
+    /**
+     * @param array $value
+     *
+     * @return mixed
+     */
     public function parseValue($value)
     {
-        foreach ($value as $keyValue => $valueItem) {
+        foreach ((array) $value as $keyValue => $valueItem) {
             $value[$keyValue] = $this->getItemType()->parseValue($valueItem);
         }
 
         return $value;
     }
 
+    /**
+     * @param mixed $value
+     *
+     * @return string
+     */
+    public function getValidationError($value = null)
+    {
+        if (!$this->isIterable($value)) {
+            return 'The value is not an iterable.';
+        }
+
+        return $this->config->get('itemType')->getValidationError($this->validList($value, true));
+    }
+
+    /**
+     * @param $value
+     *
+     * @return bool
+     */
+    protected function isIterable($value)
+    {
+        return null === $value || is_array($value) || ($value instanceof \Traversable);
+    }
 }

@@ -1,16 +1,12 @@
 <?php
-/**
- * Date: 10.05.16
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Relay;
 
-
+/**
+ * Class Node
+ */
 class Node
 {
-
     /**
      * @param $id
      *

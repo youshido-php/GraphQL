@@ -1,16 +1,12 @@
 <?php
-/**
- * Date: 27.11.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Validator\ErrorContainer;
 
-
+/**
+ * Interface ErrorContainerInterface
+ */
 interface ErrorContainerInterface
 {
-
     public function addError(\Exception $exception);
 
     public function mergeErrors(ErrorContainerInterface $errorContainer);
@@ -22,5 +18,4 @@ interface ErrorContainerInterface
     public function getErrorsArray();
 
     public function clearErrors();
-
 }

@@ -1,54 +1,54 @@
 <?php
-/**
- * Date: 03.12.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Introspection\Field;
 
 use Youshido\GraphQL\Config\Field\FieldConfig;
+use Youshido\GraphQL\Execution\TypeCollector;
 use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Introspection\QueryType;
-use Youshido\GraphQL\Introspection\Traits\TypeCollectorTrait;
+use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
+/**
+ * Class TypeDefinitionField
+ */
 class TypeDefinitionField extends AbstractField
 {
-
-    use TypeCollectorTrait;
-
+    /**
+     * @param null        $value
+     * @param array       $args
+     * @param ResolveInfoInterface $info
+     *
+     * @return null|AbstractType
+     */
     public function resolve($value = null, array $args, ResolveInfoInterface $info)
     {
-        $schema = $info->getExecutionContext()->getSchema();
-        $this->collectTypes($schema->getQueryType());
-        $this->collectTypes($schema->getMutationType());
+        $collector = TypeCollector::getInstance();
+        $collector->addSchema($info->getExecutionContext()->getSchema());
 
-        foreach ($schema->getTypesList()->getTypes() as $type) {
-            $this->collectTypes($type);
-        }
-
-        foreach ($this->types as $name => $info) {
-            if ($name == $args['name']) {
-                return $info;
+        foreach ($collector->getTypes() as $type) {
+            if ($type->getName() === $args['name']) {
+                return $type;
             }
         }
 
         return null;
     }
 
+    /**
+     * @param FieldConfig $config
+     */
     public function build(FieldConfig $config)
     {
         $config->addArgument(new InputField([
             'name' => 'name',
-            'type' => new NonNullType(new StringType())
+            'type' => new NonNullType(new StringType()),
         ]));
     }
-
 
     /**
      * @return String type name

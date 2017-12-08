@@ -1,13 +1,9 @@
 <?php
-/**
- * Date: 17.05.16
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Relay;
 
-
+use Youshido\GraphQL\Exception\GraphQLException;
+use Youshido\GraphQL\Exception\LogicException;
 use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\InputField;
@@ -17,9 +13,11 @@ use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
+/**
+ * Class RelayMutation
+ */
 class RelayMutation
 {
-
     /**
      * @param string                   $name
      * @param array                    $args
@@ -28,12 +26,12 @@ class RelayMutation
      *
      * @return Field
      *
-     * @throws \Exception
+     * @throws GraphQLException
      */
     public static function buildMutation($name, array $args, $output, callable $resolveFunction)
     {
         if (!is_array($output) || (is_object($output) && !($output instanceof AbstractObjectType))) {
-            throw new \Exception('Output can be instance of AbstractObjectType or array of fields');
+            throw new LogicException('Output can be instance of AbstractObjectType or array of fields');
         }
 
         return new Field([
@@ -46,16 +44,16 @@ class RelayMutation
                         'fields' => array_merge(
                             $args,
                             [new InputField(['name' => 'clientMutationId', 'type' => new NonNullType(new StringType())])]
-                        )
-                    ]))
-                ])
+                        ),
+                    ])),
+                ]),
             ],
             'type'    => new ObjectType([
                 'fields' => is_object($output) ? $output : array_merge(
                     $output,
                     [new Field(['name' => 'clientMutationId', 'type' => new NonNullType(new StringType())])]
                 ),
-                'name'   => ucfirst($name) . 'Payload'
+                'name'   => ucfirst($name) . 'Payload',
             ]),
             'resolve' => function ($value, $args, ResolveInfoInterface $info) use ($resolveFunction) {
                 $resolveValue = $resolveFunction($value, $args['input'], $args, $info);
@@ -67,8 +65,7 @@ class RelayMutation
                 }
 
                 return $resolveValue;
-            }
+            },
         ]);
     }
-
 }

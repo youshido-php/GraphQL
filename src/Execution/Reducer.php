@@ -1,12 +1,6 @@
 <?php
-/**
- * Date: 07.11.16
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Execution;
-
 
 use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Execution\Visitor\AbstractQueryVisitor;
@@ -21,9 +15,11 @@ use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Union\AbstractUnionType;
 
+/**
+ * Class Reducer
+ */
 class Reducer
 {
-
     /** @var  ExecutionContextInterface */
     private $executionContext;
 
@@ -74,9 +70,9 @@ class Reducer
                      * @var Query|FieldAst $queryField
                      * @var Field          $astField
                      */
-                    $cost = $reducer->visit($queryField->getKeyValueArguments(), $astField->getConfig(), $childCost);
+                    $cost      = $reducer->visit($queryField->getKeyValueArguments(), $astField->getConfig(), $childCost);
                     $queryCost += $cost;
-                    $results = $coroutine->send($cost);
+                    $results   = $coroutine->send($cost);
                 }
             }
         }
@@ -113,9 +109,9 @@ class Reducer
                     $gen  = $this->walkQuery($queryField, $currentLevelAST);
                     $next = $gen->current();
                     while ($next) {
-                        $received = (yield $next);
-                        $childrenScore += (int)$received;
-                        $next = $gen->send($received);
+                        $received      = (yield $next);
+                        $childrenScore += (int) $received;
+                        $next          = $gen->send($received);
                     }
                 } else {
                     $fieldType = $currentLevelAST->getType()->getNamedType();
@@ -125,9 +121,9 @@ class Reducer
                                 $gen  = $this->walkQuery($queryField, $fieldAst);
                                 $next = $gen->current();
                                 while ($next) {
-                                    $received = (yield $next);
-                                    $childrenScore += (int)$received;
-                                    $next = $gen->send($received);
+                                    $received      = (yield $next);
+                                    $childrenScore += (int) $received;
+                                    $next          = $gen->send($received);
                                 }
                             }
                         }
@@ -135,9 +131,9 @@ class Reducer
                         $gen  = $this->walkQuery($queryField, $fieldAst);
                         $next = $gen->current();
                         while ($next) {
-                            $received = (yield $next);
-                            $childrenScore += (int)$received;
-                            $next = $gen->send($received);
+                            $received      = (yield $next);
+                            $childrenScore += (int) $received;
+                            $next          = $gen->send($received);
                         }
                     }
                 }

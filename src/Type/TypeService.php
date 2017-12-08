@@ -1,14 +1,8 @@
 <?php
-/*
-* This file is a part of GraphQL project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 5/11/16 10:19 PM
-*/
 
 namespace Youshido\GraphQL\Type;
 
-
+use Youshido\GraphQL\Exception\RuntimeException;
 use Youshido\GraphQL\Type\Enum\AbstractEnumType;
 use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
 use Youshido\GraphQL\Type\ListType\AbstractListType;
@@ -16,9 +10,11 @@ use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
+/**
+ * Class TypeService
+ */
 class TypeService
 {
-
     const TYPE_CALLABLE               = 'callable';
     const TYPE_GRAPHQL_TYPE           = 'graphql_type';
     const TYPE_OBJECT_TYPE            = 'object_type';
@@ -36,23 +32,30 @@ class TypeService
     const TYPE_ANY_OBJECT             = 'any_object';
     const TYPE_ANY_INPUT              = 'any_input';
 
+    /**
+     * @param mixed $object
+     *
+     * @return null|AbstractType|StringType
+     * @throws RuntimeException
+     */
     public static function resolveNamedType($object)
     {
         if (is_object($object)) {
             if ($object instanceof AbstractType) {
                 return $object->getType();
             }
-        } elseif (is_null($object)) {
+        } elseif (null === $object) {
             return null;
         } elseif (is_scalar($object)) {
             return new StringType();
         }
 
-        throw new \Exception('Invalid type');
+        throw new RuntimeException('Invalid type');
     }
 
     /**
      * @param AbstractType|mixed $type
+     *
      * @return bool
      */
     public static function isInterface($type)
@@ -61,11 +64,12 @@ class TypeService
             return false;
         }
 
-        return $type->getKind() == TypeMap::KIND_INTERFACE;
+        return $type->getKind() === TypeMap::KIND_INTERFACE;
     }
 
     /**
      * @param AbstractType|mixed $type
+     *
      * @return bool
      */
     public static function isAbstractType($type)
@@ -74,28 +78,48 @@ class TypeService
             return false;
         }
 
-        return in_array($type->getKind(), [TypeMap::KIND_INTERFACE, TypeMap::KIND_UNION]);
+        return in_array($type->getKind(), [TypeMap::KIND_INTERFACE, TypeMap::KIND_UNION], false);
     }
 
+    /**
+     * @param mixed $type
+     *
+     * @return bool
+     */
     public static function isScalarType($type)
     {
         if (is_object($type)) {
             return $type instanceof AbstractScalarType || $type instanceof AbstractEnumType;
         }
 
-        return in_array(strtolower($type), TypeFactory::getScalarTypesNames());
+        return in_array(strtolower($type), TypeFactory::getScalarTypesNames(), false);
     }
 
+    /**
+     * @param mixed $type
+     *
+     * @return bool
+     */
     public static function isGraphQLType($type)
     {
         return $type instanceof AbstractType || TypeService::isScalarType($type);
     }
 
+    /**
+     * @param mixed $type
+     *
+     * @return bool
+     */
     public static function isLeafType($type)
     {
         return $type instanceof AbstractEnumType || TypeService::isScalarType($type);
     }
 
+    /**
+     * @param mixed $type
+     *
+     * @return bool
+     */
     public static function isObjectType($type)
     {
         return $type instanceof AbstractObjectType;
@@ -103,6 +127,7 @@ class TypeService
 
     /**
      * @param mixed|AbstractType $type
+     *
      * @return bool
      */
     public static function isInputType($type)
@@ -111,29 +136,52 @@ class TypeService
             $namedType = $type->getNullableType()->getNamedType();
 
             return ($namedType instanceof AbstractScalarType)
-                   || ($type instanceof AbstractListType)
-                   || ($namedType instanceof AbstractInputObjectType)
-                   || ($namedType instanceof AbstractEnumType);
-        } else {
-            return TypeService::isScalarType($type);
+                || ($type instanceof AbstractListType)
+                || ($namedType instanceof AbstractInputObjectType)
+                || ($namedType instanceof AbstractEnumType);
         }
+
+        return TypeService::isScalarType($type);
     }
 
+    /**
+     * @param mixed $type
+     *
+     * @return bool
+     */
     public static function isInputObjectType($type)
     {
         return $type instanceof AbstractInputObjectType;
     }
 
+    /**
+     * @param mixed  $data
+     * @param string $path
+     *
+     * @return mixed|null
+     */
     public static function getPropertyValue($data, $path)
     {
         if (is_object($data)) {
             $getter = $path;
-            if (substr($path, 0, 2) != 'is') {
+            if (0 !== strpos($path, 'is')) {
                 $getter = 'get' . self::classify($path);
+                if (!is_callable([$data, $getter])) {
+                    $getter = 'is' . self::classify($path);
+                }
+                if (!is_callable([$data, $getter])) {
+                    $getter = self::classify($path);
+                }
             }
 
-            return is_callable([$data, $getter]) ? $data->$getter() : (isset($data->$path) ? $data->$path : null);
-        } elseif (is_array($data)) {
+            if (is_callable([$data, $getter])) {
+                return $data->$getter();
+            }
+
+            return isset($data->$path) ? $data->$path : null;
+        }
+
+        if (is_array($data)) {
             return array_key_exists($path, $data) ? $data[$path] : null;
         }
 

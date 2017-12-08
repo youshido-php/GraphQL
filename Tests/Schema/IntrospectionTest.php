@@ -11,6 +11,7 @@ namespace Youshido\Tests\Schema;
 
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
+use Youshido\GraphQL\Execution\TypeCollector;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Type\Enum\EnumType;
 use Youshido\GraphQL\Type\InterfaceType\InterfaceType;
@@ -34,12 +35,10 @@ query IntrospectionQuery {
                     directives {
                         name
                         description
+                        locations
                         args {
                             ...InputValue
                         }
-                        onOperation
-                        onFragment
-                        onField
                     }
                 }
             }
@@ -145,6 +144,7 @@ TEXT;
             }
         ]));
 
+        TypeCollector::getInstance()->clear();
         $processor = new Processor(new ExecutionContext($schema));
 
         $processor->processPayload($query);
@@ -159,7 +159,6 @@ TEXT;
             [
                 '{ __type { name } }',
                 [
-                    'data'   => ['__type' => null],
                     'errors' => [['message' => 'Require "name" arguments to query "__type"']]
                 ]
             ],
@@ -203,11 +202,12 @@ TEXT;
                                 ['name' => 'String', 'fields' => null],
                                 ['name' => '__Schema', 'fields' => [['name' => 'queryType', 'args' => []], ['name' => 'mutationType', 'args' => []], ['name' => 'subscriptionType', 'args' => []], ['name' => 'types', 'args' => []], ['name' => 'directives', 'args' => []]]],
                                 ['name' => '__Type', 'fields' => [['name' => 'name', 'args' => []], ['name' => 'kind', 'args' => []], ['name' => 'description', 'args' => []], ['name' => 'ofType', 'args' => []], ['name' => 'inputFields', 'args' => []], ['name' => 'enumValues', 'args' => [['defaultValue' => 'false']]], ['name' => 'fields', 'args' => [['defaultValue' => 'false']]], ['name' => 'interfaces', 'args' => []], ['name' => 'possibleTypes', 'args' => []]]],
-                                ['name' => '__InputValue', 'fields' => [['name' => 'name', 'args' => []], ['name' => 'description', 'args' => []], ['name' => 'type', 'args' => []], ['name' => 'defaultValue', 'args' => []],]],
+                                ['name' => '__InputValue', 'fields' => [['name' => 'name', 'args' => []], ['name' => 'description', 'args' => []], ['name' => 'isDeprecated', 'args' => []], ['name' => 'deprecationReason', 'args' => []], ['name' => 'type', 'args' => []], ['name' => 'defaultValue', 'args' => []],]],
                                 ['name' => 'Boolean', 'fields' => null],
                                 ['name' => '__EnumValue', 'fields' => [['name' => 'name', 'args' => []], ['name' => 'description', 'args' => []], ['name' => 'deprecationReason', 'args' => []], ['name' => 'isDeprecated', 'args' => []],]],
                                 ['name' => '__Field', 'fields' => [['name' => 'name', 'args' => []], ['name' => 'description', 'args' => []], ['name' => 'isDeprecated', 'args' => []], ['name' => 'deprecationReason', 'args' => []], ['name' => 'type', 'args' => []], ['name' => 'args', 'args' => []]]],
-                                ['name' => '__Directive', 'fields' => [['name' => 'name', 'args' => []], ['name' => 'description', 'args' => []], ['name' => 'args', 'args' => []], ['name' => 'onOperation', 'args' => []], ['name' => 'onFragment', 'args' => []], ['name' => 'onField', 'args' => []]]],
+                                ['name' => '__Directive', 'fields' => [['name' => 'name', 'args' => []], ['name' => 'description', 'args' => []], ['name' => 'args', 'args' => []], ['name' => 'locations', 'args' => []]]],
+                                ['name' => '__DirectiveLocation', 'fields' => null],
                             ]
                         ]
                     ]

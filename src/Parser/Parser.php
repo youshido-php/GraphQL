@@ -1,13 +1,6 @@
 <?php
-/*
-* This file is a part of graphql-youshido project.
-*
-* @author Portey Vasil <portey@gmail.com>
-* created: 11/23/15 1:22 AM
-*/
 
 namespace Youshido\GraphQL\Parser;
-
 
 use Youshido\GraphQL\Exception\Parser\SyntaxErrorException;
 use Youshido\GraphQL\Parser\Ast\Argument;
@@ -16,6 +9,7 @@ use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputObject;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Literal;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\VariableReference;
+use Youshido\GraphQL\Parser\Ast\Directive;
 use Youshido\GraphQL\Parser\Ast\Field;
 use Youshido\GraphQL\Parser\Ast\Fragment;
 use Youshido\GraphQL\Parser\Ast\FragmentReference;
@@ -23,89 +17,105 @@ use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
 
-class Parser extends Tokenizer
+/**
+ * Class Parser
+ */
+class Parser
 {
+    /** @var  Tokenizer */
+    private $tokenizer;
 
-    /** @var array */
-    private $data = [];
+    /** @var  ParseResult */
+    private $parseResult;
 
-    public function parse($source = null)
+    /**
+     * @param string $source
+     *
+     * @return ParseResult
+     * @throws SyntaxErrorException
+     */
+    public function parse($source = '')
     {
-        $this->init($source);
+        $this->tokenizer   = new Tokenizer($source);
+        $this->parseResult = new ParseResult();
 
-        while (!$this->end()) {
-            $tokenType = $this->peek()->getType();
-
-            switch ($tokenType) {
+        while (!$this->tokenizer->end()) {
+            switch ($this->tokenizer->peek()->getType()) {
                 case Token::TYPE_LBRACE:
-                case Token::TYPE_QUERY:
                     foreach ($this->parseBody() as $query) {
-                        $this->data['queries'][] = $query;
+                        $this->parseResult->addQuery($query);
                     }
 
                     break;
+                case Token::TYPE_QUERY:
+                    $queries = $this->parseOperation(Token::TYPE_QUERY);
+                    foreach ($queries as $query) {
+                        $this->parseResult->addQuery($query);
+                    }
 
+                    break;
                 case Token::TYPE_MUTATION:
-                    foreach ($this->parseBody(Token::TYPE_MUTATION) as $query) {
-                        $this->data['mutations'][] = $query;
+                    $mutations = $this->parseOperation(Token::TYPE_MUTATION);
+                    foreach ($mutations as $mutation) {
+                        $this->parseResult->addMutation($mutation);
                     }
 
                     break;
 
                 case Token::TYPE_FRAGMENT:
-                    $this->data['fragments'][] = $this->parseFragment();
+                    $this->parseResult->addFragment($this->parseFragment());
 
                     break;
 
                 default:
-                    throw new SyntaxErrorException('Incorrect request syntax', $this->getLocation());
+                    throw $this->tokenizer->createException('Incorrect request syntax');
             }
         }
 
-        return $this->data;
+        return $this->parseResult;
     }
 
-    private function init($source = null)
+    private function parseOperation($type = Token::TYPE_QUERY)
     {
-        $this->initTokenizer($source);
+        if ($this->tokenizer->eatMulti([Token::TYPE_QUERY, Token::TYPE_MUTATION])) {
+            $this->tokenizer->eat(Token::TYPE_IDENTIFIER);
 
-        $this->data = [
-            'queries'            => [],
-            'mutations'          => [],
-            'fragments'          => [],
-            'fragmentReferences' => [],
-            'variables'          => [],
-            'variableReferences' => []
-        ];
-    }
-
-    protected function parseBody($token = Token::TYPE_QUERY, $highLevel = true)
-    {
-        $fields = [];
-        $first  = true;
-
-        if ($highLevel && $this->peek()->getType() === $token) {
-            $this->lex();
-            $this->eat(Token::TYPE_IDENTIFIER);
-
-            if ($this->match(Token::TYPE_LPAREN)) {
+            if ($this->tokenizer->match(Token::TYPE_LPAREN)) {
                 $this->parseVariables();
             }
+
+            if ($this->tokenizer->match(Token::TYPE_AT)) {
+                $this->parseResult->setDirectives($this->parseDirectiveList());
+            }
         }
 
-        $this->lex();
+        $this->tokenizer->lex();
 
-        while (!$this->match(Token::TYPE_RBRACE) && !$this->end()) {
-            if ($first) {
-                $first = false;
-            } else {
-                $this->eatMulti([Token::TYPE_COMMA]);
-            }
+        $fields = [];
+        while (!$this->tokenizer->match(Token::TYPE_RBRACE) && !$this->tokenizer->end()) {
+            $this->tokenizer->eatMulti([Token::TYPE_COMMA]);
 
-            if ($this->match(Token::TYPE_FRAGMENT_REFERENCE)) {
-                $this->lex();
+            $fields[] = $this->parseBodyItem($type, true);
+        }
 
-                if ($this->eat(Token::TYPE_ON)) {
+        $this->tokenizer->expect(Token::TYPE_RBRACE);
+
+        return $fields;
+    }
+
+    private function parseBody($token = Token::TYPE_QUERY, $highLevel = true)
+    {
+        $fields = [];
+
+        $this->tokenizer->lex();
+
+        while (!$this->tokenizer->match(Token::TYPE_RBRACE) && !$this->tokenizer->end()) {
+            $this->tokenizer->eatMulti([Token::TYPE_COMMA]);
+
+            if ($this->tokenizer->match(Token::TYPE_FRAGMENT_REFERENCE)) {
+                $this->tokenizer->lex();
+
+                if ($this->tokenizer->eat(Token::TYPE_ON)) {
                     $fields[] = $this->parseBodyItem(Token::TYPE_TYPED_FRAGMENT, $highLevel);
                 } else {
                     $fields[] = $this->parseFragmentReference();
@@ -115,121 +125,107 @@ class Parser extends Tokenizer
             }
         }
 
-        $this->expect(Token::TYPE_RBRACE);
+        $this->tokenizer->expect(Token::TYPE_RBRACE);
 
         return $fields;
     }
 
-    protected function parseVariables()
+    private function parseVariables()
     {
-        $first = true;
-        $this->eat(Token::TYPE_LPAREN);
+        $this->tokenizer->eat(Token::TYPE_LPAREN);
 
-        while (!$this->match(Token::TYPE_RPAREN) && !$this->end()) {
-            if ($first) {
-                $first = false;
-            } else {
-                $this->expect(Token::TYPE_COMMA);
-            }
+        while (!$this->tokenizer->match(Token::TYPE_RPAREN) && !$this->tokenizer->end()) {
+            $this->tokenizer->eat(Token::TYPE_COMMA);
 
-            $variableToken = $this->eat(Token::TYPE_VARIABLE);
+            $variableToken = $this->tokenizer->eat(Token::TYPE_VARIABLE);
             $nameToken     = $this->eatIdentifierToken();
-            $this->eat(Token::TYPE_COLON);
+            $this->tokenizer->eat(Token::TYPE_COLON);
 
             $isArray              = false;
             $arrayElementNullable = true;
 
-            if ($this->match(Token::TYPE_LSQUARE_BRACE)) {
+            if ($this->tokenizer->match(Token::TYPE_LSQUARE_BRACE)) {
                 $isArray = true;
 
-                $this->eat(Token::TYPE_LSQUARE_BRACE);
+                $this->tokenizer->eat(Token::TYPE_LSQUARE_BRACE);
                 $type = $this->eatIdentifierToken()->getData();
 
-                if ($this->match(Token::TYPE_REQUIRED)) {
+                if ($this->tokenizer->match(Token::TYPE_REQUIRED)) {
                     $arrayElementNullable = false;
-                    $this->eat(Token::TYPE_REQUIRED);
+                    $this->tokenizer->eat(Token::TYPE_REQUIRED);
                 }
 
-                $this->eat(Token::TYPE_RSQUARE_BRACE);
+                $this->tokenizer->eat(Token::TYPE_RSQUARE_BRACE);
             } else {
                 $type = $this->eatIdentifierToken()->getData();
             }
 
             $required = false;
-            if ($this->match(Token::TYPE_REQUIRED)) {
+            if ($this->tokenizer->match(Token::TYPE_REQUIRED)) {
                 $required = true;
-                $this->eat(Token::TYPE_REQUIRED);
+                $this->tokenizer->eat(Token::TYPE_REQUIRED);
             }
 
-            $this->data['variables'][] = new Variable(
+            $variable = new Variable(
                 $nameToken->getData(),
                 $type,
                 $required,
                 $isArray,
-                new Location($variableToken->getLine(), $variableToken->getColumn()),
-                $arrayElementNullable
+                $arrayElementNullable,
+                $variableToken->getLocation()
             );
+
+            if ($this->tokenizer->match(Token::TYPE_EQUAL)) {
+                $this->tokenizer->eat(Token::TYPE_EQUAL);
+                $variable->setDefaultValue($this->parseValue());
+            }
+
+            $this->parseResult->addVariable($variable);
         }
 
-        $this->expect(Token::TYPE_RPAREN);
+        $this->tokenizer->expect(Token::TYPE_RPAREN);
     }
 
-    protected function expectMulti($types)
+    private function parseVariableReference()
     {
-        if ($this->matchMulti($types)) {
-            return $this->lex();
-        }
+        $startToken = $this->tokenizer->expectMulti([Token::TYPE_VARIABLE]);
 
-        throw $this->createUnexpectedException($this->peek());
-    }
+        if ($this->tokenizer->matchMulti([Token::TYPE_NUMBER, Token::TYPE_IDENTIFIER, Token::TYPE_QUERY])) {
+            $name = $this->tokenizer->lex()->getData();
 
-    protected function parseVariableReference()
-    {
-        $startToken = $this->expectMulti([Token::TYPE_VARIABLE]);
-
-        if ($this->match(Token::TYPE_NUMBER) || $this->match(Token::TYPE_IDENTIFIER) || $this->match(Token::TYPE_QUERY)) {
-            $name = $this->lex()->getData();
-
-            $variable = $this->findVariable($name);
-            if ($variable) {
+            if ($variable = $this->parseResult->getVariable($name)) {
                 $variable->setUsed(true);
             }
 
-            $variableReference = new VariableReference($name, $variable, new Location($startToken->getLine(), $startToken->getColumn()));
-
-            $this->data['variableReferences'][] = $variableReference;
+            $variableReference = new VariableReference($name, $variable, $startToken->getLocation());
+            $this->parseResult->addVariableReference($variableReference);
 
             return $variableReference;
         }
 
-        throw $this->createUnexpectedException($this->peek());
+        throw $this->tokenizer->createUnexpectedTokenTypeException($this->tokenizer->peek()->getType());
     }
 
-    protected function findVariable($name)
+    private function parseFragmentReference()
     {
-        foreach ($this->data['variables'] as $variable) {
-            /** @var $variable Variable */
-            if ($variable->getName() == $name) {
-                return $variable;
-            }
+        $nameToken = $this->eatIdentifierToken();
+
+        $directives = [];
+        if ($this->tokenizer->match(Token::TYPE_AT)) {
+            $directives = $this->parseDirectiveList();
         }
 
-        return null;
-    }
+        $fragmentReference = new FragmentReference($nameToken->getData(), $nameToken->getLocation());
+        $fragmentReference->setDirectives($directives);
 
-    protected function parseFragmentReference()
-    {
-        $nameToken         = $this->eatIdentifierToken();
-        $fragmentReference = new FragmentReference($nameToken->getData(), new Location($nameToken->getLine(), $nameToken->getColumn()));
-
-        $this->data['fragmentReferences'][] = $fragmentReference;
+        $this->parseResult->addFragmentReference($fragmentReference);
 
         return $fragmentReference;
     }
 
-    protected function eatIdentifierToken()
+    private function eatIdentifierToken()
     {
-        return $this->expectMulti([
+        return $this->tokenizer->expectMulti([
             Token::TYPE_IDENTIFIER,
             Token::TYPE_MUTATION,
             Token::TYPE_QUERY,
@@ -237,85 +233,95 @@ class Parser extends Tokenizer
         ]);
     }
 
-    protected function parseBodyItem($type = Token::TYPE_QUERY, $highLevel = true)
+    private function parseBodyItem($type = Token::TYPE_QUERY, $highLevel = true)
     {
         $nameToken = $this->eatIdentifierToken();
         $alias     = null;
 
-        if ($this->eat(Token::TYPE_COLON)) {
+        if ($this->tokenizer->eat(Token::TYPE_COLON)) {
             $alias     = $nameToken->getData();
             $nameToken = $this->eatIdentifierToken();
         }
 
-        $bodyLocation = new Location($nameToken->getLine(), $nameToken->getColumn());
-        $arguments    = $this->match(Token::TYPE_LPAREN) ? $this->parseArgumentList() : [];
+        $arguments  = $this->tokenizer->match(Token::TYPE_LPAREN) ? $this->parseArgumentList() : [];
+        $directives = $this->tokenizer->match(Token::TYPE_AT) ? $this->parseDirectiveList() : [];
 
-        if ($this->match(Token::TYPE_LBRACE)) {
-            $fields = $this->parseBody($type == Token::TYPE_TYPED_FRAGMENT ? Token::TYPE_QUERY : $type, false);
+        if ($this->tokenizer->match(Token::TYPE_LBRACE)) {
+            $fields = $this->parseBody($type === Token::TYPE_TYPED_FRAGMENT ? Token::TYPE_QUERY : $type, false);
 
             if (!$fields) {
-                throw $this->createUnexpectedTokenTypeException($this->lookAhead->getType());
+                throw $this->tokenizer->createUnexpectedTokenTypeException($this->tokenizer->peek()->getType());
             }
 
-            if ($type == Token::TYPE_QUERY) {
-                return new Query($nameToken->getData(), $alias, $arguments, $fields, $bodyLocation);
-            } elseif ($type == Token::TYPE_TYPED_FRAGMENT) {
-                return new TypedFragmentReference($nameToken->getData(), $fields, $bodyLocation);
-            } else {
-                return new Mutation($nameToken->getData(), $alias, $arguments, $fields, $bodyLocation);
+            if ($type === Token::TYPE_QUERY) {
+                return new Query($nameToken->getData(), $alias, $arguments, $fields, $directives, $nameToken->getLocation());
             }
-        } else {
-            if ($highLevel && $type == Token::TYPE_MUTATION) {
-                return new Mutation($nameToken->getData(), $alias, $arguments, [], $bodyLocation);
-            } elseif ($highLevel && $type == Token::TYPE_QUERY) {
-                return new Query($nameToken->getData(), $alias, $arguments, [], $bodyLocation);
+            if ($type === Token::TYPE_TYPED_FRAGMENT) {
+                return new TypedFragmentReference($nameToken->getData(), $fields, $directives, $nameToken->getLocation());
             }
 
-            return new Field($nameToken->getData(), $alias, $arguments, $bodyLocation);
+            return new Mutation($nameToken->getData(), $alias, $arguments, $fields, $directives, $nameToken->getLocation());
         }
+
+        if ($highLevel && $type === Token::TYPE_MUTATION) {
+            return new Mutation($nameToken->getData(), $alias, $arguments, [], $directives, $nameToken->getLocation());
+        }
+        if ($highLevel && $type === Token::TYPE_QUERY) {
+            return new Query($nameToken->getData(), $alias, $arguments, [], $directives, $nameToken->getLocation());
+        }
+
+        return new Field($nameToken->getData(), $alias, $arguments, $directives, $nameToken->getLocation());
     }
 
-    protected function parseArgumentList()
+    private function parseArgumentList()
     {
-        $args  = [];
-        $first = true;
+        $args = [];
 
-        $this->expect(Token::TYPE_LPAREN);
-
-        while (!$this->match(Token::TYPE_RPAREN) && !$this->end()) {
-            if ($first) {
-                $first = false;
-            } else {
-                if ($this->match(Token::TYPE_COMMA)) {
-                    $this->eat(Token::TYPE_COMMA);
-                }
-            }
-
+        $this->tokenizer->expect(Token::TYPE_LPAREN);
+        while (!$this->tokenizer->match(Token::TYPE_RPAREN) && !$this->tokenizer->end()) {
+            $this->tokenizer->eat(Token::TYPE_COMMA);
             $args[] = $this->parseArgument();
         }
 
-        $this->expect(Token::TYPE_RPAREN);
+        $this->tokenizer->expect(Token::TYPE_RPAREN);
 
         return $args;
     }
 
-    protected function parseArgument()
+    private function parseArgument()
     {
         $nameToken = $this->eatIdentifierToken();
-        $this->expect(Token::TYPE_COLON);
+        $this->tokenizer->expect(Token::TYPE_COLON);
         $value = $this->parseValue();
 
-        return new Argument($nameToken->getData(), $value, new Location($nameToken->getLine(), $nameToken->getColumn()));
+        return new Argument($nameToken->getData(), $value, $nameToken->getLocation());
     }
 
-    /**
-     * @return array|InputList|InputObject|Literal|VariableReference
-     *
-     * @throws SyntaxErrorException
-     */
-    protected function parseValue()
+    private function parseDirectiveList()
     {
-        switch ($this->lookAhead->getType()) {
+        $directives = [];
+
+        while ($this->tokenizer->match(Token::TYPE_AT)) {
+            $directives[] = $this->parseDirective();
+            $this->tokenizer->eat(Token::TYPE_COMMA);
+        }
+
+        return $directives;
+    }
+
+    private function parseDirective()
+    {
+        $this->tokenizer->expect(Token::TYPE_AT);
+
+        $nameToken = $this->eatIdentifierToken();
+        $args      = $this->tokenizer->match(Token::TYPE_LPAREN) ? $this->parseArgumentList() : [];
+
+        return new Directive($nameToken->getData(), $args, $nameToken->getLocation());
+    }
+
+    private function parseValue()
+    {
+        switch ($this->tokenizer->peek()->getType()) {
             case Token::TYPE_LSQUARE_BRACE:
                 return $this->parseList();
 
@@ -331,42 +337,40 @@ class Parser extends Tokenizer
             case Token::TYPE_NULL:
             case Token::TYPE_TRUE:
             case Token::TYPE_FALSE:
-                $token = $this->lex();
+                $token = $this->tokenizer->lex();
 
-                return new Literal($token->getData(), new Location($token->getLine(), $token->getColumn()));
+                return new Literal($token->getData(), $token->getLocation());
         }
 
-        throw $this->createUnexpectedException($this->lookAhead);
+        throw $this->tokenizer->createUnexpectedTokenTypeException($this->tokenizer->peek()->getType());
     }
 
-    protected function parseList($createType = true)
+    private function parseList($createType = true)
     {
-        $startToken = $this->eat(Token::TYPE_LSQUARE_BRACE);
+        $startToken = $this->tokenizer->eat(Token::TYPE_LSQUARE_BRACE);
 
         $list = [];
-        while (!$this->match(Token::TYPE_RSQUARE_BRACE) && !$this->end()) {
+        while (!$this->tokenizer->match(Token::TYPE_RSQUARE_BRACE) && !$this->tokenizer->end()) {
             $list[] = $this->parseListValue();
 
-            if ($this->lookAhead->getType() != Token::TYPE_RSQUARE_BRACE) {
-                $this->expect(Token::TYPE_COMMA);
-            }
+            $this->tokenizer->eat(Token::TYPE_COMMA);
         }
 
-        $this->expect(Token::TYPE_RSQUARE_BRACE);
+        $this->tokenizer->expect(Token::TYPE_RSQUARE_BRACE);
 
-        return $createType ? new InputList($list, new Location($startToken->getLine(), $startToken->getColumn())) : $list;
+        return $createType ? new InputList($list, $startToken->getLocation()) : $list;
     }
 
-    protected function parseListValue()
+    private function parseListValue()
     {
-        switch ($this->lookAhead->getType()) {
+        switch ($this->tokenizer->peek()->getType()) {
             case Token::TYPE_NUMBER:
             case Token::TYPE_STRING:
             case Token::TYPE_TRUE:
             case Token::TYPE_FALSE:
             case Token::TYPE_NULL:
             case Token::TYPE_IDENTIFIER:
-                return $this->expect($this->lookAhead->getType())->getData();
+                return $this->tokenizer->expect($this->tokenizer->peek()->getType())->getData();
 
             case Token::TYPE_VARIABLE:
                 return $this->parseVariableReference();
@@ -378,70 +382,42 @@ class Parser extends Tokenizer
                 return $this->parseList(false);
         }
 
-        throw new SyntaxErrorException('Can\'t parse argument', $this->getLocation());
+        throw $this->tokenizer->createException('Can\'t parse argument');
     }
 
-    protected function parseObject($createType = true)
+    private function parseObject($createType = true)
     {
-        $startToken = $this->eat(Token::TYPE_LBRACE);
+        $startToken = $this->tokenizer->eat(Token::TYPE_LBRACE);
 
         $object = [];
-        while (!$this->match(Token::TYPE_RBRACE) && !$this->end()) {
-            $key = $this->expectMulti([Token::TYPE_STRING, Token::TYPE_IDENTIFIER])->getData();
-            $this->expect(Token::TYPE_COLON);
+        while (!$this->tokenizer->match(Token::TYPE_RBRACE) && !$this->tokenizer->end()) {
+            $key = $this->tokenizer->expectMulti([Token::TYPE_STRING, Token::TYPE_IDENTIFIER])->getData();
+            $this->tokenizer->expect(Token::TYPE_COLON);
             $value = $this->parseListValue();
 
-            if ($this->peek()->getType() != Token::TYPE_RBRACE) {
-                $this->expect(Token::TYPE_COMMA);
-            }
+            $this->tokenizer->eat(Token::TYPE_COMMA);
 
             $object[$key] = $value;
         }
 
-        $this->eat(Token::TYPE_RBRACE);
+        $this->tokenizer->eat(Token::TYPE_RBRACE);
 
-        return $createType ? new InputObject($object, new Location($startToken->getLine(), $startToken->getColumn())) : $object;
+        return $createType ? new InputObject($object, $startToken->getLocation()) : $object;
     }
 
-    protected function parseFragment()
+    private function parseFragment()
     {
-        $this->lex();
+        $this->tokenizer->lex();
         $nameToken = $this->eatIdentifierToken();
 
-        $this->eat(Token::TYPE_ON);
+        $this->tokenizer->eat(Token::TYPE_ON);
 
-        $model  = $this->eatIdentifierToken();
+        $model = $this->eatIdentifierToken();
+
+        $directives = $this->tokenizer->match(Token::TYPE_AT) ? $this->parseDirectiveList() : [];
+
         $fields = $this->parseBody(Token::TYPE_QUERY, false);
 
-        return new Fragment($nameToken->getData(), $model->getData(), $fields, new Location($nameToken->getLine(), $nameToken->getColumn()));
-    }
-
-    protected function eat($type)
-    {
-        if ($this->match($type)) {
-            return $this->lex();
-        }
-
-        return null;
-    }
-
-    protected function eatMulti($types)
-    {
-        if ($this->matchMulti($types)) {
-            return $this->lex();
-        }
-
-        return null;
-    }
-
-    protected function matchMulti($types)
-    {
-        foreach ($types as $type) {
-            if ($this->peek()->getType() == $type) {
-                return true;
-            }
-        }
-
-        return false;
+        return new Fragment($nameToken->getData(), $model->getData(), $directives, $fields, $nameToken->getLocation());
     }
 }

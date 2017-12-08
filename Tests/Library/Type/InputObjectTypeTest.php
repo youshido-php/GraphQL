@@ -86,9 +86,8 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('mutation { createList(posts: [{title: null }, {}]) }');
         $this->assertEquals(
             [
-                'data'   => ['createList' => null],
                 'errors' => [[
-                    'message'   => 'Not valid type for argument "posts" in query "createList"',
+                    'message'   => 'Not valid type for argument "posts" in query "createList": Not valid type for field "title" in input type "PostInputType": Field must not be NULL',
                     'locations' => [
                         [
                             'line'   => 1,
@@ -184,9 +183,8 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
         ])));
         $processor->processPayload('mutation { createList(topArgument: { postObject:[ { title: null } ] })}');
         $this->assertEquals([
-            'data'   => ['createList' => null],
             'errors' => [[
-                'message'   => 'Not valid type for argument "topArgument" in query "createList"',
+                'message'   => 'Not valid type for argument "topArgument" in query "createList": Not valid type for field "postObject" in input type "topArgument": Not valid type for field "title" in input type "postObject": Field must not be NULL',
                 'locations' => [
                     [
                         'line'   => 1,
@@ -283,9 +281,8 @@ class InputObjectTypeTest extends \PHPUnit_Framework_TestCase
         $response = $processor->getResponseData();
         $this->assertEquals(
             [
-                'data' => ['createPost' => null],
                 'errors' => [[
-                    'message' => 'userId is required on InputPostType',
+                    'message' => 'Not valid type for argument "object" in query "createPost": userId is required on InputPostType',
                     'locations' => [
                         ['line' => 1, 'column' => 23]
                     ]

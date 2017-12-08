@@ -1,20 +1,22 @@
 <?php
-/**
- * Date: 23.11.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Parser\Ast;
 
-
+use Youshido\GraphQL\Parser\Ast\Interfaces\DirectivesContainerInterface;
+use Youshido\GraphQL\Parser\Ast\Interfaces\NamedFieldInterface;
 use Youshido\GraphQL\Parser\Location;
 
-class Fragment extends AbstractAst
+/**
+ * Class Fragment
+ */
+class Fragment extends AbstractAst implements DirectivesContainerInterface, NamedFieldInterface
 {
+    use AstDirectivesTrait;
 
+    /** @var string */
     protected $name;
 
+    /** @var string */
     protected $model;
 
     /** @var Field[]|Query[] */
@@ -26,16 +28,18 @@ class Fragment extends AbstractAst
     /**
      * @param string          $name
      * @param string          $model
+     * @param array           $directives
      * @param Field[]|Query[] $fields
      * @param Location        $location
      */
-    public function __construct($name, $model, array $fields, Location $location)
+    public function __construct($name, $model, array $directives, array $fields, Location $location)
     {
         parent::__construct($location);
 
         $this->name   = $name;
         $this->model  = $model;
         $this->fields = $fields;
+        $this->setDirectives($directives);
     }
 
     /**
@@ -55,7 +59,7 @@ class Fragment extends AbstractAst
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getName()
     {
@@ -63,7 +67,7 @@ class Fragment extends AbstractAst
     }
 
     /**
-     * @param mixed $name
+     * @param string $name
      */
     public function setName($name)
     {
@@ -71,7 +75,7 @@ class Fragment extends AbstractAst
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getModel()
     {
@@ -79,7 +83,7 @@ class Fragment extends AbstractAst
     }
 
     /**
-     * @param mixed $model
+     * @param string $model
      */
     public function setModel($model)
     {

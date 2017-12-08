@@ -1,53 +1,50 @@
 <?php
-/*
-* This file is a part of graphql-youshido project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 11/28/15 3:53 PM
-*/
 
 namespace Youshido\GraphQL\Config\Schema;
-
 
 use Youshido\GraphQL\Config\AbstractConfig;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
-use Youshido\GraphQL\Type\SchemaTypesList;
+use Youshido\GraphQL\Type\SchemaDirectiveCollection;
+use Youshido\GraphQL\Type\SchemaTypesCollection;
 use Youshido\GraphQL\Type\TypeService;
 
+/**
+ * Class SchemaConfig
+ */
 class SchemaConfig extends AbstractConfig
 {
+    /**
+     * @var SchemaTypesCollection
+     */
+    private $types;
 
     /**
-     * @var SchemaTypesList
+     * @var SchemaDirectiveCollection;
      */
-    private $typesList;
+    private $directives;
 
     public function __construct(array $configData, $contextObject = null, $finalClass = false)
     {
-        $this->typesList = new SchemaTypesList();
+        $this->types      = new SchemaTypesCollection();
+        $this->directives = new SchemaDirectiveCollection();
+
         parent::__construct($configData, $contextObject, $finalClass);
     }
 
-
+    /**
+     * @return array
+     */
     public function getRules()
     {
         return [
-            'query'    => ['type' => TypeService::TYPE_OBJECT_TYPE, 'required' => true],
-            'mutation' => ['type' => TypeService::TYPE_OBJECT_TYPE],
-            'types'    => ['type' => TypeService::TYPE_ARRAY],
-            'name'     => ['type' => TypeService::TYPE_STRING],
+            'query'      => ['type' => TypeService::TYPE_OBJECT_TYPE, 'required' => true],
+            'mutation'   => ['type' => TypeService::TYPE_OBJECT_TYPE],
+            'types'      => ['type' => TypeService::TYPE_ARRAY],
+            'directives' => ['type' => TypeService::TYPE_ARRAY],
+            'name'       => ['type' => TypeService::TYPE_STRING],
         ];
     }
-
-    protected function build()
-    {
-        parent::build();
-        if (!empty($this->data['types'])) {
-            $this->typesList->addTypes($this->data['types']);
-        }
-    }
-
 
     /**
      * @return AbstractObjectType
@@ -94,9 +91,30 @@ class SchemaConfig extends AbstractConfig
         return $this->get('name', 'RootSchema');
     }
 
-    public function getTypesList()
+    /**
+     * @return SchemaTypesCollection
+     */
+    public function getTypes()
     {
-        return $this->typesList;
+        return $this->types;
     }
 
+    /**
+     * @return SchemaDirectiveCollection
+     */
+    public function getDirectives()
+    {
+        return $this->directives;
+    }
+
+    protected function build()
+    {
+        parent::build();
+        if (!empty($this->data['types'])) {
+            $this->types->addMany($this->data['types']);
+        }
+        if (!empty($this->data['directives'])) {
+            $this->directives->addMany($this->data['directives']);
+        }
+    }
 }

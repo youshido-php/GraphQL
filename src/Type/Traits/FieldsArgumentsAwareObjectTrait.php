@@ -1,33 +1,35 @@
 <?php
-/*
- * This file is a part of GraphQL project.
- *
- * @author Alexandr Viniychuk <a@viniychuk.com>
- * created: 5:12 PM 5/14/16
- */
 
 namespace Youshido\GraphQL\Type\Traits;
 
-
+/**
+ * Trait FieldsArgumentsAwareObjectTrait
+ */
 trait FieldsArgumentsAwareObjectTrait
 {
     use FieldsAwareObjectTrait;
 
-    protected $hasArgumentCache = null;
+    protected $hasArgumentCache;
 
-    public function addArguments($argumentsList)
+    public function addArguments($arguments)
     {
-        return $this->getConfig()->addArguments($argumentsList);
+        return $this->getConfig()->addArguments($arguments);
     }
 
-    public function removeArgument($argumentName)
+    public function removeArgument($name)
     {
-        return $this->getConfig()->removeArgument($argumentName);
+        return $this->getConfig()->removeArgument($name);
     }
 
-    public function addArgument($argument, $ArgumentInfo = null)
+    /**
+     * @param array|string      $argument
+     * @param null|array|string $info
+     *
+     * @return $this
+     */
+    public function addArgument($argument, $info = null)
     {
-        return $this->getConfig()->addArgument($argument, $ArgumentInfo);
+        return $this->getConfig()->addArgument($argument, $info);
     }
 
     public function getArguments()
@@ -35,14 +37,14 @@ trait FieldsArgumentsAwareObjectTrait
         return $this->getConfig()->getArguments();
     }
 
-    public function getArgument($argumentName)
+    public function getArgument($name)
     {
-        return $this->getConfig()->getArgument($argumentName);
+        return $this->getConfig()->getArgument($name);
     }
 
-    public function hasArgument($argumentName)
+    public function hasArgument($name)
     {
-        return $this->getConfig()->hasArgument($argumentName);
+        return $this->getConfig()->hasArgument($name);
     }
 
     public function hasArguments()

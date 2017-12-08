@@ -1,19 +1,16 @@
 <?php
-/**
- * Date: 23.11.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Parser\Ast;
 
-
+use Youshido\GraphQL\Parser\Ast\Interfaces\NamedFieldInterface;
 use Youshido\GraphQL\Parser\Ast\Interfaces\ValueInterface;
 use Youshido\GraphQL\Parser\Location;
 
-class Argument extends AbstractAst
+/**
+ * Class Argument
+ */
+class Argument extends AbstractAst implements NamedFieldInterface
 {
-
     /** @var string */
     private $name;
 
@@ -28,7 +25,6 @@ class Argument extends AbstractAst
     public function __construct($name, ValueInterface $value, Location $location)
     {
         parent::__construct($location);
-
         $this->name  = $name;
         $this->value = $value;
     }
@@ -50,7 +46,7 @@ class Argument extends AbstractAst
     }
 
     /**
-     * @return \Youshido\GraphQL\Parser\Ast\Interfaces\ValueInterface
+     * @return ValueInterface
      */
     public function getValue()
     {
@@ -64,6 +60,4 @@ class Argument extends AbstractAst
     {
         $this->value = $value;
     }
-
-
 }

@@ -1,17 +1,25 @@
 <?php
-/*
-* This file is a part of graphql-youshido project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 11/27/15 1:22 AM
-*/
 
 namespace Youshido\GraphQL\Type\Scalar;
 
-
+/**
+ * Class BooleanType
+ */
 class BooleanType extends AbstractScalarType
 {
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return 'Boolean';
+    }
 
+    /**
+     * @param mixed $value
+     *
+     * @return bool
+     */
     public function serialize($value)
     {
         if ($value === 'true') {
@@ -21,17 +29,24 @@ class BooleanType extends AbstractScalarType
             return false;
         }
 
-        return (bool)$value;
+        return (bool) $value;
     }
 
+    /**
+     * @param mixed $value
+     *
+     * @return bool
+     */
     public function isValidValue($value)
     {
-        return is_null($value) || is_bool($value);
+        return null === $value || is_bool($value);
     }
 
+    /**
+     * @return string
+     */
     public function getDescription()
     {
         return 'The `Boolean` scalar type represents `true` or `false`.';
     }
-
 }

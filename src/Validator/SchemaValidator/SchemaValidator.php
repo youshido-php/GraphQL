@@ -1,10 +1,4 @@
 <?php
-/*
-* This file is a part of GraphQL project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 4/30/16 9:11 PM
-*/
 
 namespace Youshido\GraphQL\Validator\SchemaValidator;
 
@@ -15,11 +9,14 @@ use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
 
+/**
+ * Class SchemaValidator
+ */
 class SchemaValidator
 {
-
     /** @var ConfigValidator */
-    private $configValidator = null;
+    private $configValidator;
+
     /**
      * @param AbstractSchema $schema
      *
@@ -65,8 +62,6 @@ class SchemaValidator
      * @param Field                 $objField
      * @param AbstractInterfaceType $interface
      *
-     * @return bool
-     *
      * @throws ConfigurationException
      */
     protected function assertFieldsIdentical($intField, $objField, AbstractInterfaceType $interface)
@@ -75,7 +70,7 @@ class SchemaValidator
         if ($intField->getType()->isCompositeType() !== $objField->getType()->isCompositeType()) {
             $isValid = false;
         }
-        if ($intField->getType()->getNamedType()->getName() != $objField->getType()->getNamedType()->getName()) {
+        if ($intField->getType()->getNamedType()->getName() !== $objField->getType()->getNamedType()->getName()) {
             $isValid = false;
         }
 

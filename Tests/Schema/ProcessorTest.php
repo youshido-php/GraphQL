@@ -88,6 +88,20 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayNotHasKey('errors', $processor->getResponseData());
     }
 
+    public function testNullListVariable()
+    {
+        $processor = new Processor(new TestSchema());
+        $processor->processPayload(
+            'mutation ($list: [Int], $status: TestEnum) { updateStatus(list: $list, newStatus: $status) }',
+            [
+                'list'   => null,
+                'status' => null,
+            ]
+        );
+
+        $this->assertArrayNotHasKey('errors', $processor->getResponseData());
+    }
+
     public function testListNullResponse()
     {
         $processor = new Processor(new ExecutionContext(new Schema([
@@ -251,7 +265,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $processor->processPayload('mutation { invalidMutation }');
         $this->assertEquals(['errors' => [[
-            'message'   => 'Field "invalidMutation" not found in type "RootSchemaMutation"',
+            'message'   => 'Field "invalidMutation" not found in type "RootSchemaMutation". Available fields are: "increaseCounter", "invalidResolveTypeMutation", "interfacedMutation"',
             'locations' => [
                 [
                     'line'   => 1,
@@ -263,7 +277,6 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $processor->processPayload('mutation { increaseCounter(noArg: 2) }');
         $this->assertEquals([
-            'data'   => ['increaseCounter' => null],
             'errors' => [[
                 'message'   => 'Unknown argument "noArg" on field "increaseCounter"',
                 'locations' => [
@@ -285,7 +298,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                     'column' => 12
                 ]
             ]
-        ]], 'data'                    => ['increaseCounter' => null]], $processor->getResponseData());
+        ]]], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('mutation { increaseCounter(amount: 2) }');
@@ -293,7 +306,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $processor->processPayload('{ invalidQuery }');
         $this->assertEquals(['errors' => [[
-            'message'   => 'Field "invalidQuery" not found in type "RootQuery"',
+            'message'   => 'Field "invalidQuery" not found in type "RootQuery". Available fields are: "me", "randomUser", "invalidValueQuery", "labels", "__schema", "__type"',
             'locations' => [
                 [
                     'line'   => 1,
@@ -304,14 +317,13 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('{ invalidValueQuery { id } }');
-        $this->assertEquals(['errors' => [['message' => 'Not valid resolved type for field "invalidValueQuery"']], 'data' => ['invalidValueQuery' => null]], $processor->getResponseData());
+        $this->assertEquals(['errors' => [['message' => 'Not valid resolved type for field "invalidValueQuery": (no details available)']], 'data' => ['invalidValueQuery' => null]], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('{ me { firstName(shorten: true), middle }}');
         $this->assertEquals([
-            'data'   => ['me' => null],
             'errors' => [[
-                'message'   => 'Field "middle" not found in type "User"',
+                'message'   => 'Field "middle" not found in type "User". Available fields are: "firstName", "id_alias", "lastName", "code"',
                 'locations' => [
                     [
                         'line'   => 1,
@@ -324,7 +336,6 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $processor->processPayload('{ randomUser { region }}');
         $this->assertEquals([
-            'data'   => ['randomUser' => null],
             'errors' => [[
                 'message'   => 'You have to specify fields for "region"',
                 'locations' => [
@@ -382,7 +393,6 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('{ test }');
         $response = $processor->getResponseData();
         $this->assertEquals([
-            'data'   => ['test' => null],
             'errors' => [['message' => 'Require "argument1" arguments to query "test"']]
         ], $response);
         $processor->getExecutionContext()->clearErrors();
@@ -390,7 +400,6 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('{ alias: test() }');
         $response = $processor->getResponseData();
         $this->assertEquals([
-            'data'   => ['alias' => null],
             'errors' => [['message' => 'Require "argument1" arguments to query "test"']]
         ], $response);
         $processor->getExecutionContext()->clearErrors();
@@ -398,9 +407,8 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('{ alias: test(argument1: VALUE4) }');
         $response = $processor->getResponseData();
         $this->assertEquals([
-            'data'   => ['alias' => null],
             'errors' => [[
-                'message'   => 'Not valid type for argument "argument1" in query "test"',
+                'message'   => 'Not valid type for argument "argument1" in query "test": Value must be one of the allowed ones: VALUE1 (val1), VALUE2 (val2)',
                 'locations' => [
                     [
                         'line'   => 1,
@@ -488,21 +496,21 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('{ listQuery }');
         $this->assertEquals([
             'data'   => ['listQuery' => null],
-            'errors' => [['message' => 'Not valid resolved type for field "listQuery"']]
+            'errors' => [['message' => 'Not valid resolved type for field "listQuery": The value is not an iterable.']]
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('{ listEnumQuery }');
         $this->assertEquals([
             'data'   => ['listEnumQuery' => [null]],
-            'errors' => [['message' => 'Not valid resolved type for field "listEnumQuery"']]
+            'errors' => [['message' => 'Not valid resolved type for field "listEnumQuery": Value must be one of the allowed ones: FINISHED (1), NEW (0)']]
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('{ invalidEnumQuery }');
         $this->assertEquals([
             'data'   => ['invalidEnumQuery' => null],
-            'errors' => [['message' => 'Not valid resolved type for field "invalidEnumQuery"']],
+            'errors' => [['message' => 'Not valid resolved type for field "invalidEnumQuery": Value must be one of the allowed ones: FINISHED (1), NEW (0)']],
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
@@ -519,7 +527,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('{ invalidNonNullInsideQuery }');
         $this->assertEquals([
             'data'   => ['invalidNonNullInsideQuery' => null],
-            'errors' => [['message' => 'Not valid resolved type for field "invalidNonNullInsideQuery"']],
+            'errors' => [['message' => 'Not valid resolved type for field "invalidNonNullInsideQuery": (no details available)']],
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
@@ -601,16 +609,28 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             ])
         ])));
         $processor->processPayload('{ union(type: "object1") { ... on Object2 { id } } }');
-        $this->assertEquals(['data' => ['union' => []]], $processor->getResponseData());
-
-        $processor->processPayload('{ union(type: "object1") { ... on Object1 { name } } }');
+        $data = $processor->getResponseData();
         $this->assertEquals([
-            'data'   => [
-                'union' => null
-            ],
             'errors' => [
                 [
-                    'message'   => 'Field "name" not found in type "Object1"',
+                    'message' => 'Field "id" not found in type "Object2". Available fields are: "name"',
+                    'locations' => [
+                        [
+                            'line' => 1,
+                            'column' => 45
+                        ]
+                    ]
+                ]
+            ]
+        ], $data);
+
+        $processor->getExecutionContext()->clearErrors();
+        $processor->processPayload('{ union(type: "object1") { ... on Object1 { name } } }');
+        $data = $processor->getResponseData();
+        $this->assertEquals([
+            'errors' => [
+                [
+                    'message'   => 'Field "name" not found in type "Object1". Available fields are: "id"',
                     'locations' => [
                         [
                             'line'   => 1,
@@ -619,7 +639,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                     ]
                 ]
             ]
-        ], $processor->getResponseData());
+        ], $data);
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('{ union(type: "object1") { ... on Object1 { id } } }');
@@ -756,12 +776,12 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
 
         $processor->processPayload('{ me { firstName, likes } }');
-        $this->assertEquals(['errors' => [['message' => 'query exceeded max allowed complexity of 10']]], $processor->getResponseData());
+        $this->assertEquals(['errors' => [['message' => 'Query exceeded max allowed complexity of 10']]], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
         // don't let complexity reducer affect query errors
         $processor->processPayload('{ me { badfield } }');
-        $this->assertArraySubset(['errors' => [['message' => 'Field "badfield" not found in type "User"']]], $processor->getResponseData());
+        $this->assertArraySubset(['errors' => [['message' => 'Field "badfield" not found in type "User". Available fields are: "firstName", "lastName", "code", "likes"']]], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
         foreach (range(1, 5) as $cost_multiplier) {

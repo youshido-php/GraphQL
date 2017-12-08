@@ -1,23 +1,19 @@
 <?php
-/*
-* This file is a part of GraphQL project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 5/11/16 9:19 PM
-*/
 
 namespace Youshido\GraphQL\Type;
-
 
 use Youshido\GraphQL\Exception\ConfigurationException;
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 
+/**
+ * Class TypeFactory
+ */
 class TypeFactory
 {
     private static $objectsHash = [];
 
     /**
-     * @param string $type
+     * @param string|AbstractScalarType $type
      *
      * @throws ConfigurationException
      * @return AbstractScalarType
@@ -31,17 +27,17 @@ class TypeFactory
             if (empty(self::$objectsHash[$type])) {
                 $name = ucfirst($type);
 
-                $name = $name == 'Datetime' ? 'DateTime' : $name;
-                $name = $name == 'Datetimetz' ? 'DateTimeTz' : $name;
+                $name = $name === 'Datetime' ? 'DateTime' : $name;
+                $name = $name === 'Datetimetz' ? 'DateTimeTz' : $name;
 
                 $className                = 'Youshido\GraphQL\Type\Scalar\\' . $name . 'Type';
                 self::$objectsHash[$type] = new $className();
             }
 
             return self::$objectsHash[$type];
-        } else {
-            throw new ConfigurationException('Configuration problem with type ' . $type);
         }
+
+        throw new ConfigurationException('Configuration problem with type ' . $type);
     }
 
     /**
@@ -56,8 +52,6 @@ class TypeFactory
             TypeMap::TYPE_BOOLEAN,
             TypeMap::TYPE_ID,
             TypeMap::TYPE_DATETIME,
-            TypeMap::TYPE_DATE,
-            TypeMap::TYPE_TIMESTAMP,
             TypeMap::TYPE_DATETIMETZ,
         ];
     }

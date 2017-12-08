@@ -1,27 +1,33 @@
 <?php
-/**
- * Date: 03.12.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Introspection;
 
-use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeMap;
 
+/**
+ * Class FieldType
+ */
 class FieldType extends AbstractObjectType
 {
-
+    /**
+     * @param FieldInterface $value
+     *
+     * @return \Youshido\GraphQL\Type\AbstractType
+     */
     public function resolveType(FieldInterface $value)
     {
         return $value->getType();
     }
 
+    /**
+     * @param FieldInterface $value
+     *
+     * @return array|\Youshido\GraphQL\Type\AbstractType[]
+     */
     public function resolveArgs(FieldInterface $value)
     {
         if ($value->hasArguments()) {
@@ -31,6 +37,9 @@ class FieldType extends AbstractObjectType
         return [];
     }
 
+    /**
+     * @param \Youshido\GraphQL\Config\Object\ObjectTypeConfig $config
+     */
     public function build($config)
     {
         $config
@@ -48,6 +57,11 @@ class FieldType extends AbstractObjectType
             ]);
     }
 
+    /**
+     * @param mixed $value
+     *
+     * @return bool
+     */
     public function isValidValue($value)
     {
         return $value instanceof FieldInterface;

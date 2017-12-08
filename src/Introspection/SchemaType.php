@@ -1,9 +1,4 @@
 <?php
-/**
- * Date: 03.12.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Introspection;
 
@@ -12,12 +7,12 @@ use Youshido\GraphQL\Introspection\Field\TypesField;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
-use Youshido\GraphQL\Type\Object\ObjectType;
-use Youshido\GraphQL\Type\TypeMap;
 
+/**
+ * Class SchemaType
+ */
 class SchemaType extends AbstractObjectType
 {
-
     /**
      * @return String type name
      */
@@ -26,45 +21,70 @@ class SchemaType extends AbstractObjectType
         return '__Schema';
     }
 
+    /**
+     * @param AbstractSchema|Field $value
+     *
+     * @return AbstractObjectType
+     */
     public function resolveQueryType($value)
     {
-        /** @var AbstractSchema|Field $value */
         return $value->getQueryType();
     }
 
+    /**
+     * @param AbstractSchema|Field $value
+     *
+     * @return null|\Youshido\GraphQL\Type\Object\ObjectType
+     */
     public function resolveMutationType($value)
     {
-        /** @var AbstractSchema|Field $value */
         return $value->getMutationType()->hasFields() ? $value->getMutationType() : null;
     }
 
+    /**
+     * @return null
+     */
     public function resolveSubscriptionType()
     {
         return null;
     }
 
+    /**
+     * @param AbstractSchema|Field $value
+     *
+     * @return \Youshido\GraphQL\Directive\DirectiveInterface[]
+     */
+    public function resolveDirectives($value)
+    {
+        return $value->getDirectives()->all();
+    }
+
+    /**
+     * @param \Youshido\GraphQL\Config\Object\ObjectTypeConfig $config
+     */
     public function build($config)
     {
         $config
             ->addField(new Field([
                 'name'    => 'queryType',
                 'type'    => new QueryType(),
-                'resolve' => [$this, 'resolveQueryType']
+                'resolve' => [$this, 'resolveQueryType'],
             ]))
             ->addField(new Field([
                 'name'    => 'mutationType',
                 'type'    => new QueryType(),
-                'resolve' => [$this, 'resolveMutationType']
+                'resolve' => [$this, 'resolveMutationType'],
             ]))
             ->addField(new Field([
                 'name'    => 'subscriptionType',
                 'type'    => new QueryType(),
-                'resolve' => [$this, 'resolveSubscriptionType']
+                'resolve' => [$this, 'resolveSubscriptionType'],
             ]))
             ->addField(new TypesField())
             ->addField(new Field([
-                'name' => 'directives',
-                'type' => new ListType(new DirectiveType())
+                'name'    => 'directives',
+                'type'    => new ListType(new DirectiveType()),
+                'resolve' => [$this, 'resolveDirectives'],
             ]));
     }
 }

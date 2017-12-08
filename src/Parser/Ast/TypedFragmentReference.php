@@ -1,18 +1,17 @@
 <?php
-/**
- * Date: 23.11.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQL\Parser\Ast;
 
-
+use Youshido\GraphQL\Parser\Ast\Interfaces\DirectivesContainerInterface;
 use Youshido\GraphQL\Parser\Ast\Interfaces\FragmentInterface;
 use Youshido\GraphQL\Parser\Location;
 
-class TypedFragmentReference extends AbstractAst implements FragmentInterface
+/**
+ * Class TypedFragmentReference
+ */
+class TypedFragmentReference extends AbstractAst implements FragmentInterface, DirectivesContainerInterface
 {
+    use AstDirectivesTrait;
 
     /** @var Field[]|Query[] */
     protected $fields;
@@ -23,14 +22,16 @@ class TypedFragmentReference extends AbstractAst implements FragmentInterface
     /**
      * @param string          $typeName
      * @param Field[]|Query[] $fields
+     * @param Directive[]     $directives
      * @param Location        $location
      */
-    public function __construct($typeName, array $fields, Location $location)
+    public function __construct($typeName, array $fields, array $directives, Location $location)
     {
         parent::__construct($location);
 
         $this->typeName = $typeName;
         $this->fields   = $fields;
+        $this->setDirectives($directives);
     }
 
     /**
@@ -64,5 +65,4 @@ class TypedFragmentReference extends AbstractAst implements FragmentInterface
     {
         $this->typeName = $typeName;
     }
-
 }
