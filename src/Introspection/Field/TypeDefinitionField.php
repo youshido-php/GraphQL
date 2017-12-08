@@ -3,8 +3,8 @@
 namespace Youshido\GraphQL\Introspection\Field;
 
 use Youshido\GraphQL\Config\Field\FieldConfig;
-use Youshido\GraphQL\Execution\TypeCollector;
 use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
+use Youshido\GraphQL\Execution\TypeCollector;
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Introspection\QueryType;
@@ -19,8 +19,8 @@ use Youshido\GraphQL\Type\Scalar\StringType;
 class TypeDefinitionField extends AbstractField
 {
     /**
-     * @param null        $value
-     * @param array       $args
+     * @param null                 $value
+     * @param array                $args
      * @param ResolveInfoInterface $info
      *
      * @return null|AbstractType

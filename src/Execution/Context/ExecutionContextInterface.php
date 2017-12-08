@@ -40,6 +40,7 @@ interface ExecutionContextInterface extends ErrorContainerInterface
 
     /**
      * @param ContainerInterface $container
+     *
      * @return mixed
      */
     public function setContainer(ContainerInterface $container);

@@ -130,9 +130,9 @@ class QueryType extends AbstractObjectType
     }
 
     /**
-     * @param AbstractObjectType $value
-     * @param array              $args
-     * @param ResolveInfoInterface        $info
+     * @param AbstractObjectType   $value
+     * @param array                $args
+     * @param ResolveInfoInterface $info
      *
      * @return array|null|AbstractObjectType[]|\Youshido\GraphQL\Type\Scalar\AbstractScalarType[]
      */

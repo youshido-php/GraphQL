@@ -5,6 +5,7 @@
  * @author Alexandr Viniychuk <a@viniychuk.com>
  * created: 2/27/17 8:45 AM
  */
+
 namespace Youshido\GraphQL\Execution\ResolveInfo;
 
 use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;

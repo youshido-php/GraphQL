@@ -6,7 +6,6 @@ use Youshido\GraphQL\Directive\IncludeDirective;
 use Youshido\GraphQL\Directive\SkipDirective;
 use Youshido\GraphQL\Exception\GraphQLException;
 use Youshido\GraphQL\Exception\ResolveException;
-use Youshido\GraphQL\Execution\Container\Container;
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfo;
@@ -22,7 +21,6 @@ use Youshido\GraphQL\Parser\Ast\Mutation as AstMutation;
 use Youshido\GraphQL\Parser\Ast\Query as AstQuery;
 use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
 use Youshido\GraphQL\Parser\Parser;
-use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\ListType\AbstractListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
@@ -61,7 +59,7 @@ class Processor
     /**
      * Processor constructor.
      *
-     * @param ExecutionContextInterface $schema
+     * @param ExecutionContextInterface $executionContext
      */
     public function __construct(ExecutionContextInterface $executionContext)
     {

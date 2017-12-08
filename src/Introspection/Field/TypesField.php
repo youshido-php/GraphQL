@@ -2,8 +2,8 @@
 
 namespace Youshido\GraphQL\Introspection\Field;
 
-use Youshido\GraphQL\Execution\TypeCollector;
 use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
+use Youshido\GraphQL\Execution\TypeCollector;
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Introspection\QueryType;
 use Youshido\GraphQL\Schema\AbstractSchema;
@@ -32,8 +32,8 @@ class TypesField extends AbstractField
     }
 
     /**
-     * @param mixed       $value
-     * @param array       $args
+     * @param mixed                $value
+     * @param array                $args
      * @param ResolveInfoInterface $info
      *
      * @return array

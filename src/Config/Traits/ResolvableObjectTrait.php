@@ -13,8 +13,8 @@ use Youshido\GraphQL\Type\TypeService;
 trait ResolvableObjectTrait
 {
     /**
-     * @param mixed       $value
-     * @param array       $args
+     * @param mixed                $value
+     * @param array                $args
      * @param ResolveInfoInterface $info
      *
      * @return mixed|null

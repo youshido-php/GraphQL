@@ -10,8 +10,8 @@ use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
 interface FieldInterface extends InputFieldInterface
 {
     /**
-     * @param mixed       $value
-     * @param array       $args
+     * @param mixed                $value
+     * @param array                $args
      * @param ResolveInfoInterface $info
      *
      * @return mixed

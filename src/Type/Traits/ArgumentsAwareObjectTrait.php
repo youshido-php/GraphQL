@@ -6,6 +6,7 @@ use Youshido\GraphQL\Config\Traits\ConfigAwareTrait;
 
 /**
  * Class ArgumentsAwareObjectTrait
+ *
  * @package    Youshido\GraphQL\Type\Traits
  * @codeCoverageIgnore
  *

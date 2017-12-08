@@ -2,7 +2,6 @@
 
 namespace Youshido\GraphQL\Parser\Ast\ArgumentValue;
 
-use Youshido\GraphQL\Exception\GraphQLException;
 use Youshido\GraphQL\Exception\LogicException;
 use Youshido\GraphQL\Parser\Ast\AbstractAst;
 use Youshido\GraphQL\Parser\Ast\Interfaces\ValueInterface;

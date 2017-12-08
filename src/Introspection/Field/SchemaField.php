@@ -29,8 +29,8 @@ class SchemaField extends AbstractField
     }
 
     /**
-     * @param mixed       $value
-     * @param array       $args
+     * @param mixed                $value
+     * @param array                $args
      * @param ResolveInfoInterface $info
      *
      * @return \Youshido\GraphQL\Schema\AbstractSchema
