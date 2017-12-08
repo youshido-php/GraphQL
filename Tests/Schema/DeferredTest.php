@@ -9,6 +9,7 @@
 namespace Youshido\Tests\Schema;
 
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\DeferredResolver;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Field\Field;
@@ -196,7 +197,7 @@ class DeferredTest extends \PHPUnit_Framework_TestCase
 
     protected function query($query, DeferredQueryBuffer $buffer)
     {
-        $processor = new Processor(new DeferredSchema($buffer));
+        $processor = new Processor(new ExecutionContext(new DeferredSchema($buffer)));
         $processor->processPayload($query, []);
 
         return $processor->getResponseData();

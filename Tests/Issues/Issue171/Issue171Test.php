@@ -1,19 +1,21 @@
 <?php
+
 namespace Youshido\Tests\Issues\Issue171;
 
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 
 class Issue171Test extends \PHPUnit_Framework_TestCase
 {
     public function testItSetsDeprecationReasonToNullByDefault()
     {
-        $schema = new Issue171Schema();
-        $processor = new Processor($schema);
+        $schema    = new Issue171Schema();
+        $processor = new Processor(new ExecutionContext($schema));
 
         $processor->processPayload($this->getIntrospectionQuery(), []);
         $resp = $processor->getResponseData();
 
-        $enumTypes = array_filter($resp['data']['__schema']['types'], function($type){
+        $enumTypes = array_filter($resp['data']['__schema']['types'], function ($type) {
             return ($type['kind'] === 'ENUM');
         });
 
@@ -27,7 +29,7 @@ class Issue171Test extends \PHPUnit_Framework_TestCase
 
     private function getIntrospectionQuery()
     {
-        return  <<<TEXT
+        return <<<TEXT
 query IntrospectionQuery {
                 __schema {
                     queryType { name }

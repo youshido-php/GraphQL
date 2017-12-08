@@ -2,10 +2,10 @@
 
 namespace Youshido\Tests\Issues\Issue116Test;
 
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\ListType\ListType;
-use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IdType;
 use Youshido\GraphQL\Type\Scalar\IntType;
@@ -59,7 +59,7 @@ class Issue149Test extends \PHPUnit_Framework_TestCase
                 ],
             ]),
         ]);
-        $processor = new Processor($schema);
+        $processor = new Processor(new ExecutionContext($schema));
         $response  = $processor->processPayload('
 {
     user {
@@ -80,9 +80,9 @@ class Issue149Test extends \PHPUnit_Framework_TestCase
     }
 }')->getResponseData();
         $this->assertEquals(['data' => ['user' => [
-            'id'   => '1',
-            'name' => 'John',
-            'age'  => 30,
+            'id'      => '1',
+            'name'    => 'John',
+            'age'     => 30,
             'friends' => [
                 [
                     'id'   => 2,
@@ -94,7 +94,7 @@ class Issue149Test extends \PHPUnit_Framework_TestCase
                     'name' => 'Friend 2',
                     'age'  => 32,
                 ],
-            ]
+            ],
         ]]], $response);
     }
 }

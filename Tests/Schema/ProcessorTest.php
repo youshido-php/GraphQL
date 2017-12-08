@@ -90,7 +90,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
     public function testNullListVariable()
     {
-        $processor = new Processor(new TestSchema());
+        $processor = new Processor(new ExecutionContext(new TestSchema()));
         $processor->processPayload(
             'mutation ($list: [Int], $status: TestEnum) { updateStatus(list: $list, newStatus: $status) }',
             [

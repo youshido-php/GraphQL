@@ -1,14 +1,8 @@
 <?php
-/*
- * This file is a part of GraphQL project.
- *
- * @author Alexandr Viniychuk <a@viniychuk.com>
- * created: 2:29 PM 5/13/16
- */
 
 namespace Youshido\Tests\Library\Field;
 
-
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Schema\Schema;
@@ -129,7 +123,7 @@ TEXT;
                 ]
             ])
         ]);
-        $processor = new Processor($schema);
+        $processor = new Processor(new ExecutionContext($schema));
         $processor->processPayload($this->introspectionQuery);
     }
 
