@@ -2,11 +2,14 @@
 
 namespace Youshido\GraphQL\Execution\Context;
 
-use Youshido\GraphQL\Execution\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Youshido\GraphQL\Execution\Request;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerInterface;
 
+/**
+ * Interface ExecutionContextInterface
+ */
 interface ExecutionContextInterface extends ErrorContainerInterface
 {
     /**

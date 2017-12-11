@@ -2,73 +2,78 @@
 
 namespace Youshido\GraphQL\Execution\Container;
 
-use Youshido\GraphQL\Exception\RuntimeException;
+use Psr\Container\ContainerInterface;
+use Youshido\GraphQL\Execution\Container\Exception\ContainerException;
+use Youshido\GraphQL\Execution\Container\Exception\NotFoundException;
 
+/**
+ * Class Container
+ */
 class Container implements ContainerInterface
 {
-
-    private $keyset = [];
+    /** @var array */
     private $values = [];
-    private $services = [];
 
+    /** @var array */
+    private $instances = [];
 
     /**
-     * @param $id
+     * @param string $id
      *
      * @return mixed
-     * @throws \Exception if there was no value set under specified id
+     *
+     * @throws ContainerException
+     * @throws NotFoundException
      */
     public function get($id)
     {
-        $this->assertIdentifierSet($id);
-        if (isset($this->services['id'])) {
-            return $this->services['id']($this);
+        if (!array_key_exists($id, $this->values)) {
+            throw new NotFoundException(sprintf('Container item "%s" was not set', $id));
         }
 
-        return $this->values[$id];
+        try {
+            if (array_key_exists($id, $this->instances)) {
+                return $this->instances[$id];
+            }
+
+            if (is_callable($this->values[$id]) || (is_object($this->values) && method_exists($this->values[$id], '__invoke'))) {
+                $instance = $this->values[$id]();
+
+                $this->instances[$id] = $instance;
+
+                return $this->instances[$id];
+            }
+
+            return $this->values[$id];
+        } catch (\Exception $exception) {
+            throw new ContainerException($exception->getMessage());
+        }
     }
 
+    /**
+     * @param string $id
+     * @param mixed  $value
+     */
     public function set($id, $value)
     {
         $this->values[$id] = $value;
-        $this->keyset[$id] = true;
-
-        return $this;
     }
 
-    protected function setAsService($id, $service)
-    {
-        if (!is_object($service)) {
-            throw new RuntimeException(sprintf('Service %s has to be an object', $id));
-        }
-
-        $this->services[$id] = $service;
-        if (isset($this->values[$id])) {
-            unset($this->values[$id]);
-        }
-        $this->keyset[$id] = true;
-    }
-
-    public function remove($id)
-    {
-        $this->assertIdentifierSet($id);
-        if (array_key_exists($id, $this->values)) {
-            unset($this->values[$id]);
-        }
-        if (array_key_exists($id, $this->services)) {
-            unset($this->services[$id]);
-        }
-    }
-
+    /**
+     * @param string $id
+     *
+     * @return bool
+     */
     public function has($id)
     {
-        return isset($this->keyset[$id]);
+        return isset($this->values[$id]);
     }
 
-    private function assertIdentifierSet($id)
+    /**
+     * @return string[]
+     */
+    public function keys()
     {
-        if (!$this->has($id)) {
-            throw new RuntimeException(sprintf('Container item "%s" was not set', $id));
-        }
+        return array_keys($this->values);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Youshido\GraphQL\Execution\Context;
 
-use Youshido\GraphQL\Execution\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Youshido\GraphQL\Execution\Request;
 use Youshido\GraphQL\Introspection\Field\SchemaField;
 use Youshido\GraphQL\Introspection\Field\TypeDefinitionField;
