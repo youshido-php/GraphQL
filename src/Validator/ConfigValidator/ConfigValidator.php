@@ -11,6 +11,8 @@ use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
 
 /**
  * Class ConfigValidator
+ *
+ * //todo refactor
  */
 class ConfigValidator implements ConfigValidatorInterface
 {
