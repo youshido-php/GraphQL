@@ -20,8 +20,6 @@ class ConfigValidator implements ConfigValidatorInterface
 
     protected $rules = [];
 
-    protected $extraFieldsAllowed = false;
-
     /** @var ValidationRuleInterface[] */
     protected $validationRules = [];
 
@@ -56,7 +54,7 @@ class ConfigValidator implements ConfigValidatorInterface
 
     public function isValidConfig(AbstractConfig $config)
     {
-        return $this->validate($config->getData(), $this->getConfigFinalRules($config), $config->isExtraFieldsAllowed());
+        return $this->validate($config->getData(), $this->getConfigFinalRules($config));
     }
 
     protected function getConfigFinalRules(AbstractConfig $config)
@@ -74,10 +72,8 @@ class ConfigValidator implements ConfigValidatorInterface
     }
 
 
-    public function validate($data, $rules = [], $extraFieldsAllowed = false)
+    public function validate($data, $rules = [])
     {
-        $this->setExtraFieldsAllowed($extraFieldsAllowed);
-
         $processedFields = [];
         foreach ($rules as $fieldName => $fieldRules) {
             $processedFields[] = $fieldName;
@@ -110,11 +106,9 @@ class ConfigValidator implements ConfigValidatorInterface
             }
         }
 
-        if (!$this->isExtraFieldsAllowed()) {
-            foreach (array_keys($data) as $fieldName) {
-                if (!in_array($fieldName, $processedFields, false)) {
-                    $this->addError(new ValidationException(sprintf('Field "%s" is not expected', $fieldName)));
-                }
+        foreach (array_keys($data) as $fieldName) {
+            if (!in_array($fieldName, $processedFields, false)) {
+                $this->addError(new ValidationException(sprintf('Field "%s" is not expected', $fieldName)));
             }
         }
 
@@ -134,27 +128,6 @@ class ConfigValidator implements ConfigValidatorInterface
     public function isValid()
     {
         return !$this->hasErrors();
-    }
-
-
-    /**
-     * @return boolean
-     */
-    public function isExtraFieldsAllowed()
-    {
-        return $this->extraFieldsAllowed;
-    }
-
-    /**
-     * @param boolean $extraFieldsAllowed
-     *
-     * @return ConfigValidator
-     */
-    public function setExtraFieldsAllowed($extraFieldsAllowed)
-    {
-        $this->extraFieldsAllowed = $extraFieldsAllowed;
-
-        return $this;
     }
 
     /**

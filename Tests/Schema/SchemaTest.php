@@ -13,6 +13,7 @@ use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Execution\TypeCollector;
 use Youshido\GraphQL\Schema\Schema;
+use Youshido\GraphQL\Type\InterfaceType\InterfaceType;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
@@ -65,7 +66,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
     {
         $authorType = null;
 
-        $userInterface = new ObjectType([
+        $userInterface = new InterfaceType([
             'name'        => 'UserInterface',
             'fields'      => [
                 'name' => new StringType(),

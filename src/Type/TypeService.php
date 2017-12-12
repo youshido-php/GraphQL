@@ -135,7 +135,7 @@ class TypeService
     public static function isInputType($type)
     {
         if (is_object($type)) {
-            $namedType = $type->getNullableType()->getNamedType();
+            $namedType = $type->getNullableType()->getNamedType()->getNullableType();
 
             return ($namedType instanceof AbstractScalarType)
                 || ($type instanceof AbstractListType)

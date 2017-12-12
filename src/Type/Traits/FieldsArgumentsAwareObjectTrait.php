@@ -4,6 +4,8 @@ namespace Youshido\GraphQL\Type\Traits;
 
 /**
  * Trait FieldsArgumentsAwareObjectTrait
+ *
+ * todo: refactor this
  */
 trait FieldsArgumentsAwareObjectTrait
 {

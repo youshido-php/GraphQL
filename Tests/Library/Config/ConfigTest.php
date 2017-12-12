@@ -87,12 +87,17 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($finalConfig->getContextRules(), $rules);
 
         $this->assertNotNull($finalConfig->getResolveFunction());
+    }
 
-        $configExtraFields = new TestConfigExtraFields([
+    /**
+     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
+     */
+    public function testExtraFieldsNotAllowed()
+    {
+        new TestConfigExtraFields([
             'name'       => 'Test',
             'extraField' => 'extraValue'
         ]);
-        $this->assertEquals('extraValue', $configExtraFields->get('extraField'));
     }
 
     /**
@@ -100,7 +105,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
      */
     public function testFinalRule()
     {
-        ConfigValidator::getInstance()->assertValidConfig(new TestConfig(['name' => 'Test' . 'final'], null, true));
+        ConfigValidator::getInstance()->assertValidConfig(new TestConfig(['name' => 'Test final'], null, true));
     }
 
     /**

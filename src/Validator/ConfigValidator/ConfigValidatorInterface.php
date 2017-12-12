@@ -7,5 +7,5 @@ namespace Youshido\GraphQL\Validator\ConfigValidator;
  */
 interface ConfigValidatorInterface
 {
-    public function validate($data, $rules = [], $allowExtraFields = null);
+    public function validate($data, $rules = []);
 }

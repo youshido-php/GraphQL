@@ -8,8 +8,6 @@ use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
 
 /**
  * Class Config
- *
- * @package Youshido\GraphQL\Config
  */
 abstract class AbstractConfig
 {
@@ -21,8 +19,6 @@ abstract class AbstractConfig
     protected $contextObject;
 
     protected $finalClass = false;
-
-    protected $extraFieldsAllowed = false;
 
     /**
      * TypeConfig constructor.
@@ -45,6 +41,8 @@ abstract class AbstractConfig
         $this->finalClass    = $finalClass;
 
         $this->build();
+
+        $this->validate();
     }
 
     /**
@@ -59,7 +57,7 @@ abstract class AbstractConfig
     {
         $validator = ConfigValidator::getInstance();
 
-        if (!$validator->validate($this->data, $this->getContextRules(), $this->extraFieldsAllowed)) {
+        if (!$validator->validate($this->data, $this->getContextRules())) {
             throw new ConfigurationException('Config is not valid for ' . ($this->contextObject ? get_class($this->contextObject) : null) . "\n" . implode("\n", $validator->getErrorsArray(false)));
         }
     }
@@ -90,14 +88,6 @@ abstract class AbstractConfig
     }
 
     /**
-     * @return string
-     */
-    public function getType()
-    {
-        return $this->get('type');
-    }
-
-    /**
      * @return array
      */
     public function getData()
@@ -116,14 +106,6 @@ abstract class AbstractConfig
     public function isFinalClass()
     {
         return $this->finalClass;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isExtraFieldsAllowed()
-    {
-        return $this->extraFieldsAllowed;
     }
 
     /**

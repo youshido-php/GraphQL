@@ -36,6 +36,7 @@ abstract class AbstractField implements FieldInterface
         if (empty($config['type'])) {
             $config['type'] = $this->getType();
             $config['name'] = $this->getName();
+
             if (empty($config['name'])) {
                 $config['name'] = $this->getAutoName();
             }

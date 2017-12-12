@@ -9,10 +9,12 @@ use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 
 /**
  * Class FieldsAwareTrait
+ *
+ * todo: this trait is used in input object to, but create Field, must InputField
  */
 trait FieldsAwareConfigTrait
 {
-    protected $fields = [];
+    protected $fields = []; //todo: think about this: build fields in $fields and not build in config
 
     /**
      * Configure object fields

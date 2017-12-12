@@ -26,6 +26,7 @@ class Issue99Schema extends AbstractSchema
                                 new Field([
                                     'name' => 'custom',
                                     'type' => new ObjectType([
+                                        'name' => 'ValueType',
                                         'fields' => [
                                             'value' => new StringType()
                                         ],
@@ -33,6 +34,7 @@ class Issue99Schema extends AbstractSchema
                                     'args' => [
                                         'argX' => [
                                             'type' => new NonNullType(new InputObjectType([
+                                                'name' => 'InputX',
                                                 'fields' => [
                                                     'x' => new NonNullType(new StringType())
                                                 ]

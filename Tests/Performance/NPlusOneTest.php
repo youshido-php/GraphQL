@@ -65,10 +65,11 @@ class NPlusOneTest extends \PHPUnit_Framework_TestCase
 
         $processor = new Processor(new ExecutionContext(new Schema([
             'query' => new ObjectType([
+                'name' => 'RootQuery',
                 'fields' => [
                     'posts' => [
                         'type'    => new ListType($postType),
-                        'resolve' => function ($source, $args, $info) {
+                        'resolve' => function () {
                             return $this->getDataForPosts();
                         }
                     ]

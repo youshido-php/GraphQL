@@ -20,6 +20,8 @@ class TypeValidationRule implements ValidationRuleInterface
     /**
      * TypeValidationRule constructor.
      *
+     * //todo think about this: it's incorrect because config validator singleton
+     *
      * @param ConfigValidator $validator
      */
     public function __construct(ConfigValidator $validator)
@@ -209,6 +211,8 @@ class TypeValidationRule implements ValidationRuleInterface
 
     /**
      * Exists for the performance
+     *
+     * //todo: think about this
      *
      * @return array
      */

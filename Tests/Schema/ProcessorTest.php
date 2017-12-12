@@ -766,7 +766,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                                 'args'    => [
                                     'cost' => [
                                         'type'    => new IntType(),
-                                        'default' => 1,
+                                        'defaultValue' => 1,
                                     ],
                                 ],
                             ],
