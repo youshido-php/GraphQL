@@ -103,13 +103,13 @@ class Processor
                         $deferredResolver->resolve();
                     }
                 } catch (\Exception $e) {
-                    $this->executionContext->addError($e);
+                    $this->executionContext->handleException($e);
                 } finally {
                     $this->data = $this->unpackDeferredResults($this->data);
                 }
             }
         } catch (\Exception $e) {
-            $this->executionContext->addError($e);
+            $this->executionContext->handleException($e);
         }
 
         return $this;
@@ -137,7 +137,7 @@ class Processor
         }
 
         if ($this->executionContext->hasErrors()) {
-            $result['errors'] = $this->executionContext->getErrorsArray();
+            $result['errors'] = $this->executionContext->getErrorsData();
         }
 
         return $result;
@@ -243,7 +243,7 @@ class Processor
                     throw new ResolveException(sprintf('Resolving type with kind "%s" not supported', $kind));
             }
         } catch (\Exception $e) {
-            $this->executionContext->addError($e);
+            $this->executionContext->handleException($e);
 
             if ($fromObject) {
                 throw $e;
@@ -422,7 +422,7 @@ class Processor
                             $value = null;
                     }
                 } catch (\Exception $e) {
-                    $this->executionContext->addError($e);
+                    $this->executionContext->handleException($e);
 
                     $value = null;
                 }
@@ -454,7 +454,7 @@ class Processor
             try {
                 return $this->collectResult($field, $type, $ast, $resolvedValue);
             } catch (\Exception $e) {
-                $this->executionContext->addError($e);
+                $this->executionContext->handleException($e);
 
                 return null;
             }

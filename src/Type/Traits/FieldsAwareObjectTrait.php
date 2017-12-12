@@ -1,16 +1,12 @@
 <?php
-/*
- * This file is a part of GraphQL project.
- *
- * @author Alexandr Viniychuk <a@viniychuk.com>
- * created: 5:07 PM 5/14/16
- */
 
 namespace Youshido\GraphQL\Type\Traits;
 
-
 use Youshido\GraphQL\Config\Traits\ConfigAwareTrait;
 
+/**
+ * Trait FieldsAwareObjectTrait
+ */
 trait FieldsAwareObjectTrait
 {
     use ConfigAwareTrait;
@@ -48,5 +44,4 @@ trait FieldsAwareObjectTrait
     {
         return $this->getConfig()->hasFields();
     }
-
 }

@@ -3,6 +3,9 @@
 namespace Youshido\GraphQL\Execution\Context;
 
 use Psr\Container\ContainerInterface;
+use Youshido\GraphQL\ExceptionHandler\ExceptionHandlerInterface;
+use Youshido\GraphQL\Execution\ExceptionConverter\ExceptionConverter;
+use Youshido\GraphQL\Execution\ExceptionConverter\ExceptionConverterInterface;
 use Youshido\GraphQL\Execution\Request;
 use Youshido\GraphQL\Introspection\Field\SchemaField;
 use Youshido\GraphQL\Introspection\Field\TypeDefinitionField;
@@ -26,33 +29,25 @@ class ExecutionContext implements ExecutionContextInterface
     /** @var ContainerInterface */
     private $container;
 
+    /** @var ExceptionHandlerInterface[] */
+    private $errorHandlers = [];
+
+    /** @var  ExceptionConverterInterface */
+    private $exceptionConverter;
+
     /**
      * ExecutionContext constructor.
      *
      * @param AbstractSchema $schema
+     * @param bool           $debug
      */
-    public function __construct(AbstractSchema $schema)
+    public function __construct(AbstractSchema $schema, $debug = false)
     {
-        $this->schema = $schema;
+        $this->schema             = $schema;
+        $this->exceptionConverter = new ExceptionConverter($debug);
         $this->validateSchema();
 
         $this->introduceIntrospectionFields();
-    }
-
-    protected function validateSchema()
-    {
-        try {
-            (new SchemaValidator())->validate($this->schema);
-        } catch (\Exception $e) {
-            $this->addError($e);
-        }
-    }
-
-    protected function introduceIntrospectionFields()
-    {
-        $schemaField = new SchemaField();
-        $this->schema->addQueryField($schemaField);
-        $this->schema->addQueryField(new TypeDefinitionField());
     }
 
     /**
@@ -95,11 +90,6 @@ class ExecutionContext implements ExecutionContextInterface
         return $this;
     }
 
-    public function get($id)
-    {
-        return $this->container->get($id);
-    }
-
     /**
      * @return ContainerInterface
      */
@@ -118,5 +108,69 @@ class ExecutionContext implements ExecutionContextInterface
         $this->container = $container;
 
         return $this;
+    }
+
+    /**
+     * @return ExceptionConverterInterface
+     */
+    public function getExceptionConverter()
+    {
+        return $this->exceptionConverter;
+    }
+
+    /**
+     * @param ExceptionConverterInterface $exceptionConverter
+     */
+    public function setExceptionConverter(ExceptionConverterInterface $exceptionConverter)
+    {
+        $this->exceptionConverter = $exceptionConverter;
+    }
+
+    /**
+     * @param ExceptionHandlerInterface $handler
+     */
+    public function addErrorHandler(ExceptionHandlerInterface $handler)
+    {
+        $this->errorHandlers[] = $handler;
+    }
+
+    /**
+     * @param \Exception $exception
+     */
+    public function handleException(\Exception $exception)
+    {
+        foreach ($this->errorHandlers as $handler) {
+            $handler->handle($exception, $this);
+
+            if ($handler->isFinal($exception)) {
+                return;
+            }
+        }
+
+        $this->addError($exception);
+    }
+
+    /**
+     * @return array
+     */
+    public function getErrorsData()
+    {
+        return $this->exceptionConverter->convert($this->getErrors());
+    }
+
+    protected function validateSchema()
+    {
+        try {
+            (new SchemaValidator())->validate($this->schema);
+        } catch (\Exception $e) {
+            $this->addError($e);
+        }
+    }
+
+    protected function introduceIntrospectionFields()
+    {
+        $schemaField = new SchemaField();
+        $this->schema->addQueryField($schemaField);
+        $this->schema->addQueryField(new TypeDefinitionField());
     }
 }

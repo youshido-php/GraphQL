@@ -159,7 +159,17 @@ TEXT;
             [
                 '{ __type { name } }',
                 [
-                    'errors' => [['message' => 'Require "name" arguments to query "__type"']]
+                    'errors' => [
+                        [
+                            'message' => 'Require "name" arguments to query "__type"',
+                            'locations' => [
+                                [
+                                    'line'   => 1,
+                                    'column' => 3,
+                                ],
+                            ],
+                        ]
+                    ],
                 ]
             ],
             [

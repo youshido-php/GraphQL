@@ -29,21 +29,5 @@ class ErrorContainerTraitTest extends \PHPUnit_Framework_TestCase implements Err
 
         $this->addError($error);
         $this->assertEquals([$error], $this->getErrors());
-
-        $this->mergeErrors($this);
-        $this->assertEquals([$error, $error], $this->getErrors());
-
-        $this->clearErrors();
-        $this->addError(new DatableResolveException('Wrong data', 412, ['user_id' => '1']));
-        $this->assertEquals([
-            ['message' => 'Wrong data', 'code' => 412, 'user_id' => '1'],
-        ], $this->getErrorsArray());
-
-        $this->clearErrors();
-        $this->addError(new ConfigurationException('Invalid name'));
-        $this->assertEquals([
-            ['message' => 'Invalid name'],
-        ], $this->getErrorsArray());
-
     }
 }

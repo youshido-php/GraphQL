@@ -276,7 +276,7 @@ class RequestConformityValidator implements RequestValidatorInterface
         }
 
         if (count($requiredArguments)) {
-            throw new ResolveException(sprintf('Require "%s" arguments to query "%s"', implode(', ', array_keys($requiredArguments)), $query->getName()));
+            throw new ResolveException(sprintf('Require "%s" arguments to query "%s"', implode(', ', array_keys($requiredArguments)), $query->getName()), $query->getLocation());
         }
     }
 
