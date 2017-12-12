@@ -4,7 +4,6 @@ namespace Youshido\GraphQL\Config\Object;
 
 use Youshido\GraphQL\Config\AbstractConfig;
 use Youshido\GraphQL\Config\Traits\FieldsAwareConfigTrait;
-use Youshido\GraphQL\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\TypeService;
 
@@ -14,7 +13,7 @@ use Youshido\GraphQL\Type\TypeService;
  * @method setDescription(string $description)
  * @method string getDescription()
  */
-class ObjectTypeConfig extends AbstractConfig implements TypeConfigInterface
+class ObjectTypeConfig extends AbstractConfig
 {
     use FieldsAwareConfigTrait;
 

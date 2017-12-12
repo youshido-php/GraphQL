@@ -3,9 +3,7 @@
 namespace Youshido\GraphQL\Config\Object;
 
 use Youshido\GraphQL\Config\AbstractConfig;
-use Youshido\GraphQL\Config\Traits\ArgumentsAwareConfigTrait;
 use Youshido\GraphQL\Config\Traits\FieldsAwareConfigTrait;
-use Youshido\GraphQL\Config\TypeConfigInterface;
 use Youshido\GraphQL\Exception\ConfigurationException;
 use Youshido\GraphQL\Type\TypeService;
 
@@ -14,9 +12,9 @@ use Youshido\GraphQL\Type\TypeService;
  *
  * @method $this setDescription(string $description)
  */
-class InterfaceTypeConfig extends AbstractConfig implements TypeConfigInterface
+class InterfaceTypeConfig extends AbstractConfig
 {
-    use FieldsAwareConfigTrait, ArgumentsAwareConfigTrait;
+    use FieldsAwareConfigTrait;
 
     /**
      * @return array
