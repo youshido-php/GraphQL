@@ -45,7 +45,7 @@ class ExecutionContext implements ExecutionContextInterface
     {
         $this->schema             = $schema;
         $this->exceptionConverter = new ExceptionConverter($debug);
-        $this->validateSchema();
+        $this->validateSchema(); //todo: why validate schema?
 
         $this->introduceIntrospectionFields();
     }

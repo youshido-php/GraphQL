@@ -14,7 +14,7 @@ use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
  */
 trait FieldsAwareConfigTrait
 {
-    protected $fields = []; //todo: think about this: build fields in $fields and not build in config
+    protected $fields = []; //todo: think about this: built fields in $fields and not built in config
 
     /**
      * Configure object fields
