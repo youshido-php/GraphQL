@@ -45,7 +45,7 @@ class ExecutionContext implements ExecutionContextInterface
             (new SchemaValidator())->validate($this->schema);
         } catch (\Exception $e) {
             $this->addError($e);
-        };
+        }
     }
 
     protected function introduceIntrospectionFields()

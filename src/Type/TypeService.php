@@ -37,6 +37,8 @@ class TypeService
      *
      * @return null|AbstractType|StringType
      * @throws RuntimeException
+     *
+     * todo: we really need this method?
      */
     public static function resolveNamedType($object)
     {
@@ -159,6 +161,8 @@ class TypeService
      * @param string $path
      *
      * @return mixed|null
+     *
+     * todo: refactor this: move to separate file and maybe add to execution context
      */
     public static function getPropertyValue($data, $path)
     {

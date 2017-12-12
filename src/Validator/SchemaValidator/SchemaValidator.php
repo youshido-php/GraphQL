@@ -11,6 +11,8 @@ use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
 
 /**
  * Class SchemaValidator
+ *
+ * todo: talk about this
  */
 class SchemaValidator
 {
