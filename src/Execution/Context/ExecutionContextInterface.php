@@ -3,6 +3,7 @@
 namespace Youshido\GraphQL\Execution\Context;
 
 use Psr\Container\ContainerInterface;
+use Youshido\GraphQL\Execution\PropertyAccessor\PropertyAccessorInterface;
 use Youshido\GraphQL\Execution\Request;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerInterface;
@@ -41,6 +42,16 @@ interface ExecutionContextInterface extends ErrorContainerInterface
      * @param ContainerInterface $container
      */
     public function setContainer(ContainerInterface $container);
+
+    /**
+     * @return PropertyAccessorInterface
+     */
+    public function getPropertyAccessor();
+
+    /**
+     * @param PropertyAccessorInterface $propertyAccessor
+     */
+    public function setPropertyAccessor(PropertyAccessorInterface $propertyAccessor);
 
     /**
      * @param \Exception $exception

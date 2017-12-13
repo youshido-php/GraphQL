@@ -6,6 +6,8 @@ use Psr\Container\ContainerInterface;
 use Youshido\GraphQL\ExceptionHandler\ExceptionHandlerInterface;
 use Youshido\GraphQL\Execution\ExceptionConverter\ExceptionConverter;
 use Youshido\GraphQL\Execution\ExceptionConverter\ExceptionConverterInterface;
+use Youshido\GraphQL\Execution\PropertyAccessor\DefaultPropertyAccessor;
+use Youshido\GraphQL\Execution\PropertyAccessor\PropertyAccessorInterface;
 use Youshido\GraphQL\Execution\Request;
 use Youshido\GraphQL\Introspection\Field\SchemaField;
 use Youshido\GraphQL\Introspection\Field\TypeDefinitionField;
@@ -35,6 +37,9 @@ class ExecutionContext implements ExecutionContextInterface
     /** @var  ExceptionConverterInterface */
     private $exceptionConverter;
 
+    /** @var  PropertyAccessorInterface */
+    private $propertyAccessor;
+
     /**
      * ExecutionContext constructor.
      *
@@ -45,7 +50,8 @@ class ExecutionContext implements ExecutionContextInterface
     {
         $this->schema             = $schema;
         $this->exceptionConverter = new ExceptionConverter($debug);
-        $this->validateSchema(); //todo: why validate schema?
+        $this->propertyAccessor   = new DefaultPropertyAccessor();
+        $this->validateSchema();
 
         $this->introduceIntrospectionFields();
     }
@@ -156,6 +162,22 @@ class ExecutionContext implements ExecutionContextInterface
     public function getErrorsData()
     {
         return $this->exceptionConverter->convert($this->getErrors());
+    }
+
+    /**
+     * @return PropertyAccessorInterface
+     */
+    public function getPropertyAccessor()
+    {
+        return $this->propertyAccessor;
+    }
+
+    /**
+     * @param PropertyAccessorInterface $propertyAccessor
+     */
+    public function setPropertyAccessor(PropertyAccessorInterface $propertyAccessor)
+    {
+        $this->propertyAccessor = $propertyAccessor;
     }
 
     protected function validateSchema()

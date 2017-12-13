@@ -8,13 +8,13 @@
 
 namespace Youshido\Tests\Library\Utilities;
 
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
 use Youshido\Tests\DataProvider\TestInterfaceType;
 use Youshido\Tests\DataProvider\TestObjectType;
-use Youshido\Tests\Library\Type\ObjectTypeTest;
 
 class TypeUtilitiesTest extends \PHPUnit_Framework_TestCase
 {
@@ -57,10 +57,13 @@ class TypeUtilitiesTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse(TypeService::isAbstractType('invalid type'));
     }
 
-    public function testGetPropertyValue() {
+    public function testGetPropertyValue()
+    {
         $arrayData = (new TestObjectType())->getData();
 
-        $this->assertEquals('John', TypeService::getPropertyValue($arrayData, 'name'));
-        $this->assertEquals('John', TypeService::getPropertyValue((object) $arrayData, 'name'));
+        $propertyAccessor = new PropertyAccessor();
+
+        $this->assertEquals('John', $propertyAccessor->getValue($arrayData, 'name'));
+        $this->assertEquals('John', $propertyAccessor->getValue((object) $arrayData, 'name'));
     }
 }

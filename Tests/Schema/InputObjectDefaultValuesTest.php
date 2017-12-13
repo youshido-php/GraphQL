@@ -37,16 +37,22 @@ class InputObjectDefaultValuesTest extends \PHPUnit_Framework_TestCase
                     'stringQuery' => [
                         'type'    => new StringType(),
                         'args'    => [
-                            'statObject' => new InputObjectType([
-                                'name'   => 'StatObjectType',
-                                'fields' => [
-                                    'status' => [
-                                        'type'         => $enumType,
-                                        'defaultValue' => 1,
+
+                            'statObject' => [
+                                'type' => new InputObjectType([
+                                    'name'   => 'StatObjectType',
+                                    'fields' => [
+                                        'status' => [
+                                            'type'         => $enumType,
+                                            'defaultValue' => 1,
+                                        ],
+                                        'level'  => new NonNullType(new IntType()),
                                     ],
-                                    'level'  => new NonNullType(new IntType()),
-                                ],
-                            ]),
+                                ]),
+                                'defaultValue' => [
+                                    'status' => 1
+                                ]
+                            ],
                         ],
                         'resolve' => function ($source, $args) {
                             return sprintf('Result with level %s and status %s',
