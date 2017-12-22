@@ -21,6 +21,17 @@ use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
 use Youshido\GraphQL\Parser\Location;
 use Youshido\GraphQL\Parser\Parser;
+use Youshido\GraphQL\Parser\Token;
+
+class TokenizerTestingParser extends Parser {
+    public function initTokenizerForTesting($source) {
+        $this->initTokenizer($source);
+    }
+
+    public function getTokenForTesting() {
+        return $this->lookAhead;
+    }
+}
 
 class ParserTest extends \PHPUnit_Framework_TestCase
 {
@@ -91,6 +102,40 @@ GRAPHQL;
         ]);
     }
 
+    private function tokenizeStringContents($graphQLString) {
+        $parser = new TokenizerTestingParser();
+        $parser->initTokenizerForTesting('"' . $graphQLString . '"');
+
+        return $parser->getTokenForTesting();
+    }
+
+
+    public function testEscapedStrings()
+    {
+        $this->assertEquals([
+                $this->tokenizeStringContents(""),           
+                $this->tokenizeStringContents("x"),
+                $this->tokenizeStringContents("\\\""),
+                $this->tokenizeStringContents("\\/"),   
+                $this->tokenizeStringContents("\\f"),
+                $this->tokenizeStringContents("\\n"),
+                $this->tokenizeStringContents("\\r"),         
+                $this->tokenizeStringContents("\\b"),
+                $this->tokenizeStringContents("\\uABCD")
+            ],
+            [
+                new Token(Token::TYPE_STRING, 1, 1, ""),
+                new Token(Token::TYPE_STRING, 1, 2, "x"),
+                new Token(Token::TYPE_STRING, 1, 3, '"'),
+                new Token(Token::TYPE_STRING, 1, 3, '/'),
+                new Token(Token::TYPE_STRING, 1, 3, "\f"),
+                new Token(Token::TYPE_STRING, 1, 3, "\n"),
+                new Token(Token::TYPE_STRING, 1, 3, "\r"),     
+                new Token(Token::TYPE_STRING, 1, 3, "\u{0008}"),         
+                new Token(Token::TYPE_STRING, 1, 7, "\u{ABCD}")            
+            ]
+        );
+    }
 
     /**
      * @param $query string
