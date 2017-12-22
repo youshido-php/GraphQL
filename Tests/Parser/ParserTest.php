@@ -131,7 +131,7 @@ GRAPHQL;
                 new Token(Token::TYPE_STRING, 1, 3, "\f"),
                 new Token(Token::TYPE_STRING, 1, 3, "\n"),
                 new Token(Token::TYPE_STRING, 1, 3, "\r"),     
-                new Token(Token::TYPE_STRING, 1, 3, chr(8)),         
+                new Token(Token::TYPE_STRING, 1, 3, sprintf("%c", 8)),         
                 new Token(Token::TYPE_STRING, 1, 7, html_entity_decode("&#xABCD;", ENT_QUOTES, 'UTF-8'))            
             ]
         );
