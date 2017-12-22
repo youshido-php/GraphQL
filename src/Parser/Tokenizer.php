@@ -320,7 +320,7 @@ class Tokenizer
                     case '/':
                         break;
                     case 'b':
-                        $ch = "\u{0008}";
+                        $ch = sprintf("%c", 8);
                         break;
                     case 'f':
                         $ch = "\f";
