@@ -16,7 +16,7 @@ final class ObjectType extends AbstractObjectType
      */
     public function __construct(array $config)
     {
-        $this->config = new ObjectTypeConfig($config, $this, true);
+        $this->config = new ObjectTypeConfig($config, $this);
     }
 
     /**

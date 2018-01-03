@@ -7,7 +7,7 @@ use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
-use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeKind;
 use Youshido\GraphQL\Type\Union\AbstractUnionType;
 
 /**
@@ -17,7 +17,7 @@ class ResolveValidator implements ResolveValidatorInterface
 {
     public function assertValidResolvedValueForField(FieldInterface $field, $resolvedValue)
     {
-        if (null === $resolvedValue && $field->getType()->getKind() === TypeMap::KIND_NON_NULL) {
+        if (null === $resolvedValue && $field->getType()->getKind() === TypeKind::KIND_NON_NULL) {
             throw new ResolveException(sprintf('Cannot return null for non-nullable field "%s"', $field->getName()));
         }
 

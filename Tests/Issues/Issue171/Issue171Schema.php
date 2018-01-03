@@ -1,21 +1,23 @@
 <?php
 namespace Youshido\Tests\Issues\Issue171;
 
+use Youshido\GraphQL\Config\Object\EnumTypeConfig;
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\Enum\AbstractEnumType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\Object\ObjectType;
 
 class Issue171Schema extends AbstractSchema
 {
     public function build(SchemaConfig $config)
     {
-        $config->getQuery()->addField(
-            'plan',
-            [
-                'type' => new PlanType(),
+        $config->setQuery(new ObjectType([
+            'name' => 'RootQuery',
+            'fields' => [
+                'plan' => new PlanType()
             ]
-        );
+        ]));
     }
 }
 
@@ -31,9 +33,12 @@ class PlanType extends AbstractObjectType
 
 class KpiStatusType extends AbstractEnumType
 {
-    public function getValues()
+    /**
+     * @param EnumTypeConfig $config
+     */
+    protected function build(EnumTypeConfig $config)
     {
-        return [
+        $config->setValues([
             [
                 'name'              => 'BAD',
                 'value'             => 'Bad',
@@ -46,6 +51,6 @@ class KpiStatusType extends AbstractEnumType
                 'name'              => 'WARNING',
                 'value'             => 'Warning',
             ]
-        ];
+        ]);
     }
 }

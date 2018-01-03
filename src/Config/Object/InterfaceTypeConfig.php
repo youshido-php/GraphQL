@@ -4,13 +4,19 @@ namespace Youshido\GraphQL\Config\Object;
 
 use Youshido\GraphQL\Config\AbstractConfig;
 use Youshido\GraphQL\Config\Traits\FieldsAwareConfigTrait;
-use Youshido\GraphQL\Exception\ConfigurationException;
-use Youshido\GraphQL\Type\TypeService;
+use Youshido\GraphQL\Validator\ConfigValidator\PropertyType;
 
 /**
  * Class InterfaceTypeConfig
  *
- * @method $this setDescription(string $description)
+ * @method void setName(string $name)
+ * @method string getName()
+ *
+ * @method void setDescription(string $description)
+ * @method string|null getDescription()
+ *
+ * @method callable getResolveType()
+ * @method void setResolveType(callable $resolveType)
  */
 class InterfaceTypeConfig extends AbstractConfig
 {
@@ -22,10 +28,10 @@ class InterfaceTypeConfig extends AbstractConfig
     public function getRules()
     {
         return [
-            'name'        => ['type' => TypeService::TYPE_STRING, 'final' => true],
-            'fields'      => ['type' => TypeService::TYPE_ARRAY_OF_FIELDS_CONFIG, 'final' => true],
-            'description' => ['type' => TypeService::TYPE_STRING],
-            'resolveType' => ['type' => TypeService::TYPE_CALLABLE, 'final' => true],
+            'name'        => ['type' => PropertyType::TYPE_STRING, 'required' => true],
+            'fields'      => ['type' => PropertyType::TYPE_FIELD, 'required' => true, 'array' => true],
+            'resolveType' => ['type' => PropertyType::TYPE_CALLABLE, 'required' => true],
+            'description' => ['type' => PropertyType::TYPE_STRING],
         ];
     }
 
@@ -35,25 +41,5 @@ class InterfaceTypeConfig extends AbstractConfig
     protected function build()
     {
         $this->buildFields();
-    }
-
-    /**
-     * @param mixed $object
-     *
-     * @return mixed
-     * @throws ConfigurationException
-     */
-    public function resolveType($object)
-    {
-        $callable = $this->get('resolveType');
-
-        if ($callable && is_callable($callable)) {
-            return $callable($object);
-        }
-        if (is_callable([$this->contextObject, 'resolveType'])) {
-            return $this->contextObject->resolveType($object);
-        }
-
-        throw new ConfigurationException('There is no valid resolveType for ' . $this->getName());
     }
 }

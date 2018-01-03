@@ -22,7 +22,7 @@ class InterfaceTypeTest extends \PHPUnit_Framework_TestCase
     public function testInterfaceMethods()
     {
         $interface = new TestInterfaceType();
-        $this->assertEquals($interface->getNamedType(), $interface->getType());
+        $this->assertEquals($interface->getNamedType(), $interface);
         $nameField = new Field(['name' => 'name', 'type' => new StringType()]);
         $nameField->getName();
 

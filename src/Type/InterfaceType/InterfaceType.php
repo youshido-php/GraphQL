@@ -17,7 +17,7 @@ final class InterfaceType extends AbstractInterfaceType
      */
     public function __construct($config = [])
     {
-        $this->config = new InterfaceTypeConfig($config, $this, true);
+        $this->config = new InterfaceTypeConfig($config, $this);
     }
 
     /**
@@ -36,6 +36,6 @@ final class InterfaceType extends AbstractInterfaceType
      */
     public function resolveType($object)
     {
-        return $this->getConfig()->resolveType($object);
+        return $this->getConfig()->getResolveType()($object);
     }
 }

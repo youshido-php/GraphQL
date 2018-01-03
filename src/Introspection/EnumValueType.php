@@ -4,7 +4,8 @@ namespace Youshido\GraphQL\Introspection;
 
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
-use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\Scalar\BooleanType;
+use Youshido\GraphQL\Type\Scalar\StringType;
 
 /**
  * Class EnumValueType
@@ -17,10 +18,10 @@ class EnumValueType extends AbstractObjectType
     public function build($config)
     {
         $config
-            ->addField('name', new NonNullType(TypeMap::TYPE_STRING))
-            ->addField('description', TypeMap::TYPE_STRING)
-            ->addField('deprecationReason', TypeMap::TYPE_STRING)
-            ->addField('isDeprecated', new NonNullType(TypeMap::TYPE_BOOLEAN));
+            ->addField('name', new NonNullType(new StringType()))
+            ->addField('description', new StringType())
+            ->addField('deprecationReason', new StringType())
+            ->addField('isDeprecated', new NonNullType(new BooleanType()));
     }
 
     /**

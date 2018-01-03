@@ -1,21 +1,16 @@
 <?php
-/**
- * Date: 12.05.16
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\Tests\Library\Type;
 
-
 use Youshido\GraphQL\Type\Enum\EnumType;
-use Youshido\GraphQL\Type\TypeMap;
-use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
+use Youshido\GraphQL\Type\TypeKind;
 use Youshido\Tests\DataProvider\TestEnumType;
 
+/**
+ * Class EnumTypeTest
+ */
 class EnumTypeTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @expectedException Youshido\GraphQL\Exception\ConfigurationException
      */
@@ -29,11 +24,9 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidEmptyParams()
     {
-        $enumField = new EnumType([
-            'values' => []
+        new EnumType([
+            'values' => [],
         ]);
-        ConfigValidator::getInstance()->assertValidConfig($enumField->getConfig());
-
     }
 
     /**
@@ -41,13 +34,12 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidValueParams()
     {
-        $enumField = new EnumType([
+        new EnumType([
             'values' => [
                 'test'  => 'asd',
-                'value' => 'asdasd'
-            ]
+                'value' => 'asdasd',
+            ],
         ]);
-        ConfigValidator::getInstance()->assertValidConfig($enumField->getConfig());
     }
 
     /**
@@ -55,15 +47,14 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function testExistingNameParams()
     {
-        $enumField = new EnumType([
+        new EnumType([
             'values' => [
                 [
                     'test'  => 'asd',
-                    'value' => 'asdasd'
-                ]
-            ]
+                    'value' => 'asdasd',
+                ],
+            ],
         ]);
-        ConfigValidator::getInstance()->assertValidConfig($enumField->getConfig());
     }
 
     /**
@@ -71,15 +62,14 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidNameParams()
     {
-        $enumField = new EnumType([
+        new EnumType([
             'values' => [
                 [
                     'name'  => false,
-                    'value' => 'asdasd'
-                ]
-            ]
+                    'value' => 'asdasd',
+                ],
+            ],
         ]);
-        ConfigValidator::getInstance()->assertValidConfig($enumField->getConfig());
     }
 
     /**
@@ -87,14 +77,13 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function testWithoutValueParams()
     {
-        $enumField = new EnumType([
+        new EnumType([
             'values' => [
                 [
                     'name' => 'TEST_ENUM',
-                ]
-            ]
+                ],
+            ],
         ]);
-        ConfigValidator::getInstance()->assertValidConfig($enumField->getConfig());
     }
 
     public function testNormalCreatingParams()
@@ -102,21 +91,20 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
         $valuesData = [
             [
                 'name'  => 'ENABLE',
-                'value' => true
+                'value' => true,
             ],
             [
                 'name'  => 'DISABLE',
-                'value' => 'disable'
-            ]
+                'value' => 'disable',
+            ],
         ];
         $enumType   = new EnumType([
             'name'   => 'BoolEnum',
-            'values' => $valuesData
+            'values' => $valuesData,
         ]);
 
-        $this->assertEquals($enumType->getKind(), TypeMap::KIND_ENUM);
+        $this->assertEquals($enumType->getKind(), TypeKind::KIND_ENUM);
         $this->assertEquals($enumType->getName(), 'BoolEnum');
-        $this->assertEquals($enumType->getType(), $enumType);
         $this->assertEquals($enumType->getNamedType(), $enumType);
 
         $this->assertFalse($enumType->isValidValue($enumType));
@@ -137,5 +125,4 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
         $testEnumType = new TestEnumType();
         $this->assertEquals('TestEnum', $testEnumType->getName());
     }
-
 }

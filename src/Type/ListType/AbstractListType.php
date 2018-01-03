@@ -6,7 +6,7 @@ use Youshido\GraphQL\Config\Object\ListTypeConfig;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\CompositeTypeInterface;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
-use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeKind;
 
 /**
  * Class AbstractListType
@@ -94,7 +94,7 @@ abstract class AbstractListType extends AbstractObjectType implements CompositeT
      */
     final public function getKind()
     {
-        return TypeMap::KIND_LIST;
+        return TypeKind::KIND_LIST;
     }
 
     /**

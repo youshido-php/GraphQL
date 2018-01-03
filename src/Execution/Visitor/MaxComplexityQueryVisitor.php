@@ -37,7 +37,7 @@ class MaxComplexityQueryVisitor extends AbstractQueryVisitor
      */
     public function visit(array $args, FieldConfig $fieldConfig, $childScore = 0)
     {
-        $cost = $fieldConfig->get('cost', null);
+        $cost = $fieldConfig->getCost();
         if (is_callable($cost)) {
             $cost = $cost($args, $fieldConfig, $childScore);
         }

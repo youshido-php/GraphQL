@@ -4,19 +4,23 @@ namespace Youshido\GraphQL\Config\Directive;
 
 use Youshido\GraphQL\Config\AbstractConfig;
 use Youshido\GraphQL\Config\Traits\ArgumentsAwareConfigTrait;
-use Youshido\GraphQL\Type\TypeService;
+use Youshido\GraphQL\Validator\ConfigValidator\PropertyType;
 
 /**
  * Class DirectiveConfig
+ *
+ * @method void setName(string $name)
+ * @method string getName()
+ *
+ * @method void setDescription(string | null $description)
+ * @method string|null getDescription()
+ *
+ * @method array getLocations()
+ * @method void setLocations(array $locations)
  */
 class DirectiveConfig extends AbstractConfig
 {
     use ArgumentsAwareConfigTrait;
-
-    /**
-     * @var array
-     */
-    protected $locations = [];
 
     /**
      * @return array
@@ -24,19 +28,11 @@ class DirectiveConfig extends AbstractConfig
     public function getRules()
     {
         return [
-            'name'        => ['type' => TypeService::TYPE_STRING, 'final' => true],
-            'description' => ['type' => TypeService::TYPE_STRING],
-            'args'        => ['type' => TypeService::TYPE_ARRAY],
-            'locations'   => ['type' => TypeService::TYPE_ARRAY],
+            'name'        => ['type' => PropertyType::TYPE_STRING, 'required' => true],
+            'locations'   => ['type' => PropertyType::TYPE_LOCATION, 'array' => true, 'required' => true],
+            'description' => ['type' => PropertyType::TYPE_STRING],
+            'args'        => ['type' => PropertyType::TYPE_INPUT_FIELD, 'array' => true],
         ];
-    }
-
-    /**
-     * @return array
-     */
-    public function getLocations()
-    {
-        return $this->locations;
     }
 
     /**
@@ -45,11 +41,5 @@ class DirectiveConfig extends AbstractConfig
     public function build()
     {
         $this->buildArguments();
-
-        if (!empty($this->data['locations'])) {
-            foreach ($this->data['locations'] as $location) {
-                $this->locations[] = $location;
-            }
-        }
     }
 }

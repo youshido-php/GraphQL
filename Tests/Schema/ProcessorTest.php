@@ -1,13 +1,6 @@
 <?php
-/*
- * This file is a part of GraphQL project.
- *
- * @author Alexandr Viniychuk <a@viniychuk.com>
- * created: 11:02 PM 5/13/16
- */
 
 namespace Youshido\Tests\Schema;
-
 
 use Youshido\GraphQL\Execution\Container\Container;
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
@@ -25,22 +18,17 @@ use Youshido\GraphQL\Type\Scalar\IdType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\Union\UnionType;
-use Youshido\Tests\DataProvider\TestEmptySchema;
 use Youshido\Tests\DataProvider\TestEnumType;
 use Youshido\Tests\DataProvider\TestInterfaceType;
 use Youshido\Tests\DataProvider\TestObjectType;
 use Youshido\Tests\DataProvider\TestSchema;
 
+/**
+ * Class ProcessorTest
+ */
 class ProcessorTest extends \PHPUnit_Framework_TestCase
 {
-
     private $_counter = 0;
-
-    public function testInit()
-    {
-        $processor = new Processor(new ExecutionContext(new TestEmptySchema()));
-        $this->assertEquals([['message' => 'Schema has to have fields']], $processor->getExecutionContext()->getErrorsData());
-    }
 
     public function testEmptyQueries()
     {
@@ -211,8 +199,21 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor = new Processor(new ExecutionContext($schema));
 
         $processor->processPayload('mutation { __typename }');
-        $this->assertEquals(['data' => ['__typename' => 'RootSchemaMutation']], $processor->getResponseData());
+        $this->assertEquals([
+            'errors' => [
+                [
+                    'message'   => 'Field "__typename" not found.',
+                    'locations' => [
+                        [
+                            'line'   => 1,
+                            'column' => 12,
+                        ],
+                    ],
+                ],
+            ],
+        ], $processor->getResponseData());
 
+        $processor->getExecutionContext()->clearErrors();
         $processor->processPayload('{ __typename }');
         $this->assertEquals(['data' => ['__typename' => 'RootQuery']], $processor->getResponseData());
 
@@ -234,32 +235,39 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload('{ labels }');
         $this->assertEquals(['data' => ['labels' => ['one', 'two']]], $processor->getResponseData());
 
-        $schema->getMutationType()
-            ->addField(new Field([
-                'name'    => 'increaseCounter',
-                'type'    => new IntType(),
-                'resolve' => function ($value, $args, ResolveInfoInterface $info) {
-                    return $this->_counter += $args['amount'];
-                },
-                'args'    => [
-                    'amount' => [
-                        'type'         => new IntType(),
-                        'defaultValue' => 1,
+        $schema->setMutationType(new ObjectType([
+            'name'   => 'RootSchemaMutation',
+            'fields' => [
+                new Field([
+                    'name'    => 'increaseCounter',
+                    'type'    => new IntType(),
+                    'resolve' => function ($value, $args, ResolveInfoInterface $info) {
+                        return $this->_counter += $args['amount'];
+                    },
+                    'args'    => [
+                        'amount' => [
+                            'type'         => new IntType(),
+                            'defaultValue' => 1,
+                        ],
                     ],
-                ],
-            ]))->addField(new Field([
-                'name'    => 'invalidResolveTypeMutation',
-                'type'    => new NonNullType(new IntType()),
-                'resolve' => function () {
-                    return null;
-                },
-            ]))->addField(new Field([
-                'name'    => 'interfacedMutation',
-                'type'    => new TestInterfaceType(),
-                'resolve' => function () {
-                    return ['name' => 'John'];
-                },
-            ]));
+                ]),
+                new Field([
+                    'name'    => 'invalidResolveTypeMutation',
+                    'type'    => new NonNullType(new IntType()),
+                    'resolve' => function () {
+                        return null;
+                    },
+                ]),
+                new Field([
+                    'name'    => 'interfacedMutation',
+                    'type'    => new TestInterfaceType(),
+                    'resolve' => function () {
+                        return ['name' => 'John'];
+                    },
+                ]),
+            ],
+        ]));
+
         $processor->processPayload('mutation { increaseCounter }');
         $this->assertEquals(['data' => ['increaseCounter' => 1]], $processor->getResponseData());
 
@@ -561,21 +569,21 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $object1 = new ObjectType([
             'name'   => 'Object1',
             'fields' => [
-                'id' => ['type' => 'int', 'cost' => 13],
+                'id' => ['type' => new IntType(), 'cost' => 13],
             ],
         ]);
 
         $object2 = new ObjectType([
             'name'   => 'Object2',
             'fields' => [
-                'name' => ['type' => 'string'],
+                'name' => ['type' => new StringType()],
             ],
         ]);
 
         $object3 = new ObjectType([
             'name'   => 'Object3',
             'fields' => [
-                'name' => ['type' => 'string'],
+                'name' => ['type' => new StringType()],
             ],
         ]);
 
@@ -604,7 +612,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                     'union'        => [
                         'type'    => $union,
                         'args'    => [
-                            'type' => ['type' => 'string'],
+                            'type' => ['type' => new StringType()],
                         ],
                         'cost'    => 10,
                         'resolve' => function ($value, $args) {
@@ -765,7 +773,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                                 },
                                 'args'    => [
                                     'cost' => [
-                                        'type'    => new IntType(),
+                                        'type'         => new IntType(),
                                         'defaultValue' => 1,
                                     ],
                                 ],
@@ -804,10 +812,10 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertArraySubset(['errors' => [['message' => 'Field "badfield" not found in type "User". Available fields are: "firstName", "lastName", "code", "likes"']]], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
-        foreach (range(1, 5) as $cost_multiplier) {
+        foreach (range(1, 5) as $costMultiplier) {
             $visitor = new MaxComplexityQueryVisitor(1000); // arbitrarily high cost
-            $processor->processPayload("{ me (cost: $cost_multiplier) { firstName, lastName, code, likes } }", ['cost' => $cost_multiplier], [$visitor]);
-            $expected = 1 + 13 * (1 + $cost_multiplier);
+            $processor->processPayload("{ me (cost: $costMultiplier) { firstName, lastName, code, likes } }", [], [$visitor]);
+            $expected = 1 + 13 * (1 + $costMultiplier);
             $this->assertEquals($expected, $visitor->getMemo());
         }
 

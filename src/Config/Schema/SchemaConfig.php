@@ -3,118 +3,94 @@
 namespace Youshido\GraphQL\Config\Schema;
 
 use Youshido\GraphQL\Config\AbstractConfig;
+use Youshido\GraphQL\Directive\DirectiveInterface;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
-use Youshido\GraphQL\Type\Object\ObjectType;
-use Youshido\GraphQL\Type\SchemaDirectiveCollection;
-use Youshido\GraphQL\Type\SchemaTypesCollection;
-use Youshido\GraphQL\Type\TypeService;
+use Youshido\GraphQL\Type\TypeInterface;
+use Youshido\GraphQL\Validator\ConfigValidator\PropertyType;
 
 /**
  * Class SchemaConfig
+ *
+ * @method void setName(string $name)
+ * @method string getName()
+ *
+ * @method AbstractObjectType getQuery()
+ * @method void setQuery(AbstractObjectType $query)
+ *
+ * @method AbstractObjectType getMutation()
+ * @method void setMutation(AbstractObjectType $query)
+ *
+ * @method AbstractObjectType[] getTypes()
+ * @method void setTypes(array $types)
+ *
+ * @method DirectiveInterface[] getDirectives()
+ * @method void setDirectives(array $directives)
  */
 class SchemaConfig extends AbstractConfig
 {
-    /**
-     * @var SchemaTypesCollection
-     */
-    private $types;
-
-    /**
-     * @var SchemaDirectiveCollection;
-     */
-    private $directives;
-
-    public function __construct(array $configData, $contextObject = null, $finalClass = false)
-    {
-        $this->types      = new SchemaTypesCollection();
-        $this->directives = new SchemaDirectiveCollection();
-
-        parent::__construct($configData, $contextObject, $finalClass);
-    }
-
     /**
      * @return array
      */
     public function getRules()
     {
         return [
-            'query'      => ['type' => TypeService::TYPE_OBJECT_TYPE, 'required' => true],
-            'mutation'   => ['type' => TypeService::TYPE_OBJECT_TYPE],
-            'types'      => ['type' => TypeService::TYPE_ARRAY],
-            'directives' => ['type' => TypeService::TYPE_ARRAY],
-            'name'       => ['type' => TypeService::TYPE_STRING],
+            'query'      => ['type' => PropertyType::TYPE_OBJECT_TYPE, 'required' => true],
+            'mutation'   => ['type' => PropertyType::TYPE_OBJECT_TYPE],
+            'types'      => ['type' => PropertyType::TYPE_GRAPHQL_TYPE, 'default' => [], 'array' => true],
+            'directives' => ['type' => PropertyType::TYPE_DIRECTIVE, 'default' => [], 'array' => true],
+            'name'       => ['type' => PropertyType::TYPE_STRING, 'default' => 'Schema'],
         ];
     }
 
     /**
-     * @return AbstractObjectType
+     * @param TypeInterface $type
      */
-    public function getQuery()
+    public function addType(TypeInterface $type)
     {
-        return $this->data['query'];
+        $this->data['types'][$type->getName()] = $type;
     }
 
     /**
-     * @param $query AbstractObjectType
-     *
-     * @return SchemaConfig
+     * @param string $name
      */
-    public function setQuery($query)
+    public function removeType($name)
     {
-        $this->data['query'] = $query;
-
-        return $this;
+        if (isset($this->data['types'][$name])) {
+            unset($this->data['types'][$name]);
+        }
     }
 
     /**
-     * @return ObjectType
+     * @param DirectiveInterface $directive
      */
-    public function getMutation()
+    public function addDirective(DirectiveInterface $directive)
     {
-        return $this->get('mutation');
+        $this->data['directives'][$directive->getName()] = $directive;
     }
 
     /**
-     * @param $query AbstractObjectType
-     *
-     * @return SchemaConfig
+     * @param string $name
      */
-    public function setMutation($query)
+    public function removeDirective($name)
     {
-        $this->data['mutation'] = $query;
-
-        return $this;
-    }
-
-    public function getName()
-    {
-        return $this->get('name', 'RootSchema');
-    }
-
-    /**
-     * @return SchemaTypesCollection
-     */
-    public function getTypes()
-    {
-        return $this->types;
-    }
-
-    /**
-     * @return SchemaDirectiveCollection
-     */
-    public function getDirectives()
-    {
-        return $this->directives;
+        if (isset($this->data['directives'][$name])) {
+            unset($this->data['directives'][$name]);
+        }
     }
 
     protected function build()
     {
-        parent::build();
-        if (!empty($this->data['types'])) {
-            $this->types->addMany($this->data['types']);
+        $directives = (array) (isset($this->data['directives']) ? $this->data['directives'] : []);
+        $types      = (array) (isset($this->data['types']) ? $this->data['types'] : []);
+
+        $this->data['directives'] = [];
+        $this->data['types']      = [];
+
+        foreach ($directives as $directive) {
+            $this->addDirective($directive);
         }
-        if (!empty($this->data['directives'])) {
-            $this->directives->addMany($this->data['directives']);
+        foreach ($types as $type) {
+            $this->addType($type);
         }
     }
 }

@@ -3,12 +3,23 @@
 namespace Youshido\GraphQL\Field;
 
 use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
+use Youshido\GraphQL\Type\TypeInterface;
 
 /**
  * Interface FieldInterface
  */
-interface FieldInterface extends InputFieldInterface
+interface FieldInterface extends ArgumentsContainerInterface
 {
+    /**
+     * @return TypeInterface
+     */
+    public function getType();
+
+    /**
+     * @return string
+     */
+    public function getName();
+
     /**
      * @param mixed                $value
      * @param array                $args

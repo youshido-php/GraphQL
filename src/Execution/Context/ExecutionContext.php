@@ -13,7 +13,6 @@ use Youshido\GraphQL\Introspection\Field\SchemaField;
 use Youshido\GraphQL\Introspection\Field\TypeDefinitionField;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
-use Youshido\GraphQL\Validator\SchemaValidator\SchemaValidator;
 
 /**
  * Class ExecutionContext
@@ -51,7 +50,6 @@ class ExecutionContext implements ExecutionContextInterface
         $this->schema             = $schema;
         $this->exceptionConverter = new ExceptionConverter($debug);
         $this->propertyAccessor   = new DefaultPropertyAccessor();
-        $this->validateSchema();
 
         $this->introduceIntrospectionFields();
     }
@@ -180,19 +178,11 @@ class ExecutionContext implements ExecutionContextInterface
         $this->propertyAccessor = $propertyAccessor;
     }
 
-    protected function validateSchema()
-    {
-        try {
-            (new SchemaValidator())->validate($this->schema);
-        } catch (\Exception $e) {
-            $this->addError($e);
-        }
-    }
-
     protected function introduceIntrospectionFields()
     {
-        $schemaField = new SchemaField();
-        $this->schema->addQueryField($schemaField);
-        $this->schema->addQueryField(new TypeDefinitionField());
+        $this->schema->getQueryType()->addFields([
+            new SchemaField(),
+            new TypeDefinitionField(),
+        ]);
     }
 }

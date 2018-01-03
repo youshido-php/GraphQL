@@ -10,20 +10,9 @@ use Youshido\GraphQL\Config\Object\EnumTypeConfig;
 final class EnumType extends AbstractEnumType
 {
     /**
-     * EnumType constructor.
-     *
-     * @param array $config
+     * @param EnumTypeConfig $config
      */
-    public function __construct(array $config)
+    protected function build(EnumTypeConfig $config)
     {
-        $this->config = new EnumTypeConfig($config, $this, true);
-    }
-
-    /**
-     * @return array
-     */
-    public function getValues()
-    {
-        return $this->getConfig()->getValues();
     }
 }

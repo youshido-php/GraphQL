@@ -2,9 +2,9 @@
 
 namespace Youshido\GraphQL\Type\Scalar;
 
-use Youshido\GraphQL\Config\Traits\ConfigAwareTrait;
 use Youshido\GraphQL\Type\AbstractType;
-use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\Traits\ConfigAwareTrait;
+use Youshido\GraphQL\Type\TypeKind;
 
 /**
  * Class AbstractScalarType
@@ -28,7 +28,7 @@ abstract class AbstractScalarType extends AbstractType
      */
     final public function getKind()
     {
-        return TypeMap::KIND_SCALAR;
+        return TypeKind::KIND_SCALAR;
     }
 
     /**

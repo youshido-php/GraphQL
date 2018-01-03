@@ -6,7 +6,7 @@ use Youshido\GraphQL\Config\Object\InterfaceTypeConfig;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\Traits\FieldsAwareObjectTrait;
-use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeKind;
 
 /**
  * Class AbstractInterfaceType
@@ -61,7 +61,7 @@ abstract class AbstractInterfaceType extends AbstractType
      */
     public function getKind()
     {
-        return TypeMap::KIND_INTERFACE;
+        return TypeKind::KIND_INTERFACE;
     }
 
     /**

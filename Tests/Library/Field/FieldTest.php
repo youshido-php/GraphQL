@@ -13,10 +13,11 @@ use Youshido\GraphQL\Config\Field\FieldConfig;
 use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\InputField;
+use Youshido\GraphQL\Type\Scalar\FloatType;
 use Youshido\GraphQL\Type\Scalar\IdType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
-use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeKind;
 use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
 use Youshido\Tests\DataProvider\TestField;
 use Youshido\Tests\DataProvider\TestResolveInfo;
@@ -46,8 +47,7 @@ class FieldTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('true', $fieldWithResolve->resolve(true, [], $resolveInfo), 'Resolve bool to string');
 
         $fieldWithResolve->setType(new IntType());
-        $this->assertEquals(new StringType(), $fieldWithResolve->getType()->getName());
-
+        $this->assertEquals(new StringType(), $fieldWithResolve->getType());
     }
 
     public function testObjectFieldCreation()
@@ -91,8 +91,7 @@ class FieldTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidFieldParams($fieldConfig)
     {
-        $field = new Field($fieldConfig);
-        ConfigValidator::getInstance()->assertValidConfig($field->getConfig());
+        new Field($fieldConfig);
     }
 
     public function invalidFieldProvider()
@@ -106,7 +105,7 @@ class FieldTest extends \PHPUnit_Framework_TestCase
             ],
             [
                 [
-                    'type' => TypeMap::TYPE_FLOAT
+                    'type' => new FloatType()
                 ]
             ]
         ];

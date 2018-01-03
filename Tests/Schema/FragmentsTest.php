@@ -46,13 +46,9 @@ class CourtReservation extends AbstractObjectType
                 ]
             ]))
         ]);
-    }
 
-    public function getInterfaces()
-    {
-        return [new ReservationInterface()];
+        $config->setInterfaces([new ReservationInterface()]);
     }
-
 }
 
 class ClassReservation extends AbstractObjectType
@@ -63,11 +59,8 @@ class ClassReservation extends AbstractObjectType
             'id'   => new IdType(),
             'user' => new UserType()
         ]);
-    }
 
-    public function getInterfaces()
-    {
-        return [new ReservationInterface()];
+        $config->setInterfaces([new ReservationInterface()]);
     }
 }
 

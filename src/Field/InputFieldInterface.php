@@ -7,7 +7,7 @@ use Youshido\GraphQL\Type\AbstractType;
 /**
  * Interface InputFieldInterface
  */
-interface InputFieldInterface extends ArgumentsContainerInterface
+interface InputFieldInterface
 {
     /**
      * @return AbstractType
@@ -18,4 +18,9 @@ interface InputFieldInterface extends ArgumentsContainerInterface
      * @return string
      */
     public function getName();
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultValue();
 }

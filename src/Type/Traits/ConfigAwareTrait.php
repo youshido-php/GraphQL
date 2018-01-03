@@ -1,6 +1,6 @@
 <?php
 
-namespace Youshido\GraphQL\Config\Traits;
+namespace Youshido\GraphQL\Type\Traits;
 
 use Youshido\GraphQL\Config\AbstractConfig;
 use Youshido\GraphQL\Config\Field\FieldConfig;
@@ -9,6 +9,9 @@ use Youshido\GraphQL\Config\Object\ObjectTypeConfig;
 
 /**
  * Trait ConfigAwareTrait
+ *
+ * todo we really need this?
+ * todo bug when build cache and then change something
  */
 trait ConfigAwareTrait
 {

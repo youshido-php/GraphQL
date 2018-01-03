@@ -3,12 +3,29 @@
 namespace Youshido\GraphQL\Config\Field;
 
 use Youshido\GraphQL\Config\AbstractConfig;
-use Youshido\GraphQL\Type\TypeService;
+use Youshido\GraphQL\Type\TypeInterface;
+use Youshido\GraphQL\Validator\ConfigValidator\PropertyType;
 
 /**
  * Class InputFieldConfig
  *
- * @method $this setDescription(string $description)
+ * @method void setName(string $name)
+ * @method string getName()
+ *
+ * @method void setDescription(string $description)
+ * @method string|null getDescription()
+ *
+ * @method void setType(TypeInterface $type)
+ * @method TypeInterface getType()
+ *
+ * @method void setDefaultValue(mixed $defaultValue)
+ * @method mixed|null getDefaultValue()
+ *
+ * @method void setIsDeprecated(bool $isDeprecated)
+ * @method bool isDeprecated()
+ *
+ * @method void setDeprecationReason(string $deprecationReason)
+ * @method string getDeprecationReason()
  */
 class InputFieldConfig extends AbstractConfig
 {
@@ -18,20 +35,12 @@ class InputFieldConfig extends AbstractConfig
     public function getRules()
     {
         return [
-            'name'              => ['type' => TypeService::TYPE_STRING, 'final' => true],
-            'type'              => ['type' => TypeService::TYPE_ANY_INPUT, 'final' => true],
-            'defaultValue'      => ['type' => TypeService::TYPE_ANY],
-            'description'       => ['type' => TypeService::TYPE_STRING],
-            'isDeprecated'      => ['type' => TypeService::TYPE_BOOLEAN],
-            'deprecationReason' => ['type' => TypeService::TYPE_STRING],
+            'name'              => ['type' => PropertyType::TYPE_STRING, 'required' => true],
+            'type'              => ['type' => PropertyType::TYPE_INPUT_TYPE, 'required' => true],
+            'defaultValue'      => ['type' => PropertyType::TYPE_ANY],
+            'description'       => ['type' => PropertyType::TYPE_STRING],
+            'isDeprecated'      => ['type' => PropertyType::TYPE_BOOLEAN, 'default' => false],
+            'deprecationReason' => ['type' => PropertyType::TYPE_STRING],
         ];
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDefaultValue()
-    {
-        return $this->get('defaultValue');
     }
 }

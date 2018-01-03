@@ -2,14 +2,12 @@
 
 namespace Youshido\GraphQL\Type\Traits;
 
-use Youshido\GraphQL\Config\Traits\ConfigAwareTrait;
-
 /**
  * Trait FieldsAwareObjectTrait
  */
 trait FieldsAwareObjectTrait
 {
-    use ConfigAwareTrait;
+    use ConfigAwareTrait; //todo refactor
 
     public function addFields($fieldsList)
     {

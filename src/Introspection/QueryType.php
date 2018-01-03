@@ -13,7 +13,8 @@ use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\BooleanType;
-use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\Scalar\StringType;
+use Youshido\GraphQL\Type\TypeKind;
 use Youshido\GraphQL\Type\Union\AbstractUnionType;
 
 /**
@@ -65,7 +66,7 @@ class QueryType extends AbstractObjectType
      */
     public function resolveEnumValues($value, $args)
     {
-        if ($value && $value->getKind() === TypeMap::KIND_ENUM) {
+        if ($value && $value->getKind() === TypeKind::KIND_ENUM) {
             $data = [];
             foreach ($value->getValues() as $enumValue) {
                 if (!$args['includeDeprecated'] && (isset($enumValue['isDeprecated']) && $enumValue['isDeprecated'])) {
@@ -99,7 +100,7 @@ class QueryType extends AbstractObjectType
      */
     public function resolveFields($value, $args)
     {
-        if (!$value || in_array($value->getKind(), [TypeMap::KIND_SCALAR, TypeMap::KIND_UNION, TypeMap::KIND_INPUT_OBJECT, TypeMap::KIND_ENUM], false)) {
+        if (!$value || in_array($value->getKind(), [TypeKind::KIND_SCALAR, TypeKind::KIND_UNION, TypeKind::KIND_INPUT_OBJECT, TypeKind::KIND_ENUM], false)) {
             return null;
         }
 
@@ -121,7 +122,7 @@ class QueryType extends AbstractObjectType
      */
     public function resolveInterfaces($value)
     {
-        if ($value->getKind() === TypeMap::KIND_OBJECT) {
+        if ($value->getKind() === TypeKind::KIND_OBJECT) {
             /** @var $value AbstractObjectType */
             return $value->getConfig()->getInterfaces() ?: [];
         }
@@ -138,13 +139,13 @@ class QueryType extends AbstractObjectType
      */
     public function resolvePossibleTypes($value, $args, ResolveInfoInterface $info)
     {
-        if ($value->getKind() === TypeMap::KIND_INTERFACE) {
+        if ($value->getKind() === TypeKind::KIND_INTERFACE) {
             $collector = TypeCollector::getInstance();
             $collector->addSchema($info->getExecutionContext()->getSchema());
 
             return $collector->getInterfacePossibleTypes($value->getName());
         }
-        if ($value->getKind() === TypeMap::KIND_UNION) {
+        if ($value->getKind() === TypeKind::KIND_UNION) {
             /** @var $value AbstractUnionType */
             return $value->getTypes();
         }
@@ -158,9 +159,9 @@ class QueryType extends AbstractObjectType
     public function build($config)
     {
         $config
-            ->addField('name', TypeMap::TYPE_STRING)
-            ->addField('kind', new NonNullType(TypeMap::TYPE_STRING))
-            ->addField('description', TypeMap::TYPE_STRING)
+            ->addField('name', new StringType())
+            ->addField('kind', new NonNullType(new StringType()))
+            ->addField('description', new StringType())
             ->addField('ofType', [
                 'type'    => new QueryType(),
                 'resolve' => [$this, 'resolveOfType'],

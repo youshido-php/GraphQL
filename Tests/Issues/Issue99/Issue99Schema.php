@@ -1,4 +1,5 @@
 <?php
+
 namespace Youshido\Tests\Issues\Issue99;
 
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
@@ -17,42 +18,44 @@ class Issue99Schema extends AbstractSchema
     {
         $config->setQuery(
             new ObjectType([
+                'name'   => 'Item',
                 'fields' => [
                     new Field([
-                        'name' => 'items',
-                        'type' => new ListType(new ObjectType([
-                            'fields'  => [
-                                'id'   => new NonNullType(new IdType()),
+                        'name'    => 'items',
+                        'type'    => new ListType(new ObjectType([
+                            'name'   => 'Item',
+                            'fields' => [
+                                'id' => new NonNullType(new IdType()),
                                 new Field([
-                                    'name' => 'custom',
-                                    'type' => new ObjectType([
-                                        'name' => 'ValueType',
+                                    'name'    => 'custom',
+                                    'type'    => new ObjectType([
+                                        'name'   => 'ValueType',
                                         'fields' => [
-                                            'value' => new StringType()
+                                            'value' => new StringType(),
                                         ],
                                     ]),
-                                    'args' => [
+                                    'args'    => [
                                         'argX' => [
                                             'type' => new NonNullType(new InputObjectType([
-                                                'name' => 'InputX',
+                                                'name'   => 'InputX',
                                                 'fields' => [
-                                                    'x' => new NonNullType(new StringType())
-                                                ]
-                                            ]))
-                                        ]
+                                                    'x' => new NonNullType(new StringType()),
+                                                ],
+                                            ])),
+                                        ],
                                     ],
-                                    'resolve' => function($source, $args) {
+                                    'resolve' => function ($source, $args) {
                                         $x = isset($args['argX']['x']) ? $args['argX']['x'] : Issue99Test::BUG_EXISTS_VALUE;
 
                                         return [
-                                            'value' => $x
+                                            'value' => $x,
                                         ];
-                                    }
-                                ])
+                                    },
+                                ]),
                             ],
                         ])),
                         'args'    => [
-                            'example' => new StringType()
+                            'example' => new StringType(),
                         ],
                         'resolve' => function () {
                             return [
@@ -61,9 +64,9 @@ class Issue99Schema extends AbstractSchema
                                 ['id' => 3],
                                 ['id' => 4],
                             ];
-                        }
-                    ])
-                ]
+                        },
+                    ]),
+                ],
             ])
         );
     }

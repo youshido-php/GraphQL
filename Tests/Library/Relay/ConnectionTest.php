@@ -11,8 +11,8 @@ namespace Youshido\Tests\Library\Relay;
 
 use Youshido\GraphQL\Relay\Connection\Connection;
 use Youshido\GraphQL\Relay\Type\PageInfoType;
+use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
-use Youshido\GraphQL\Type\TypeMap;
 use Youshido\Tests\DataProvider\TestObjectType;
 
 class ConnectionTest extends \PHPUnit_Framework_TestCase
@@ -21,10 +21,10 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     public function testConnectionArgs()
     {
         $this->assertEquals([
-            'after'  => ['type' => TypeMap::TYPE_STRING],
-            'first'  => ['type' => TypeMap::TYPE_INT],
-            'before' => ['type' => TypeMap::TYPE_STRING],
-            'last'   => ['type' => TypeMap::TYPE_INT],
+            'after'  => ['type' => new StringType()],
+            'first'  => ['type' => new IntType()],
+            'before' => ['type' => new StringType()],
+            'last'   => ['type' => new IntType()],
 
         ], Connection::connectionArgs());
     }

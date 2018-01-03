@@ -2,32 +2,18 @@
 
 namespace Youshido\GraphQL\Field;
 
-use Youshido\GraphQL\Type\Object\AbstractObjectType;
+use Youshido\GraphQL\Type\TypeInterface;
 
 /**
  * Class Field
- *
- * @package Youshido\GraphQL\Type\Field
- *
  */
 final class Field extends AbstractField
 {
-    protected $isFinal = true;
-
-    protected $_typeCache;
-    protected $_nameCache;
-
     /**
-     * @return AbstractObjectType
+     * @return TypeInterface
      */
     public function getType()
     {
-        return $this->_typeCache ?: ($this->_typeCache = $this->getConfigValue('type'));
+        return $this->getConfig()->getType();
     }
-
-    public function getName()
-    {
-        return $this->_nameCache ?: ($this->_nameCache = $this->getConfigValue('name'));
-    }
-
 }

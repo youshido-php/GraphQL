@@ -2,8 +2,8 @@
 
 namespace Youshido\GraphQL\Type;
 
-use Youshido\GraphQL\Config\Traits\ConfigAwareTrait;
 use Youshido\GraphQL\Exception\ConfigurationException;
+use Youshido\GraphQL\Type\Traits\ConfigAwareTrait;
 
 /**
  * Class NonNullType
@@ -21,15 +21,9 @@ final class NonNullType extends AbstractType implements CompositeTypeInterface
      *
      * @throws ConfigurationException
      */
-    public function __construct($fieldType)
+    public function __construct(AbstractType $fieldType)
     {
-        if (!TypeService::isGraphQLType($fieldType)) {
-            throw new ConfigurationException('NonNullType accepts only GraphpQL Types as argument');
-        }
-        if (TypeService::isScalarType($fieldType)) {
-            $fieldType = TypeFactory::getScalarType($fieldType);
-        }
-
+        //todo not null config
         $this->_typeOf = $fieldType;
     }
 
@@ -46,7 +40,7 @@ final class NonNullType extends AbstractType implements CompositeTypeInterface
      */
     final public function getKind()
     {
-        return TypeMap::KIND_NON_NULL;
+        return TypeKind::KIND_NON_NULL;
     }
 
     /**

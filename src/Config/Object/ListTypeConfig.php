@@ -2,12 +2,17 @@
 
 namespace Youshido\GraphQL\Config\Object;
 
-use Youshido\GraphQL\Type\TypeService;
+use Youshido\GraphQL\Config\AbstractConfig;
+use Youshido\GraphQL\Type\TypeInterface;
+use Youshido\GraphQL\Validator\ConfigValidator\PropertyType;
 
 /**
  * Class ListTypeConfig
+ *
+ * @method TypeInterface getItemType()
+ * @method void setItemType(TypeInterface $itemType)
  */
-class ListTypeConfig extends ObjectTypeConfig
+class ListTypeConfig extends AbstractConfig
 {
     /**
      * @return array
@@ -15,9 +20,7 @@ class ListTypeConfig extends ObjectTypeConfig
     public function getRules()
     {
         return [
-            'itemType' => ['type' => TypeService::TYPE_GRAPHQL_TYPE, 'final' => true],
-            'resolve'  => ['type' => TypeService::TYPE_CALLABLE],
-            'args'     => ['type' => TypeService::TYPE_ARRAY_OF_INPUT_FIELDS],
+            'itemType' => ['type' => PropertyType::TYPE_GRAPHQL_TYPE, 'required' => true],
         ];
     }
 }

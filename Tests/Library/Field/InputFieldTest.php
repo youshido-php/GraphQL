@@ -131,7 +131,7 @@ TEXT;
     {
         $field = new InputField([
             'name'         => 'id',
-            'type'         => 'id',
+            'type'         => new IdType(),
             'description'  => 'description',
             'defaultValue' => 123
         ]);

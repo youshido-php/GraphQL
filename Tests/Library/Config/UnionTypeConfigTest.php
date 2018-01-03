@@ -2,25 +2,34 @@
 
 namespace Youshido\Tests\Library\Config;
 
-use Youshido\GraphQL\Config\Object\InterfaceTypeConfig;
+use Youshido\GraphQL\Config\Object\UnionTypeConfig;
+use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IdType;
+use Youshido\GraphQL\Type\Scalar\IntType;
+use Youshido\GraphQL\Type\Scalar\StringType;
 
 /**
- * Class InterfaceTypeConfigTest
+ * Class UnionTypeConfigTest
  */
-class InterfaceTypeConfigTest extends \PHPUnit_Framework_TestCase
+class UnionTypeConfigTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreation()
     {
-        $config = new InterfaceTypeConfig([
-            'name'        => 'Test',
-            'fields'      => [
-                'id' => new IdType(),
+        $objectType = new ObjectType([
+            'name'   => 'Object',
+            'fields' => [
+                'test' => new StringType(),
             ],
+        ]);
+        $config     = new UnionTypeConfig([
+            'name'        => 'Union',
+            'types'       => [$objectType],
             'resolveType' => function () {
+
             },
         ]);
-        $this->assertEquals($config->getName(), 'Test');
+
+        $this->assertEquals($config->getName(), 'Union');
 
         $config->setName('test2');
         $this->assertEquals($config->getName(), 'test2');
@@ -33,6 +42,16 @@ class InterfaceTypeConfigTest extends \PHPUnit_Framework_TestCase
         }, $config->getResolveType());
         $config->setResolveType('null');
         $this->assertEquals('null', $config->getResolveType());
+
+        $this->assertEquals([$objectType], $config->getTypes());
+        $objectType2 = new ObjectType([
+            'name'   => 'Test',
+            'fields' => [
+                'id' => new IdType(),
+            ],
+        ]);
+        $config->setTypes([$objectType2]);
+        $this->assertEquals([$objectType2], $config->getTypes());
     }
 
     /**
@@ -43,12 +62,19 @@ class InterfaceTypeConfigTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidConfigs(array $config)
     {
-        $config = new InterfaceTypeConfig($config);
+        $config = new UnionTypeConfig($config);
         $config->validate();
     }
 
     public function invalidConfigs()
     {
+        $objectType = new ObjectType([
+            'name'   => 'Object',
+            'fields' => [
+                'test' => new StringType(),
+            ],
+        ]);
+
         return [
             [
                 [],
@@ -61,69 +87,47 @@ class InterfaceTypeConfigTest extends \PHPUnit_Framework_TestCase
             [
                 [
                     'name'        => '',
-                    'fields'      => [
-                        'id' => new IdType(),
-                    ],
+                    'types'       => [$objectType],
                     'resolveType' => function () {
-
                     },
                 ],
             ],
             [
                 [
-                    'name'        => null,
-                    'fields'      => [
-                        'id' => new IdType(),
-                    ],
+                    'name'        => '',
+                    'types'       => [$objectType],
                     'resolveType' => function () {
-
                     },
                 ],
             ],
             [
                 [
-                    'fields'      => [
-                        'id' => new IdType(),
-                    ],
+                    'name'        => 'name',
+                    'types'       => [],
                     'resolveType' => function () {
-
                     },
                 ],
             ],
             [
                 [
-                    'name'   => 'Interface',
-                    'fields' => [
-                        'id' => new IdType(),
-                    ],
+                    'name'        => 'name',
+                    'types'       => null,
+                    'resolveType' => function () {
+                    },
                 ],
             ],
             [
                 [
-                    'name'        => 'Interface',
-                    'fields'      => [
-                        'id' => new IdType(),
-                    ],
+                    'name'        => 'name',
+                    'types'       => [$objectType],
                     'resolveType' => null,
                 ],
             ],
             [
                 [
-                    'name'        => 'Interface',
-                    'fields'      => [
-                        'id' => new IdType(),
-                    ],
-                    'resolveType' => 'resolveFunction',
-                ],
-            ],
-            [
-                [
-                    'name'        => 'Interface',
-                    'fields'      => [
-                    ],
-                    'resolveType' => function () {
-
-                    },
+                    'name'        => 'name',
+                    'types'       => [new IntType()],
+                    'resolveType' => null,
                 ],
             ],
         ];

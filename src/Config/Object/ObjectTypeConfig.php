@@ -5,13 +5,21 @@ namespace Youshido\GraphQL\Config\Object;
 use Youshido\GraphQL\Config\AbstractConfig;
 use Youshido\GraphQL\Config\Traits\FieldsAwareConfigTrait;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
-use Youshido\GraphQL\Type\TypeService;
+use Youshido\GraphQL\Validator\ConfigValidator\PropertyType;
 
 /**
  * Class ObjectTypeConfig
  *
- * @method setDescription(string $description)
- * @method string getDescription()
+ * //todo post validate interfaces
+ *
+ * @method void setName(string $name)
+ * @method string getName()
+ *
+ * @method void setDescription(string $description)
+ * @method string|null getDescription()
+ *
+ * @method AbstractInterfaceType[] getInterfaces()
+ * @method void setInterfaces(array $interfaces)
  */
 class ObjectTypeConfig extends AbstractConfig
 {
@@ -23,11 +31,25 @@ class ObjectTypeConfig extends AbstractConfig
     public function getRules()
     {
         return [
-            'name'        => ['type' => TypeService::TYPE_STRING, 'required' => true],
-            'description' => ['type' => TypeService::TYPE_STRING],
-            'fields'      => ['type' => TypeService::TYPE_ARRAY_OF_FIELDS_CONFIG, 'final' => true],
-            'interfaces'  => ['type' => TypeService::TYPE_ARRAY_OF_INTERFACES],
+            'name'        => ['type' => PropertyType::TYPE_STRING, 'required' => true],
+            'fields'      => ['type' => PropertyType::TYPE_FIELD, 'required' => true, 'array' => true],
+            'description' => ['type' => PropertyType::TYPE_STRING],
+            'interfaces'  => ['type' => PropertyType::TYPE_INTERFACE, 'default' => [], 'array' => true],
         ];
+    }
+
+    /**
+     * Add fields from passed interface
+     *
+     * @param AbstractInterfaceType $interfaceType
+     *
+     * @return $this
+     */
+    public function applyInterface(AbstractInterfaceType $interfaceType)
+    {
+        $this->addFields($interfaceType->getFields());
+
+        return $this;
     }
 
     /**
@@ -36,13 +58,5 @@ class ObjectTypeConfig extends AbstractConfig
     protected function build()
     {
         $this->buildFields();
-    }
-
-    /**
-     * @return AbstractInterfaceType[]
-     */
-    public function getInterfaces()
-    {
-        return $this->get('interfaces', []);
     }
 }

@@ -6,7 +6,7 @@ use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\TypeInterface;
-use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeKind;
 use Youshido\GraphQL\Type\Union\AbstractUnionType;
 
 
@@ -53,11 +53,11 @@ class TypeCollector
         }
 
         $this->addType($schema->getQueryType());
-        if ($schema->getMutationType()->hasFields()) {
+        if ($schema->getMutationType()) {
             $this->addType($schema->getMutationType());
         }
 
-        foreach ($schema->getTypes()->all() as $type) {
+        foreach ($schema->getTypes() as $type) {
             $this->addType($type);
         }
 
@@ -74,13 +74,13 @@ class TypeCollector
         }
 
         switch ($type->getKind()) {
-            case TypeMap::KIND_INTERFACE:
-            case TypeMap::KIND_UNION:
-            case TypeMap::KIND_ENUM:
-            case TypeMap::KIND_SCALAR:
+            case TypeKind::KIND_INTERFACE:
+            case TypeKind::KIND_UNION:
+            case TypeKind::KIND_ENUM:
+            case TypeKind::KIND_SCALAR:
                 $this->insertType($type->getName(), $type);
 
-                if ($type->getKind() === TypeMap::KIND_UNION) {
+                if ($type->getKind() === TypeKind::KIND_UNION) {
                     /** @var AbstractUnionType $type */
                     foreach ($type->getTypes() as $subType) {
                         $this->addType($subType);
@@ -89,8 +89,8 @@ class TypeCollector
 
                 break;
 
-            case TypeMap::KIND_INPUT_OBJECT:
-            case TypeMap::KIND_OBJECT:
+            case TypeKind::KIND_INPUT_OBJECT:
+            case TypeKind::KIND_OBJECT:
                 /** @var AbstractObjectType $namedType */
                 $namedType = $type->getNamedType();
                 $this->checkAndInsertInterfaces($namedType);
@@ -101,11 +101,11 @@ class TypeCollector
 
                 break;
 
-            case TypeMap::KIND_LIST:
+            case TypeKind::KIND_LIST:
                 $this->addType($type->getNamedType());
                 break;
 
-            case TypeMap::KIND_NON_NULL:
+            case TypeKind::KIND_NON_NULL:
                 $this->addType($type->getNamedType());
 
                 break;
@@ -113,7 +113,7 @@ class TypeCollector
     }
 
     /**
-     * @return array
+     * @return TypeInterface[]
      */
     public function getTypes()
     {
@@ -139,7 +139,7 @@ class TypeCollector
         $possibleTypes = [];
         foreach ($this->types as $type) {
             /** @var $type AbstractObjectType */
-            if ($type->getKind() === TypeMap::KIND_OBJECT) {
+            if ($type->getKind() === TypeKind::KIND_OBJECT) {
                 if ($interfaces = $type->getConfig()->getInterfaces()) {
                     foreach ($interfaces as $interface) {
                         if ($interface->getName() === $name) {

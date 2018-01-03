@@ -12,6 +12,7 @@ use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\StringType;
+use Youshido\GraphQL\Type\TypeInterface;
 
 /**
  * Class TypeDefinitionField
@@ -23,7 +24,7 @@ class TypeDefinitionField extends AbstractField
      * @param array                $args
      * @param ResolveInfoInterface $info
      *
-     * @return null|AbstractType
+     * @return null|TypeInterface
      */
     public function resolve($value = null, array $args, ResolveInfoInterface $info)
     {

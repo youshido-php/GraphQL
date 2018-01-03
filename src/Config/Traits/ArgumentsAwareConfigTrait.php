@@ -3,30 +3,13 @@
 namespace Youshido\GraphQL\Config\Traits;
 
 use Youshido\GraphQL\Field\InputField;
+use Youshido\GraphQL\Field\InputFieldInterface;
 
 /**
  * Trait ArgumentsAwareConfigTrait
  */
 trait ArgumentsAwareConfigTrait
 {
-    protected $arguments = [];
-    protected $_isArgumentsBuilt;
-
-    /**
-     * Build object arguments
-     */
-    public function buildArguments()
-    {
-        if ($this->_isArgumentsBuilt) {
-            return;
-        }
-
-        if (!empty($this->data['args'])) {
-            $this->addArguments($this->data['args']);
-        }
-        $this->_isArgumentsBuilt = true;
-    }
-
     /**
      * @param array $arguments
      *
@@ -36,9 +19,11 @@ trait ArgumentsAwareConfigTrait
     {
         foreach ((array) $arguments as $argumentName => $argumentInfo) {
             if ($argumentInfo instanceof InputField) {
-                $this->arguments[$argumentInfo->getName()] = $argumentInfo;
+                $this->data['args'][$argumentInfo->getName()] = $argumentInfo;
+
                 continue;
             }
+
             $this->addArgument($argumentName, $this->buildConfig($argumentName, $argumentInfo));
         }
 
@@ -46,8 +31,8 @@ trait ArgumentsAwareConfigTrait
     }
 
     /**
-     * @param array|string      $argument
-     * @param null|array|string $info
+     * @param array|string|InputFieldInterface $argument
+     * @param null|array|string                $info
      *
      * @return $this
      */
@@ -56,9 +41,77 @@ trait ArgumentsAwareConfigTrait
         if (!($argument instanceof InputField)) {
             $argument = new InputField($this->buildConfig($argument, $info));
         }
-        $this->arguments[$argument->getName()] = $argument;
+
+        $this->data['args'][$argument->getName()] = $argument;
 
         return $this;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return InputField
+     */
+    public function getArgument($name)
+    {
+        return $this->hasArgument($name) ? $this->data['args'][$name] : null;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function hasArgument($name)
+    {
+        return isset($this->data['args'][$name]);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasArguments()
+    {
+        return !empty($this->data['args']);
+    }
+
+    /**
+     * @return InputField[]
+     */
+    public function getArguments()
+    {
+        if ($this->hasArguments()) {
+            return (array) $this->data['args'];
+        }
+
+        return [];
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return $this
+     */
+    public function removeArgument($name)
+    {
+        if ($this->hasArgument($name)) {
+            unset($this->data['args'][$name]);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Build object arguments
+     */
+    protected function buildArguments()
+    {
+        if (!empty($this->data['args'])) {
+            $args               = $this->data['args'];
+            $this->data['args'] = [];
+
+            $this->addArguments($args);
+        }
     }
 
     /**
@@ -80,55 +133,5 @@ trait ArgumentsAwareConfigTrait
         }
 
         return $info;
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return InputField
-     */
-    public function getArgument($name)
-    {
-        return $this->hasArgument($name) ? $this->arguments[$name] : null;
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return bool
-     */
-    public function hasArgument($name)
-    {
-        return array_key_exists($name, $this->arguments);
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasArguments()
-    {
-        return !empty($this->arguments);
-    }
-
-    /**
-     * @return InputField[]
-     */
-    public function getArguments()
-    {
-        return $this->arguments;
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return $this
-     */
-    public function removeArgument($name)
-    {
-        if ($this->hasArgument($name)) {
-            unset($this->arguments[$name]);
-        }
-
-        return $this;
     }
 }

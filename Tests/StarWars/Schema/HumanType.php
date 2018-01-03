@@ -13,7 +13,7 @@ use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\IdType;
 use Youshido\GraphQL\Type\Scalar\StringType;
-use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeKind;
 
 class HumanType extends AbstractObjectType
 {
@@ -30,7 +30,7 @@ class HumanType extends AbstractObjectType
                 },
             ])
             ->addField('appearsIn', new ListType(new EpisodeEnum()))
-            ->addField('homePlanet', TypeMap::TYPE_STRING);
+            ->addField('homePlanet', new StringType());
     }
 
     public function getInterfaces()

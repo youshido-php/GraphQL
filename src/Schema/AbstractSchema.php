@@ -3,10 +3,11 @@
 namespace Youshido\GraphQL\Schema;
 
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Directive\DirectiveInterface;
 use Youshido\GraphQL\Directive\IncludeDirective;
 use Youshido\GraphQL\Directive\SkipDirective;
-use Youshido\GraphQL\Type\SchemaDirectiveCollection;
-use Youshido\GraphQL\Type\SchemaTypesCollection;
+use Youshido\GraphQL\Type\AbstractType;
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
 
 /**
  * Class AbstractSchema
@@ -23,39 +24,17 @@ abstract class AbstractSchema
      */
     public function __construct($config = [])
     {
-        if (!array_key_exists('query', $config)) {
-            $config['query'] = new InternalSchemaQueryObject(['name' => $this->getName($config) . 'Query']);
-        }
-        if (!array_key_exists('mutation', $config)) {
-            $config['mutation'] = new InternalSchemaMutationObject(['name' => $this->getName($config) . 'Mutation']);
-        }
-        if (!array_key_exists('types', $config)) {
-            $config['types'] = [];
-        }
-
         if (!array_key_exists('directives', $config)) {
-            $config['directives'] = [
-                SkipDirective::build(),
-                IncludeDirective::build(),
-            ];
+            $config['directives'] = [SkipDirective::build(), IncludeDirective::build()];
         }
 
-        $this->config = new SchemaConfig($config, $this);
-
+        $this->config = new SchemaConfig($config, $this, true);
         $this->build($this->config);
+
+        $this->config->validate();
     }
 
     abstract public function build(SchemaConfig $config);
-
-    public function addQueryField($field, $info = null)
-    {
-        $this->getQueryType()->addField($field, $info);
-    }
-
-    public function addMutationField($field, $info = null)
-    {
-        $this->getMutationType()->addField($field, $info);
-    }
 
     /**
      * @return \Youshido\GraphQL\Type\Object\AbstractObjectType
@@ -66,7 +45,7 @@ abstract class AbstractSchema
     }
 
     /**
-     * @return \Youshido\GraphQL\Type\Object\ObjectType
+     * @return \Youshido\GraphQL\Type\Object\AbstractObjectType
      */
     final public function getMutationType()
     {
@@ -74,7 +53,23 @@ abstract class AbstractSchema
     }
 
     /**
-     * @return SchemaTypesCollection
+     * @param AbstractObjectType $type
+     */
+    public function setQueryType(AbstractObjectType $type)
+    {
+        $this->config->setQuery($type);
+    }
+
+    /**
+     * @param AbstractObjectType $type
+     */
+    public function setMutationType(AbstractObjectType $type)
+    {
+        $this->config->setMutation($type);
+    }
+
+    /**
+     * @return AbstractType[]
      */
     public function getTypes()
     {
@@ -82,7 +77,7 @@ abstract class AbstractSchema
     }
 
     /**
-     * @return SchemaDirectiveCollection
+     * @return DirectiveInterface[]
      */
     public function getDirectives()
     {

@@ -5,15 +5,18 @@ namespace Youshido\Tests\Issues\Issue116Test;
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
+use Youshido\GraphQL\Type\InputObject\InputObjectType;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IdType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
+/**
+ * Class Issue131Test
+ */
 class Issue131Test extends \PHPUnit_Framework_TestCase
 {
-
     public function testInternalVariableArgument()
     {
         $schema    = new Schema([
@@ -36,10 +39,10 @@ class Issue131Test extends \PHPUnit_Framework_TestCase
                         ]),
                         'args'    => [
                             'name'          => new StringType(),
-                            'related_beans' => new ListType(new ObjectType([
+                            'related_beans' => new ListType(new InputObjectType([
                                 'name'   => 'RelatedBeanInputType',
                                 'fields' => [
-                                    'id'     => new IntType(),
+                                    'id'     => new IdType(),
                                     'module' => new StringType(),
                                 ],
                             ])),
@@ -56,16 +59,16 @@ class Issue131Test extends \PHPUnit_Framework_TestCase
         ]);
         $processor = new Processor(new ExecutionContext($schema));
         $response  = $processor->processPayload('
-mutation ($related_beans: RelatedBeanInputType) {
+mutation ($related_beans: [RelatedBeanInputType]) {
   createMeeting(name: "Meeting 1", related_beans: $related_beans) {
     id,
     name
   }
 }',
             [
-                "related_beans" => [
-                    ["module" => "contacts", "id" => "5cc6be5b-fb86-2671-e2c0-55e749882d29"],
-                    ["module" => "contacts", "id" => "2a135003-3765-af3f-bc54-55e7497e77aa"],
+                'related_beans' => [
+                    ['module' => 'contacts', 'id' => '5cc6be5b-fb86-2671-e2c0-55e749882d29'],
+                    ['module' => 'contacts', 'id' => '2a135003-3765-af3f-bc54-55e7497e77aa'],
 
                 ],
             ])->getResponseData();

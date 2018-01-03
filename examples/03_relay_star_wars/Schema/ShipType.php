@@ -12,7 +12,8 @@ namespace Examples\StarWars;
 use Youshido\GraphQL\Relay\Field\GlobalIdField;
 use Youshido\GraphQL\Relay\NodeInterfaceType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
-use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\Scalar\StringType;
+use Youshido\GraphQL\Type\TypeKind;
 
 class ShipType extends AbstractObjectType
 {
@@ -22,7 +23,7 @@ class ShipType extends AbstractObjectType
     {
         $config
             ->addField(new GlobalIdField(self::TYPE_KEY))
-            ->addField('name', ['type' => TypeMap::TYPE_STRING, 'description' => 'The name of the ship.']);
+            ->addField('name', ['type' => new StringType(), 'description' => 'The name of the ship.']);
     }
 
     public function getOne($id)

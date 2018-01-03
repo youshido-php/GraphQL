@@ -6,18 +6,13 @@ use Youshido\GraphQL\Config\Field\InputFieldConfig;
 use Youshido\GraphQL\Type\InputTypeInterface;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\Traits\FieldsArgumentsAwareObjectTrait;
-use Youshido\GraphQL\Type\TypeFactory;
-use Youshido\GraphQL\Type\TypeService;
 
 /**
  * Class AbstractInputField
  */
 abstract class AbstractInputField implements InputFieldInterface
 {
-    use FieldsArgumentsAwareObjectTrait, AutoNameTrait;
-
-    /** @var bool */
-    protected $isFinal = false;
+    use FieldsArgumentsAwareObjectTrait, AutoNameTrait; //todo: without arguments
 
     /**
      * AbstractInputField constructor.
@@ -31,12 +26,10 @@ abstract class AbstractInputField implements InputFieldInterface
             $config['name'] = $this->getName();
         }
 
-        if (TypeService::isScalarType($config['type'])) {
-            $config['type'] = TypeFactory::getScalarType($config['type']);
-        }
-
-        $this->config = new InputFieldConfig($config, $this, $this->isFinal);
+        $this->config = new InputFieldConfig($config, $this);
         $this->build($this->config);
+
+        $this->config->validate();
     }
 
     /**

@@ -5,6 +5,9 @@ namespace Youshido\Tests\Issues\Issue109;
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 
+/**
+ * Class Issue109Test
+ */
 class Issue109Test extends \PHPUnit_Framework_TestCase
 {
 
@@ -23,13 +26,14 @@ query ($postId: Int, $commentId: Int) {
 }',
             [
                 'postId'    => 1,
-                'commentId' => 100
+                'commentId' => 100,
             ])->getResponseData();
+
         $this->assertEquals(['data' => ['latestPost' => [
             'id'       => 1,
             'comments' => [
-                ['comment_id' => 100]
-            ]
+                ['comment_id' => 100],
+            ],
         ]]], $response);
     }
 }

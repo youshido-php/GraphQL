@@ -4,57 +4,22 @@ namespace Youshido\GraphQL\Config\Traits;
 
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\FieldInterface;
-use Youshido\GraphQL\Field\InputFieldInterface;
-use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 
 /**
  * Class FieldsAwareTrait
- *
- * todo: this trait is used in input object to, but create Field, must InputField
  */
 trait FieldsAwareConfigTrait
 {
-    protected $fields = []; //todo: think about this: built fields in $fields and not built in config
-
     /**
-     * Configure object fields
-     */
-    public function buildFields()
-    {
-        if (!empty($this->data['fields'])) {
-            $this->addFields($this->data['fields']);
-        }
-    }
-
-    /**
-     * Add fields from passed interface
-     *
-     * @param AbstractInterfaceType $interfaceType
+     * @param array $fields
      *
      * @return $this
      */
-    public function applyInterface(AbstractInterfaceType $interfaceType)
+    public function addFields(array $fields)
     {
-        $this->addFields($interfaceType->getFields());
-
-        return $this;
-    }
-
-    /**
-     * @param array $fieldsList
-     *
-     * @return $this
-     */
-    public function addFields($fieldsList)
-    {
-        foreach ($fieldsList as $fieldName => $fieldConfig) {
-            if ($fieldConfig instanceof FieldInterface) {
-                $this->fields[$fieldConfig->getName()] = $fieldConfig;
-                continue;
-            }
-
-            if ($fieldConfig instanceof InputFieldInterface) {
-                $this->fields[$fieldConfig->getName()] = $fieldConfig;
+        foreach ($fields as $fieldName => $fieldConfig) {
+            if ($this->isFieldInstance($fieldConfig)) {
+                $this->data['fields'][$fieldConfig->getName()] = $fieldConfig;
                 continue;
             }
 
@@ -72,11 +37,11 @@ trait FieldsAwareConfigTrait
      */
     public function addField($field, $info = null)
     {
-        if (!($field instanceof FieldInterface)) {
-            $field = new Field($this->buildFieldConfig($field, $info));
+        if (!$this->isFieldInstance($field)) {
+            $field = $this->createField($field, $info);
         }
 
-        $this->fields[$field->getName()] = $field;
+        $this->data['fields'][$field->getName()] = $field;
 
         return $this;
     }
@@ -88,7 +53,7 @@ trait FieldsAwareConfigTrait
      */
     public function getField($name)
     {
-        return $this->hasField($name) ? $this->fields[$name] : null;
+        return $this->hasField($name) ? $this->data['fields'][$name] : null;
     }
 
     /**
@@ -98,7 +63,7 @@ trait FieldsAwareConfigTrait
      */
     public function hasField($name)
     {
-        return array_key_exists($name, $this->fields);
+        return isset($this->data['fields'][$name]);
     }
 
     /**
@@ -106,7 +71,7 @@ trait FieldsAwareConfigTrait
      */
     public function hasFields()
     {
-        return !empty($this->fields);
+        return !empty($this->data['fields']);
     }
 
     /**
@@ -114,7 +79,7 @@ trait FieldsAwareConfigTrait
      */
     public function getFields()
     {
-        return $this->fields;
+        return $this->data['fields'];
     }
 
     /**
@@ -125,12 +90,28 @@ trait FieldsAwareConfigTrait
     public function removeField($name)
     {
         if ($this->hasField($name)) {
-            unset($this->fields[$name]);
+            unset($this->data['fields'][$name]);
         }
 
         return $this;
     }
 
+    protected function isFieldInstance($field)
+    {
+        return $field instanceof FieldInterface;
+    }
+
+    protected function createField($field, $info = null)
+    {
+        return new Field($this->buildFieldConfig($field, $info));
+    }
+
+    /**
+     * @param string|array $name
+     * @param null|array   $info
+     *
+     * @return array|null
+     */
     protected function buildFieldConfig($name, $info = null)
     {
         if (!is_array($info)) {
@@ -140,5 +121,15 @@ trait FieldsAwareConfigTrait
         }
 
         return $info;
+    }
+
+    private function buildFields()
+    {
+        if (!empty($this->data['fields'])) {
+            $fields               = $this->data['fields'];
+            $this->data['fields'] = [];
+
+            $this->addFields($fields);
+        }
     }
 }

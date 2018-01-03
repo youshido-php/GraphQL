@@ -9,8 +9,6 @@ use Youshido\GraphQL\Type\Object\AbstractObjectType;
  */
 final class InputField extends AbstractInputField
 {
-    protected $isFinal = true;
-
     /**
      * @return AbstractObjectType
      */

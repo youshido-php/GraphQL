@@ -1,10 +1,11 @@
 <?php
+
 namespace Youshido\Tests\Issues\Issue90;
 
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\Object\ObjectType;
-use Youshido\GraphQL\Type\Scalar\DateTimeType;
+use Youshido\GraphQL\Type\Scalar\StringType;
 
 class Issue90Schema extends AbstractSchema
 {
@@ -16,9 +17,9 @@ class Issue90Schema extends AbstractSchema
                 'name'   => 'QueryType',
                 'fields' => [
                     'echo' => [
-                        'type'    => new DateTimeType('Y-m-d H:ia'),
+                        'type'    => new StringType(),
                         'args'    => [
-                            'date' => new DateTimeType('Y-m-d H:ia')
+                            'date' => new StringType(),
                         ],
                         'resolve' => function ($value, $args, $info) {
 
@@ -27,9 +28,9 @@ class Issue90Schema extends AbstractSchema
                             }
 
                             return null;
-                        }
-                    ]
-                ]
+                        },
+                    ],
+                ],
             ])
         );
 
@@ -38,9 +39,9 @@ class Issue90Schema extends AbstractSchema
                 'name'   => 'MutationType',
                 'fields' => [
                     'echo' => [
-                        'type'    => new DateTimeType('Y-m-d H:ia'),
+                        'type'    => new StringType(),
                         'args'    => [
-                            'date' => new DateTimeType('Y-m-d H:ia')
+                            'date' => new StringType(),
                         ],
                         'resolve' => function ($value, $args, $info) {
 
@@ -49,9 +50,9 @@ class Issue90Schema extends AbstractSchema
                             }
 
                             return null;
-                        }
-                    ]
-                ]
+                        },
+                    ],
+                ],
             ])
         );
     }

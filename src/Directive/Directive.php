@@ -14,8 +14,6 @@ class Directive implements DirectiveInterface
     use ArgumentsAwareObjectTrait;
     use AutoNameTrait;
 
-    protected $isFinal = false;
-
     /**
      * Directive constructor.
      *
@@ -27,7 +25,7 @@ class Directive implements DirectiveInterface
             $config['name'] = $this->getName();
         }
 
-        $this->config = new DirectiveConfig($config, $this, $this->isFinal);
+        $this->config = new DirectiveConfig($config, $this);
         $this->build($this->config);
     }
 

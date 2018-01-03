@@ -35,7 +35,7 @@ interface ArgumentsContainerInterface
     /**
      * @param string $name
      *
-     * @return AbstractType
+     * @return InputFieldInterface
      */
     public function getArgument($name);
 

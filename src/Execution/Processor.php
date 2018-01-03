@@ -25,7 +25,7 @@ use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\ListType\AbstractListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
-use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeKind;
 use Youshido\GraphQL\Type\Union\AbstractUnionType;
 use Youshido\GraphQL\Validator\RequestValidator\RequestValidator;
 use Youshido\GraphQL\Validator\RequestValidator\Validator\FragmentsValidator;
@@ -212,15 +212,15 @@ class Processor
             $targetField = $nonNullType->getField($ast->getName());
 
             switch ($kind = $targetField->getType()->getNullableType()->getKind()) {
-                case TypeMap::KIND_ENUM:
-                case TypeMap::KIND_SCALAR:
+                case TypeKind::KIND_ENUM:
+                case TypeKind::KIND_SCALAR:
                     if ($ast instanceof AstQuery && $ast->hasFields()) {
                         throw new ResolveException(sprintf('You can\'t specify fields for scalar type "%s"', $targetField->getType()->getNullableType()->getName()), $ast->getLocation());
                     }
 
                     return $this->resolveScalar($targetField, $ast, $parentValue);
 
-                case TypeMap::KIND_OBJECT:
+                case TypeKind::KIND_OBJECT:
                     /** @var $type AbstractObjectType */
                     if (!$ast instanceof AstQuery) {
                         throw new ResolveException(sprintf('You have to specify fields for "%s"', $ast->getName()), $ast->getLocation());
@@ -228,11 +228,11 @@ class Processor
 
                     return $this->resolveObject($targetField, $ast, $parentValue);
 
-                case TypeMap::KIND_LIST:
+                case TypeKind::KIND_LIST:
                     return $this->resolveList($targetField, $ast, $parentValue);
 
-                case TypeMap::KIND_UNION:
-                case TypeMap::KIND_INTERFACE:
+                case TypeKind::KIND_UNION:
+                case TypeKind::KIND_INTERFACE:
                     if (!$ast instanceof AstQuery) {
                         throw new ResolveException(sprintf('You have to specify fields for "%s"', $ast->getName()), $ast->getLocation());
                     }
@@ -400,20 +400,20 @@ class Processor
                     });
 
                     switch ($itemType->getNullableType()->getKind()) {
-                        case TypeMap::KIND_ENUM:
-                        case TypeMap::KIND_SCALAR:
+                        case TypeKind::KIND_ENUM:
+                        case TypeKind::KIND_SCALAR:
                             $value = $this->resolveScalar($fakeField, $fakeAst, $resolvedValueItem);
 
                             break;
 
 
-                        case TypeMap::KIND_OBJECT:
+                        case TypeKind::KIND_OBJECT:
                             $value = $this->resolveObject($fakeField, $fakeAst, $resolvedValueItem);
 
                             break;
 
-                        case TypeMap::KIND_UNION:
-                        case TypeMap::KIND_INTERFACE:
+                        case TypeKind::KIND_UNION:
+                        case TypeKind::KIND_INTERFACE:
                             $value = $this->resolveComposite($fakeField, $fakeAst, $resolvedValueItem);
 
                             break;
@@ -475,12 +475,7 @@ class Processor
 
             /** @var AbstractUnionType $type */
             $type         = $field->getType()->getNullableType();
-            $resolveInfo  = new ResolveInfo(
-                $field,
-                $ast instanceof AstQuery ? $ast->getFields() : [],
-                $this->executionContext
-            );
-            $resolvedType = $type->resolveType($resolvedValue, $resolveInfo); //todo talk about this
+            $resolvedType = $type->resolveType($resolvedValue, $this->createResolveInfo($field, $ast instanceof AstQuery ? $ast->getFields() : []));
 
             if (!$resolvedType) {
                 throw new ResolveException('Resolving function must return type');

@@ -136,6 +136,17 @@ const blogSchema = new GraphQLSchema({
     query: new GraphQLObjectType({
         name: 'RootQueryType',
         fields: {
+            test: {
+                type: GraphQLString,
+                args: {
+                    foo: { type: GraphQLString }
+                },
+                resolve: (_, args) => {
+                    console.log(args);
+
+                    return args['foo'];
+                }
+            },
             node: nodeField,
             faction: {
                 type: factionType
@@ -230,13 +241,13 @@ const blogSchema = new GraphQLSchema({
     })
 });
 
-var query = '{ enumNull }';
-graphql(blogSchema, query).then(result => {
-    console.log(JSON.stringify(result, null, 5));
-    process.exit(0);
-}).catch(res => {
-    console.log('error', res);
-});
+// var query = '{ enumNull }';
+// graphql(blogSchema, query).then(result => {
+//     console.log(JSON.stringify(result, null, 5));
+//     process.exit(0);
+// }).catch(res => {
+//     console.log('error', res);
+// });
 
 
 var app = express();

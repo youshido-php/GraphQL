@@ -22,7 +22,7 @@ class SchemaType extends AbstractObjectType
     }
 
     /**
-     * @param AbstractSchema|Field $value
+     * @param AbstractSchema $value
      *
      * @return AbstractObjectType
      */
@@ -32,13 +32,13 @@ class SchemaType extends AbstractObjectType
     }
 
     /**
-     * @param AbstractSchema|Field $value
+     * @param AbstractSchema $value
      *
-     * @return null|\Youshido\GraphQL\Type\Object\ObjectType
+     * @return null|\Youshido\GraphQL\Type\Object\AbstractObjectType
      */
     public function resolveMutationType($value)
     {
-        return $value->getMutationType()->hasFields() ? $value->getMutationType() : null;
+        return $value->getMutationType();
     }
 
     /**
@@ -56,7 +56,7 @@ class SchemaType extends AbstractObjectType
      */
     public function resolveDirectives($value)
     {
-        return $value->getDirectives()->all();
+        return $value->getDirectives();
     }
 
     /**

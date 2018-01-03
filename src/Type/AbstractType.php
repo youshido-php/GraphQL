@@ -22,17 +22,9 @@ abstract class AbstractType implements TypeInterface
     /**
      * @return AbstractType
      */
-    public function getType()
-    {
-        return $this;
-    }
-
-    /**
-     * @return AbstractType
-     */
     public function getNamedType()
     {
-        return $this->getType();
+        return $this;
     }
 
     /**
@@ -50,6 +42,8 @@ abstract class AbstractType implements TypeInterface
      */
     public function getValidationError($value = null)
     {
+        //todo add to interface
+
         return $this->lastValidationError;
     }
 
@@ -99,13 +93,5 @@ abstract class AbstractType implements TypeInterface
     public function isInputType()
     {
         return false;
-    }
-
-    /**
-     * @return String
-     */
-    public function __toString()
-    {
-        return $this->getName();
     }
 }

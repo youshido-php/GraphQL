@@ -8,7 +8,7 @@
 namespace Youshido\Tests\StarWars\Schema;
 
 
-use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\Scalar\StringType;
 
 class DroidType extends HumanType
 {
@@ -30,7 +30,7 @@ class DroidType extends HumanType
         });
 
         $config
-            ->addField('primaryFunction', TypeMap::TYPE_STRING);
+            ->addField('primaryFunction', new StringType());
     }
 
     public function getInterfaces()

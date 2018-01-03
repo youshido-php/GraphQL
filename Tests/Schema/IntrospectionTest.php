@@ -13,13 +13,13 @@ use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Execution\TypeCollector;
 use Youshido\GraphQL\Field\Field;
+use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\Enum\EnumType;
 use Youshido\GraphQL\Type\InterfaceType\InterfaceType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
-use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\Union\UnionType;
-use Youshido\Tests\DataProvider\TestEmptySchema;
 use Youshido\Tests\DataProvider\TestSchema;
 
 class IntrospectionTest extends \PHPUnit_Framework_TestCase
@@ -119,30 +119,36 @@ TEXT;
      */
     public function testPredefinedQueries($query, $expectedResponse)
     {
-        $schema = new TestEmptySchema();
-        $schema->addQueryField(new Field([
-            'name'              => 'latest',
-            'type'              => new ObjectType([
-                'name'   => 'LatestType',
+        $schema = new Schema([
+            'query' => new ObjectType([
+                'name'   => 'RootQuery',
                 'fields' => [
-                    'id'   => ['type' => TypeMap::TYPE_INT],
-                    'name' => ['type' => TypeMap::TYPE_STRING]
+                    new Field([
+                        'name'              => 'latest',
+                        'type'              => new ObjectType([
+                            'name'   => 'LatestType',
+                            'fields' => [
+                                'id'   => ['type' => new IntType()],
+                                'name' => ['type' => new StringType()],
+                            ],
+                        ]),
+                        'args'              => [
+                            'id'  => ['type' => new IntType(), 'defaultValue' => 'test'],
+                            'id2' => ['type' => new IntType()],
+                        ],
+                        'description'       => 'latest description',
+                        'deprecationReason' => 'for test',
+                        'isDeprecated'      => true,
+                        'resolve'           => function () {
+                            return [
+                                'id'   => 1,
+                                'name' => 'Alex',
+                            ];
+                        },
+                    ]),
                 ],
             ]),
-            'args'              => [
-                'id' => ['type' => TypeMap::TYPE_INT, 'defaultValue' => 'test'],
-                'id2' => ['type' => TypeMap::TYPE_INT]
-            ],
-            'description'       => 'latest description',
-            'deprecationReason' => 'for test',
-            'isDeprecated'      => true,
-            'resolve'           => function () {
-                return [
-                    'id'   => 1,
-                    'name' => 'Alex'
-                ];
-            }
-        ]));
+        ]);
 
         TypeCollector::getInstance()->clear();
         $processor = new Processor(new ExecutionContext($schema));
@@ -161,32 +167,32 @@ TEXT;
                 [
                     'errors' => [
                         [
-                            'message' => 'Require "name" arguments to query "__type"',
+                            'message'   => 'Require "name" arguments to query "__type"',
                             'locations' => [
                                 [
                                     'line'   => 1,
                                     'column' => 3,
                                 ],
                             ],
-                        ]
+                        ],
                     ],
-                ]
+                ],
             ],
             [
                 '{ __type (name: "__Type") { name } }',
                 [
                     'data' => [
-                        '__type' => ['name' => '__Type']
-                    ]
-                ]
+                        '__type' => ['name' => '__Type'],
+                    ],
+                ],
             ],
             [
                 '{ __type (name: "InvalidName") { name } }',
                 [
                     'data' => [
-                        '__type' => null
-                    ]
-                ]
+                        '__type' => null,
+                    ],
+                ],
             ],
             [
                 '{
@@ -206,7 +212,7 @@ TEXT;
                     'data' => [
                         '__schema' => [
                             'types' => [
-                                ['name' => 'TestSchemaQuery', 'fields' => [['name' => 'latest', 'args' => [['defaultValue' => 'test'], ['defaultValue' => null]]]]],
+                                ['name' => 'RootQuery', 'fields' => [['name' => 'latest', 'args' => [['defaultValue' => 'test'], ['defaultValue' => null]]]]],
                                 ['name' => 'Int', 'fields' => null],
                                 ['name' => 'LatestType', 'fields' => [['name' => 'id', 'args' => []], ['name' => 'name', 'args' => []]]],
                                 ['name' => 'String', 'fields' => null],
@@ -218,10 +224,10 @@ TEXT;
                                 ['name' => '__Field', 'fields' => [['name' => 'name', 'args' => []], ['name' => 'description', 'args' => []], ['name' => 'isDeprecated', 'args' => []], ['name' => 'deprecationReason', 'args' => []], ['name' => 'type', 'args' => []], ['name' => 'args', 'args' => []]]],
                                 ['name' => '__Directive', 'fields' => [['name' => 'name', 'args' => []], ['name' => 'description', 'args' => []], ['name' => 'args', 'args' => []], ['name' => 'locations', 'args' => []]]],
                                 ['name' => '__DirectiveLocation', 'fields' => null],
-                            ]
-                        ]
-                    ]
-                ]
+                            ],
+                        ],
+                    ],
+                ],
             ],
             [
                 '{
@@ -244,14 +250,14 @@ TEXT;
                 ['data' => [
                     'test' => [
                         'queryType' => [
-                            'name'   => 'TestSchemaQuery',
+                            'name'   => 'RootQuery',
                             'kind'   => 'OBJECT',
                             'fields' => [
-                                ['name' => 'latest', 'isDeprecated' => true, 'deprecationReason' => 'for test', 'description' => 'latest description', 'type' => ['name' => 'LatestType']]
-                            ]
-                        ]
-                    ]
-                ]]
+                                ['name' => 'latest', 'isDeprecated' => true, 'deprecationReason' => 'for test', 'description' => 'latest description', 'type' => ['name' => 'LatestType']],
+                            ],
+                        ],
+                    ],
+                ]],
             ],
             [
                 '{
@@ -279,23 +285,21 @@ TEXT;
                     '__schema' => [
                         'queryType' => [
                             'kind'          => 'OBJECT',
-                            'name'          => 'TestSchemaQuery',
+                            'name'          => 'RootQuery',
                             'description'   => null,
                             'interfaces'    => [],
                             'possibleTypes' => null,
                             'inputFields'   => null,
-                            'ofType'        => null
-                        ]
-                    ]
-                ]]
-            ]
+                            'ofType'        => null,
+                        ],
+                    ],
+                ]],
+            ],
         ];
     }
 
     public function testCombinedFields()
     {
-        $schema = new TestEmptySchema();
-
         $interface = new InterfaceType([
             'name'        => 'TestInterface',
             'fields'      => [
@@ -304,7 +308,7 @@ TEXT;
             ],
             'resolveType' => function ($type) {
 
-            }
+            },
         ]);
 
         $object1 = new ObjectType([
@@ -314,7 +318,7 @@ TEXT;
                 'name'     => ['type' => new IntType()],
                 'lastName' => ['type' => new IntType()],
             ],
-            'interfaces' => [$interface]
+            'interfaces' => [$interface],
         ]);
 
         $object2 = new ObjectType([
@@ -324,7 +328,7 @@ TEXT;
                 'name'      => ['type' => new IntType()],
                 'thirdName' => ['type' => new IntType()],
             ],
-            'interfaces' => [$interface]
+            'interfaces' => [$interface],
         ]);
 
         $unionType = new UnionType([
@@ -332,45 +336,56 @@ TEXT;
             'types'       => [$object1, $object2],
             'resolveType' => function () {
 
-            }
+            },
         ]);
 
-        $schema->addQueryField(new Field([
-            'name'    => 'union',
-            'type'    => $unionType,
-            'args'    => [
-                'id' => ['type' => TypeMap::TYPE_INT]
-            ],
-            'resolve' => function () {
-                return [
-                    'id'   => 1,
-                    'name' => 'Alex'
-                ];
-            }
-        ]));
-
-        $schema->addMutationField(new Field([
-            'name'    => 'mutation',
-            'type'    => $unionType,
-            'args'    => [
-                'type' => new EnumType([
-                    'name'   => 'MutationType',
-                    'values' => [
-                        [
-                            'name'  => 'Type1',
-                            'value' => 'type_1'
+        $schema = new Schema([
+            'query'    => new ObjectType([
+                'name'   => 'RootQueryType',
+                'fields' => [
+                    new Field([
+                        'name'    => 'union',
+                        'type'    => $unionType,
+                        'args'    => [
+                            'id' => ['type' => new IntType()],
                         ],
-                        [
-                            'name'  => 'Type2',
-                            'value' => 'type_2'
-                        ]
-                    ]
-                ])
-            ],
-            'resolve' => function () {
-                return null;
-            }
-        ]));
+                        'resolve' => function () {
+                            return [
+                                'id'   => 1,
+                                'name' => 'Alex',
+                            ];
+                        },
+                    ])
+                ],
+            ]),
+            'mutation' => new ObjectType([
+                'name'   => 'RootMutationType',
+                'fields' => [
+                    new Field([
+                        'name'    => 'mutation',
+                        'type'    => $unionType,
+                        'args'    => [
+                            'type' => new EnumType([
+                                'name'   => 'MutationType',
+                                'values' => [
+                                    [
+                                        'name'  => 'Type1',
+                                        'value' => 'type_1',
+                                    ],
+                                    [
+                                        'name'  => 'Type2',
+                                        'value' => 'type_2',
+                                    ],
+                                ],
+                            ]),
+                        ],
+                        'resolve' => function () {
+                            return null;
+                        },
+                    ])
+                ],
+            ]),
+        ]);
 
         $processor = new Processor(new ExecutionContext($schema));
 
@@ -380,5 +395,4 @@ TEXT;
         /** strange that this test got broken after I fixed the field resolve behavior */
         $this->assertArrayNotHasKey('errors', $responseData);
     }
-
 }

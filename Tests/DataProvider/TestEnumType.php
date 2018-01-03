@@ -1,21 +1,21 @@
 <?php
-/*
-* This file is a part of GraphQL project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 5/12/16 6:42 PM
-*/
 
 namespace Youshido\Tests\DataProvider;
 
-
+use Youshido\GraphQL\Config\Object\EnumTypeConfig;
 use Youshido\GraphQL\Type\Enum\AbstractEnumType;
 
+/**
+ * Class TestEnumType
+ */
 class TestEnumType extends AbstractEnumType
 {
-    public function getValues()
+    /**
+     * @param EnumTypeConfig $config
+     */
+    protected function build(EnumTypeConfig $config)
     {
-        return [
+        $config->setValues([
             [
                 'name'  => 'FINISHED',
                 'value' => 1,
@@ -24,7 +24,6 @@ class TestEnumType extends AbstractEnumType
                 'name'  => 'NEW',
                 'value' => 0,
             ]
-        ];
+        ]);
     }
-
 }

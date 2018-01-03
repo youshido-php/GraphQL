@@ -3,15 +3,14 @@
 namespace Youshido\GraphQL\Field;
 
 use Youshido\GraphQL\Config\Field\FieldConfig;
+use Youshido\GraphQL\Exception\ResolveException;
+use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\Traits\FieldsArgumentsAwareObjectTrait;
-use Youshido\GraphQL\Type\TypeFactory;
-use Youshido\GraphQL\Type\TypeService;
-use Youshido\GraphQL\Exception\ResolveException;
-use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
-use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeInterface;
+use Youshido\GraphQL\Type\TypeKind;
 
 /**
  * Class AbstractField
@@ -21,12 +20,6 @@ abstract class AbstractField implements FieldInterface
     use FieldsArgumentsAwareObjectTrait, AutoNameTrait {
         getName as getAutoName;
     }
-
-    /** @var bool */
-    protected $isFinal = false;
-
-    /** @var bool|string */
-    private $nameCache;
 
     /**
      * AbstractField constructor.
@@ -44,19 +37,9 @@ abstract class AbstractField implements FieldInterface
             }
         }
 
-        if (TypeService::isScalarType($config['type'])) {
-            $config['type'] = TypeFactory::getScalarType($config['type']);
-        }
-        $this->nameCache = isset($config['name']) ? $config['name'] : $this->getAutoName();
-
-        $this->config = new FieldConfig($config, $this, $this->isFinal);
+        $this->config = new FieldConfig($config, $this);
         $this->build($this->config);
     }
-
-    /**
-     * @return AbstractType|AbstractObjectType
-     */
-    abstract public function getType();
 
     /**
      * @param FieldConfig $config
@@ -78,7 +61,7 @@ abstract class AbstractField implements FieldInterface
      */
     public function getName()
     {
-        return $this->nameCache;
+        return $this->getConfig()->getName();
     }
 
     /**
@@ -91,7 +74,7 @@ abstract class AbstractField implements FieldInterface
      */
     public function resolve($value, array $args, ResolveInfoInterface $info)
     {
-        if ($resolveFunction = $this->getConfig()->getResolveFunction()) {
+        if ($resolveFunction = $this->getConfig()->getResolve()) {
             return $resolveFunction($value, $args, $info);
         }
 
@@ -103,7 +86,7 @@ abstract class AbstractField implements FieldInterface
             return $info->getExecutionContext()->getPropertyAccessor()->getValue($value, $this->getName());
         }
 
-        if ($this->getType()->getNamedType()->getKind() === TypeMap::KIND_SCALAR) {
+        if ($this->getType()->getNamedType()->getKind() === TypeKind::KIND_SCALAR) {
             return null;
         }
 
@@ -115,7 +98,7 @@ abstract class AbstractField implements FieldInterface
      */
     public function getResolveFunction()
     {
-        return $this->getConfig()->getResolveFunction();
+        return $this->getConfig()->getResolve();
     }
 
     /**
@@ -123,7 +106,7 @@ abstract class AbstractField implements FieldInterface
      */
     public function isDeprecated()
     {
-        return $this->getConfigValue('isDeprecated', false);
+        return $this->getConfig()->isDeprecated();
     }
 
     /**
@@ -131,6 +114,6 @@ abstract class AbstractField implements FieldInterface
      */
     public function getDeprecationReason()
     {
-        return $this->getConfigValue('deprecationReason');
+        return $this->getConfig()->getDeprecationReason();
     }
 }

@@ -8,7 +8,7 @@ use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\Traits\FieldsArgumentsAwareObjectTrait;
-use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeKind;
 
 /**
  * Class AbstractObjectType
@@ -26,9 +26,8 @@ abstract class AbstractObjectType extends AbstractType
      */
     public function __construct(array $config = [])
     {
-        if (empty($config)) {
-            $config['name']       = $this->getName();
-            $config['interfaces'] = $this->getInterfaces();
+        if (empty($config['name'])) {
+            $config['name'] = $this->getName();
         }
 
         $this->config = new ObjectTypeConfig($config, $this);
@@ -63,15 +62,7 @@ abstract class AbstractObjectType extends AbstractType
      */
     public function getKind()
     {
-        return TypeMap::KIND_OBJECT;
-    }
-
-    /**
-     * @return array
-     */
-    public function getType()
-    {
-        return $this->getConfigValue('type', $this);
+        return TypeKind::KIND_OBJECT;
     }
 
     /**
@@ -92,7 +83,7 @@ abstract class AbstractObjectType extends AbstractType
      */
     public function getInterfaces()
     {
-        return $this->getConfigValue('interfaces', []);
+        return $this->getConfig()->getInterfaces();
     }
 
     /**

@@ -2,24 +2,21 @@
 
 namespace Youshido\Tests\Library\Config;
 
-use Youshido\GraphQL\Config\Field\FieldConfig;
+use Youshido\GraphQL\Config\Field\InputFieldConfig;
 use Youshido\GraphQL\Type\Scalar\IdType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
 /**
- * Class FieldConfigTest
+ * Class InputFieldConfigTest
  */
-class FieldConfigTest extends \PHPUnit_Framework_TestCase
+class InputFieldConfigTest extends \PHPUnit_Framework_TestCase
 {
     public function testInvalidParams()
     {
-        $config = new FieldConfig([
+        $config = new InputFieldConfig([
             'name' => 'Field',
             'type' => new StringType(),
-            'args' => [
-                'id' => new IdType(),
-            ],
         ]);
 
         $this->assertEquals('Field', $config->getName());
@@ -34,9 +31,6 @@ class FieldConfigTest extends \PHPUnit_Framework_TestCase
         $config->setDescription('desc');
         $this->assertEquals('desc', $config->getDescription());
 
-        $this->assertTrue($config->hasArguments());
-        $this->assertTrue($config->hasArgument('id'));
-
         $this->assertNull($config->getDeprecationReason());
         $config->setDeprecationReason('dep');
         $this->assertEquals('dep', $config->getDeprecationReason());
@@ -44,16 +38,6 @@ class FieldConfigTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($config->isDeprecated());
         $config->setIsDeprecated(true);
         $this->assertTrue($config->isDeprecated());
-
-        $this->assertEquals(null, $config->getCost());
-        $config->setCost(123);
-        $this->assertEquals(123, $config->getCost());
-
-        $this->assertNull($config->getResolve());
-        $config->setResolve(function () {
-        });
-        $this->assertEquals(function () {
-        }, $config->getResolve());
     }
 
     /**
@@ -64,16 +48,12 @@ class FieldConfigTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidConfigs(array $config)
     {
-        $config = new FieldConfig($config);
+        $config = new InputFieldConfig($config);
         $config->validate();
     }
 
     public function invalidConfigs()
     {
-        $args = [
-            'id' => new IdType(),
-        ];
-
         return [
             [
                 [],
@@ -87,24 +67,13 @@ class FieldConfigTest extends \PHPUnit_Framework_TestCase
                 [
                     'name' => '',
                     'type' => new IntType(),
-                    'args' => $args,
-                    'cost' => 1
-                ],
-            ],
-            [
-                [
-                    'name' => 'test',
-                    'type' => new IntType(),
-                    'args' => $args,
-                    'cost' => '123'
+                    'cost' => 1,
                 ],
             ],
             [
                 [
                     'name' => 'test',
                     'type' => new \stdClass(),
-                    'args' => $args,
-                    'cost' => 12
                 ],
             ],
         ];

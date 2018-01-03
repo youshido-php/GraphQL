@@ -2,19 +2,21 @@
 
 namespace Youshido\GraphQL\Type\Union;
 
+use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
+
 /**
  * Class UnionType
  */
 final class UnionType extends AbstractUnionType
 {
-    protected $isFinal = true;
-
     /**
-     * @param object $object
+     * @param object               $object
+     * @param ResolveInfoInterface $resolveInfo
      *
-     * @return mixed
+     * @return AbstractObjectType
      */
-    public function resolveType($object)
+    public function resolveType($object, ResolveInfoInterface $resolveInfo)
     {
         $callable = $this->getConfigValue('resolveType');
 
@@ -26,6 +28,6 @@ final class UnionType extends AbstractUnionType
      */
     public function getTypes()
     {
-        return $this->getConfig()->get('types', []);
+        return $this->getConfig()->get('types');
     }
 }

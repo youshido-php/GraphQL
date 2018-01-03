@@ -7,7 +7,8 @@ use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\ObjectType;
-use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\Scalar\IntType;
+use Youshido\GraphQL\Type\Scalar\StringType;
 
 /**
  * Class Connection
@@ -28,8 +29,8 @@ class Connection
     public static function forwardArgs()
     {
         return [
-            'after' => ['type' => TypeMap::TYPE_STRING],
-            'first' => ['type' => TypeMap::TYPE_INT],
+            'after' => ['type' => new StringType()],
+            'first' => ['type' => new IntType()],
         ];
     }
 
@@ -39,8 +40,8 @@ class Connection
     public static function backwardArgs()
     {
         return [
-            'before' => ['type' => TypeMap::TYPE_STRING],
-            'last'   => ['type' => TypeMap::TYPE_INT],
+            'before' => ['type' => new StringType()],
+            'last'   => ['type' => new IntType()],
         ];
     }
 
@@ -68,7 +69,7 @@ class Connection
                     'resolve'     => [__CLASS__, 'getNode'],
                 ],
                 'cursor' => [
-                    'type'        => TypeMap::TYPE_STRING,
+                    'type'        => new StringType(),
                     'description' => 'A cursor for use in pagination',
                 ],
             ], $edgeFields),

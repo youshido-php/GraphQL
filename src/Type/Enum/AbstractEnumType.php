@@ -3,10 +3,10 @@
 namespace Youshido\GraphQL\Type\Enum;
 
 use Youshido\GraphQL\Config\Object\EnumTypeConfig;
-use Youshido\GraphQL\Config\Traits\ConfigAwareTrait;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
-use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\Traits\ConfigAwareTrait;
+use Youshido\GraphQL\Type\TypeKind;
 
 /**
  * Class AbstractEnumType
@@ -24,23 +24,32 @@ abstract class AbstractEnumType extends AbstractType
     {
         if (empty($config)) {
             $config['name']   = $this->getName();
-            $config['values'] = $this->getValues();
         }
 
         $this->config = new EnumTypeConfig($config, $this);
+        $this->build($this->config);
+        $this->config->validate();
     }
+
+    /**
+     * @param EnumTypeConfig $config
+     */
+    abstract protected function build(EnumTypeConfig $config);
 
     /**
      * @return array
      */
-    abstract public function getValues();
+    public function getValues()
+    {
+        return $this->getConfig()->getValues();
+    }
 
     /**
      * @return String predefined type kind
      */
     public function getKind()
     {
-        return TypeMap::KIND_ENUM;
+        return TypeKind::KIND_ENUM;
     }
 
     /**

@@ -8,7 +8,8 @@ use Youshido\GraphQL\Directive\DirectiveInterface;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
-use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\Scalar\StringType;
+use Youshido\GraphQL\Type\TypeKind;
 
 /**
  * Class DirectiveType
@@ -56,8 +57,8 @@ class DirectiveType extends AbstractObjectType
     public function build($config)
     {
         $config
-            ->addField('name', new NonNullType(TypeMap::TYPE_STRING))
-            ->addField('description', TypeMap::TYPE_STRING)
+            ->addField('name', new NonNullType(new StringType()))
+            ->addField('description', new StringType())
             ->addField('args', [
                 'type'    => new NonNullType(new ListType(new NonNullType(new InputValueType()))),
                 'resolve' => [$this, 'resolveArgs'],

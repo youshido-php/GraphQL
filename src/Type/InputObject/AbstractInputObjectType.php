@@ -5,12 +5,13 @@ namespace Youshido\GraphQL\Type\InputObject;
 use Youshido\GraphQL\Config\Object\InputObjectTypeConfig;
 use Youshido\GraphQL\Exception\ValidationException;
 use Youshido\GraphQL\Field\FieldInterface;
+use Youshido\GraphQL\Field\InputFieldInterface;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputObject;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\Traits\FieldsAwareObjectTrait;
-use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeKind;
 
 /**
  * Class AbstractInputObjectType
@@ -74,8 +75,8 @@ abstract class AbstractInputObjectType extends AbstractType
         }
 
         $typeConfig     = $this->getConfig();
-        $requiredFields = array_filter($typeConfig->getFields(), function (FieldInterface $field) {
-            return $field->getType()->getKind() === TypeMap::KIND_NON_NULL;
+        $requiredFields = array_filter($typeConfig->getFields(), function (InputFieldInterface $field) {
+            return $field->getType()->getKind() === TypeKind::KIND_NON_NULL;
         });
 
         foreach ($value as $valueKey => $valueItem) {
@@ -108,7 +109,7 @@ abstract class AbstractInputObjectType extends AbstractType
      */
     public function getKind()
     {
-        return TypeMap::KIND_INPUT_OBJECT;
+        return TypeKind::KIND_INPUT_OBJECT;
     }
 
     /**

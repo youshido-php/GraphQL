@@ -1,21 +1,29 @@
 <?php
-/**
- * Date: 07.12.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\Tests\StarWars\Schema;
 
-
+use Youshido\GraphQL\Config\Object\EnumTypeConfig;
 use Youshido\GraphQL\Type\Enum\AbstractEnumType;
 
+/**
+ * Class EpisodeEnum
+ */
 class EpisodeEnum extends AbstractEnumType
 {
-
-    public function getValues()
+    /**
+     * @return String type name
+     */
+    public function getName()
     {
-        return [
+        return 'Episode';
+    }
+
+    /**
+     * @param EnumTypeConfig $config
+     */
+    protected function build(EnumTypeConfig $config)
+    {
+        $config->setValues([
             [
                 'value'       => 4,
                 'name'        => 'NEWHOPE',
@@ -31,14 +39,6 @@ class EpisodeEnum extends AbstractEnumType
                 'name'        => 'JEDI',
                 'description' => 'Released in 1983.'
             ],
-        ];
-    }
-
-    /**
-     * @return String type name
-     */
-    public function getName()
-    {
-        return 'Episode';
+        ]);
     }
 }

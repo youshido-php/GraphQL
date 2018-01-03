@@ -32,7 +32,7 @@ use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\ListType\AbstractListType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
-use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\TypeKind;
 use Youshido\GraphQL\Type\Union\AbstractUnionType;
 use Youshido\GraphQL\Validator\RequestValidator\RequestValidatorInterface;
 
@@ -60,6 +60,10 @@ class RequestConformityValidator implements RequestValidatorInterface
 
         foreach ($request->getAllOperations() as $operation) {
             $type = $operation instanceof Mutation ? $schema->getMutationType() : $schema->getQueryType();
+
+            if (!$type) {
+                throw new ResolveException(sprintf('Field "%s" not found.', $operation->getName()), $operation->getLocation());
+            }
 
             $this->assertAstConformity($type, $operation);
         }
@@ -99,15 +103,15 @@ class RequestConformityValidator implements RequestValidatorInterface
         }
 
         switch ($kind = $targetType->getKind()) {
-            case TypeMap::KIND_ENUM:
-            case TypeMap::KIND_SCALAR:
+            case TypeKind::KIND_ENUM:
+            case TypeKind::KIND_SCALAR:
                 if ($ast instanceof AstQuery && $ast->hasFields()) {
                     throw new ResolveException(sprintf('You can\'t specify fields for scalar type "%s"', $targetType->getName()), $ast->getLocation());
                 }
 
                 break;
 
-            case TypeMap::KIND_OBJECT:
+            case TypeKind::KIND_OBJECT:
                 /** @var $type AbstractObjectType */
                 if ((!$ast instanceof AstQuery && !$ast instanceof AstFragment && !$ast instanceof TypedFragmentReference) || !$ast->getFields()) {
                     throw new ResolveException(sprintf('You have to specify fields for "%s"', $ast->getName()), $ast->getLocation());
@@ -123,14 +127,14 @@ class RequestConformityValidator implements RequestValidatorInterface
 
                 break;
 
-            case TypeMap::KIND_LIST:
+            case TypeKind::KIND_LIST:
                 $type = $targetType->getNamedType()->getNullableType();
 
-                if (!$ast instanceof AstQuery && $type->getKind() === TypeMap::KIND_OBJECT) {
+                if (!$ast instanceof AstQuery && $type->getKind() === TypeKind::KIND_OBJECT) {
                     throw new ResolveException(sprintf('You have to specify fields for "%s"', $ast->getName()), $ast->getLocation());
                 }
 
-                if ((!$ast instanceof AstField && $ast->getFields()) && in_array($type->getKind(), [TypeMap::KIND_ENUM, TypeMap::KIND_SCALAR], false)) {
+                if ((!$ast instanceof AstField && $ast->getFields()) && in_array($type->getKind(), [TypeKind::KIND_ENUM, TypeKind::KIND_SCALAR], false)) {
                     throw new ResolveException('You can\'t specify fields for scalars or enums', $ast->getLocation());
                 }
 
@@ -140,8 +144,8 @@ class RequestConformityValidator implements RequestValidatorInterface
 
                 break;
 
-            case TypeMap::KIND_UNION:
-            case TypeMap::KIND_INTERFACE:
+            case TypeKind::KIND_UNION:
+            case TypeKind::KIND_INTERFACE:
                 if (!$ast instanceof AstQuery && !$ast instanceof TypedFragmentReference) {
                     throw new ResolveException(sprintf('You have to specify fields for "%s"', $ast->getName()), $ast->getLocation());
                 }
@@ -180,7 +184,7 @@ class RequestConformityValidator implements RequestValidatorInterface
                         continue;
                     }
 
-                    if ($type->getKind() === TypeMap::KIND_UNION) {
+                    if ($type->getKind() === TypeKind::KIND_UNION) {
                         throw new ResolveException(sprintf('You must use typed fragment to query fields on union type "%s"', $targetType->getName()), $field->getLocation());
                     }
 
@@ -200,7 +204,7 @@ class RequestConformityValidator implements RequestValidatorInterface
         $subType        = null;
 
         /** @var AbstractUnionType|AbstractInterfaceType $targetType */
-        if ($targetType->getKind() === TypeMap::KIND_UNION) {
+        if ($targetType->getKind() === TypeKind::KIND_UNION) {
             $possibleTypes = $targetType->getTypes();
         } else {
             $collector = TypeCollector::getInstance();
@@ -208,7 +212,7 @@ class RequestConformityValidator implements RequestValidatorInterface
             $possibleTypes = $collector->getInterfacePossibleTypes($targetType->getName());
         }
 
-        if ($targetType->getKind() === TypeMap::KIND_INTERFACE && $targetType->getName() === $typeName) {
+        if ($targetType->getKind() === TypeKind::KIND_INTERFACE && $targetType->getName() === $typeName) {
             $isTypePossible = true;
             $subType        = $targetType;
         } else {
@@ -243,7 +247,7 @@ class RequestConformityValidator implements RequestValidatorInterface
         $this->prepareAstArguments($field, $query, $request);
 
         $requiredArguments = array_filter($field->getArguments(), function (AbstractInputField $argument) {
-            return $argument->getType()->getKind() === TypeMap::KIND_NON_NULL;
+            return $argument->getType()->getKind() === TypeKind::KIND_NON_NULL;
         });
 
         foreach ($query->getArguments() as $astArgument) {
@@ -255,10 +259,10 @@ class RequestConformityValidator implements RequestValidatorInterface
             $argumentType = $argument->getType()->getNullableType();
 
             switch ($argumentType->getKind()) {
-                case TypeMap::KIND_ENUM:
-                case TypeMap::KIND_SCALAR:
-                case TypeMap::KIND_INPUT_OBJECT:
-                case TypeMap::KIND_LIST:
+                case TypeKind::KIND_ENUM:
+                case TypeKind::KIND_SCALAR:
+                case TypeKind::KIND_INPUT_OBJECT:
+                case TypeKind::KIND_LIST:
                     if (!$argument->getType()->isValidValue($astArgument->getValue())) {
                         $error = $argument->getType()->getValidationError($astArgument->getValue()) ?: '(no details available)';
                         throw new ResolveException(sprintf('Not valid type for argument "%s" in query "%s": %s', $astArgument->getName(), $field->getName(), $error), $astArgument->getLocation());
@@ -283,7 +287,7 @@ class RequestConformityValidator implements RequestValidatorInterface
     private function prepareArgumentValue($argumentValue, AbstractType $argumentType, Request $request)
     {
         switch ($argumentType->getKind()) {
-            case TypeMap::KIND_LIST:
+            case TypeKind::KIND_LIST:
                 /** @var $argumentType AbstractListType */
                 $result = [];
                 if ($argumentValue instanceof AstInputList || is_array($argumentValue)) {
@@ -299,7 +303,7 @@ class RequestConformityValidator implements RequestValidatorInterface
 
                 return $result;
 
-            case TypeMap::KIND_INPUT_OBJECT:
+            case TypeKind::KIND_INPUT_OBJECT:
                 /** @var $argumentType AbstractInputObjectType */
                 $result = [];
                 if ($argumentValue instanceof AstInputObject) {
@@ -332,8 +336,8 @@ class RequestConformityValidator implements RequestValidatorInterface
 
                 return $result;
 
-            case TypeMap::KIND_SCALAR:
-            case TypeMap::KIND_ENUM:
+            case TypeKind::KIND_SCALAR:
+            case TypeKind::KIND_ENUM:
                 /** @var $argumentValue AstLiteral|VariableReference */
                 if ($argumentValue instanceof VariableReference) {
                     return $this->getVariableReferenceArgumentValue($argumentValue, $argumentType, $request);
@@ -351,10 +355,10 @@ class RequestConformityValidator implements RequestValidatorInterface
     private function getVariableReferenceArgumentValue(VariableReference $variableReference, AbstractType $argumentType, Request $request)
     {
         $variable = $variableReference->getVariable();
-        if ($argumentType->getKind() === TypeMap::KIND_LIST) {
+        if ($argumentType->getKind() === TypeKind::KIND_LIST) {
             if (
                 (!$variable->isArray() && !is_array($variable->getValue())) ||
-                ($argumentType->getNamedType()->getKind() === TypeMap::KIND_NON_NULL && $variable->isArrayElementNullable()) ||
+                ($argumentType->getNamedType()->getKind() === TypeKind::KIND_NON_NULL && $variable->isArrayElementNullable()) ||
                 ($variable->getTypeName() !== $argumentType->getNamedType()->getNullableType()->getName())
             ) {
                 throw new ResolveException(sprintf('Invalid variable "%s" type, allowed type is "%s"', $variable->getName(), $argumentType->getNamedType()->getNullableType()->getName()), $variable->getLocation());
@@ -381,7 +385,7 @@ class RequestConformityValidator implements RequestValidatorInterface
      */
     private function assetTypeHasField(AbstractType $objectType, NamedFieldInterface $ast)
     {
-        if (!in_array($objectType->getKind(), [TypeMap::KIND_OBJECT, TypeMap::KIND_INPUT_OBJECT, TypeMap::KIND_INTERFACE], false) || !$objectType->hasField($ast->getName())) {
+        if (!in_array($objectType->getKind(), [TypeKind::KIND_OBJECT, TypeKind::KIND_INPUT_OBJECT, TypeKind::KIND_INTERFACE], false) || !$objectType->hasField($ast->getName())) {
             $availableFieldNames = implode(', ', array_map(function (FieldInterface $field) {
                 return sprintf('"%s"', $field->getName());
             }, $objectType->getFields()));

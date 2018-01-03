@@ -15,7 +15,8 @@ use Youshido\GraphQL\Relay\Field\GlobalIdField;
 use Youshido\GraphQL\Relay\NodeInterfaceType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
-use Youshido\GraphQL\Type\TypeMap;
+use Youshido\GraphQL\Type\Scalar\StringType;
+use Youshido\GraphQL\Type\TypeKind;
 
 class FactionType extends AbstractObjectType
 {
@@ -33,7 +34,7 @@ class FactionType extends AbstractObjectType
                 }
             ])
             ->addField('name', [
-                'type'        => TypeMap::TYPE_STRING,
+                'type'        => new StringType(),
                 'description' => 'The name of the faction.'
             ])
             ->addField('ships', [

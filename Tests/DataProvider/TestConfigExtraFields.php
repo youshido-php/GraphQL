@@ -10,14 +10,14 @@ namespace Youshido\Tests\DataProvider;
 
 
 use Youshido\GraphQL\Config\AbstractConfig;
-use Youshido\GraphQL\Type\TypeService;
+use Youshido\GraphQL\Validator\ConfigValidator\PropertyType;
 
 class TestConfigExtraFields extends AbstractConfig
 {
     public function getRules()
     {
         return [
-            'name' => ['type' => TypeService::TYPE_ANY, 'required' => true]
+            'name' => ['type' => PropertyType::TYPE_ANY, 'required' => true]
         ];
     }
 }

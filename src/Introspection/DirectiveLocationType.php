@@ -2,6 +2,7 @@
 
 namespace Youshido\GraphQL\Introspection;
 
+use Youshido\GraphQL\Config\Object\EnumTypeConfig;
 use Youshido\GraphQL\Directive\DirectiveLocation;
 use Youshido\GraphQL\Type\Enum\AbstractEnumType;
 
@@ -22,15 +23,18 @@ class DirectiveLocationType extends AbstractEnumType
         return '__DirectiveLocation';
     }
 
-    public function getValues()
+    /**
+     * @param EnumTypeConfig $config
+     */
+    protected function build(EnumTypeConfig $config)
     {
-        return [
+        $config->setValues([
             ['name' => 'QUERY', 'value' => self::QUERY],
             ['name' => 'MUTATION', 'value' => self::MUTATION],
             ['name' => 'FIELD', 'value' => self::FIELD],
             ['name' => 'FRAGMENT_DEFINITION', 'value' => self::FRAGMENT_DEFINITION],
             ['name' => 'FRAGMENT_SPREAD', 'value' => self::FRAGMENT_SPREAD],
             ['name' => 'INLINE_FRAGMENT', 'value' => self::INLINE_FRAGMENT],
-        ];
+        ]);
     }
 }

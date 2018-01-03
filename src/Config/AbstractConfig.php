@@ -3,7 +3,6 @@
 namespace Youshido\GraphQL\Config;
 
 use Youshido\GraphQL\Exception\ConfigurationException;
-use Youshido\GraphQL\Exception\ValidationException;
 use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
 
 /**
@@ -11,38 +10,27 @@ use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
  */
 abstract class AbstractConfig
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $data = [];
 
+    /** @var mixed|null */
     protected $contextObject;
 
-    protected $finalClass = false;
+    /** @var bool */
+    private $validated = false;
 
     /**
      * TypeConfig constructor.
      *
-     * @param array $configData
+     * @param array $data
      * @param mixed $contextObject
-     * @param bool  $finalClass
-     *
-     * @throws ConfigurationException
-     * @throws ValidationException
      */
-    public function __construct(array $configData, $contextObject = null, $finalClass = false)
+    public function __construct(array $data, $contextObject = null)
     {
-        if (empty($configData)) {
-            throw new ConfigurationException('Config for Type should be an array');
-        }
-
         $this->contextObject = $contextObject;
-        $this->data          = $configData;
-        $this->finalClass    = $finalClass;
+        $this->data          = $data;
 
         $this->build();
-
-        $this->validate();
     }
 
     /**
@@ -55,36 +43,20 @@ abstract class AbstractConfig
      */
     public function validate()
     {
+        if ($this->validated) {
+            return;
+        }
+
         $validator = ConfigValidator::getInstance();
 
-        if (!$validator->validate($this->data, $this->getContextRules())) {
-            throw new ConfigurationException('Config is not valid for ' . ($this->contextObject ? get_class($this->contextObject) : null) . "\n" . implode("\n", $validator->getErrorsArray(false)));
-        }
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getContextRules()
-    {
-        $rules = $this->getRules();
-        if ($this->finalClass) {
-            foreach ($rules as $name => $info) {
-                if (!empty($info['final'])) {
-                    $rules[$name]['required'] = true;
-                }
-            }
+        if (!$validator->validate($this)) {
+            throw new ConfigurationException(sprintf('Config is not valid for %s: %s',
+                $this->contextObject ? get_class($this->contextObject) : '',
+                implode("\n", $validator->getErrorsArray())
+            ));
         }
 
-        return $rules;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->get('name');
+        $this->validated = true;
     }
 
     /**
@@ -95,36 +67,31 @@ abstract class AbstractConfig
         return $this->data;
     }
 
+    /**
+     * @return mixed|null
+     */
     public function getContextObject()
     {
         return $this->contextObject;
     }
 
     /**
-     * @return bool
-     */
-    public function isFinalClass()
-    {
-        return $this->finalClass;
-    }
-
-    /**
-     * @return null|callable
-     */
-    public function getResolveFunction()
-    {
-        return $this->get('resolve', null);
-    }
-
-    /**
      * @param string $key
-     * @param null   $defaultValue
      *
-     * @return mixed|null|callable
+     * @return mixed
      */
-    public function get($key, $defaultValue = null)
+    public function get($key)
     {
-        return $this->has($key) ? $this->data[$key] : $defaultValue;
+        if ($this->has($key)) {
+            return $this->data[$key];
+        }
+
+        $rules = $this->getRules();
+        if (isset($rules[$key]) && array_key_exists('default', $rules[$key])) {
+            return $rules[$key]['default'];
+        }
+
+        return null;
     }
 
     /**
@@ -154,7 +121,7 @@ abstract class AbstractConfig
      * @param string $method
      * @param  array $arguments
      *
-     * @return $this|callable|mixed|null
+     * @return callable|mixed|null
      * @throws \Exception
      */
     public function __call($method, $arguments)
@@ -164,10 +131,8 @@ abstract class AbstractConfig
         } elseif (0 === strpos($method, 'set')) {
             $propertyName = lcfirst(substr($method, 3));
             $this->set($propertyName, $arguments[0]);
-
-            return $this;
         } elseif (0 === strpos($method, 'is')) {
-            $propertyName = lcfirst(substr($method, 2));
+            $propertyName = lcfirst($method);
         } else {
             throw new ConfigurationException('Call to undefined method ' . $method);
         }
