@@ -36,23 +36,25 @@ class ArrayConnectionTest extends \PHPUnit_Framework_TestCase
         }
 
         $this->assertEquals([
-            'edges'    => $edges,
-            'pageInfo' => [
+            'totalCount' => count($data),
+            'edges'      => $edges,
+            'pageInfo'   => [
                 'startCursor'     => $edges[0]['cursor'],
                 'endCursor'       => $edges[count($edges) - 1]['cursor'],
                 'hasPreviousPage' => false,
-                'hasNextPage'     => false
-            ]
+                'hasNextPage'     => false,
+            ],
         ], ArrayConnection::connectionFromArray($data));
 
         $this->assertEquals([
-            'edges'    => array_slice($edges, 0, 2),
-            'pageInfo' => [
+            'totalCount' => count($data),
+            'edges'      => array_slice($edges, 0, 2),
+            'pageInfo'   => [
                 'startCursor'     => $edges[0]['cursor'],
                 'endCursor'       => $edges[1]['cursor'],
                 'hasPreviousPage' => false,
-                'hasNextPage'     => true
-            ]
+                'hasNextPage'     => true,
+            ],
         ], ArrayConnection::connectionFromArray($data, ['first' => 2, 'last' => 4]));
     }
 }
