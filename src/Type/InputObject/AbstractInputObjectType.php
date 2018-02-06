@@ -10,7 +10,7 @@ namespace Youshido\GraphQL\Type\InputObject;
 
 
 use Youshido\GraphQL\Config\Object\InputObjectTypeConfig;
-use Youshido\GraphQL\Field\FieldInterface;
+use Youshido\GraphQL\Field\InputFieldInterface;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputObject;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
 use Youshido\GraphQL\Type\AbstractType;
@@ -65,7 +65,7 @@ abstract class AbstractInputObjectType extends AbstractType
         }
 
         $typeConfig     = $this->getConfig();
-        $requiredFields = array_filter($typeConfig->getFields(), function (FieldInterface $field) {
+        $requiredFields = array_filter($typeConfig->getFields(), function (InputFieldInterface $field) {
             return $field->getType()->getKind() == TypeMap::KIND_NON_NULL;
         });
 
