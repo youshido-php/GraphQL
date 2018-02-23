@@ -18,11 +18,15 @@ class Node
      */
     public static function fromGlobalId($id)
     {
-        if ($decoded = base64_decode($id)) {
-            return explode(':', $decoded);
+        $decoded = base64_decode($id, true);
+        if (!$decoded) {
+            throw new \InvalidArgumentException('ID must be a valid base 64 string');
         }
-
-        return [null, null];
+        $decodedParts = explode(':', $decoded, 2);
+        if (count($decodedParts) != 2) {
+            throw new \InvalidArgumentException('ID was not correctly formed');
+        }
+        return $decodedParts;
     }
 
     /**
