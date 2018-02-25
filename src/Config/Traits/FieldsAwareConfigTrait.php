@@ -11,6 +11,7 @@ namespace Youshido\GraphQL\Config\Traits;
 
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\FieldInterface;
+use Youshido\GraphQL\Field\InputFieldInterface;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 
 /**
@@ -49,6 +50,9 @@ trait FieldsAwareConfigTrait
         foreach ($fieldsList as $fieldName => $fieldConfig) {
 
             if ($fieldConfig instanceof FieldInterface) {
+                $this->fields[$fieldConfig->getName()] = $fieldConfig;
+                continue;
+            } elseif($fieldConfig instanceof InputFieldInterface) {
                 $this->fields[$fieldConfig->getName()] = $fieldConfig;
                 continue;
             } else {

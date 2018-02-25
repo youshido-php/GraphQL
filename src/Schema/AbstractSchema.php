@@ -10,9 +10,8 @@ namespace Youshido\GraphQL\Schema;
 
 
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
-use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\SchemaTypesList;
-use Youshido\GraphQL\Type\TypeInterface;
+use Youshido\GraphQL\Type\SchemaDirectivesList;
 
 abstract class AbstractSchema
 {
@@ -23,10 +22,10 @@ abstract class AbstractSchema
     public function __construct($config = [])
     {
         if (!array_key_exists('query', $config)) {
-            $config['query'] = new InternalSchemaQueryObject(['name' => $this->getName() . 'Query']);
+            $config['query'] = new InternalSchemaQueryObject(['name' => $this->getName($config) . 'Query']);
         }
         if (!array_key_exists('mutation', $config)) {
-            $config['mutation'] = new InternalSchemaMutationObject(['name' => $this->getName() . 'Mutation']);
+            $config['mutation'] = new InternalSchemaMutationObject(['name' => $this->getName($config) . 'Mutation']);
         }
         if (!array_key_exists('types', $config)) {
           $config['types'] = [];
@@ -67,10 +66,18 @@ abstract class AbstractSchema
         return $this->config->getTypesList();
     }
 
-    public function getName()
+    /**
+     * @return SchemaDirectivesList
+     */
+    public function getDirectiveList()
+    {
+        return $this->config->getDirectiveList();
+    }
+
+    public function getName($config)
     {
         $defaultName = 'RootSchema';
 
-        return $this->config ? $this->config->get('name', $defaultName) : $defaultName;
+        return isset($config["name"])? $config["name"] : $defaultName;
     }
 }

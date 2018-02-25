@@ -127,7 +127,7 @@ class NonNullableTest extends \PHPUnit_Framework_TestCase
                     ],
                     'errors' => [
                         [
-                            'message' => 'Not valid type for argument "ids" in query "nonNullArgument2"',
+                            'message' => 'Not valid type for argument "ids" in query "nonNullArgument2": Field must not be NULL',
                             'locations' => [['line' => 1, 'column' => 25]]
                         ]
                     ]
@@ -189,7 +189,7 @@ class NonNullableTest extends \PHPUnit_Framework_TestCase
                     ],
                     'errors' => [
                         [
-                            'message' => 'Not valid resolved type for field "nonNullListOfNpnNull"'
+                            'message' => 'Not valid resolved type for field "nonNullListOfNpnNull": Field must not be NULL'
                         ]
                     ]
                 ]

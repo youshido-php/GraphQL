@@ -44,6 +44,8 @@ class InputValueType extends AbstractObjectType
         $config
             ->addField('name', new NonNullType(TypeMap::TYPE_STRING))
             ->addField('description', TypeMap::TYPE_STRING)
+            ->addField('isDeprecated', new NonNullType(TypeMap::TYPE_BOOLEAN))
+            ->addField('deprecationReason', TypeMap::TYPE_STRING)
             ->addField(new Field([
                 'name'    => 'type',
                 'type'    => new NonNullType(new QueryType()),

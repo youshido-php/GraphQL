@@ -12,7 +12,6 @@ use Youshido\GraphQL\Type\Scalar\StringType;
 
 class VariablesTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testInvalidNullableList()
     {
         $schema = new Schema([
@@ -22,14 +21,14 @@ class VariablesTest extends \PHPUnit_Framework_TestCase
                     'list' => [
                         'type'    => new StringType(),
                         'args'    => [
-                            'ids' => new ListType(new NonNullType(new IdType()))
+                            'ids' => new ListType(new NonNullType(new IdType())),
                         ],
                         'resolve' => function () {
                             return 'item';
-                        }
+                        },
                     ],
-                ]
-            ])
+                ],
+            ]),
         ]);
 
 
@@ -37,16 +36,32 @@ class VariablesTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload(
             'query getList($ids: [ID!]) { list(ids: $ids) }',
             [
-                'ids' => [1, 12, null]
+                'ids' => [1, 12],
             ]
         );
         $this->assertEquals(['data' => ['list' => 'item']], $processor->getResponseData());
 
         $processor->getExecutionContext()->clearErrors();
         $processor->processPayload(
+            'query getList($ids: [ID!]) { list(ids: $ids) }',
+            [
+                'ids' => [1, 12, null],
+            ]
+        );
+        $this->assertEquals(['data' => ['list' => null], 'errors' => [
+            [
+                'message'   => 'Not valid type for argument "ids" in query "list": Field must not be NULL',
+                'locations' => [
+                    ['line' => 1, 'column' => 35],
+                ],
+            ],
+        ]], $processor->getResponseData());
+
+        $processor->getExecutionContext()->clearErrors();
+        $processor->processPayload(
             'query getList($ids: [ID]) { list(ids: $ids) }',
             [
-                'ids' => [1, 12, null]
+                'ids' => [1, 12, null],
             ]
         );
         $this->assertEquals(
@@ -58,11 +73,11 @@ class VariablesTest extends \PHPUnit_Framework_TestCase
                         'locations' => [
                             [
                                 'line'   => 1,
-                                'column' => 15
-                            ]
-                        ]
+                                'column' => 15,
+                            ],
+                        ],
                     ],
-                ]
+                ],
             ],
             $processor->getResponseData());
     }
@@ -89,8 +104,8 @@ class VariablesTest extends \PHPUnit_Framework_TestCase
                             return sprintf('Result with %s order', empty($args['sortOrder']) ? 'default' : $args['sortOrder']);
                         },
                     ],
-                ]
-            ])
+                ],
+            ]),
         ]);
 
         $processor = new Processor($schema);
@@ -109,12 +124,12 @@ class VariablesTest extends \PHPUnit_Framework_TestCase
                 }',
                 [
                     'data' => [
-                        'stringQuery' => 'Result with default order'
+                        'stringQuery' => 'Result with default order',
                     ],
                 ],
                 [
-                    'sort' => null
-                ]
+                    'sort' => null,
+                ],
             ],
             [
                 'query queryWithVariable($abc:String) {
@@ -129,17 +144,16 @@ class VariablesTest extends \PHPUnit_Framework_TestCase
                             'locations' => [
                                 [
                                     'line'   => 3,
-                                    'column' => 24
-                                ]
-                            ]
-                        ]
+                                    'column' => 24,
+                                ],
+                            ],
+                        ],
                     ],
                 ],
                 [
-                    'abc' => null
-                ]
+                    'abc' => null,
+                ],
             ],
         ];
     }
-
 }

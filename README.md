@@ -8,16 +8,14 @@
 
 This is a pure PHP realization of the GraphQL protocol based on the working draft of the official GraphQL Specification located on http://facebook.github.io/graphql/.
 
-GraphQL is a modern replacement of the almost obsolete REST approach to present API. It's been almost 16 years since the REST idea was found in 2000 by Roy Fielding. With all credit to everything we accomplished using REST it's time to change for something better.
-GraphQL advanced in many ways and has fundamental improvements over the old good REST:
+GraphQL is a query language for APIs. It brings a new paradigm to the world of client-server communication and delivers a much more predictable behavior and smallest possible over-the-wire responses to any request. 
+GraphQL advanced in many ways and has fundamental quality improvements:
 
- - self-checks embedded on the ground level of your backend architecture
- - reusable API for different client versions and devices, i.e. no more need in maintaining "/v1" and "/v2"
- - a complete new level of distinguishing of the backend and frontend logic
+ - strongly typed communication protocol makes both client and server predictable and more stable
+ - encourages you to build a constantly evolving APIs and not use versions in the endpoints
+ - bulk requests and responses to avoiding waiting for multiple HTTP handshakes
  - easily generated documentation and incredibly intuitive way to explore created API
- - once your architecture is complete – most client-based changes does not require backend modifications
-
-It could be hard to believe but give it a try and you'll be rewarded with much better architecture and so much easier to support code.
+ - clients will be much less likely to require backend changes
 
 > Current package is and will be trying to be kept up to date with the latest revision of the official GraphQL Specification which is now of April 2016.
 
@@ -58,16 +56,7 @@ On the other hand, we prepared a step-by-step guide for those who wants to get u
 ### Installation
 
 Install GraphQL package using composer. If you're not familiar with it, you should check out their [manual](https://getcomposer.org/doc/00-intro.md).
-Add the following package to your `composer.json` (or simply create a new file with this content):
-
- ```
- {
-     "require": {
-         "youshido/graphql": "^1.2"
-     }
- }
- ```
-Run `composer update`.
+Run `composer require youshido/graphql`.
 
 Alternatively you can run the following commands:
 ```sh
@@ -78,7 +67,7 @@ composer require youshido/graphql
 
 Now you're ready to create your `GraphQL Schema` and check if everything works fine.
 Your first GraphQL app will be able to receive `currentTime` request and response with a formatted time string.
-> you can find this example in the examples directory – [01_sandbox](https://github.com/Youshido/GraphQL/examples/01_sandbox).
+> you can find this example in the examples directory – [01_sandbox](https://github.com/Youshido/GraphQL/tree/master/examples/01_sandbox).
 
 Create an `index.php` file with the following content:
 ```php
@@ -123,13 +112,13 @@ If you're having any troubles – here're some troubleshooting points:
 * make sure your `index.php` file has been created in the same directory that you have `vendor` folder in (presumably it's `graphql-test` folder)
 * last but not least, check that you have php-cli installed and running and it's version >= 5.5 (`php -v`)
 
-Also, you can always check if script from the [examples folder](https://github.com/Youshido/GraphQL/examples/01_sandbox) work.
+Also, you can always check if script from the [examples folder](https://github.com/Youshido/GraphQL/tree/master/examples/01_sandbox) work.
 
 ## Tutorial – Creating Blog Schema
 
 For our learning example we'll architect a GraphQL Schema for a Blog.
 You'll probably be using our package along with your favorite framework (we have a Symfony version [here](http://github.com/Youshido/GraphqlBundle)), but for the purpose of this tutorial we're keeping it all examples as plain php code.
->> (Complete example of the Blog schema available by the following link https://github.com/Youshido/GraphQL/examples/02_Blog)
+>> (Complete example of the Blog schema available by the following link https://github.com/Youshido/GraphQL/tree/master/examples/02_blog)
 
 Our Blog will have `Users` who can write `Posts` and leave `Comments`. Also, there will be a `LikePost` operation that could be performed by anyone.
 Let's start with `Post`. Take a look at the query that returns `title` and `summary` of the latest Post:

@@ -70,7 +70,7 @@ class QueryType extends AbstractObjectType
                     $enumValue['isDeprecated'] = false;
                 }
                 if (!array_key_exists('deprecationReason', $enumValue)) {
-                    $enumValue['deprecationReason'] = '';
+                    $enumValue['deprecationReason'] = null;
                 }
 
                 $data[] = $enumValue;

@@ -9,16 +9,129 @@
 namespace Youshido\Tests\Library\Field;
 
 
+use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Field\InputField;
+use Youshido\GraphQL\Schema\Schema;
+use Youshido\GraphQL\Type\InputObject\InputObjectType;
 use Youshido\GraphQL\Type\ListType\ListType;
+use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IdType;
 use Youshido\GraphQL\Type\Scalar\IntType;
+use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
 use Youshido\Tests\DataProvider\TestInputField;
 
 class InputFieldTest extends \PHPUnit_Framework_TestCase
 {
+
+    private $introspectionQuery = <<<TEXT
+
+query IntrospectionQuery {
+                __schema {
+                    queryType { name }
+                    mutationType { name }
+                    types {
+                        ...FullType
+                    }
+                    directives {
+                        name
+                        description
+                        args {
+                            ...InputValue
+                        }
+                        onOperation
+                        onFragment
+                        onField
+                    }
+                }
+            }
+
+            fragment FullType on __Type {
+                kind
+                name
+                description
+                fields {
+                    name
+                    description
+                    args {
+                        ...InputValue
+                    }
+                    type {
+                        ...TypeRef
+                    }
+                    isDeprecated
+                    deprecationReason
+                }
+                inputFields {
+                    ...InputValue
+                }
+                interfaces {
+                    ...TypeRef
+                }
+                enumValues {
+                    name
+                    description
+                    isDeprecated
+                    deprecationReason
+                }
+                possibleTypes {
+                    ...TypeRef
+                }
+            }
+
+            fragment InputValue on __InputValue {
+                name
+                description
+                type { ...TypeRef }
+                defaultValue
+            }
+
+            fragment TypeRef on __Type {
+                kind
+                name
+                ofType {
+                    kind
+                    name
+                    ofType {
+                        kind
+                        name
+                        ofType {
+                            kind
+                            name
+                        }
+                    }
+                }
+            }
+TEXT;
+
+    public function testFieldWithInputFieldArgument()
+    {
+        $schema    = new Schema([
+            'query' => new ObjectType([
+                'name'   => 'RootQuery',
+                'fields' => [
+                    'amount' => [
+                        'type' => new IntType(),
+                        'args' => [
+                            new InputField([
+                                'name' => 'input',
+                                'type' => new InputObjectType([
+                                    'name'   => 'TestInput',
+                                    'fields' => [
+                                        new InputField(['name' => 'clientMutationId', 'type' => new NonNullType(new StringType())])
+                                    ]
+                                ])
+                            ])
+                        ],
+                    ]
+
+                ]
+            ])
+        ]);
+        $processor = new Processor($schema);
+        $processor->processPayload($this->introspectionQuery);
+    }
 
     public function testInlineInputFieldCreation()
     {
@@ -50,7 +163,7 @@ class InputFieldTest extends \PHPUnit_Framework_TestCase
     {
         new InputField([
             'name' => 'test',
-            'type' => new ListType(new IntType())
+            'type' => new ListType(new IntType()),
         ]);
     }
 

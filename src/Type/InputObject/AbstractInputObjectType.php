@@ -10,7 +10,7 @@ namespace Youshido\GraphQL\Type\InputObject;
 
 
 use Youshido\GraphQL\Config\Object\InputObjectTypeConfig;
-use Youshido\GraphQL\Field\FieldInterface;
+use Youshido\GraphQL\Field\InputFieldInterface;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputObject;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
 use Youshido\GraphQL\Type\AbstractType;
@@ -65,12 +65,20 @@ abstract class AbstractInputObjectType extends AbstractType
         }
 
         $typeConfig     = $this->getConfig();
-        $requiredFields = array_filter($typeConfig->getFields(), function (FieldInterface $field) {
+        $requiredFields = array_filter($typeConfig->getFields(), function (InputFieldInterface $field) {
             return $field->getType()->getKind() == TypeMap::KIND_NON_NULL;
         });
 
         foreach ($value as $valueKey => $valueItem) {
-            if (!$typeConfig->hasField($valueKey) || !$typeConfig->getField($valueKey)->getType()->isValidValue($valueItem)) {
+            if (!$typeConfig->hasField($valueKey)) {
+                // Schema validation will generate the error message for us.
+                return false;
+            }
+
+            $field = $typeConfig->getField($valueKey);
+            if (!$field->getType()->isValidValue($valueItem)) {
+                $error                     = $field->getType()->getValidationError($valueItem) ?: '(no details available)';
+                $this->lastValidationError = sprintf('Not valid type for field "%s" in input type "%s": %s', $field->getName(), $this->getName(), $error);
                 return false;
             }
 
@@ -79,7 +87,7 @@ abstract class AbstractInputObjectType extends AbstractType
             }
         }
         if (count($requiredFields)) {
-            $this->lastError = sprintf('%s %s required on %s', implode(', ', array_keys($requiredFields)), count($requiredFields) > 1 ? 'are' : 'is', $typeConfig->getName());
+            $this->lastValidationError = sprintf('%s %s required on %s', implode(', ', array_keys($requiredFields)), count($requiredFields) > 1 ? 'are' : 'is', $typeConfig->getName());
         }
 
         return !(count($requiredFields) > 0);

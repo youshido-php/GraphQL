@@ -9,8 +9,6 @@ namespace Youshido\GraphQL\Field;
 
 
 use Youshido\GraphQL\Config\Field\InputFieldConfig;
-use Youshido\GraphQL\Config\Traits\ResolvableObjectTrait;
-use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
 use Youshido\GraphQL\Type\InputTypeInterface;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\Traits\FieldsArgumentsAwareObjectTrait;

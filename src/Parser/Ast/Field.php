@@ -14,6 +14,7 @@ use Youshido\GraphQL\Parser\Location;
 class Field extends AbstractAst implements FieldInterface
 {
     use AstArgumentsTrait;
+    use AstDirectivesTrait;
 
     /** @var string */
     private $name;
@@ -25,15 +26,17 @@ class Field extends AbstractAst implements FieldInterface
      * @param string   $name
      * @param string   $alias
      * @param array    $arguments
+     * @param array    $directives
      * @param Location $location
      */
-    public function __construct($name, $alias, array $arguments, Location $location)
+    public function __construct($name, $alias, array $arguments, array $directives, Location $location)
     {
         parent::__construct($location);
 
         $this->name      = $name;
         $this->alias     = $alias;
         $this->setArguments($arguments);
+        $this->setDirectives($directives);
     }
 
     /**

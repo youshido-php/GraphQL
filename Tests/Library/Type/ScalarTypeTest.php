@@ -14,7 +14,6 @@ use Youshido\GraphQL\Type\Scalar\StringType;
 use Youshido\GraphQL\Type\TypeFactory;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
-use Youshido\Tests\DataProvider\TestScalarDataProvider;
 
 class ScalarTypeTest extends \PHPUnit_Framework_TestCase
 {
@@ -57,7 +56,7 @@ class ScalarTypeTest extends \PHPUnit_Framework_TestCase
     public function testDateTimeType()
     {
         $dateType = new DateTimeType('Y/m/d H:i:s');
-        $this->assertEquals('2016/05/31 12:00:00', $dateType->serialize(new \DateTime('2016-05-31 12:00pm')));
+        $this->assertEquals('2016/05/31 12:00:00', $dateType->serialize(new \DateTimeImmutable('2016-05-31 12:00pm')));
     }
 
     private function assertSerialization(AbstractScalarType $object, $input, $expected)
@@ -69,9 +68,10 @@ class ScalarTypeTest extends \PHPUnit_Framework_TestCase
     {
         $parsed = $object->parseValue($input);
         if ($parsed instanceof \DateTime) {
-            $expected = \DateTime::createFromFormat($typeName == 'datetime' ? 'Y-m-d H:i:s' : 'D, d M Y H:i:s O', $expected);
+            $expected = \DateTime::createFromFormat($typeName === 'datetime' ? 'Y-m-d H:i:s' : 'D, d M Y H:i:s O', $expected);
+            $parsed   = \DateTime::createFromFormat('Y-m-d H:i:s', $parsed->format('Y-m-d H:i:s'));
         }
+
         $this->assertEquals($expected, $parsed, $object->getName() . ' parse for: ' . serialize($input));
     }
-
 }
