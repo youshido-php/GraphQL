@@ -79,29 +79,34 @@ class ConfigValidator implements ConfigValidatorInterface
 
     public function validate($data, $rules = [], $extraFieldsAllowed = null)
     {
-        if ($extraFieldsAllowed !== null) $this->setExtraFieldsAllowed($extraFieldsAllowed);
+        if ($extraFieldsAllowed !== null) {
+            $this->setExtraFieldsAllowed($extraFieldsAllowed);
+        }
 
         $processedFields = [];
         foreach ($rules as $fieldName => $fieldRules) {
             $processedFields[] = $fieldName;
 
+            if (!isset($data[$fieldName])) {
+                continue;
+            }
             /** Custom validation of 'required' property */
-            if (array_key_exists('required', $fieldRules)) {
+            if (isset($fieldRules['required'])) {
                 unset($fieldRules['required']);
 
-                if (!array_key_exists($fieldName, $data)) {
+                if (!isset($data[$fieldName])) {
                     $this->addError(new ValidationException(sprintf('Field "%s" is required', $fieldName)));
 
                     continue;
                 }
-            } elseif (!array_key_exists($fieldName, $data)) {
-                continue;
             }
-            if (!empty($fieldRules['final'])) unset($fieldRules['final']);
+            if (!empty($fieldRules['final'])) {
+                unset($fieldRules['final']);
+            }
 
             /** Validation of all other rules*/
             foreach ($fieldRules as $ruleName => $ruleInfo) {
-                if (!array_key_exists($ruleName, $this->validationRules)) {
+                if (!isset($this->validationRules[$ruleName])) {
                     $this->addError(new ValidationException(sprintf('Field "%s" has invalid rule "%s"', $fieldName, $ruleInfo)));
 
                     continue;

@@ -41,7 +41,9 @@ class Tokenizer
             $ch = $this->source[$this->pos];
             if ($ch === ' ' || $ch === "\t" || $ch === ',') {
                 $this->pos++;
-            } elseif ($ch === '#') {
+                continue;
+            }
+            if ($ch === '#') {
                 $this->pos++;
                 while (
                     $this->pos < strlen($this->source) &&
@@ -50,20 +52,24 @@ class Tokenizer
                 ) {
                     $this->pos++;
                 }
-            } elseif ($ch === "\r") {
+                continue;
+            }
+            if ($ch === "\r") {
                 $this->pos++;
                 if ($this->source[$this->pos] === "\n") {
                     $this->pos++;
                 }
                 $this->line++;
                 $this->lineStart = $this->pos;
-            } elseif ($ch === "\n") {
+                continue;
+            }
+            if ($ch === "\n") {
                 $this->pos++;
                 $this->line++;
                 $this->lineStart = $this->pos;
-            } else {
-                break;
+                continue;
             }
+            break;
         }
     }
 
@@ -163,9 +169,7 @@ class Tokenizer
         $this->pos++;
         $nextCh = $this->source[$this->pos];
 
-        $isset = $ch == Token::TYPE_POINT && $nextCh == Token::TYPE_POINT;
-
-        if ($isset) {
+        if ($ch == Token::TYPE_POINT && $nextCh == Token::TYPE_POINT) {
             $this->pos++;
 
             return true;
@@ -184,9 +188,10 @@ class Tokenizer
 
             if ($ch === '_' || $ch === '$' || ('a' <= $ch && $ch <= 'z') || ('A' <= $ch && $ch <= 'Z') || ('0' <= $ch && $ch <= '9')) {
                 $this->pos++;
-            } else {
-                break;
+                continue;
             }
+
+            break;
         }
 
         $value = substr($this->source, $start, $this->pos - $start);
@@ -267,9 +272,10 @@ class Tokenizer
             $ch = $this->source[$this->pos];
             if ('0' <= $ch && $ch <= '9') {
                 $this->pos++;
-            } else {
-                break;
+                continue;
             }
+
+            break;
         }
     }
 

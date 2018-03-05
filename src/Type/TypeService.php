@@ -38,13 +38,15 @@ class TypeService
 
     public static function resolveNamedType($object)
     {
-        if (is_object($object)) {
-            if ($object instanceof AbstractType) {
-                return $object->getType();
-            }
-        } elseif (is_null($object)) {
+        if (is_object($object) && $object instanceof AbstractType) {
+            return $object->getType();
+        }
+
+        if (null === $object) {
             return null;
-        } elseif (is_scalar($object)) {
+        }
+
+        if (is_scalar($object)) {
             return new StringType();
         }
 
@@ -114,9 +116,9 @@ class TypeService
                    || ($type instanceof AbstractListType)
                    || ($namedType instanceof AbstractInputObjectType)
                    || ($namedType instanceof AbstractEnumType);
-        } else {
-            return TypeService::isScalarType($type);
         }
+
+        return TypeService::isScalarType($type);
     }
 
     public static function isInputObjectType($type)
@@ -139,11 +141,9 @@ class TypeService
             }
 
             return is_callable([$data, $getter]) ? $data->$getter() : (isset($data->$path) ? $data->$path : null);
-        } elseif (is_array($data)) {
-            return array_key_exists($path, $data) ? $data[$path] : null;
         }
 
-        return null;
+        return (is_array($data) && \array_key_exists($path, $data)) ? $data[$path] : null;
     }
 
     protected static function classify($text)
