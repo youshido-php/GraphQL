@@ -30,7 +30,7 @@ class BooleanType extends AbstractScalarType
 
     public function isValidValue($value)
     {
-        return is_null($value) || is_bool($value);
+        return is_null($value) || is_bool($value) || (is_int($value) && ($value === 0 || $value === 1));
     }
 
     public function getDescription()
