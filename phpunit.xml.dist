@@ -1,15 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.1/phpunit.xsd"
+    beStrictAboutOutputDuringTests="true"
+    beStrictAboutTestsThatDoNotTestAnything="true"
+    bootstrap="tests/bootstrap.php"
+    colors="auto"
+    convertErrorsToExceptions="true"
+    printerFile="vendor/skyzyx/phpunit-result-printer/ResultPrinter.php"
+    printerClass="Skyzyx\ResultPrinter\ResultPrinter"
+    processIsolation="false"
+    stopOnError="false"
+    stopOnFailure="false"
+    stopOnIncomplete="false"
+    stopOnSkipped="false"
+    verbose="true">
 
-<phpunit colors="true">
     <testsuites>
-        <testsuite name="Project Tests">
-            <directory suffix="Test.php">./Tests</directory>
+        <testsuite name="unit">
+            <directory phpVersion="7.2.0" phpVersionOperator=">=" suffix="Test.php">tests/Unit</directory>
+        </testsuite>
+        <testsuite name="integration">
+            <directory phpVersion="7.2.0" phpVersionOperator=">=" suffix="Test.php">tests/Integration</directory>
         </testsuite>
     </testsuites>
 
     <filter>
-        <whitelist>
-            <directory>./src/</directory>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">src</directory>
         </whitelist>
     </filter>
+
+    <logging>
+        <log charset="UTF-8" highLowerBound="70" highlight="false" lowUpperBound="35" target="tests/report/report" type="coverage-html"/>
+        <log target="tests/report/clover.xml" type="coverage-clover"/>
+        <log target="tests/report/coverage.cov" type="coverage-php"/>
+        <log target="tests/report/coverage.txt" type="coverage-text"/>
+        <log target="tests/report/logfile.xml" type="junit" logIncompleteSkipped="false"/>
+        <log target="tests/report/testdox.html" type="testdox-html"/>
+        <log target="tests/report/testdox.txt" type="testdox-text"/>
+    </logging>
 </phpunit>
