@@ -1,33 +1,45 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+
 namespace Youshido\Tests\Issues\Issue171;
 
 use Youshido\GraphQL\Execution\Processor;
 
 class Issue171Test extends \PHPUnit_Framework_TestCase
 {
-    public function testItSetsDeprecationReasonToNullByDefault()
+    public function testItSetsDeprecationReasonToNullByDefault(): void
     {
-        $schema = new Issue171Schema();
+        $schema    = new Issue171Schema();
         $processor = new Processor($schema);
 
         $processor->processPayload($this->getIntrospectionQuery(), []);
         $resp = $processor->getResponseData();
 
-        $enumTypes = array_filter($resp['data']['__schema']['types'], function($type){
-            return ($type['kind'] === 'ENUM');
+        $enumTypes = \array_filter($resp['data']['__schema']['types'], static function ($type) {
+            return 'ENUM' === $type['kind'];
         });
 
         foreach ($enumTypes as $enumType) {
             foreach ($enumType['enumValues'] as $value) {
                 $this->assertFalse($value['isDeprecated']);
-                $this->assertNull($value['deprecationReason'], "deprecationReason should have been null");
+                $this->assertNull($value['deprecationReason'], 'deprecationReason should have been null');
             }
         }
     }
 
     private function getIntrospectionQuery()
     {
-        return  <<<TEXT
+        return <<<'TEXT'
 query IntrospectionQuery {
                 __schema {
                     queryType { name }

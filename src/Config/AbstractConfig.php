@@ -1,26 +1,33 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 /*
-* This file is a part of graphql-youshido project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 11/27/15 2:31 AM
-*/
+ * This file is a part of graphql-youshido project.
+ *
+ * @author Alexandr Viniychuk <a@viniychuk.com>
+ * created: 11/27/15 2:31 AM
+ */
 
 namespace Youshido\GraphQL\Config;
-
 
 use Youshido\GraphQL\Exception\ConfigurationException;
 use Youshido\GraphQL\Exception\ValidationException;
 use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
 
 /**
- * Class Config
- *
- * @package Youshido\GraphQL\Config
+ * Class Config.
  */
 abstract class AbstractConfig
 {
-
     /**
      * @var array
      */
@@ -30,7 +37,7 @@ abstract class AbstractConfig
 
     protected $finalClass = false;
 
-    protected $extraFieldsAllowed = null;
+    protected $extraFieldsAllowed;
 
     /**
      * TypeConfig constructor.
@@ -55,18 +62,39 @@ abstract class AbstractConfig
         $this->build();
     }
 
-    public function validate()
+    public function __call($method, $arguments)
+    {
+        if ('get' === \mb_substr($method, 0, 3)) {
+            return $this->get(\lcfirst(\mb_substr($method, 3)));
+        }
+
+        if ('set' === \mb_substr($method, 0, 3)) {
+            $propertyName = \lcfirst(\mb_substr($method, 3));
+            $this->set($propertyName, $arguments[0]);
+
+            return $this;
+        }
+
+        if ('is' === \mb_substr($method, 0, 2)) {
+            return $this->get(\lcfirst(\mb_substr($method, 2)));
+        }
+
+        throw new \Exception('Call to undefined method ' . $method);
+    }
+
+    public function validate(): void
     {
         $validator = ConfigValidator::getInstance();
 
         if (!$validator->validate($this->data, $this->getContextRules(), $this->extraFieldsAllowed)) {
-            throw new ConfigurationException('Config is not valid for ' . ($this->contextObject ? get_class($this->contextObject) : null) . "\n" . implode("\n", $validator->getErrorsArray(false)));
+            throw new ConfigurationException('Config is not valid for ' . ($this->contextObject ? \get_class($this->contextObject) : null) . "\n" . \implode("\n", $validator->getErrorsArray(false)));
         }
     }
 
     public function getContextRules()
     {
         $rules = $this->getRules();
+
         if ($this->finalClass) {
             foreach ($rules as $name => $info) {
                 if (!empty($info['final'])) {
@@ -110,24 +138,19 @@ abstract class AbstractConfig
         return $this->extraFieldsAllowed;
     }
 
-
     /**
-     * @return null|callable
+     * @return callable|null
      */
     public function getResolveFunction()
     {
         return $this->get('resolve', null);
     }
 
-    protected function build()
-    {
-    }
-
     /**
      * @param      $key
      * @param null $defaultValue
      *
-     * @return mixed|null|callable
+     * @return callable|mixed|null
      */
     public function get($key, $defaultValue = null)
     {
@@ -143,28 +166,10 @@ abstract class AbstractConfig
 
     public function has($key)
     {
-        return array_key_exists($key, $this->data);
+        return \array_key_exists($key, $this->data);
     }
 
-    public function __call($method, $arguments)
+    protected function build(): void
     {
-        if (substr($method, 0, 3) == 'get') {
-            return $this->get(lcfirst(substr($method, 3)));
-        }
-
-        if (substr($method, 0, 3) == 'set') {
-            $propertyName = lcfirst(substr($method, 3));
-            $this->set($propertyName, $arguments[0]);
-
-            return $this;
-        }
-
-        if (substr($method, 0, 2) == 'is') {
-            return $this->get(lcfirst(substr($method, 2)));
-        }
-
-        throw new \Exception('Call to undefined method ' . $method);
     }
-
-
 }

@@ -1,13 +1,23 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 /*
-* This file is a part of GraphQL project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 5/10/16 11:23 PM
-*/
+ * This file is a part of GraphQL project.
+ *
+ * @author Alexandr Viniychuk <a@viniychuk.com>
+ * created: 5/10/16 11:23 PM
+ */
 
 namespace Youshido\GraphQL\Relay\Field;
-
 
 use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Field\AbstractField;
@@ -17,8 +27,7 @@ use Youshido\GraphQL\Type\Scalar\IdType;
 
 class GlobalIdField extends AbstractField
 {
-
-    /** @var  string */
+    /** @var string */
     protected $typeName;
 
     /**
@@ -31,7 +40,7 @@ class GlobalIdField extends AbstractField
         $config = [
             'type'    => $this->getType(),
             'name'    => $this->getName(),
-            'resolve' => [$this, 'resolve']
+            'resolve' => [$this, 'resolve'],
         ];
 
         parent::__construct($config);
@@ -53,7 +62,7 @@ class GlobalIdField extends AbstractField
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function resolve($value, array $args, ResolveInfo $info)
     {

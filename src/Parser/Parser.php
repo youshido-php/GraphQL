@@ -1,13 +1,23 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 /*
-* This file is a part of graphql-youshido project.
-*
-* @author Portey Vasil <portey@gmail.com>
-* created: 11/23/15 1:22 AM
-*/
+ * This file is a part of graphql-youshido project.
+ *
+ * @author Portey Vasil <portey@gmail.com>
+ * created: 11/23/15 1:22 AM
+ */
 
 namespace Youshido\GraphQL\Parser;
-
 
 use Youshido\GraphQL\Exception\Parser\SyntaxErrorException;
 use Youshido\GraphQL\Parser\Ast\Argument;
@@ -26,7 +36,6 @@ use Youshido\GraphQL\Parser\Ast\TypedFragmentReference;
 
 class Parser extends Tokenizer
 {
-
     /** @var array */
     private $data = [];
 
@@ -46,6 +55,7 @@ class Parser extends Tokenizer
                     break;
                 case Token::TYPE_QUERY:
                     $queries = $this->parseOperation(Token::TYPE_QUERY);
+
                     foreach ($queries as $query) {
                         $this->data['queries'][] = $query;
                     }
@@ -53,6 +63,7 @@ class Parser extends Tokenizer
                     break;
                 case Token::TYPE_MUTATION:
                     $mutations = $this->parseOperation(Token::TYPE_MUTATION);
+
                     foreach ($mutations as $query) {
                         $this->data['mutations'][] = $query;
                     }
@@ -72,20 +83,6 @@ class Parser extends Tokenizer
         return $this->data;
     }
 
-    private function init($source = null)
-    {
-        $this->initTokenizer($source);
-
-        $this->data = [
-            'queries'            => [],
-            'mutations'          => [],
-            'fragments'          => [],
-            'fragmentReferences' => [],
-            'variables'          => [],
-            'variableReferences' => [],
-        ];
-    }
-
     protected function parseOperation($type = Token::TYPE_QUERY)
     {
         $operation  = null;
@@ -103,7 +100,6 @@ class Parser extends Tokenizer
             if ($this->match(Token::TYPE_AT)) {
                 $directives = $this->parseDirectiveList();
             }
-
         }
 
         $this->lex();
@@ -138,10 +134,12 @@ class Parser extends Tokenizer
 
                 if ($this->eat(Token::TYPE_ON)) {
                     $fields[] = $this->parseBodyItem(Token::TYPE_TYPED_FRAGMENT, $highLevel);
+
                     continue;
                 }
 
                 $fields[] = $this->parseFragmentReference();
+
                 continue;
             }
 
@@ -153,7 +151,7 @@ class Parser extends Tokenizer
         return $fields;
     }
 
-    protected function parseVariables()
+    protected function parseVariables(): void
     {
         $this->eat(Token::TYPE_LPAREN);
 
@@ -184,6 +182,7 @@ class Parser extends Tokenizer
             }
 
             $required = false;
+
             if ($this->match(Token::TYPE_REQUIRED)) {
                 $required = true;
                 $this->eat(Token::TYPE_REQUIRED);
@@ -226,6 +225,7 @@ class Parser extends Tokenizer
             $name = $this->lex()->getData();
 
             $variable = $this->findVariable($name);
+
             if (!empty($variable)) {
                 $variable->setUsed(true);
             }
@@ -248,8 +248,6 @@ class Parser extends Tokenizer
                 return $variable;
             }
         }
-
-        return null;
     }
 
     protected function parseFragmentReference()
@@ -287,29 +285,28 @@ class Parser extends Tokenizer
         $directives   = $this->match(Token::TYPE_AT) ? $this->parseDirectiveList() : [];
 
         if ($this->match(Token::TYPE_LBRACE)) {
-            $fields = $this->parseBody($type === Token::TYPE_TYPED_FRAGMENT ? Token::TYPE_QUERY : $type, false);
+            $fields = $this->parseBody(Token::TYPE_TYPED_FRAGMENT === $type ? Token::TYPE_QUERY : $type, false);
 
             if (!isset($fields)) {
                 throw $this->createUnexpectedTokenTypeException($this->lookAhead->getType());
             }
 
-            if ($type === Token::TYPE_QUERY) {
+            if (Token::TYPE_QUERY === $type) {
                 return new Query($nameToken->getData(), $alias, $arguments, $fields, $directives, $bodyLocation);
             }
 
-            if ($type === Token::TYPE_TYPED_FRAGMENT) {
+            if (Token::TYPE_TYPED_FRAGMENT === $type) {
                 return new TypedFragmentReference($nameToken->getData(), $fields, $directives, $bodyLocation);
             }
 
             return new Mutation($nameToken->getData(), $alias, $arguments, $fields, $directives, $bodyLocation);
-
         }
 
-        if ($highLevel && $type === Token::TYPE_MUTATION) {
+        if ($highLevel && Token::TYPE_MUTATION === $type) {
             return new Mutation($nameToken->getData(), $alias, $arguments, [], $directives, $bodyLocation);
         }
 
-        if ($highLevel && $type === Token::TYPE_QUERY) {
+        if ($highLevel && Token::TYPE_QUERY === $type) {
             return new Query($nameToken->getData(), $alias, $arguments, [], $directives, $bodyLocation);
         }
 
@@ -364,9 +361,9 @@ class Parser extends Tokenizer
     }
 
     /**
-     * @return array|InputList|InputObject|Literal|VariableReference
-     *
      * @throws SyntaxErrorException
+     *
+     * @return array|InputList|InputObject|Literal|VariableReference
      */
     protected function parseValue()
     {
@@ -399,6 +396,7 @@ class Parser extends Tokenizer
         $startToken = $this->eat(Token::TYPE_LSQUARE_BRACE);
 
         $list = [];
+
         while (!$this->match(Token::TYPE_RSQUARE_BRACE) && !$this->end()) {
             $list[] = $this->parseListValue();
 
@@ -439,6 +437,7 @@ class Parser extends Tokenizer
         $startToken = $this->eat(Token::TYPE_LBRACE);
 
         $object = [];
+
         while (!$this->match(Token::TYPE_RBRACE) && !$this->end()) {
             $key = $this->expectMulti([Token::TYPE_STRING, Token::TYPE_IDENTIFIER])->getData();
             $this->expect(Token::TYPE_COLON);
@@ -489,5 +488,19 @@ class Parser extends Tokenizer
         }
 
         return false;
+    }
+
+    private function init($source = null): void
+    {
+        $this->initTokenizer($source);
+
+        $this->data = [
+            'queries'            => [],
+            'mutations'          => [],
+            'fragments'          => [],
+            'fragmentReferences' => [],
+            'variables'          => [],
+            'variableReferences' => [],
+        ];
     }
 }

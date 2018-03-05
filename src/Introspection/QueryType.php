@@ -1,8 +1,17 @@
 <?php
 /**
- * Date: 03.12.15
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Portey Vasil <portey@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 03.12.15.
  */
 
 namespace Youshido\GraphQL\Introspection;
@@ -23,11 +32,10 @@ use Youshido\GraphQL\Type\Union\AbstractUnionType;
 
 class QueryType extends AbstractObjectType
 {
-
     use TypeCollectorTrait;
 
     /**
-     * @return String type name
+     * @return string type name
      */
     public function getName()
     {
@@ -39,37 +47,36 @@ class QueryType extends AbstractObjectType
         if ($value instanceof CompositeTypeInterface) {
             return $value->getTypeOf();
         }
-
-        return null;
     }
 
     public function resolveInputFields($value)
     {
         if ($value instanceof AbstractInputObjectType) {
-            /** @var AbstractObjectType $value */
+            /* @var AbstractObjectType $value */
             return $value->getConfig()->getFields();
         }
-
-        return null;
     }
 
     public function resolveEnumValues($value, $args)
     {
         /** @var $value AbstractType|AbstractEnumType */
-        if ($value && $value->getKind() == TypeMap::KIND_ENUM) {
+        if ($value && TypeMap::KIND_ENUM === $value->getKind()) {
             $data = [];
+
             foreach ($value->getValues() as $enumValue) {
-                if(!$args['includeDeprecated'] && (isset($enumValue['isDeprecated']) && $enumValue['isDeprecated'])) {
+                if (!$args['includeDeprecated'] && (isset($enumValue['isDeprecated']) && $enumValue['isDeprecated'])) {
                     continue;
                 }
 
-                if (!array_key_exists('description', $enumValue)) {
+                if (!\array_key_exists('description', $enumValue)) {
                     $enumValue['description'] = '';
                 }
-                if (!array_key_exists('isDeprecated', $enumValue)) {
+
+                if (!\array_key_exists('isDeprecated', $enumValue)) {
                     $enumValue['isDeprecated'] = false;
                 }
-                if (!array_key_exists('deprecationReason', $enumValue)) {
+
+                if (!\array_key_exists('deprecationReason', $enumValue)) {
                     $enumValue['deprecationReason'] = null;
                 }
 
@@ -78,23 +85,20 @@ class QueryType extends AbstractObjectType
 
             return $data;
         }
-
-        return null;
     }
 
     public function resolveFields($value, $args)
     {
         /** @var AbstractType $value */
-        if (!$value ||
-            in_array($value->getKind(), [TypeMap::KIND_SCALAR, TypeMap::KIND_UNION, TypeMap::KIND_INPUT_OBJECT, TypeMap::KIND_ENUM])
+        if (!$value || \in_array($value->getKind(), [TypeMap::KIND_SCALAR, TypeMap::KIND_UNION, TypeMap::KIND_INPUT_OBJECT, TypeMap::KIND_ENUM], true)
         ) {
-            return null;
+            return;
         }
 
-        /** @var AbstractObjectType $value */
-        return array_filter($value->getConfig()->getFields(), function ($field) use ($args) {
+        /* @var AbstractObjectType $value */
+        return \array_filter($value->getConfig()->getFields(), static function ($field) use ($args) {
             /** @var $field Field */
-            if (in_array($field->getName(), ['__type', '__schema']) || (!$args['includeDeprecated'] && $field->isDeprecated())) {
+            if (\in_array($field->getName(), ['__type', '__schema'], true) || (!$args['includeDeprecated'] && $field->isDeprecated())) {
                 return false;
             }
 
@@ -105,33 +109,33 @@ class QueryType extends AbstractObjectType
     public function resolveInterfaces($value)
     {
         /** @var $value AbstractType */
-        if ($value->getKind() == TypeMap::KIND_OBJECT) {
-            /** @var $value AbstractObjectType */
+        if (TypeMap::KIND_OBJECT === $value->getKind()) {
+            /* @var $value AbstractObjectType */
             return $value->getConfig()->getInterfaces() ?: [];
         }
-
-        return null;
     }
 
     public function resolvePossibleTypes($value, $args, ResolveInfo $info)
     {
         /** @var $value AbstractObjectType */
-        if ($value->getKind() == TypeMap::KIND_INTERFACE) {
+        if (TypeMap::KIND_INTERFACE === $value->getKind()) {
             $schema = $info->getExecutionContext()->getSchema();
             $this->collectTypes($schema->getQueryType());
+
             foreach ($schema->getTypesList()->getTypes() as $type) {
                 $this->collectTypes($type);
             }
 
             $possibleTypes = [];
+
             foreach ($this->types as $type) {
                 /** @var $type AbstractObjectType */
-                if ($type->getKind() == TypeMap::KIND_OBJECT) {
+                if (TypeMap::KIND_OBJECT === $type->getKind()) {
                     $interfaces = $type->getConfig()->getInterfaces();
 
                     if ($interfaces) {
                         foreach ($interfaces as $interface) {
-                            if ($interface->getName() == $value->getName()) {
+                            if ($interface->getName() === $value->getName()) {
                                 $possibleTypes[] = $type;
                             }
                         }
@@ -140,60 +144,59 @@ class QueryType extends AbstractObjectType
             }
 
             return $possibleTypes;
-        } elseif ($value->getKind() == TypeMap::KIND_UNION) {
-            /** @var $value AbstractUnionType */
-            return $value->getTypes();
         }
 
-        return null;
+        if (TypeMap::KIND_UNION === $value->getKind()) {
+            /* @var $value AbstractUnionType */
+            return $value->getTypes();
+        }
     }
 
-    public function build($config)
+    public function build($config): void
     {
         $config
             ->addField('name', TypeMap::TYPE_STRING)
             ->addField('kind', new NonNullType(TypeMap::TYPE_STRING))
             ->addField('description', TypeMap::TYPE_STRING)
             ->addField('ofType', [
-                'type'    => new QueryType(),
-                'resolve' => [$this, 'resolveOfType']
+                'type'    => new self(),
+                'resolve' => [$this, 'resolveOfType'],
             ])
             ->addField(new Field([
                 'name'    => 'inputFields',
                 'type'    => new ListType(new NonNullType(new InputValueType())),
-                'resolve' => [$this, 'resolveInputFields']
+                'resolve' => [$this, 'resolveInputFields'],
             ]))
             ->addField(new Field([
-                'name'    => 'enumValues',
-                'args'    => [
+                'name' => 'enumValues',
+                'args' => [
                     'includeDeprecated' => [
-                        'type'    => new BooleanType(),
-                        'defaultValue' => false
-                    ]
+                        'type'         => new BooleanType(),
+                        'defaultValue' => false,
+                    ],
                 ],
                 'type'    => new ListType(new NonNullType(new EnumValueType())),
-                'resolve' => [$this, 'resolveEnumValues']
+                'resolve' => [$this, 'resolveEnumValues'],
             ]))
             ->addField(new Field([
-                'name'    => 'fields',
-                'args'    => [
+                'name' => 'fields',
+                'args' => [
                     'includeDeprecated' => [
-                        'type'    => new BooleanType(),
-                        'defaultValue' => false
-                    ]
+                        'type'         => new BooleanType(),
+                        'defaultValue' => false,
+                    ],
                 ],
                 'type'    => new ListType(new NonNullType(new FieldType())),
-                'resolve' => [$this, 'resolveFields']
+                'resolve' => [$this, 'resolveFields'],
             ]))
             ->addField(new Field([
                 'name'    => 'interfaces',
-                'type'    => new ListType(new NonNullType(new QueryType())),
-                'resolve' => [$this, 'resolveInterfaces']
+                'type'    => new ListType(new NonNullType(new self())),
+                'resolve' => [$this, 'resolveInterfaces'],
             ]))
             ->addField('possibleTypes', [
-                'type'    => new ListType(new NonNullType(new QueryType())),
-                'resolve' => [$this, 'resolvePossibleTypes']
+                'type'    => new ListType(new NonNullType(new self())),
+                'resolve' => [$this, 'resolvePossibleTypes'],
             ]);
     }
-
 }

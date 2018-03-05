@@ -1,19 +1,26 @@
 <?php
 /**
- * Date: 01.12.15
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Portey Vasil <portey@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 01.12.15.
  */
 
 namespace Youshido\GraphQL\Validator\ErrorContainer;
-
 
 use Youshido\GraphQL\Exception\Interfaces\DatableExceptionInterface;
 use Youshido\GraphQL\Exception\Interfaces\LocationableExceptionInterface;
 
 trait ErrorContainerTrait
 {
-
     /** @var \Exception[] */
     protected $errors = [];
 
@@ -52,32 +59,34 @@ trait ErrorContainerTrait
         foreach ($this->errors as $error) {
             if ($inGraphQLStyle) {
                 if ($error instanceof DatableExceptionInterface) {
-                    $errors[] = array_merge(
+                    $errors[] = \array_merge(
                         ['message' => $error->getMessage()],
                         $error->getData() ?: [],
                         $error->getCode() ? ['code' => $error->getCode()] : []
                     );
+
                     continue;
                 }
 
                 if ($error instanceof LocationableExceptionInterface) {
-                    $errors[] = array_merge(
+                    $errors[] = \array_merge(
                         ['message' => $error->getMessage()],
                         $error->getLocation() ? ['locations' => [$error->getLocation()->toArray()]] : [],
                         $error->getCode() ? ['code' => $error->getCode()] : []
                     );
+
                     continue;
                 }
 
-                $errors[] = array_merge(
+                $errors[] = \array_merge(
                     ['message' => $error->getMessage()],
                     $error->getCode() ? ['code' => $error->getCode()] : []
                 );
+
                 continue;
             }
 
             $errors[] = $error->getMessage();
-
         }
 
         return $errors;
@@ -89,5 +98,4 @@ trait ErrorContainerTrait
 
         return $this;
     }
-
 }

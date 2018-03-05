@@ -1,12 +1,20 @@
 <?php
 /**
- * Date: 16.05.16
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Portey Vasil <portey@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 16.05.16.
  */
 
 namespace Youshido\GraphQL\Introspection\Field;
-
 
 use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Field\AbstractField;
@@ -18,7 +26,6 @@ use Youshido\GraphQL\Type\Object\AbstractObjectType;
 
 class TypesField extends AbstractField
 {
-
     use TypeCollectorTrait;
 
     /**
@@ -36,7 +43,7 @@ class TypesField extends AbstractField
 
     public function resolve($value, array $args, ResolveInfo $info)
     {
-        /** @var $value AbstractSchema $a */
+        /* @var $value AbstractSchema $a */
         $this->types = [];
         $this->collectTypes($value->getQueryType());
 
@@ -45,10 +52,9 @@ class TypesField extends AbstractField
         }
 
         foreach ($value->getTypesList()->getTypes() as $type) {
-          $this->collectTypes($type);
+            $this->collectTypes($type);
         }
 
-        return array_values($this->types);
+        return \array_values($this->types);
     }
-
 }

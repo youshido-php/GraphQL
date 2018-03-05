@@ -1,12 +1,20 @@
 <?php
 /**
- * Date: 07.12.15
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Portey Vasil <portey@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 07.12.15.
  */
 
 namespace Youshido\GraphQL\Type\Enum;
-
 
 use Youshido\GraphQL\Config\Object\EnumTypeConfig;
 use Youshido\GraphQL\Config\Traits\ConfigAwareTrait;
@@ -16,11 +24,11 @@ use Youshido\GraphQL\Type\TypeMap;
 
 abstract class AbstractEnumType extends AbstractType
 {
-
     use AutoNameTrait, ConfigAwareTrait;
 
     /**
      * ObjectType constructor.
+     *
      * @param $config
      */
     public function __construct($config = [])
@@ -34,7 +42,7 @@ abstract class AbstractEnumType extends AbstractType
     }
 
     /**
-     * @return String predefined type kind
+     * @return string predefined type kind
      */
     public function getKind()
     {
@@ -51,6 +59,7 @@ abstract class AbstractEnumType extends AbstractType
         if (null === $value) {
             return true;
         }
+
         foreach ($this->getConfig()->get('values') as $item) {
             if ($value === $item['name'] || $value === $item['value']) {
                 return true;
@@ -62,11 +71,11 @@ abstract class AbstractEnumType extends AbstractType
 
     public function getValidationError($value = null)
     {
-        $allowedValues = array_map(function (array $value) {
-            return sprintf('%s (%s)', $value['name'], $value['value']);
+        $allowedValues = \array_map(static function (array $value) {
+            return \sprintf('%s (%s)', $value['name'], $value['value']);
         }, $this->getConfig()->get('values'));
 
-        return sprintf('Value must be one of the allowed ones: %s', implode(', ', $allowedValues));
+        return \sprintf('Value must be one of the allowed ones: %s', \implode(', ', $allowedValues));
     }
 
     /**
@@ -81,8 +90,6 @@ abstract class AbstractEnumType extends AbstractType
                 return $valueItem['name'];
             }
         }
-
-        return null;
     }
 
     public function parseValue($value)
@@ -92,8 +99,6 @@ abstract class AbstractEnumType extends AbstractType
                 return $valueItem['value'];
             }
         }
-
-        return null;
     }
 
     public function parseInputValue($value)
@@ -103,8 +108,5 @@ abstract class AbstractEnumType extends AbstractType
                 return $valueItem['name'];
             }
         }
-
-        return null;
     }
-
 }

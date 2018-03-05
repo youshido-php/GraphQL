@@ -1,13 +1,20 @@
 <?php
 /**
- * This file is a part of GraphQL project.
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Philipp Melab <philipp.melab@amazee.com>
- * created: 7/25/17 12:34 PM
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * This file is a part of GraphQL project.
  */
 
 namespace Youshido\GraphQL\Execution;
-
 
 /**
  * Wrapper class for deferred resolvers during execution process.
@@ -15,16 +22,16 @@ namespace Youshido\GraphQL\Execution;
  *
  * @internal
  */
-class DeferredResult implements DeferredResolverInterface {
-
-    /** @var \Youshido\GraphQL\Execution\DeferredResolver */
-    private $resolver;
+final class DeferredResult implements DeferredResolverInterface
+{
+    /** @var mixed */
+    public $result;
 
     /** @var callable */
     protected $callback;
 
-    /** @var  mixed */
-    public $result;
+    /** @var \Youshido\GraphQL\Execution\DeferredResolver */
+    private $resolver;
 
     public function __construct(DeferredResolverInterface $resolver, callable $callback)
     {
@@ -32,7 +39,8 @@ class DeferredResult implements DeferredResolverInterface {
         $this->callback = $callback;
     }
 
-    public function resolve() {
-        $this->result = call_user_func($this->callback, $this->resolver->resolve());
+    public function resolve(): void
+    {
+        $this->result = \call_user_func($this->callback, $this->resolver->resolve());
     }
 }

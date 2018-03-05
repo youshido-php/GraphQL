@@ -1,13 +1,23 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 /*
-* This file is a part of graphql-youshido project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 12/1/15 11:05 PM
-*/
+ * This file is a part of graphql-youshido project.
+ *
+ * @author Alexandr Viniychuk <a@viniychuk.com>
+ * created: 12/1/15 11:05 PM
+ */
 
 namespace Youshido\GraphQL\Config\Traits;
-
 
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\FieldInterface;
@@ -15,14 +25,13 @@ use Youshido\GraphQL\Field\InputFieldInterface;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 
 /**
- * Class FieldsAwareTrait
- * @package Youshido\GraphQL\Config\Traits
+ * Class FieldsAwareTrait.
  */
 trait FieldsAwareConfigTrait
 {
     protected $fields = [];
 
-    public function buildFields()
+    public function buildFields(): void
     {
         if (!empty($this->data['fields'])) {
             $this->addFields($this->data['fields']);
@@ -30,8 +39,10 @@ trait FieldsAwareConfigTrait
     }
 
     /**
-     * Add fields from passed interface
+     * Add fields from passed interface.
+     *
      * @param AbstractInterfaceType $interfaceType
+     *
      * @return $this
      */
     public function applyInterface(AbstractInterfaceType $interfaceType)
@@ -43,6 +54,7 @@ trait FieldsAwareConfigTrait
 
     /**
      * @param array $fieldsList
+     *
      * @return $this
      */
     public function addFields($fieldsList)
@@ -50,16 +62,17 @@ trait FieldsAwareConfigTrait
         foreach ($fieldsList as $fieldName => $fieldConfig) {
             if ($fieldConfig instanceof FieldInterface) {
                 $this->fields[$fieldConfig->getName()] = $fieldConfig;
+
                 continue;
             }
 
-            if($fieldConfig instanceof InputFieldInterface) {
+            if ($fieldConfig instanceof InputFieldInterface) {
                 $this->fields[$fieldConfig->getName()] = $fieldConfig;
+
                 continue;
             }
 
             $this->addField($fieldName, $this->buildFieldConfig($fieldName, $fieldConfig));
-
         }
 
         return $this;
@@ -67,7 +80,8 @@ trait FieldsAwareConfigTrait
 
     /**
      * @param FieldInterface|string $field     Field name or Field Object
-     * @param mixed                $fieldInfo Field Type or Field Config array
+     * @param mixed                 $fieldInfo Field Type or Field Config array
+     *
      * @return $this
      */
     public function addField($field, $fieldInfo = null)
@@ -79,20 +93,6 @@ trait FieldsAwareConfigTrait
         $this->fields[$field->getName()] = $field;
 
         return $this;
-    }
-
-    protected function buildFieldConfig($name, $info = null)
-    {
-        if (!is_array($info)) {
-            $info = [
-                'type' => $info,
-                'name' => $name,
-            ];
-        } elseif (empty($info['name'])) {
-            $info['name'] = $name;
-        }
-
-        return $info;
     }
 
     /**
@@ -112,7 +112,7 @@ trait FieldsAwareConfigTrait
      */
     public function hasField($name)
     {
-        return array_key_exists($name, $this->fields);
+        return \array_key_exists($name, $this->fields);
     }
 
     public function hasFields()
@@ -135,5 +135,19 @@ trait FieldsAwareConfigTrait
         }
 
         return $this;
+    }
+
+    protected function buildFieldConfig($name, $info = null)
+    {
+        if (!\is_array($info)) {
+            $info = [
+                'type' => $info,
+                'name' => $name,
+            ];
+        } elseif (empty($info['name'])) {
+            $info['name'] = $name;
+        }
+
+        return $info;
     }
 }

@@ -1,12 +1,20 @@
 <?php
 /**
- * Date: 5/20/16
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Portey Vasil <portey@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 5/20/16.
  */
 
 namespace Youshido\GraphQL\Execution\Context;
-
 
 use Youshido\GraphQL\Execution\Container\ContainerInterface;
 use Youshido\GraphQL\Execution\Request;
@@ -15,7 +23,6 @@ use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerInterface;
 
 interface ExecutionContextInterface extends ErrorContainerInterface
 {
-
     /**
      * @return AbstractSchema
      */
@@ -47,8 +54,8 @@ interface ExecutionContextInterface extends ErrorContainerInterface
 
     /**
      * @param ContainerInterface $container
+     *
      * @return mixed
      */
     public function setContainer(ContainerInterface $container);
-
 }

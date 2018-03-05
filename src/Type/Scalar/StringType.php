@@ -1,17 +1,26 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 /*
-* This file is a part of graphql-youshido project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 11/27/15 1:05 AM
-*/
+ * This file is a part of graphql-youshido project.
+ *
+ * @author Alexandr Viniychuk <a@viniychuk.com>
+ * created: 11/27/15 1:05 AM
+ */
 
 namespace Youshido\GraphQL\Type\Scalar;
 
-
 class StringType extends AbstractScalarType
 {
-
     public function getName()
     {
         return 'String';
@@ -19,15 +28,19 @@ class StringType extends AbstractScalarType
 
     public function serialize($value)
     {
-        if ($value === true) {
+        if (true === $value) {
             return 'true';
-        } elseif ($value === false) {
-            return 'false';
-        } elseif ($value === null) {
-            return null;
         }
 
-        if(is_array($value)) {
+        if (false === $value) {
+            return 'false';
+        }
+
+        if (null === $value) {
+            return;
+        }
+
+        if (\is_array($value)) {
             return '';
         }
 
@@ -36,7 +49,7 @@ class StringType extends AbstractScalarType
 
     public function isValidValue($value)
     {
-        return is_null($value) || is_scalar($value) || ((is_object($value) && method_exists($value, '__toString')));
+        return null === $value || \is_scalar($value) || ((\is_object($value) && \method_exists($value, '__toString')));
     }
 
     public function getDescription()
@@ -45,5 +58,4 @@ class StringType extends AbstractScalarType
                'character sequences. The String type is most often used by GraphQL to ' .
                'represent free-form human-readable text.';
     }
-
 }

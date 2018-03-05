@@ -1,8 +1,17 @@
 <?php
 /**
- * Date: 01.12.15
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Portey Vasil <portey@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 01.12.15.
  */
 
 namespace Youshido\Tests\Parser;
@@ -23,20 +32,22 @@ use Youshido\GraphQL\Parser\Location;
 use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Parser\Token;
 
-class TokenizerTestingParser extends Parser {
-    public function initTokenizerForTesting($source) {
+class TokenizerTestingParser extends Parser
+{
+    public function initTokenizerForTesting($source): void
+    {
         $this->initTokenizer($source);
     }
 
-    public function getTokenForTesting() {
+    public function getTokenForTesting()
+    {
         return $this->lookAhead;
     }
 }
 
 class ParserTest extends \PHPUnit_Framework_TestCase
 {
-
-    public function testEmptyParser()
+    public function testEmptyParser(): void
     {
         $parser = new Parser();
 
@@ -50,11 +61,11 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         ], $parser->parse());
     }
 
-    /**
-     * @expectedException Youshido\GraphQL\Exception\Parser\SyntaxErrorException
-     */
-    public function testInvalidSelection()
+
+    public function testInvalidSelection(): void
     {
+        $this->expectException(\Youshido\GraphQL\Exception\Parser\SyntaxErrorException::class);
+
         $parser = new Parser();
         $data   = $parser->parse('
         {
@@ -68,9 +79,9 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         ');
     }
 
-    public function testComments()
+    public function testComments(): void
     {
-        $query = <<<GRAPHQL
+        $query = <<<'GRAPHQL'
 # asdasd "asdasdasd"
 # comment line 2
 
@@ -85,14 +96,19 @@ GRAPHQL;
         $parsedData = $parser->parse($query);
 
         $this->assertEquals($parsedData, [
-            'queries'            => [
-                new Query('authors', null,
+            'queries' => [
+                new Query(
+                    'authors',
+                    null,
                     [
                         new Argument('category', new Literal('#2', new Location(5, 25)), new Location(5, 14)),
                     ],
                     [
                         new Field('_id', null, [], [], new Location(6, 9)),
-                    ], [], new Location(5, 5)),
+                    ],
+                    [],
+                    new Location(5, 5)
+                ),
             ],
             'mutations'          => [],
             'fragments'          => [],
@@ -102,37 +118,30 @@ GRAPHQL;
         ]);
     }
 
-    private function tokenizeStringContents($graphQLString) {
-        $parser = new TokenizerTestingParser();
-        $parser->initTokenizerForTesting('"' . $graphQLString . '"');
-
-        return $parser->getTokenForTesting();
-    }
-
-
-    public function testEscapedStrings()
+    public function testEscapedStrings(): void
     {
-        $this->assertEquals([
-                $this->tokenizeStringContents(""),           
-                $this->tokenizeStringContents("x"),
-                $this->tokenizeStringContents("\\\""),
-                $this->tokenizeStringContents("\\/"),   
-                $this->tokenizeStringContents("\\f"),
-                $this->tokenizeStringContents("\\n"),
-                $this->tokenizeStringContents("\\r"),         
-                $this->tokenizeStringContents("\\b"),
-                $this->tokenizeStringContents("\\uABCD")
+        $this->assertEquals(
+            [
+                $this->tokenizeStringContents(''),
+                $this->tokenizeStringContents('x'),
+                $this->tokenizeStringContents('\\"'),
+                $this->tokenizeStringContents('\\/'),
+                $this->tokenizeStringContents('\\f'),
+                $this->tokenizeStringContents('\\n'),
+                $this->tokenizeStringContents('\\r'),
+                $this->tokenizeStringContents('\\b'),
+                $this->tokenizeStringContents('\\uABCD'),
             ],
             [
-                new Token(Token::TYPE_STRING, 1, 1, ""),
-                new Token(Token::TYPE_STRING, 1, 2, "x"),
+                new Token(Token::TYPE_STRING, 1, 1, ''),
+                new Token(Token::TYPE_STRING, 1, 2, 'x'),
                 new Token(Token::TYPE_STRING, 1, 3, '"'),
                 new Token(Token::TYPE_STRING, 1, 3, '/'),
                 new Token(Token::TYPE_STRING, 1, 3, "\f"),
                 new Token(Token::TYPE_STRING, 1, 3, "\n"),
-                new Token(Token::TYPE_STRING, 1, 3, "\r"),     
-                new Token(Token::TYPE_STRING, 1, 3, sprintf("%c", 8)),         
-                new Token(Token::TYPE_STRING, 1, 7, html_entity_decode("&#xABCD;", ENT_QUOTES, 'UTF-8'))            
+                new Token(Token::TYPE_STRING, 1, 3, "\r"),
+                new Token(Token::TYPE_STRING, 1, 3, \sprintf('%c', 8)),
+                new Token(Token::TYPE_STRING, 1, 7, \html_entity_decode('&#xABCD;', ENT_QUOTES, 'UTF-8')),
             ]
         );
     }
@@ -141,16 +150,17 @@ GRAPHQL;
      * @param $query string
      *
      * @dataProvider wrongQueriesProvider
-     * @expectedException Youshido\GraphQL\Exception\Parser\SyntaxErrorException
      */
-    public function testWrongQueries($query)
+    public function testWrongQueries($query): void
     {
+        $this->expectException(\Youshido\GraphQL\Exception\Parser\SyntaxErrorException::class);
+
         $parser = new Parser();
 
         $parser->parse($query);
     }
 
-    public function testCommas()
+    public function testCommas(): void
     {
         $parser = new Parser();
         $data   = $parser->parse('{ foo,       ,,  , bar  }');
@@ -160,12 +170,12 @@ GRAPHQL;
         ], $data['queries']);
     }
 
-    public function testQueryWithNoFields()
+    public function testQueryWithNoFields(): void
     {
         $parser = new Parser();
         $data   = $parser->parse('{ name }');
         $this->assertEquals([
-            'queries'            => [
+            'queries' => [
                 new Query('name', '', [], [], [], new Location(1, 3)),
             ],
             'mutations'          => [],
@@ -176,12 +186,12 @@ GRAPHQL;
         ], $data);
     }
 
-    public function testQueryWithFields()
+    public function testQueryWithFields(): void
     {
         $parser = new Parser();
         $data   = $parser->parse('{ post, user { name } }');
         $this->assertEquals([
-            'queries'            => [
+            'queries' => [
                 new Query('post', null, [], [], [], new Location(1, 3)),
                 new Query('user', null, [], [
                     new Field('name', null, [], [], new Location(1, 16)),
@@ -195,7 +205,7 @@ GRAPHQL;
         ], $data);
     }
 
-    public function testFragmentWithFields()
+    public function testFragmentWithFields(): void
     {
         $parser = new Parser();
         $data   = $parser->parse('
@@ -206,9 +216,9 @@ GRAPHQL;
                 }
             }');
         $this->assertEquals([
-            'queries'            => [],
-            'mutations'          => [],
-            'fragments'          => [
+            'queries'   => [],
+            'mutations' => [],
+            'fragments' => [
                 new Fragment('FullType', '__Type', [], [
                     new Field('kind', null, [], [], new Location(3, 17)),
                     new Query('fields', null, [], [
@@ -222,7 +232,7 @@ GRAPHQL;
         ], $data);
     }
 
-    public function testInspectionQuery()
+    public function testInspectionQuery(): void
     {
         $parser = new Parser();
 
@@ -306,7 +316,7 @@ GRAPHQL;
         ');
 
         $this->assertEquals([
-            'queries'            => [
+            'queries' => [
                 new Query('__schema', null, [], [
                     new Query('queryType', null, [], [
                         new Field('name', null, [], [], new Location(4, 33)),
@@ -329,8 +339,8 @@ GRAPHQL;
                     ], [], new Location(9, 21)),
                 ], [], new Location(3, 17)),
             ],
-            'mutations'          => [],
-            'fragments'          => [
+            'mutations' => [],
+            'fragments' => [
                 new Fragment('FullType', '__Type', [], [
                     new Field('kind', null, [], [], new Location(23, 17)),
                     new Field('name', null, [], [], new Location(24, 17)),
@@ -421,8 +431,11 @@ GRAPHQL;
 
     /**
      * @dataProvider mutationProvider
+     *
+     * @param mixed $query
+     * @param mixed $structure
      */
-    public function testMutations($query, $structure)
+    public function testMutations($query, $structure): void
     {
         $parser = new Parser();
 
@@ -431,7 +444,7 @@ GRAPHQL;
         $this->assertEquals($parsedStructure, $structure);
     }
 
-    public function testTypedFragment()
+    public function testTypedFragment(): void
     {
         $parser          = new Parser();
         $parsedStructure = $parser->parse('
@@ -446,12 +459,18 @@ GRAPHQL;
         ');
 
         $this->assertEquals($parsedStructure, [
-            'queries'            => [
-                new Query('test', 'test', [],
+            'queries' => [
+                new Query(
+                    'test',
+                    'test',
+                    [],
                     [
                         new Field('name', null, [], [], new Location(4, 21)),
                         new TypedFragmentReference('UnionType', [new Field('unionName', null, [], [], new Location(6, 25))], [], new Location(5, 28)),
-                    ], [], new Location(3, 23)),
+                    ],
+                    [],
+                    new Location(3, 23)
+                ),
             ],
             'mutations'          => [],
             'fragments'          => [],
@@ -467,14 +486,19 @@ GRAPHQL;
             [
                 'query ($variable: Int){ query ( teas: $variable ) { alias: name } }',
                 [
-                    'queries'            => [
-                        new Query('query', null,
+                    'queries' => [
+                        new Query(
+                            'query',
+                            null,
                             [
                                 new Argument('teas', new VariableReference('variable', (new Variable('variable', 'Int', false, false, true, new Location(1, 8)))->setUsed(true), new Location(1, 39)), new Location(1, 33)),
                             ],
                             [
                                 new Field('name', 'alias', [], [], new Location(1, 60)),
-                            ], [], new Location(1, 25)),
+                            ],
+                            [],
+                            new Location(1, 25)
+                        ),
                     ],
                     'mutations'          => [],
                     'fragments'          => [],
@@ -490,7 +514,7 @@ GRAPHQL;
             [
                 '{ query { alias: name } }',
                 [
-                    'queries'            => [
+                    'queries' => [
                         new Query('query', null, [], [new Field('name', 'alias', [], [], new Location(1, 18))], [], new Location(1, 3)),
                     ],
                     'mutations'          => [],
@@ -503,8 +527,8 @@ GRAPHQL;
             [
                 'mutation { createUser ( email: "test@test.com", active: true ) { id } }',
                 [
-                    'queries'            => [],
-                    'mutations'          => [
+                    'queries'   => [],
+                    'mutations' => [
                         new Mutation(
                             'createUser',
                             null,
@@ -528,8 +552,8 @@ GRAPHQL;
             [
                 'mutation { test : createUser (id: 4) }',
                 [
-                    'queries'            => [],
-                    'mutations'          => [
+                    'queries'   => [],
+                    'mutations' => [
                         new Mutation(
                             'createUser',
                             'test',
@@ -552,8 +576,11 @@ GRAPHQL;
 
     /**
      * @dataProvider queryProvider
+     *
+     * @param mixed $query
+     * @param mixed $structure
      */
-    public function testParser($query, $structure)
+    public function testParser($query, $structure): void
     {
         $parser          = new Parser();
         $parsedStructure = $parser->parse($query);
@@ -561,14 +588,13 @@ GRAPHQL;
         $this->assertEquals($structure, $parsedStructure);
     }
 
-
     public function queryProvider()
     {
         return [
             [
                 '{ film(id: 1 filmID: 2) { title } }',
                 [
-                    'queries'            => [
+                    'queries' => [
                         new Query('film', null, [
                             new Argument('id', new Literal(1, new Location(1, 12)), new Location(1, 8)),
                             new Argument('filmID', new Literal(2, new Location(1, 22)), new Location(1, 14)),
@@ -586,7 +612,7 @@ GRAPHQL;
             [
                 '{ test (id: -5) { id } } ',
                 [
-                    'queries'            => [
+                    'queries' => [
                         new Query('test', null, [
                             new Argument('id', new Literal(-5, new Location(1, 13)), new Location(1, 9)),
                         ], [
@@ -603,7 +629,7 @@ GRAPHQL;
             [
                 "{ test (id: -5) \r\n { id } } ",
                 [
-                    'queries'            => [
+                    'queries' => [
                         new Query('test', null, [
                             new Argument('id', new Literal(-5, new Location(1, 13)), new Location(1, 9)),
                         ], [
@@ -625,7 +651,7 @@ GRAPHQL;
                   }
                 }',
                 [
-                    'queries'            => [
+                    'queries' => [
                         new Query('hero', null, [
                             new Argument('episode', new Literal('EMPIRE', new Location(2, 33)), new Location(2, 24)),
                         ], [
@@ -643,7 +669,7 @@ GRAPHQL;
             [
                 '{ test { __typename, id } }',
                 [
-                    'queries'            => [
+                    'queries' => [
                         new Query('test', null, [], [
                             new Field('__typename', null, [], [], new Location(1, 10)),
                             new Field('id', null, [], [], new Location(1, 22)),
@@ -703,11 +729,11 @@ GRAPHQL;
             [
                 '{ test { ...userDataFragment } } fragment userDataFragment on User { id, name, email }',
                 [
-                    'queries'            => [
+                    'queries' => [
                         new Query('test', null, [], [new FragmentReference('userDataFragment', new Location(1, 13))], [], new Location(1, 3)),
                     ],
-                    'mutations'          => [],
-                    'fragments'          => [
+                    'mutations' => [],
+                    'fragments' => [
                         new Fragment('userDataFragment', 'User', [], [
                             new Field('id', null, [], [], new Location(1, 70)),
                             new Field('name', null, [], [], new Location(1, 74)),
@@ -724,7 +750,7 @@ GRAPHQL;
             [
                 '{ user (id: 10, name: "max", float: 123.123 ) { id, name } }',
                 [
-                    'queries'            => [
+                    'queries' => [
                         new Query(
                             'user',
                             null,
@@ -751,7 +777,7 @@ GRAPHQL;
             [
                 '{ allUsers : users ( id: [ 1, 2, 3] ) { id } }',
                 [
-                    'queries'            => [
+                    'queries' => [
                         new Query(
                             'users',
                             'allUsers',
@@ -775,12 +801,12 @@ GRAPHQL;
             [
                 '{ allUsers : users ( id: [ 1, "2", true, null] ) { id } }',
                 [
-                    'queries'            => [
+                    'queries' => [
                         new Query(
                             'users',
                             'allUsers',
                             [
-                                new Argument('id', new InputList([1, "2", true, null], new Location(1, 26)), new Location(1, 22)),
+                                new Argument('id', new InputList([1, '2', true, null], new Location(1, 26)), new Location(1, 22)),
                             ],
                             [
                                 new Field('id', null, [], [], new Location(1, 52)),
@@ -799,7 +825,7 @@ GRAPHQL;
             [
                 '{ allUsers : users ( object: { "a": 123, "d": "asd",  "b" : [ 1, 2, 4 ], "c": { "a" : 123, "b":  "asd" } } ) { id } }',
                 [
-                    'queries'            => [
+                    'queries' => [
                         new Query(
                             'users',
                             'allUsers',
@@ -831,7 +857,7 @@ GRAPHQL;
         ];
     }
 
-    public function testVariablesInQuery()
+    public function testVariablesInQuery(): void
     {
         $parser = new Parser();
 
@@ -874,7 +900,7 @@ GRAPHQL;
         $this->assertArrayNotHasKey('errors', $data);
     }
 
-    public function testVariableDefaultValue()
+    public function testVariableDefaultValue(): void
     {
         $parser          = new Parser();
         $parsedStructure = $parser->parse('
@@ -891,4 +917,11 @@ GRAPHQL;
         $this->assertEquals('small', $var->getValue()->getValue());
     }
 
+    private function tokenizeStringContents($graphQLString)
+    {
+        $parser = new TokenizerTestingParser();
+        $parser->initTokenizerForTesting('"' . $graphQLString . '"');
+
+        return $parser->getTokenForTesting();
+    }
 }

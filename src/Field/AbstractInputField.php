@@ -1,12 +1,20 @@
 <?php
 /**
- * Date: 13.05.16
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Portey Vasil <portey@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 13.05.16.
  */
 
 namespace Youshido\GraphQL\Field;
-
 
 use Youshido\GraphQL\Config\Field\InputFieldConfig;
 use Youshido\GraphQL\Type\InputTypeInterface;
@@ -17,7 +25,6 @@ use Youshido\GraphQL\Type\TypeService;
 
 abstract class AbstractInputField implements InputFieldInterface
 {
-
     use FieldsArgumentsAwareObjectTrait, AutoNameTrait;
 
     protected $isFinal = false;
@@ -37,9 +44,8 @@ abstract class AbstractInputField implements InputFieldInterface
         $this->build($this->config);
     }
 
-    public function build(InputFieldConfig $config)
+    public function build(InputFieldConfig $config): void
     {
-
     }
 
     /**
@@ -53,5 +59,4 @@ abstract class AbstractInputField implements InputFieldInterface
     }
 
     //todo: think about serialize, parseValue methods
-
 }

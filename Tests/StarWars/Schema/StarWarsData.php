@@ -1,15 +1,103 @@
 <?php
 /**
- * Date: 07.12.15
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Portey Vasil <portey@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 07.12.15.
  */
 
 namespace Youshido\Tests\StarWars\Schema;
 
-
 class StarWarsData
 {
+    public static function humans()
+    {
+        return [
+            '1000' => self::luke(),
+            '1001' => self::vader(),
+            '1002' => self::han(),
+            '1003' => self::leia(),
+            '1004' => self::tarkin(),
+        ];
+    }
+
+    /**
+     * We export artoo directly because the schema returns him
+     * from a root field, and hence needs to reference him.
+     */
+    public static function artoo()
+    {
+        return [
+
+            'id'              => '2001',
+            'name'            => 'R2-D2',
+            'friends'         => ['1000', '1002', '1003'],
+            'appearsIn'       => [4, 5, 6],
+            'primaryFunction' => 'Astromech',
+        ];
+    }
+
+    public static function droids()
+    {
+        return [
+            '2000' => self::threepio(),
+            '2001' => self::artoo(),
+        ];
+    }
+
+    /**
+     * Helper function to get a character by ID.
+     *
+     * @param mixed $id
+     */
+    public static function getCharacter($id)
+    {
+        $humans = self::humans();
+        $droids = self::droids();
+
+        if (isset($humans[$id])) {
+            return $humans[$id];
+        }
+
+        if (isset($droids[$id])) {
+            return $droids[$id];
+        }
+    }
+
+    /**
+     * @param $episode
+     *
+     * @return array
+     */
+    public static function getHero($episode)
+    {
+        if (5 === $episode) {
+            // Luke is the hero of Episode V.
+            return self::luke();
+        }
+
+        // Artoo is the hero otherwise.
+        return self::artoo();
+    }
+
+    /**
+     * Allows us to query for a character's friends.
+     *
+     * @param mixed $character
+     */
+    public static function getFriends($character)
+    {
+        return \array_map([__CLASS__, 'getCharacter'], $character['friends']);
+    }
+
     private static function luke()
     {
         return [
@@ -63,17 +151,6 @@ class StarWarsData
         ];
     }
 
-    static function humans()
-    {
-        return [
-            '1000' => self::luke(),
-            '1001' => self::vader(),
-            '1002' => self::han(),
-            '1003' => self::leia(),
-            '1004' => self::tarkin(),
-        ];
-    }
-
     private static function threepio()
     {
         return [
@@ -83,69 +160,5 @@ class StarWarsData
             'appearsIn'       => [4, 5, 6],
             'primaryFunction' => 'Protocol',
         ];
-    }
-
-    /**
-     * We export artoo directly because the schema returns him
-     * from a root field, and hence needs to reference him.
-     */
-    static function artoo()
-    {
-        return [
-
-            'id'              => '2001',
-            'name'            => 'R2-D2',
-            'friends'         => ['1000', '1002', '1003'],
-            'appearsIn'       => [4, 5, 6],
-            'primaryFunction' => 'Astromech',
-        ];
-    }
-
-    static function droids()
-    {
-        return [
-            '2000' => self::threepio(),
-            '2001' => self::artoo(),
-        ];
-    }
-
-    /**
-     * Helper function to get a character by ID.
-     */
-    static function getCharacter($id)
-    {
-        $humans = self::humans();
-        $droids = self::droids();
-        if (isset($humans[$id])) {
-            return $humans[$id];
-        }
-        if (isset($droids[$id])) {
-            return $droids[$id];
-        }
-
-        return null;
-    }
-
-    /**
-     * @param $episode
-     * @return array
-     */
-    static function getHero($episode)
-    {
-        if ($episode === 5) {
-            // Luke is the hero of Episode V.
-            return self::luke();
-        }
-
-        // Artoo is the hero otherwise.
-        return self::artoo();
-    }
-
-    /**
-     * Allows us to query for a character's friends.
-     */
-    static function getFriends($character)
-    {
-        return array_map([__CLASS__, 'getCharacter'], $character['friends']);
     }
 }

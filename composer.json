@@ -27,15 +27,24 @@
       "email": "asheliahut@gmail.com"
     }
   ],
+  "repositories": [
+      {
+          "packagist": false
+      },
+      {
+          "type": "composer",
+          "url": "https://packagist.org/"
+      }
+  ],
   "require": {
-    "php": ">=7.2,<8.0-DEV"
+    "php": "^7.2"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^2.10",
     "pdepend/pdepend": "^2.5",
     "phploc/phploc": "^3.0",
     "phpmetrics/phpmetrics": "^2.3",
-    "phpunit/phpunit": "^6.3",
+    "phpunit/phpunit": "^7.0",
     "sebastian/phpcpd": "^2.0",
     "skyzyx/phpunit-result-printer": "^3.0",
     "squizlabs/php_codesniffer": "^3.0",

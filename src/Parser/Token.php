@@ -1,56 +1,85 @@
 <?php
 /**
- * Date: 23.11.15
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Portey Vasil <portey@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 23.11.15.
  */
 
 namespace Youshido\GraphQL\Parser;
 
 class Token
 {
+    public const TYPE_END = 'end';
 
-    const TYPE_END        = 'end';
-    const TYPE_IDENTIFIER = 'identifier';
-    const TYPE_NUMBER     = 'number';
-    const TYPE_STRING     = 'string';
-    const TYPE_ON         = 'on';
+    public const TYPE_IDENTIFIER = 'identifier';
 
-    const TYPE_QUERY              = 'query';
-    const TYPE_MUTATION           = 'mutation';
-    const TYPE_FRAGMENT           = 'fragment';
-    const TYPE_FRAGMENT_REFERENCE = '...';
-    const TYPE_TYPED_FRAGMENT     = 'typed fragment';
+    public const TYPE_NUMBER = 'number';
 
-    const TYPE_LBRACE        = '{';
-    const TYPE_RBRACE        = '}';
-    const TYPE_LPAREN        = '(';
-    const TYPE_RPAREN        = ')';
-    const TYPE_LSQUARE_BRACE = '[';
-    const TYPE_RSQUARE_BRACE = ']';
-    const TYPE_COLON         = ':';
-    const TYPE_COMMA         = ',';
-    const TYPE_VARIABLE      = '$';
-    const TYPE_POINT         = '.';
-    const TYPE_REQUIRED      = '!';
-    const TYPE_EQUAL         = '=';
-    const TYPE_AT            = '@';
+    public const TYPE_STRING = 'string';
 
-    const TYPE_NULL  = 'null';
-    const TYPE_TRUE  = 'true';
-    const TYPE_FALSE = 'false';
+    public const TYPE_ON = 'on';
 
+    public const TYPE_QUERY = 'query';
+
+    public const TYPE_MUTATION = 'mutation';
+
+    public const TYPE_FRAGMENT = 'fragment';
+
+    public const TYPE_FRAGMENT_REFERENCE = '...';
+
+    public const TYPE_TYPED_FRAGMENT = 'typed fragment';
+
+    public const TYPE_LBRACE = '{';
+
+    public const TYPE_RBRACE = '}';
+
+    public const TYPE_LPAREN = '(';
+
+    public const TYPE_RPAREN = ')';
+
+    public const TYPE_LSQUARE_BRACE = '[';
+
+    public const TYPE_RSQUARE_BRACE = ']';
+
+    public const TYPE_COLON = ':';
+
+    public const TYPE_COMMA = ',';
+
+    public const TYPE_VARIABLE = '$';
+
+    public const TYPE_POINT = '.';
+
+    public const TYPE_REQUIRED = '!';
+
+    public const TYPE_EQUAL = '=';
+
+    public const TYPE_AT = '@';
+
+    public const TYPE_NULL = 'null';
+
+    public const TYPE_TRUE = 'true';
+
+    public const TYPE_FALSE = 'false';
 
     /** @var mixed */
     private $data;
 
-    /** @var  string */
+    /** @var string */
     private $type;
 
-    /** @var integer */
+    /** @var int */
     private $line;
 
-    /** @var integer */
+    /** @var int */
     private $column;
 
     public function __construct($type, $line, $column, $data = null)
@@ -62,21 +91,21 @@ class Token
         $this->column = $column;
 
         if ($data) {
-            $tokenLength = mb_strlen($data);
+            $tokenLength = \mb_strlen($data);
             $tokenLength = $tokenLength > 1 ? $tokenLength - 1 : 0;
 
             $this->column = $column - $tokenLength;
         }
 
-        if ($this->getType() == self::TYPE_TRUE) {
+        if (self::TYPE_TRUE === $this->getType()) {
             $this->data = true;
         }
 
-        if ($this->getType() == self::TYPE_FALSE) {
+        if (self::TYPE_FALSE === $this->getType()) {
             $this->data = false;
         }
 
-        if ($this->getType() == self::TYPE_NULL) {
+        if (self::TYPE_NULL === $this->getType()) {
             $this->data = null;
         }
     }

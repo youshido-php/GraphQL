@@ -1,13 +1,23 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 /*
-* This file is a part of graphql-youshido project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 11/28/15 6:07 PM
-*/
+ * This file is a part of graphql-youshido project.
+ *
+ * @author Alexandr Viniychuk <a@viniychuk.com>
+ * created: 11/28/15 6:07 PM
+ */
 
 namespace Youshido\GraphQL\Validator\ConfigValidator\Rules;
-
 
 use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Field\InputFieldInterface;
@@ -18,7 +28,6 @@ use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
 
 class TypeValidationRule implements ValidationRuleInterface
 {
-
     private $configValidator;
 
     public function __construct(ConfigValidator $validator)
@@ -28,23 +37,25 @@ class TypeValidationRule implements ValidationRuleInterface
 
     public function validate($data, $ruleInfo)
     {
-        if (!is_string($ruleInfo)) return false;
+        if (!\is_string($ruleInfo)) {
+            return false;
+        }
 
         switch ($ruleInfo) {
             case TypeService::TYPE_ANY:
                 return true;
 
             case TypeService::TYPE_ANY_OBJECT:
-                return is_object($data);
+                return \is_object($data);
 
             case TypeService::TYPE_CALLABLE:
-                return is_callable($data);
+                return \is_callable($data);
 
             case TypeService::TYPE_BOOLEAN:
-                return is_bool($data);
+                return \is_bool($data);
 
             case TypeService::TYPE_ARRAY:
-                return is_array($data);
+                return \is_array($data);
 
             case TypeService::TYPE_STRING:
                 return TypeFactory::getScalarType($ruleInfo)->isValidValue($data);
@@ -83,7 +94,7 @@ class TypeValidationRule implements ValidationRuleInterface
 
     private function isArrayOfObjectTypes($data)
     {
-        if (!is_array($data) || !count($data)) {
+        if (!\is_array($data) || !\count($data)) {
             return false;
         }
 
@@ -98,16 +109,16 @@ class TypeValidationRule implements ValidationRuleInterface
 
     private function isEnumValues($data)
     {
-        if (!is_array($data) || empty($data)) {
+        if (!\is_array($data) || empty($data)) {
             return false;
         }
 
         foreach ($data as $item) {
-            if (!is_array($item) || !array_key_exists('name', $item) || !is_string($item['name']) || !preg_match('/^[_a-zA-Z][_a-zA-Z0-9]*$/', $item['name'])) {
+            if (!\is_array($item) || !\array_key_exists('name', $item) || !\is_string($item['name']) || !\preg_match('/^[_a-zA-Z][_a-zA-Z0-9]*$/', $item['name'])) {
                 return false;
             }
 
-            if (!array_key_exists('value', $item)) {
+            if (!\array_key_exists('value', $item)) {
                 return false;
             }
         }
@@ -117,7 +128,7 @@ class TypeValidationRule implements ValidationRuleInterface
 
     private static function isArrayOfInterfaces($data)
     {
-        if (!is_array($data)) {
+        if (!\is_array($data)) {
             return false;
         }
 
@@ -132,7 +143,7 @@ class TypeValidationRule implements ValidationRuleInterface
 
     private function isArrayOfFields($data)
     {
-        if (!is_array($data) || empty($data)) {
+        if (!\is_array($data) || empty($data)) {
             return false;
         }
 
@@ -147,7 +158,7 @@ class TypeValidationRule implements ValidationRuleInterface
 
     private function isField($data, $name = null)
     {
-        if (is_object($data)) {
+        if (\is_object($data)) {
             if (($data instanceof FieldInterface) || ($data instanceof AbstractType)) {
                 return !$data->getConfig() || ($data->getConfig() && $this->configValidator->isValidConfig($data->getConfig()));
             }
@@ -155,7 +166,7 @@ class TypeValidationRule implements ValidationRuleInterface
             return false;
         }
 
-        if (!is_array($data)) {
+        if (!\is_array($data)) {
             $data = [
                 'type' => $data,
                 'name' => $name,
@@ -170,7 +181,7 @@ class TypeValidationRule implements ValidationRuleInterface
 
     private function isArrayOfInputFields($data)
     {
-        if (!is_array($data)) {
+        if (!\is_array($data)) {
             return false;
         }
 
@@ -185,7 +196,7 @@ class TypeValidationRule implements ValidationRuleInterface
 
     private function isInputField($data)
     {
-        if (is_object($data)) {
+        if (\is_object($data)) {
             if ($data instanceof InputFieldInterface) {
                 return true;
             }
@@ -198,11 +209,11 @@ class TypeValidationRule implements ValidationRuleInterface
         }
 
         return TypeService::isInputType($data['type']);
-
     }
 
     /**
-     * Exists for the performance
+     * Exists for the performance.
+     *
      * @return array
      */
     private function getFieldConfigRules()
@@ -215,8 +226,7 @@ class TypeValidationRule implements ValidationRuleInterface
             'resolve'           => ['type' => TypeService::TYPE_CALLABLE],
             'isDeprecated'      => ['type' => TypeService::TYPE_BOOLEAN],
             'deprecationReason' => ['type' => TypeService::TYPE_STRING],
-            'cost'              => ['type' => TypeService::TYPE_ANY]
+            'cost'              => ['type' => TypeService::TYPE_ANY],
         ];
     }
-
 }

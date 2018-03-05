@@ -1,22 +1,31 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 /*
-* Concrete implementation of query visitor.
-*
-* Enforces maximum complexity on a query, computed from "cost" functions on
-* the fields touched by that query.
-*
-* @author Ben Roberts <bjr.roberts@gmail.com>
-* created: 7/11/16 11:05 AM
-*/
+ * Concrete implementation of query visitor.
+ *
+ * Enforces maximum complexity on a query, computed from "cost" functions on
+ * the fields touched by that query.
+ *
+ * @author Ben Roberts <bjr.roberts@gmail.com>
+ * created: 7/11/16 11:05 AM
+ */
 
 namespace Youshido\GraphQL\Execution\Visitor;
-
 
 use Youshido\GraphQL\Config\Field\FieldConfig;
 
 class MaxComplexityQueryVisitor extends AbstractQueryVisitor
 {
-
     /**
      * @var int max score allowed before throwing an exception (causing processing to stop)
      */
@@ -45,11 +54,12 @@ class MaxComplexityQueryVisitor extends AbstractQueryVisitor
     public function visit(array $args, FieldConfig $fieldConfig, $childScore = 0)
     {
         $cost = $fieldConfig->get('cost', null);
-        if (is_callable($cost)) {
+
+        if (\is_callable($cost)) {
             $cost = $cost($args, $fieldConfig, $childScore);
         }
 
-        $cost = is_null($cost) ? $this->defaultScore : $cost;
+        $cost = null === $cost ? $this->defaultScore : $cost;
         $this->memo += $cost;
 
         if ($this->memo > $this->maxScore) {

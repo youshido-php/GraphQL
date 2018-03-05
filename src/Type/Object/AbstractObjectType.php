@@ -1,13 +1,23 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 /*
-* This file is a part of graphql-youshido project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 12/2/15 8:57 PM
-*/
+ * This file is a part of graphql-youshido project.
+ *
+ * @author Alexandr Viniychuk <a@viniychuk.com>
+ * created: 12/2/15 8:57 PM
+ */
 
 namespace Youshido\GraphQL\Type\Object;
-
 
 use Youshido\GraphQL\Config\Object\ObjectTypeConfig;
 use Youshido\GraphQL\Type\AbstractType;
@@ -17,8 +27,7 @@ use Youshido\GraphQL\Type\Traits\FieldsArgumentsAwareObjectTrait;
 use Youshido\GraphQL\Type\TypeMap;
 
 /**
- * Class AbstractObjectType
- * @package Youshido\GraphQL\Type\Object
+ * Class AbstractObjectType.
  */
 abstract class AbstractObjectType extends AbstractType
 {
@@ -26,18 +35,9 @@ abstract class AbstractObjectType extends AbstractType
 
     protected $isBuilt = false;
 
-    public function getConfig()
-    {
-        if (!$this->isBuilt) {
-            $this->isBuilt = true;
-            $this->build($this->config);
-        }
-
-        return $this->config;
-    }
-
     /**
      * ObjectType constructor.
+     *
      * @param $config
      */
     public function __construct(array $config = [])
@@ -50,7 +50,17 @@ abstract class AbstractObjectType extends AbstractType
         $this->config = new ObjectTypeConfig($config, $this);
     }
 
-    final public function serialize($value)
+    public function getConfig()
+    {
+        if (!$this->isBuilt) {
+            $this->isBuilt = true;
+            $this->build($this->config);
+        }
+
+        return $this->config;
+    }
+
+    final public function serialize($value): void
     {
         throw new \InvalidArgumentException('You can not serialize object value directly');
     }
@@ -85,7 +95,6 @@ abstract class AbstractObjectType extends AbstractType
 
     public function isValidValue($value)
     {
-        return is_array($value) || is_null($value) || is_object($value);
+        return \is_array($value) || null === $value || \is_object($value);
     }
-
 }

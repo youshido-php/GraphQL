@@ -1,4 +1,15 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 /*
  * This file is a part of GraphQL project.
  *
@@ -7,7 +18,6 @@
  */
 
 namespace Youshido\Tests\Schema;
-
 
 use Youshido\GraphQL\Execution\Container\Container;
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
@@ -33,32 +43,30 @@ use Youshido\Tests\DataProvider\TestSchema;
 
 class ProcessorTest extends \PHPUnit_Framework_TestCase
 {
-
     private $_counter = 0;
 
-    public function testInit()
+    public function testInit(): void
     {
         $processor = new Processor(new TestEmptySchema());
         $this->assertEquals([['message' => 'Schema has to have fields']], $processor->getExecutionContext()->getErrorsArray());
     }
 
-    public function testEmptyQueries()
+    public function testEmptyQueries(): void
     {
         $processor = new Processor(new TestSchema());
         $processor->processPayload('');
         $this->assertEquals(['errors' => [
-            ['message' => 'Must provide an operation.']
+            ['message' => 'Must provide an operation.'],
         ]], $processor->getResponseData());
 
         $processor->getExecutionContext()->clearErrors();
         $processor->processPayload('{ me { name } }');
         $this->assertEquals(['data' => [
-            'me' => ['name' => 'John']
+            'me' => ['name' => 'John'],
         ]], $processor->getResponseData());
-
     }
 
-    public function testNestedVariables()
+    public function testNestedVariables(): void
     {
         $processor    = new Processor(new TestSchema());
         $noArgsQuery  = '{ me { echo(value:"foo") } }';
@@ -66,8 +74,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->processPayload($noArgsQuery, ['value' => 'foo']);
         $this->assertEquals($expectedData, $processor->getResponseData());
 
-        $parameterizedFieldQuery =
-            'query nestedFieldQuery($value:String!){
+        $parameterizedFieldQuery = 'query nestedFieldQuery($value:String!){
           me {
             echo(value:$value)
           }
@@ -76,8 +83,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $response = $processor->getResponseData();
         $this->assertEquals($expectedData, $response);
 
-        $parameterizedQueryQuery =
-            'query nestedQueryQuery($value:Int){
+        $parameterizedQueryQuery = 'query nestedQueryQuery($value:Int){
           me {
             location(noop:$value) {
               address
@@ -88,7 +94,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayNotHasKey('errors', $processor->getResponseData());
     }
 
-    public function testNullListVariable()
+    public function testNullListVariable(): void
     {
         $processor = new Processor(new TestSchema());
         $processor->processPayload(
@@ -102,7 +108,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayNotHasKey('errors', $processor->getResponseData());
     }
 
-    public function testListNullResponse()
+    public function testListNullResponse(): void
     {
         $processor = new Processor(new Schema([
             'query' => new ObjectType([
@@ -110,19 +116,17 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                 'fields' => [
                     'list' => [
                         'type'    => new ListType(new StringType()),
-                        'resolve' => function () {
-                            return null;
-                        }
-                    ]
-                ]
-            ])
+                        'resolve' => static function () {
+                        },
+                    ],
+                ],
+            ]),
         ]));
-        $data      = $processor->processPayload(' { list }')->getResponseData();
+        $data = $processor->processPayload(' { list }')->getResponseData();
         $this->assertEquals(['data' => ['list' => null]], $data);
     }
 
-
-    public function testSubscriptionNullResponse()
+    public function testSubscriptionNullResponse(): void
     {
         $processor = new Processor(new Schema([
             'query' => new ObjectType([
@@ -130,83 +134,83 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                 'fields' => [
                     'list' => [
                         'type'    => new ListType(new StringType()),
-                        'resolve' => function () {
-                            return null;
-                        }
-                    ]
-                ]
-            ])
+                        'resolve' => static function () {
+                        },
+                    ],
+                ],
+            ]),
         ]));
-        $data      = $processor->processPayload(' { __schema { subscriptionType { name } } }')->getResponseData();
+        $data = $processor->processPayload(' { __schema { subscriptionType { name } } }')->getResponseData();
         $this->assertEquals(['data' => ['__schema' => ['subscriptionType' => null]]], $data);
     }
 
-    public function testSchemaOperations()
+    public function testSchemaOperations(): void
     {
-        $schema    = new Schema([
+        $schema = new Schema([
             'query' => new ObjectType([
                 'name'   => 'RootQuery',
                 'fields' => [
-                    'me'                => [
-                        'type'    => new ObjectType([
+                    'me' => [
+                        'type' => new ObjectType([
                             'name'   => 'User',
                             'fields' => [
                                 'firstName' => [
-                                    'type'    => new StringType(),
-                                    'args'    => [
-                                        'shorten' => new BooleanType()
+                                    'type' => new StringType(),
+                                    'args' => [
+                                        'shorten' => new BooleanType(),
                                     ],
-                                    'resolve' => function ($value, $args) {
+                                    'resolve' => static function ($value, $args) {
                                         return empty($args['shorten']) ? $value['firstName'] : $value['firstName'];
-                                    }
+                                    },
                                 ],
-                                'id_alias'  => [
+                                'id_alias' => [
                                     'type'    => new IdType(),
-                                    'resolve' => function ($value) {
+                                    'resolve' => static function ($value) {
                                         return $value['id'];
-                                    }
+                                    },
                                 ],
-                                'lastName'  => new StringType(),
-                                'code'      => new StringType(),
-                            ]
+                                'lastName' => new StringType(),
+                                'code'     => new StringType(),
+                            ],
                         ]),
-                        'resolve' => function ($value, $args) {
+                        'resolve' => static function ($value, $args) {
                             $data = ['id' => '123', 'firstName' => 'John', 'code' => '007'];
+
                             if (!empty($args['upper'])) {
                                 foreach ($data as $key => $value) {
-                                    $data[$key] = strtoupper($value);
+                                    $data[$key] = \mb_strtoupper($value);
                                 }
                             }
 
                             return $data;
                         },
-                        'args'    => [
+                        'args' => [
                             'upper' => [
                                 'type'         => new BooleanType(),
-                                'defaultValue' => false
-                            ]
-                        ]
+                                'defaultValue' => false,
+                            ],
+                        ],
                     ],
-                    'randomUser'        => [
+                    'randomUser' => [
                         'type'    => new TestObjectType(),
-                        'resolve' => function () {
+                        'resolve' => static function () {
                             return ['invalidField' => 'John'];
-                        }
+                        },
                     ],
                     'invalidValueQuery' => [
                         'type'    => new TestObjectType(),
-                        'resolve' => function () {
+                        'resolve' => static function () {
                             return 'stringValue';
-                        }
+                        },
                     ],
-                    'labels'            => [
+                    'labels' => [
                         'type'    => new ListType(new StringType()),
-                        'resolve' => function () {
+                        'resolve' => static function () {
                             return ['one', 'two'];
-                        }
-                    ]
+                        },
+                    ],
                 ],
-            ])
+            ]),
         ]);
         $processor = new Processor($schema);
 
@@ -241,24 +245,23 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                 'resolve' => function ($value, $args, ResolveInfo $info) {
                     return $this->_counter += $args['amount'];
                 },
-                'args'    => [
+                'args' => [
                     'amount' => [
-                        'type'    => new IntType(),
-                        'defaultValue' => 1
-                    ]
-                ]
+                        'type'         => new IntType(),
+                        'defaultValue' => 1,
+                    ],
+                ],
             ]))->addField(new Field([
                 'name'    => 'invalidResolveTypeMutation',
                 'type'    => new NonNullType(new IntType()),
-                'resolve' => function () {
-                    return null;
-                }
+                'resolve' => static function () {
+                },
             ]))->addField(new Field([
                 'name'    => 'interfacedMutation',
                 'type'    => new TestInterfaceType(),
-                'resolve' => function () {
+                'resolve' => static function () {
                     return ['name' => 'John'];
-                }
+                },
             ]));
         $processor->processPayload('mutation { increaseCounter }');
         $this->assertEquals(['data' => ['increaseCounter' => 1]], $processor->getResponseData());
@@ -269,9 +272,9 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             'locations' => [
                 [
                     'line'   => 1,
-                    'column' => 12
-                ]
-            ]
+                    'column' => 12,
+                ],
+            ],
         ]]], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
@@ -283,10 +286,10 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                 'locations' => [
                     [
                         'line'   => 1,
-                        'column' => 28
-                    ]
-                ]
-            ]]
+                        'column' => 28,
+                    ],
+                ],
+            ]],
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
@@ -296,10 +299,10 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             'locations' => [
                 [
                     'line'   => 1,
-                    'column' => 12
-                ]
-            ]
-        ]], 'data'                    => ['increaseCounter' => null]], $processor->getResponseData());
+                    'column' => 12,
+                ],
+            ],
+        ]], 'data' => ['increaseCounter' => null]], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('mutation { increaseCounter(amount: 2) }');
@@ -311,9 +314,9 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             'locations' => [
                 [
                     'line'   => 1,
-                    'column' => 3
-                ]
-            ]
+                    'column' => 3,
+                ],
+            ],
         ]]], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
@@ -329,9 +332,9 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                 'locations' => [
                     [
                         'line'   => 1,
-                        'column' => 34
-                    ]
-                ]
+                        'column' => 34,
+                    ],
+                ],
             ]],
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
@@ -344,10 +347,10 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                 'locations' => [
                     [
                         'line'   => 1,
-                        'column' => 16
-                    ]
-                ]
-            ]]
+                        'column' => 16,
+                    ],
+                ],
+            ]],
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
@@ -362,42 +365,42 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['data' => ['user' => ['name' => 'John']]], $processor->getResponseData());
     }
 
-    public function testEnumType()
+    public function testEnumType(): void
     {
         $processor = new Processor(new Schema([
             'query' => new ObjectType([
                 'name'   => 'RootQuery',
                 'fields' => [
                     'test' => [
-                        'args'    => [
+                        'args' => [
                             'argument1' => new NonNullType(new EnumType([
                                 'name'   => 'TestEnumType',
                                 'values' => [
                                     [
                                         'name'  => 'VALUE1',
-                                        'value' => 'val1'
+                                        'value' => 'val1',
                                     ],
                                     [
                                         'name'  => 'VALUE2',
-                                        'value' => 'val2'
-                                    ]
-                                ]
-                            ]))
+                                        'value' => 'val2',
+                                    ],
+                                ],
+                            ])),
                         ],
                         'type'    => new StringType(),
-                        'resolve' => function ($value, $args) {
+                        'resolve' => static function ($value, $args) {
                             return $args['argument1'];
-                        }
-                    ]
-                ]
-            ])
+                        },
+                    ],
+                ],
+            ]),
         ]));
 
         $processor->processPayload('{ test }');
         $response = $processor->getResponseData();
         $this->assertEquals([
             'data'   => ['test' => null],
-            'errors' => [['message' => 'Require "argument1" arguments to query "test"']]
+            'errors' => [['message' => 'Require "argument1" arguments to query "test"']],
         ], $response);
         $processor->getExecutionContext()->clearErrors();
 
@@ -405,7 +408,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $response = $processor->getResponseData();
         $this->assertEquals([
             'data'   => ['alias' => null],
-            'errors' => [['message' => 'Require "argument1" arguments to query "test"']]
+            'errors' => [['message' => 'Require "argument1" arguments to query "test"']],
         ], $response);
         $processor->getExecutionContext()->clearErrors();
 
@@ -418,10 +421,10 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                 'locations' => [
                     [
                         'line'   => 1,
-                        'column' => 15
-                    ]
-                ]
-            ]]
+                        'column' => 15,
+                    ],
+                ],
+            ]],
         ], $response);
         $processor->getExecutionContext()->clearErrors();
 
@@ -430,86 +433,85 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['data' => ['alias' => 'val1']], $response);
     }
 
-    public function testListEnumsSchemaOperations()
+    public function testListEnumsSchemaOperations(): void
     {
         $processor = new Processor(new Schema([
             'query' => new ObjectType([
                 'name'   => 'RootQuery',
                 'fields' => [
-                    'listQuery'                 => [
+                    'listQuery' => [
                         'type'    => new ListType(new TestEnumType()),
-                        'resolve' => function () {
+                        'resolve' => static function () {
                             return 'invalid list';
-                        }
+                        },
                     ],
-                    'listEnumQuery'             => [
+                    'listEnumQuery' => [
                         'type'    => new ListType(new TestEnumType()),
-                        'resolve' => function () {
+                        'resolve' => static function () {
                             return ['invalid enum'];
-                        }
+                        },
                     ],
-                    'invalidEnumQuery'          => [
+                    'invalidEnumQuery' => [
                         'type'    => new TestEnumType(),
-                        'resolve' => function () {
+                        'resolve' => static function () {
                             return 'invalid enum';
-                        }
+                        },
                     ],
-                    'enumQuery'                 => [
+                    'enumQuery' => [
                         'type'    => new TestEnumType(),
-                        'resolve' => function () {
+                        'resolve' => static function () {
                             return 1;
-                        }
+                        },
                     ],
-                    'invalidNonNullQuery'       => [
+                    'invalidNonNullQuery' => [
                         'type'    => new NonNullType(new IntType()),
-                        'resolve' => function () {
-                            return null;
-                        }
+                        'resolve' => static function () {
+                        },
                     ],
                     'invalidNonNullInsideQuery' => [
                         'type'    => new NonNullType(new IntType()),
-                        'resolve' => function () {
+                        'resolve' => static function () {
                             return 'hello';
-                        }
+                        },
                     ],
-                    'objectQuery'               => [
+                    'objectQuery' => [
                         'type'    => new TestObjectType(),
-                        'resolve' => function () {
+                        'resolve' => static function () {
                             return ['name' => 'John'];
-                        }
+                        },
                     ],
-                    'deepObjectQuery'           => [
-                        'type'    => new ObjectType([
+                    'deepObjectQuery' => [
+                        'type' => new ObjectType([
                             'name'   => 'deepObject',
                             'fields' => [
                                 'object' => new TestObjectType(),
                                 'enum'   => new TestEnumType(),
                             ],
                         ]),
-                        'resolve' => function () {
+                        'resolve' => static function () {
                             return [
                                 'object' => [
-                                    'name' => 'John'
+                                    'name' => 'John',
                                 ],
-                                'enum'   => 1
+                                'enum' => 1,
                             ];
                         },
                     ],
-                ]
-            ])
+                ],
+            ]),
         ]));
 
         $processor->processPayload('{ listQuery }');
         $this->assertEquals([
             'data'   => ['listQuery' => null],
-            'errors' => [['message' => 'Not valid resolved type for field "listQuery": The value is not an iterable.']]
+            'errors' => [['message' => 'Not valid resolved type for field "listQuery": The value is not an iterable.']],
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
         $processor->processPayload('{ listEnumQuery }');
         $this->assertEquals([
             'data'   => ['listEnumQuery' => [null]],
-            'errors' => [['message' => 'Not valid resolved type for field "listEnumQuery": Value must be one of the allowed ones: FINISHED (1), NEW (0)']]
+            'errors' => [['message' => 'Not valid resolved type for field "listEnumQuery": Value must be one of the allowed ones: FINISHED (1), NEW (0)']],
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
@@ -541,86 +543,85 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['data' => ['test' => ['object' => ['name' => 'John']]]], $processor->getResponseData());
     }
 
-    public function testTypedFragment()
+    public function testTypedFragment(): void
     {
-
         $object1 = new ObjectType([
             'name'   => 'Object1',
             'fields' => [
-                'id' => ['type' => 'int', 'cost' => 13]
-            ]
+                'id' => ['type' => 'int', 'cost' => 13],
+            ],
         ]);
 
         $object2 = new ObjectType([
             'name'   => 'Object2',
             'fields' => [
-                'name' => ['type' => 'string']
-            ]
+                'name' => ['type' => 'string'],
+            ],
         ]);
 
         $object3 = new ObjectType([
             'name'   => 'Object3',
             'fields' => [
-                'name' => ['type' => 'string']
-            ]
+                'name' => ['type' => 'string'],
+            ],
         ]);
 
-        $union        = new UnionType([
+        $union = new UnionType([
             'name'        => 'TestUnion',
             'types'       => [$object1, $object2],
-            'resolveType' => function ($object) use ($object1, $object2) {
+            'resolveType' => static function ($object) use ($object1, $object2) {
                 if (isset($object['id'])) {
                     return $object1;
                 }
 
                 return $object2;
-            }
+            },
         ]);
         $invalidUnion = new UnionType([
             'name'        => 'TestUnion',
             'types'       => [$object1, $object2],
-            'resolveType' => function ($object) use ($object3) {
+            'resolveType' => static function ($object) use ($object3) {
                 return $object3;
-            }
+            },
         ]);
-        $processor    = new Processor(new Schema([
+        $processor = new Processor(new Schema([
             'query' => new ObjectType([
                 'name'   => 'RootQuery',
                 'fields' => [
-                    'union'        => [
-                        'type'    => $union,
-                        'args'    => [
-                            'type' => ['type' => 'string']
+                    'union' => [
+                        'type' => $union,
+                        'args' => [
+                            'type' => ['type' => 'string'],
                         ],
                         'cost'    => 10,
-                        'resolve' => function ($value, $args) {
-                            if ($args['type'] == 'object1') {
+                        'resolve' => static function ($value, $args) {
+                            if ('object1' === $args['type']) {
                                 return [
-                                    'id' => 43
-                                ];
-                            } else {
-                                return [
-                                    'name' => 'name resolved'
+                                    'id' => 43,
                                 ];
                             }
-                        }
+
+                            return [
+                                    'name' => 'name resolved',
+                                ];
+                        },
                     ],
                     'invalidUnion' => [
                         'type'    => $invalidUnion,
-                        'resolve' => function () {
+                        'resolve' => static function () {
                             return ['name' => 'name resolved'];
-                        }
+                        },
                     ],
-                ]
-            ])
+                ],
+            ]),
         ]));
         $processor->processPayload('{ union(type: "object1") { ... on Object2 { id } } }');
         $this->assertEquals(['data' => ['union' => []]], $processor->getResponseData());
 
         $processor->processPayload('{ union(type: "object1") { ... on Object1 { name } } }');
         $this->assertEquals([
-            'data'   => [
-                'union' => null
+            'data' => [
+                'union' => null,
             ],
             'errors' => [
                 [
@@ -628,11 +629,11 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                     'locations' => [
                         [
                             'line'   => 1,
-                            'column' => 45
-                        ]
-                    ]
-                ]
-            ]
+                            'column' => 45,
+                        ],
+                    ],
+                ],
+            ],
         ], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
@@ -644,12 +645,12 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
         $processor->processPayload('{ invalidUnion { ... on Object2 { name } } }');
         $this->assertEquals([
-            'data'   => [
-                'invalidUnion' => null
+            'data' => [
+                'invalidUnion' => null,
             ],
             'errors' => [
-                ['message' => 'Type "Object3" not exist in types of "TestUnion"']
-            ]
+                ['message' => 'Type "Object3" not exist in types of "TestUnion"'],
+            ],
         ], $processor->getResponseData());
 
         $visitor = new MaxComplexityQueryVisitor(1000); // arbitrarily high cost
@@ -666,7 +667,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(10 + 13 + 1, $visitor->getMemo());
     }
 
-    public function testContainer()
+    public function testContainer(): void
     {
         $container = new Container();
         $container->set('user', ['name' => 'Alex']);
@@ -677,12 +678,12 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                 'fields' => [
                     'currentUser' => [
                         'type'    => new StringType(),
-                        'resolve' => function ($source, $args, ResolveInfo $info) {
+                        'resolve' => static function ($source, $args, ResolveInfo $info) {
                             return $info->getContainer()->get('user')['name'];
-                        }
-                    ]
-                ]
-            ])
+                        },
+                    ],
+                ],
+            ]),
         ]));
         $executionContext->setContainer($container);
         $this->assertNotNull($executionContext->getContainer());
@@ -693,60 +694,60 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['data' => ['currentUser' => 'Alex']], $processor->processPayload('{ currentUser }')->getResponseData());
     }
 
-    public function testComplexityReducer()
+    public function testComplexityReducer(): void
     {
-        $schema    = new Schema(
+        $schema = new Schema(
             [
                 'query' => new ObjectType(
                     [
                         'name'   => 'RootQuery',
                         'fields' => [
                             'me' => [
-                                'type'    => new ObjectType(
+                                'type' => new ObjectType(
                                     [
                                         'name'   => 'User',
                                         'fields' => [
                                             'firstName' => [
-                                                'type'    => new StringType(),
-                                                'args'    => [
-                                                    'shorten' => new BooleanType()
+                                                'type' => new StringType(),
+                                                'args' => [
+                                                    'shorten' => new BooleanType(),
                                                 ],
-                                                'resolve' => function ($value, $args) {
+                                                'resolve' => static function ($value, $args) {
                                                     return empty($args['shorten']) ? $value['firstName'] : $value['firstName'];
-                                                }
+                                                },
                                             ],
-                                            'lastName'  => new StringType(),
-                                            'code'      => new StringType(),
-                                            'likes'     => [
+                                            'lastName' => new StringType(),
+                                            'code'     => new StringType(),
+                                            'likes'    => [
                                                 'type'    => new IntType(),
                                                 'cost'    => 10,
-                                                'resolve' => function () {
+                                                'resolve' => static function () {
                                                     return 42;
-                                                }
-                                            ]
-                                        ]
+                                                },
+                                            ],
+                                        ],
                                     ]
                                 ),
-                                'cost'    => function ($args, $context, $childCost) {
-                                    $argsCost = isset($args['cost']) ? $args['cost'] : 1;
+                                'cost' => static function ($args, $context, $childCost) {
+                                    $argsCost = $args['cost'] ?? 1;
 
                                     return 1 + $argsCost * $childCost;
                                 },
-                                'resolve' => function ($value, $args) {
+                                'resolve' => static function ($value, $args) {
                                     $data = ['firstName' => 'John', 'code' => '007'];
 
                                     return $data;
                                 },
-                                'args'    => [
+                                'args' => [
                                     'cost' => [
                                         'type'    => new IntType(),
-                                        'default' => 1
-                                    ]
-                                ]
-                            ]
-                        ]
+                                        'default' => 1,
+                                    ],
+                                ],
+                            ],
+                        ],
                     ]
-                )
+                ),
             ]
         );
         $processor = new Processor($schema);
@@ -762,12 +763,11 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             'locations' => [
                 [
                     'line'   => 1,
-                    'column' => 10
-                ]
-            ]
+                    'column' => 10,
+                ],
+            ],
         ]]], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
-
 
         $processor->processPayload('{ me { firstName, likes } }');
         $this->assertEquals(['errors' => [['message' => 'query exceeded max allowed complexity of 10']]], $processor->getResponseData());
@@ -778,9 +778,9 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertArraySubset(['errors' => [['message' => 'Field "badfield" not found in type "User". Available fields are: "firstName", "lastName", "code", "likes"']]], $processor->getResponseData());
         $processor->getExecutionContext()->clearErrors();
 
-        foreach (range(1, 5) as $cost_multiplier) {
+        foreach (\range(1, 5) as $cost_multiplier) {
             $visitor = new MaxComplexityQueryVisitor(1000); // arbitrarily high cost
-            $processor->processPayload("{ me (cost: $cost_multiplier) { firstName, lastName, code, likes } }", ['cost' => $cost_multiplier], [$visitor]);
+            $processor->processPayload("{ me (cost: ${cost_multiplier}) { firstName, lastName, code, likes } }", ['cost' => $cost_multiplier], [$visitor]);
             $expected = 1 + 13 * (1 + $cost_multiplier);
             $this->assertEquals($expected, $visitor->getMemo());
         }

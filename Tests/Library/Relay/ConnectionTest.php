@@ -1,4 +1,15 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 /*
  * This file is a part of GraphQL project.
  *
@@ -8,7 +19,6 @@
 
 namespace Youshido\Tests\Library\Relay;
 
-
 use Youshido\GraphQL\Relay\Connection\Connection;
 use Youshido\GraphQL\Relay\Type\PageInfoType;
 use Youshido\GraphQL\Type\Scalar\StringType;
@@ -17,8 +27,7 @@ use Youshido\Tests\DataProvider\TestObjectType;
 
 class ConnectionTest extends \PHPUnit_Framework_TestCase
 {
-
-    public function testConnectionArgs()
+    public function testConnectionArgs(): void
     {
         $this->assertEquals([
             'after'  => ['type' => TypeMap::TYPE_STRING],
@@ -29,7 +38,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         ], Connection::connectionArgs());
     }
 
-    public function testPageInfoType()
+    public function testPageInfoType(): void
     {
         $type = new PageInfoType();
         $this->assertEquals('PageInfo', $type->getName());
@@ -40,7 +49,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($type->hasField('endCursor'));
     }
 
-    public function testEdgeDefinition()
+    public function testEdgeDefinition(): void
     {
         $edgeType = Connection::edgeDefinition(new StringType(), 'user');
         $this->assertEquals('userEdge', $edgeType->getName());
@@ -48,12 +57,11 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($edgeType->hasField('cursor'));
     }
 
-    public function testConnectionDefinition()
+    public function testConnectionDefinition(): void
     {
         $connection = Connection::connectionDefinition(new TestObjectType(), 'user');
         $this->assertEquals($connection->getName(), 'userConnection');
         $this->assertTrue($connection->hasField('pageInfo'));
         $this->assertTrue($connection->hasField('edges'));
     }
-
 }

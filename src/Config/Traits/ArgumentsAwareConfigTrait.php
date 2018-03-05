@@ -1,22 +1,33 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 /*
-* This file is a part of graphql-youshido project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 12/1/15 11:07 PM
-*/
+ * This file is a part of graphql-youshido project.
+ *
+ * @author Alexandr Viniychuk <a@viniychuk.com>
+ * created: 12/1/15 11:07 PM
+ */
 
 namespace Youshido\GraphQL\Config\Traits;
-
 
 use Youshido\GraphQL\Field\InputField;
 
 trait ArgumentsAwareConfigTrait
 {
     protected $arguments = [];
+
     protected $_isArgumentsBuilt;
 
-    public function buildArguments()
+    public function buildArguments(): void
     {
         if ($this->_isArgumentsBuilt) {
             return;
@@ -33,6 +44,7 @@ trait ArgumentsAwareConfigTrait
         foreach ($argsList as $argumentName => $argumentInfo) {
             if ($argumentInfo instanceof InputField) {
                 $this->arguments[$argumentInfo->getName()] = $argumentInfo;
+
                 continue;
             }
 
@@ -52,21 +64,6 @@ trait ArgumentsAwareConfigTrait
         return $this;
     }
 
-    protected function buildConfig($name, $info = null)
-    {
-        if (!is_array($info)) {
-            return [
-                'type' => $info,
-                'name' => $name
-            ];
-        }
-        if (empty($info['name'])) {
-            $info['name'] = $name;
-        }
-
-        return $info;
-    }
-
     /**
      * @param $name
      *
@@ -84,7 +81,7 @@ trait ArgumentsAwareConfigTrait
      */
     public function hasArgument($name)
     {
-        return array_key_exists($name, $this->arguments);
+        return \array_key_exists($name, $this->arguments);
     }
 
     public function hasArguments()
@@ -109,4 +106,19 @@ trait ArgumentsAwareConfigTrait
         return $this;
     }
 
+    protected function buildConfig($name, $info = null)
+    {
+        if (!\is_array($info)) {
+            return [
+                'type' => $info,
+                'name' => $name,
+            ];
+        }
+
+        if (empty($info['name'])) {
+            $info['name'] = $name;
+        }
+
+        return $info;
+    }
 }

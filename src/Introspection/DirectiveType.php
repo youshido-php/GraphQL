@@ -1,8 +1,17 @@
 <?php
 /**
- * Date: 16.12.15
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Portey Vasil <portey@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 16.12.15.
  */
 
 namespace Youshido\GraphQL\Introspection;
@@ -17,9 +26,8 @@ use Youshido\GraphQL\Type\TypeMap;
 
 class DirectiveType extends AbstractObjectType
 {
-
     /**
-     * @return String type name
+     * @return string type name
      */
     public function getName()
     {
@@ -36,7 +44,7 @@ class DirectiveType extends AbstractObjectType
     }
 
     /**
-     * @param DirectiveInterface|Directive $value
+     * @param Directive|DirectiveInterface $value
      *
      * @return mixed
      */
@@ -50,7 +58,7 @@ class DirectiveType extends AbstractObjectType
         return $locations;
     }
 
-    public function build($config)
+    public function build($config): void
     {
         $config
             ->addField('name', new NonNullType(TypeMap::TYPE_STRING))
@@ -59,8 +67,8 @@ class DirectiveType extends AbstractObjectType
                 'type'    => new NonNullType(new ListType(new NonNullType(new InputValueType()))),
                 'resolve' => [$this, 'resolveArgs'],
             ])
-            ->addField('locations',[
-                'type'  =>  new NonNullType(new ListType(new NonNullType(new DirectiveLocationType()))),
+            ->addField('locations', [
+                'type'    => new NonNullType(new ListType(new NonNullType(new DirectiveLocationType()))),
                 'resolve' => [$this, 'resolveLocations'],
             ]);
     }

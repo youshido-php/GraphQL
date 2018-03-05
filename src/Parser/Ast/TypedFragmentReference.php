@@ -1,12 +1,20 @@
 <?php
 /**
- * Date: 23.11.15
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Portey Vasil <portey@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 23.11.15.
  */
 
 namespace Youshido\GraphQL\Parser\Ast;
-
 
 use Youshido\GraphQL\Parser\Ast\Interfaces\FragmentInterface;
 use Youshido\GraphQL\Parser\Location;
@@ -47,7 +55,7 @@ class TypedFragmentReference extends AbstractAst implements FragmentInterface
     /**
      * @param Field[]|Query[] $fields
      */
-    public function setFields($fields)
+    public function setFields($fields): void
     {
         $this->fields = $fields;
     }
@@ -63,9 +71,8 @@ class TypedFragmentReference extends AbstractAst implements FragmentInterface
     /**
      * @param string $typeName
      */
-    public function setTypeName($typeName)
+    public function setTypeName($typeName): void
     {
         $this->typeName = $typeName;
     }
-
 }

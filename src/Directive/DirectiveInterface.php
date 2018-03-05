@@ -1,18 +1,25 @@
 <?php
 /**
- * Date: 3/17/17
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Volodymyr Rashchepkin <rashepkin@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 3/17/17.
  */
 
 namespace Youshido\GraphQL\Directive;
-
 
 use Youshido\GraphQL\Type\AbstractType;
 
 interface DirectiveInterface
 {
-
     public function getName();
 
     public function addArguments($argumentsList);
@@ -41,8 +48,7 @@ interface DirectiveInterface
     public function hasArgument($argumentName);
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function hasArguments();
-
 }

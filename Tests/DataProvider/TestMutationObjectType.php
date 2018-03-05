@@ -1,4 +1,15 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 /*
  * This file is a part of GraphQL project.
  *
@@ -7,7 +18,6 @@
  */
 
 namespace Youshido\Tests\DataProvider;
-
 
 use Youshido\GraphQL\Type\Object\AbstractMutationObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
@@ -20,10 +30,8 @@ class TestMutationObjectType extends AbstractMutationObjectType
         return new StringType();
     }
 
-    public function build($config)
+    public function build($config): void
     {
         $this->addArgument('increment', new IntType());
     }
-
-
 }

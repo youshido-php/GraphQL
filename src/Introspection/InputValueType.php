@@ -1,8 +1,17 @@
 <?php
 /**
- * Date: 03.12.15
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Portey Vasil <portey@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 03.12.15.
  */
 
 namespace Youshido\GraphQL\Introspection;
@@ -36,10 +45,11 @@ class InputValueType extends AbstractObjectType
     public function resolveDefaultValue($value)
     {
         $resolvedValue = $value->getConfig()->getDefaultValue();
-        return $resolvedValue === null ? $resolvedValue : str_replace('"', '', json_encode($resolvedValue));
+
+        return null === $resolvedValue ? $resolvedValue : \str_replace('"', '', \json_encode($resolvedValue));
     }
 
-    public function build($config)
+    public function build($config): void
     {
         $config
             ->addField('name', new NonNullType(TypeMap::TYPE_STRING))
@@ -49,11 +59,11 @@ class InputValueType extends AbstractObjectType
             ->addField(new Field([
                 'name'    => 'type',
                 'type'    => new NonNullType(new QueryType()),
-                'resolve' => [$this, 'resolveType']
+                'resolve' => [$this, 'resolveType'],
             ]))
             ->addField('defaultValue', [
-                'type' => TypeMap::TYPE_STRING,
-                'resolve' => [$this, 'resolveDefaultValue']
+                'type'    => TypeMap::TYPE_STRING,
+                'resolve' => [$this, 'resolveDefaultValue'],
             ]);
     }
 

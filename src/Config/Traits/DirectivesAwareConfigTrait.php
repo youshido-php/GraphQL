@@ -1,12 +1,20 @@
 <?php
 /**
- * Date: 03/17/2017
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Volodymyr Rashchepkin <rashepkin@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 03/17/2017.
  */
 
 namespace Youshido\GraphQL\Config\Traits;
-
 
 use Youshido\GraphQL\Directive\Directive;
 use Youshido\GraphQL\Field\InputField;
@@ -14,9 +22,10 @@ use Youshido\GraphQL\Field\InputField;
 trait DirectivesAwareConfigTrait
 {
     protected $directives = [];
+
     protected $_isDirectivesBuilt;
 
-    public function buildDirectives()
+    public function buildDirectives(): void
     {
         if ($this->_isDirectivesBuilt) {
             return;
@@ -33,6 +42,7 @@ trait DirectivesAwareConfigTrait
         foreach ($directiveList as $directiveName => $directiveInfo) {
             if ($directiveInfo instanceof Directive) {
                 $this->directives[$directiveInfo->getName()] = $directiveInfo;
+
                 continue;
             }
 
@@ -69,7 +79,7 @@ trait DirectivesAwareConfigTrait
      */
     public function hasDirective($name)
     {
-        return array_key_exists($name, $this->directives);
+        return \array_key_exists($name, $this->directives);
     }
 
     public function hasDirectives()
@@ -93,5 +103,4 @@ trait DirectivesAwareConfigTrait
 
         return $this;
     }
-
 }

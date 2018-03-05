@@ -1,13 +1,23 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 /*
-* This file is a part of GraphQL project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 12/5/15 12:12 AM
-*/
+ * This file is a part of GraphQL project.
+ *
+ * @author Alexandr Viniychuk <a@viniychuk.com>
+ * created: 12/5/15 12:12 AM
+ */
 
 namespace Youshido\GraphQL\Type\Union;
-
 
 use Youshido\GraphQL\Config\Object\UnionTypeConfig;
 use Youshido\GraphQL\Config\Traits\ConfigAwareTrait;
@@ -20,13 +30,13 @@ use Youshido\GraphQL\Type\TypeMap;
 
 abstract class AbstractUnionType extends AbstractType implements AbstractInterfaceTypeInterface
 {
-
     use ConfigAwareTrait, AutoNameTrait;
 
     protected $isFinal = false;
 
     /**
      * ObjectType constructor.
+     *
      * @param $config
      */
     public function __construct($config = [])
@@ -58,5 +68,4 @@ abstract class AbstractUnionType extends AbstractType implements AbstractInterfa
     {
         return true;
     }
-
 }

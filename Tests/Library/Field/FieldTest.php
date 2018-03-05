@@ -1,15 +1,24 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 /*
-* This file is a part of GraphQL project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 5/12/16 7:14 PM
-*/
+ * This file is a part of GraphQL project.
+ *
+ * @author Alexandr Viniychuk <a@viniychuk.com>
+ * created: 5/12/16 7:14 PM
+ */
 
 namespace Youshido\Tests\Library\Field;
 
-
-use Youshido\GraphQL\Config\Field\FieldConfig;
 use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\InputField;
@@ -23,36 +32,34 @@ use Youshido\Tests\DataProvider\TestResolveInfo;
 
 class FieldTest extends \PHPUnit_Framework_TestCase
 {
-
-    public function testInlineFieldCreation()
+    public function testInlineFieldCreation(): void
     {
         $field = new Field([
             'name' => 'id',
-            'type' => new IdType()
+            'type' => new IdType(),
         ]);
         $resolveInfo = TestResolveInfo::createTestResolveInfo($field);
         $this->assertEquals('id', $field->getName());
         $this->assertEquals(new IdType(), $field->getType());
-        $this->assertEquals(null, $field->resolve('data', [], $resolveInfo));
+        $this->assertNull($field->resolve('data', [], $resolveInfo));
 
         $fieldWithResolve = new Field([
             'name'    => 'title',
             'type'    => new StringType(),
-            'resolve' => function ($value, array $args, ResolveInfo $info) {
+            'resolve' => static function ($value, array $args, ResolveInfo $info) {
                 return $info->getReturnType()->serialize($value);
-            }
+            },
         ]);
         $resolveInfo = TestResolveInfo::createTestResolveInfo($fieldWithResolve);
         $this->assertEquals('true', $fieldWithResolve->resolve(true, [], $resolveInfo), 'Resolve bool to string');
 
         $fieldWithResolve->setType(new IntType());
         $this->assertEquals(new StringType(), $fieldWithResolve->getType()->getName());
-
     }
 
-    public function testObjectFieldCreation()
+    public function testObjectFieldCreation(): void
     {
-        $field = new TestField();
+        $field       = new TestField();
         $resolveInfo = TestResolveInfo::createTestResolveInfo($field);
 
         $this->assertEquals('test', $field->getName());
@@ -61,18 +68,18 @@ class FieldTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('test', $field->resolve('test', [], $resolveInfo));
     }
 
-    public function testArgumentsTrait()
+    public function testArgumentsTrait(): void
     {
         $testField = new TestField();
         $this->assertFalse($testField->hasArguments());
 
         $testField->addArgument(new InputField(['name' => 'id', 'type' => new IntType()]));
         $this->assertEquals([
-            'id' => new InputField(['name' => 'id', 'type' => new IntType()])
+            'id' => new InputField(['name' => 'id', 'type' => new IntType()]),
         ], $testField->getArguments());
 
         $testField->addArguments([
-            new InputField(['name' => 'name', 'type' => new StringType()])
+            new InputField(['name' => 'name', 'type' => new StringType()]),
         ]);
         $this->assertEquals([
             'id'   => new InputField(['name' => 'id', 'type' => new IntType()]),
@@ -87,10 +94,11 @@ class FieldTest extends \PHPUnit_Framework_TestCase
      * @param $fieldConfig
      *
      * @dataProvider invalidFieldProvider
-     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
      */
-    public function testInvalidFieldParams($fieldConfig)
+    public function testInvalidFieldParams($fieldConfig): void
     {
+        $this->expectException(\Youshido\GraphQL\Exception\ConfigurationException::class);
+
         $field = new Field($fieldConfig);
         ConfigValidator::getInstance()->assertValidConfig($field->getConfig());
     }
@@ -101,15 +109,14 @@ class FieldTest extends \PHPUnit_Framework_TestCase
             [
                 [
                     'name' => 'id',
-                    'type' => 'invalid type'
-                ]
+                    'type' => 'invalid type',
+                ],
             ],
             [
                 [
-                    'type' => TypeMap::TYPE_FLOAT
-                ]
-            ]
+                    'type' => TypeMap::TYPE_FLOAT,
+                ],
+            ],
         ];
     }
-
 }

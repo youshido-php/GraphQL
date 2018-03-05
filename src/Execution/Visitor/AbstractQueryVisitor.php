@@ -1,5 +1,16 @@
 <?php
 /**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
  * Abstract query visitor.
  *
  * The contract between this and the processor is that it will yield tuples to `visit` in DFS manner.  i.e. a query of:
@@ -18,9 +29,6 @@
  *
  * Implementations are able to "reduce" the query by mutating $this->memo.  A reasonable thing to do is raise an
  * exception if some limit is reached.  (see MaxComplexityQueryVisitor for example concrete implementation)
- *
- * @author Ben Roberts <bjr.roberts@gmail.com>
- * created: 7/11/16 11:03 AM
  */
 
 namespace Youshido\GraphQL\Execution\Visitor;
@@ -29,9 +37,8 @@ use Youshido\GraphQL\Config\Field\FieldConfig;
 
 abstract class AbstractQueryVisitor
 {
-
     /**
-     * @var int initial value of $this->memo
+     * @var int initial value of->memo
      */
     protected $initialValue = 0;
 

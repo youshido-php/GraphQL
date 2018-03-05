@@ -1,32 +1,42 @@
 <?php
 /**
- * This file is a part of PhpStorm project.
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Alexandr Viniychuk <a@viniychuk.com>
- * created: 10/7/16 3:36 PM
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * This file is a part of PhpStorm project.
  */
 
 namespace Youshido\GraphQL\Type;
 
-
 class SchemaTypesList
 {
-
     private $typesList = [];
 
     /**
      * @param array $types
+     *
      * @throws
+     *
      * @return $this
      */
     public function addTypes($types)
     {
-        if (!is_array($types)) {
+        if (!\is_array($types)) {
             throw new \Exception('addTypes accept only array of types');
         }
-        foreach($types as $type) {
+
+        foreach ($types as $type) {
             $this->addType($type);
         }
+
         return $this;
     }
 
@@ -37,33 +47,37 @@ class SchemaTypesList
 
     /**
      * @param TypeInterface $type
+     *
      * @return $this
      */
     public function addType(TypeInterface $type)
     {
         $typeName = $this->getTypeName($type);
+
         if ($this->isTypeNameRegistered($typeName)) {
             return $this;
         }
 
         $this->typesList[$typeName] = $type;
+
         return $this;
     }
 
     public function isTypeNameRegistered($typeName)
     {
-        return (isset($this->typesList[$typeName]));
+        return isset($this->typesList[$typeName]);
     }
 
-    private function getTypeName($type) {
-        if (is_string($type)) {
+    private function getTypeName($type)
+    {
+        if (\is_string($type)) {
             return $type;
         }
 
-        if (is_object($type) && $type instanceof AbstractType) {
+        if (\is_object($type) && $type instanceof AbstractType) {
             return $type->getName();
         }
+
         throw new \Exception('Invalid type passed to Schema');
     }
-
 }
