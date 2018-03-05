@@ -34,9 +34,9 @@ trait ArgumentsAwareConfigTrait
             if ($argumentInfo instanceof InputField) {
                 $this->arguments[$argumentInfo->getName()] = $argumentInfo;
                 continue;
-            } else {
-                $this->addArgument($argumentName, $this->buildConfig($argumentName, $argumentInfo));
             }
+
+            $this->addArgument($argumentName, $this->buildConfig($argumentName, $argumentInfo));
         }
 
         return $this;

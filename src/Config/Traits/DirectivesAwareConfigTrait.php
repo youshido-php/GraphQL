@@ -34,9 +34,9 @@ trait DirectivesAwareConfigTrait
             if ($directiveInfo instanceof Directive) {
                 $this->directives[$directiveInfo->getName()] = $directiveInfo;
                 continue;
-            } else {
-                $this->addDirective($directiveName, $this->buildConfig($directiveName, $directiveInfo));
             }
+
+            $this->addDirective($directiveName, $this->buildConfig($directiveName, $directiveInfo));
         }
 
         return $this;

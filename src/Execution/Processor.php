@@ -177,7 +177,7 @@ class Processor
 
             $this->resolveValidator->assetTypeHasField($nonNullType, $ast);
 
-            $targetField = $nonNullType->getField($ast->getName());
+            $targetField = $this->executionContext->getField($nonNullType, $ast->getName());
 
             $this->prepareAstArguments($targetField, $ast, $this->executionContext->getRequest());
             $this->resolveValidator->assertValidArguments($targetField, $ast, $this->executionContext->getRequest());
@@ -255,9 +255,10 @@ class Processor
                 return $result;
 
             case TypeMap::KIND_INPUT_OBJECT:
-                /** @var $argumentType AbstractInputObjectType */
-                $result = [];
                 if ($argumentValue instanceof AstInputObject) {
+                    $result = [];
+
+                    /** @var $argumentType AbstractInputObjectType */
                     foreach ($argumentType->getFields() as $field) {
                         /** @var $field Field */
                         if ($field->getConfig()->has('defaultValue')) {
@@ -267,37 +268,38 @@ class Processor
                     foreach ($argumentValue->getValue() as $key => $item) {
                         if ($argumentType->hasField($key)) {
                             $result[$key] = $this->prepareArgumentValue($item, $argumentType->getField($key)->getType()->getNullableType(), $request);
-                        } else {
-                            $result[$key] = $item;
+                            continue;
                         }
+
+                        $result[$key] = $item;
                     }
-                } else {
-                    if ($argumentValue instanceof VariableReference) {
-                        return $this->getVariableReferenceArgumentValue($argumentValue, $argumentType, $request);
-                    } else {
-                        if (is_array($argumentValue)) {
-                            return $argumentValue;
-                        }
-                    }
+
+                    return $result;
                 }
 
-                return $result;
+                if ($argumentValue instanceof VariableReference) {
+                    return $this->getVariableReferenceArgumentValue($argumentValue, $argumentType, $request);
+                }
+
+                if (is_array($argumentValue)) {
+                    return $argumentValue;
+                }
+
+                return [];
 
             case TypeMap::KIND_SCALAR:
             case TypeMap::KIND_ENUM:
                 /** @var $argumentValue AstLiteral|VariableReference */
                 if ($argumentValue instanceof VariableReference) {
                     return $this->getVariableReferenceArgumentValue($argumentValue, $argumentType, $request);
-                } else {
-                    if ($argumentValue instanceof AstLiteral) {
-                        return $argumentValue->getValue();
-                    } else {
-                        return $argumentValue;
-                    }
                 }
+                if ($argumentValue instanceof AstLiteral) {
+                    return $argumentValue->getValue();
+                }
+                return $argumentValue;
+            default:
+                throw new ResolveException('Argument type not supported');
         }
-
-        throw new ResolveException('Argument type not supported');
     }
 
     private function getVariableReferenceArgumentValue(VariableReference $variableReference, AbstractType $argumentType, Request $request)
@@ -400,9 +402,10 @@ class Processor
             $type = $field->getType()->getNamedType();
             if ($type instanceof AbstractScalarType || $type instanceof AbstractEnumType) {
                 array_push($this->deferredResultsLeaf, $deferredResult);
-            } else {
-                array_push($this->deferredResultsComplex, $deferredResult);
+
+                return $deferredResult;
             }
+            array_push($this->deferredResultsComplex, $deferredResult);
 
             return $deferredResult;
         }

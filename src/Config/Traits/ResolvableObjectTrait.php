@@ -18,17 +18,19 @@ trait ResolvableObjectTrait
     {
         if ($resolveFunction = $this->getConfig()->getResolveFunction()) {
             return $resolveFunction($value, $args, $info);
-        } else {
-            if (is_array($value) && array_key_exists($this->getName(), $value)) {
-                return $value[$this->getName()];
-            } elseif (is_object($value)) {
-                return TypeService::getPropertyValue($value, $this->getName());
-            } elseif ($this->getType()->getNamedType()->getKind() == TypeMap::KIND_SCALAR) {
-                return null;
-            } else {
-                throw new \Exception(sprintf('Property "%s" not found in resolve result', $this->getName()));
-            }
         }
+
+        if (is_array($value) && array_key_exists($this->getName(), $value)) {
+            return $value[$this->getName()];
+        }
+        if (is_object($value)) {
+            return TypeService::getPropertyValue($value, $this->getName());
+        }
+        if ($this->getType()->getNamedType()->getKind() == TypeMap::KIND_SCALAR) {
+            return null;
+        }
+
+        throw new \Exception(sprintf('Property "%s" not found in resolve result', $this->getName()));
     }
 
 

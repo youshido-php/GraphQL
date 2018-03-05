@@ -46,7 +46,9 @@ class InterfaceTypeConfig extends AbstractConfig implements TypeConfigInterface
 
         if ($callable && is_callable($callable)) {
             return call_user_func_array($callable, [$object]);
-        } elseif (is_callable([$this->contextObject, 'resolveType'])) {
+        }
+
+        if (is_callable([$this->contextObject, 'resolveType'])) {
             return $this->contextObject->resolveType($object);
         }
 

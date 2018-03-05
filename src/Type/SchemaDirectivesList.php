@@ -41,7 +41,9 @@ class SchemaDirectivesList
     public function addDirective(DirectiveInterface $directive)
     {
         $directiveName = $this->getDirectiveName($directive);
-        if ($this->isDirectiveNameRegistered($directiveName)) return $this;
+        if ($this->isDirectiveNameRegistered($directiveName)) {
+            return $this;
+        }
 
         $this->directivesList[$directiveName] = $directive;
 
@@ -50,7 +52,10 @@ class SchemaDirectivesList
 
     private function getDirectiveName($directive)
     {
-        if (is_string($directive)) return $directive;
+        if (is_string($directive)) {
+            return $directive;
+        }
+
         if (is_object($directive) && $directive instanceof DirectiveInterface) {
             return $directive->getName();
         }

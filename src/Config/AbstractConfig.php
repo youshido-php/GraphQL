@@ -149,19 +149,21 @@ abstract class AbstractConfig
     public function __call($method, $arguments)
     {
         if (substr($method, 0, 3) == 'get') {
-            $propertyName = lcfirst(substr($method, 3));
-        } elseif (substr($method, 0, 3) == 'set') {
+            return $this->get(lcfirst(substr($method, 3)));
+        }
+
+        if (substr($method, 0, 3) == 'set') {
             $propertyName = lcfirst(substr($method, 3));
             $this->set($propertyName, $arguments[0]);
 
             return $this;
-        } elseif (substr($method, 0, 2) == 'is') {
-            $propertyName = lcfirst(substr($method, 2));
-        } else {
-            throw new \Exception('Call to undefined method ' . $method);
         }
 
-        return $this->get($propertyName);
+        if (substr($method, 0, 2) == 'is') {
+            return $this->get(lcfirst(substr($method, 2)));
+        }
+
+        throw new \Exception('Call to undefined method ' . $method);
     }
 
 
