@@ -1,6 +1,10 @@
 The MIT License (MIT)
 
-Copyright (c) 2015 Youshido
+Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.  
+Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.  
+Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.  
+Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.  
+Copyright (c) 2015–2018 Contributors.  
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

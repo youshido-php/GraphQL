@@ -34,7 +34,6 @@
     "friendsofphp/php-cs-fixer": "^2.10",
     "pdepend/pdepend": "^2.5",
     "phploc/phploc": "^3.0",
-    "phpmd/phpmd": "^2.6",
     "phpmetrics/phpmetrics": "^2.3",
     "phpunit/phpunit": "^6.3",
     "sebastian/phpcpd": "^2.0",

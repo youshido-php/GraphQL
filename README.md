@@ -1,11 +1,5 @@
 # GraphQL
 
-[![Join the chat at https://gitter.im/Youshido/GraphQL](https://badges.gitter.im/Youshido/GraphQL.svg)](https://gitter.im/Youshido/GraphQL?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build Status](https://travis-ci.org/Youshido/GraphQL.svg?branch=master)](http://travis-ci.org/Youshido/GraphQL)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Youshido/GraphQL/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Youshido/GraphQL/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/Youshido/GraphQL/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Youshido/GraphQL/?branch=master)
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/8b8ab2a2-32fb-4298-a986-b75ca523c7c9/mini.png)](https://insight.sensiolabs.com/projects/8b8ab2a2-32fb-4298-a986-b75ca523c7c9)
-
 This is a pure PHP realization of the GraphQL protocol based on the working draft of the official GraphQL Specification located on http://facebook.github.io/graphql/.
 
 GraphQL is a query language for APIs. It brings a new paradigm to the world of client-server communication and delivers a much more predictable behavior and smallest possible over-the-wire responses to any request. 
@@ -16,12 +10,6 @@ GraphQL advanced in many ways and has fundamental quality improvements:
  - bulk requests and responses to avoiding waiting for multiple HTTP handshakes
  - easily generated documentation and incredibly intuitive way to explore created API
  - clients will be much less likely to require backend changes
-
-> Current package is and will be trying to be kept up to date with the latest revision of the official GraphQL Specification which is now of April 2016.
-
-> Symfony bundle is available by the link – [http://github.com/Youshido/GraphqlBundle](http://github.com/Youshido/GraphqlBundle)
-
-> If you have any questions or suggestions – let's talk on [GraphQL Gitter channel](https://gitter.im/Youshido/GraphQL)
 
 ## Table of Contents
 
