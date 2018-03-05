@@ -42,7 +42,9 @@ class SchemaTypesList
     public function addType(TypeInterface $type)
     {
         $typeName = $this->getTypeName($type);
-        if ($this->isTypeNameRegistered($typeName)) return $this;
+        if ($this->isTypeNameRegistered($typeName)) {
+            return $this;
+        }
 
         $this->typesList[$typeName] = $type;
         return $this;
@@ -54,7 +56,10 @@ class SchemaTypesList
     }
 
     private function getTypeName($type) {
-        if (is_string($type)) return $type;
+        if (is_string($type)) {
+            return $type;
+        }
+
         if (is_object($type) && $type instanceof AbstractType) {
             return $type->getName();
         }

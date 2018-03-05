@@ -138,12 +138,14 @@ class Parser extends Tokenizer
 
                 if ($this->eat(Token::TYPE_ON)) {
                     $fields[] = $this->parseBodyItem(Token::TYPE_TYPED_FRAGMENT, $highLevel);
-                } else {
-                    $fields[] = $this->parseFragmentReference();
+                    continue;
                 }
-            } else {
-                $fields[] = $this->parseBodyItem($token, $highLevel);
+
+                $fields[] = $this->parseFragmentReference();
+                continue;
             }
+
+            $fields[] = $this->parseBodyItem($token, $highLevel);
         }
 
         $this->expect(Token::TYPE_RBRACE);
@@ -224,7 +226,7 @@ class Parser extends Tokenizer
             $name = $this->lex()->getData();
 
             $variable = $this->findVariable($name);
-            if ($variable) {
+            if (!empty($variable)) {
                 $variable->setUsed(true);
             }
 
@@ -287,26 +289,31 @@ class Parser extends Tokenizer
         if ($this->match(Token::TYPE_LBRACE)) {
             $fields = $this->parseBody($type === Token::TYPE_TYPED_FRAGMENT ? Token::TYPE_QUERY : $type, false);
 
-            if (!$fields) {
+            if (!isset($fields)) {
                 throw $this->createUnexpectedTokenTypeException($this->lookAhead->getType());
             }
 
             if ($type === Token::TYPE_QUERY) {
                 return new Query($nameToken->getData(), $alias, $arguments, $fields, $directives, $bodyLocation);
-            } elseif ($type === Token::TYPE_TYPED_FRAGMENT) {
-                return new TypedFragmentReference($nameToken->getData(), $fields, $directives, $bodyLocation);
-            } else {
-                return new Mutation($nameToken->getData(), $alias, $arguments, $fields, $directives, $bodyLocation);
-            }
-        } else {
-            if ($highLevel && $type === Token::TYPE_MUTATION) {
-                return new Mutation($nameToken->getData(), $alias, $arguments, [], $directives, $bodyLocation);
-            } elseif ($highLevel && $type === Token::TYPE_QUERY) {
-                return new Query($nameToken->getData(), $alias, $arguments, [], $directives, $bodyLocation);
             }
 
-            return new Field($nameToken->getData(), $alias, $arguments, $directives, $bodyLocation);
+            if ($type === Token::TYPE_TYPED_FRAGMENT) {
+                return new TypedFragmentReference($nameToken->getData(), $fields, $directives, $bodyLocation);
+            }
+
+            return new Mutation($nameToken->getData(), $alias, $arguments, $fields, $directives, $bodyLocation);
+
         }
+
+        if ($highLevel && $type === Token::TYPE_MUTATION) {
+            return new Mutation($nameToken->getData(), $alias, $arguments, [], $directives, $bodyLocation);
+        }
+
+        if ($highLevel && $type === Token::TYPE_QUERY) {
+            return new Query($nameToken->getData(), $alias, $arguments, [], $directives, $bodyLocation);
+        }
+
+        return new Field($nameToken->getData(), $alias, $arguments, $directives, $bodyLocation);
     }
 
     protected function parseArgumentList()
@@ -465,20 +472,12 @@ class Parser extends Tokenizer
 
     protected function eat($type)
     {
-        if ($this->match($type)) {
-            return $this->lex();
-        }
-
-        return null;
+        return $this->match($type) ? $this->lex() : null;
     }
 
     protected function eatMulti($types)
     {
-        if ($this->matchMulti($types)) {
-            return $this->lex();
-        }
-
-        return null;
+        return $this->matchMulti($types) ? $this->lex() : null;
     }
 
     protected function matchMulti($types)

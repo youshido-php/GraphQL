@@ -57,21 +57,27 @@ trait ErrorContainerTrait
                         $error->getData() ?: [],
                         $error->getCode() ? ['code' => $error->getCode()] : []
                     );
-                } elseif ($error instanceof LocationableExceptionInterface) {
+                    continue;
+                }
+
+                if ($error instanceof LocationableExceptionInterface) {
                     $errors[] = array_merge(
                         ['message' => $error->getMessage()],
                         $error->getLocation() ? ['locations' => [$error->getLocation()->toArray()]] : [],
                         $error->getCode() ? ['code' => $error->getCode()] : []
                     );
-                } else {
-                    $errors[] = array_merge(
-                        ['message' => $error->getMessage()],
-                        $error->getCode() ? ['code' => $error->getCode()] : []
-                    );
+                    continue;
                 }
-            } else {
-                $errors[] = $error->getMessage();
+
+                $errors[] = array_merge(
+                    ['message' => $error->getMessage()],
+                    $error->getCode() ? ['code' => $error->getCode()] : []
+                );
+                continue;
             }
+
+            $errors[] = $error->getMessage();
+
         }
 
         return $errors;

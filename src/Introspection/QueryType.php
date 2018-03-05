@@ -120,7 +120,7 @@ class QueryType extends AbstractObjectType
             $schema = $info->getExecutionContext()->getSchema();
             $this->collectTypes($schema->getQueryType());
             foreach ($schema->getTypesList()->getTypes() as $type) {
-              $this->collectTypes($type);
+                $this->collectTypes($type);
             }
 
             $possibleTypes = [];

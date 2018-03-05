@@ -28,6 +28,7 @@ class TypeFactory
             if (is_object($type)) {
                 return $type;
             }
+
             if (empty(self::$objectsHash[$type])) {
                 $name = ucfirst($type);
 
@@ -39,9 +40,9 @@ class TypeFactory
             }
 
             return self::$objectsHash[$type];
-        } else {
-            throw new ConfigurationException('Configuration problem with type ' . $type);
         }
+
+        throw new ConfigurationException('Configuration problem with type ' . $type);
     }
 
     /**

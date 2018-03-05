@@ -48,16 +48,18 @@ trait FieldsAwareConfigTrait
     public function addFields($fieldsList)
     {
         foreach ($fieldsList as $fieldName => $fieldConfig) {
-
             if ($fieldConfig instanceof FieldInterface) {
                 $this->fields[$fieldConfig->getName()] = $fieldConfig;
                 continue;
-            } elseif($fieldConfig instanceof InputFieldInterface) {
+            }
+
+            if($fieldConfig instanceof InputFieldInterface) {
                 $this->fields[$fieldConfig->getName()] = $fieldConfig;
                 continue;
-            } else {
-                $this->addField($fieldName, $this->buildFieldConfig($fieldName, $fieldConfig));
             }
+
+            $this->addField($fieldName, $this->buildFieldConfig($fieldName, $fieldConfig));
+
         }
 
         return $this;

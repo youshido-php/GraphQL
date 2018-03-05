@@ -48,7 +48,9 @@ abstract class AbstractEnumType extends AbstractType
      */
     public function isValidValue($value)
     {
-        if (is_null($value)) return true;
+        if (null === $value) {
+            return true;
+        }
         foreach ($this->getConfig()->get('values') as $item) {
             if ($value === $item['name'] || $value === $item['value']) {
                 return true;
@@ -60,9 +62,10 @@ abstract class AbstractEnumType extends AbstractType
 
     public function getValidationError($value = null)
     {
-        $allowedValues             = array_map(function (array $value) {
+        $allowedValues = array_map(function (array $value) {
             return sprintf('%s (%s)', $value['name'], $value['value']);
         }, $this->getConfig()->get('values'));
+
         return sprintf('Value must be one of the allowed ones: %s', implode(', ', $allowedValues));
     }
 

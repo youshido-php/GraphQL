@@ -98,7 +98,9 @@ class TypeValidationRule implements ValidationRuleInterface
 
     private function isEnumValues($data)
     {
-        if (!is_array($data) || empty($data)) return false;
+        if (!is_array($data) || empty($data)) {
+            return false;
+        }
 
         foreach ($data as $item) {
             if (!is_array($item) || !array_key_exists('name', $item) || !is_string($item['name']) || !preg_match('/^[_a-zA-Z][_a-zA-Z0-9]*$/', $item['name'])) {
@@ -115,7 +117,9 @@ class TypeValidationRule implements ValidationRuleInterface
 
     private static function isArrayOfInterfaces($data)
     {
-        if (!is_array($data)) return false;
+        if (!is_array($data)) {
+            return false;
+        }
 
         foreach ($data as $item) {
             if (!TypeService::isInterface($item)) {
@@ -128,10 +132,14 @@ class TypeValidationRule implements ValidationRuleInterface
 
     private function isArrayOfFields($data)
     {
-        if (!is_array($data) || empty($data)) return false;
+        if (!is_array($data) || empty($data)) {
+            return false;
+        }
 
         foreach ($data as $name => $item) {
-            if (!$this->isField($item, $name)) return false;
+            if (!$this->isField($item, $name)) {
+                return false;
+            }
         }
 
         return true;
@@ -142,10 +150,11 @@ class TypeValidationRule implements ValidationRuleInterface
         if (is_object($data)) {
             if (($data instanceof FieldInterface) || ($data instanceof AbstractType)) {
                 return !$data->getConfig() || ($data->getConfig() && $this->configValidator->isValidConfig($data->getConfig()));
-            } else {
-                return false;
             }
+
+            return false;
         }
+
         if (!is_array($data)) {
             $data = [
                 'type' => $data,
@@ -161,10 +170,14 @@ class TypeValidationRule implements ValidationRuleInterface
 
     private function isArrayOfInputFields($data)
     {
-        if (!is_array($data)) return false;
+        if (!is_array($data)) {
+            return false;
+        }
 
         foreach ($data as $name => $item) {
-            if (!$this->isInputField($item)) return false;
+            if (!$this->isInputField($item)) {
+                return false;
+            }
         }
 
         return true;
@@ -175,16 +188,17 @@ class TypeValidationRule implements ValidationRuleInterface
         if (is_object($data)) {
             if ($data instanceof InputFieldInterface) {
                 return true;
-            } else {
-                return TypeService::isInputType($data);
-            }
-        } else {
-            if (!isset($data['type'])) {
-                return false;
             }
 
-            return TypeService::isInputType($data['type']);
+            return TypeService::isInputType($data);
         }
+
+        if (!isset($data['type'])) {
+            return false;
+        }
+
+        return TypeService::isInputType($data['type']);
+
     }
 
     /**

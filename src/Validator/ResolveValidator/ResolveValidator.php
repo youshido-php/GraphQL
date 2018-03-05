@@ -81,12 +81,12 @@ class ResolveValidator implements ResolveValidatorInterface
                     throw new ResolveException(sprintf('Invalid argument type "%s"', $argumentType->getName()));
             }
 
-            if (array_key_exists($astArgument->getName(), $requiredArguments) || $argument->getConfig()->get('defaultValue') !== null) {
+            if (isset($requiredArguments[$astArgument->getName()]) || $argument->getConfig()->get('defaultValue') !== null) {
                 unset($requiredArguments[$astArgument->getName()]);
             }
         }
 
-        if (count($requiredArguments)) {
+        if (!empty($requiredArguments)) {
             throw new ResolveException(sprintf('Require "%s" arguments to query "%s"', implode(', ', array_keys($requiredArguments)), $query->getName()));
         }
     }
