@@ -9,6 +9,7 @@ namespace Youshido\GraphQL\Validator\ResolveValidator;
 
 
 use Youshido\GraphQL\Exception\ResolveException;
+use Youshido\GraphQL\Execution\Context\ExecutionContext;
 use Youshido\GraphQL\Execution\Request;
 use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Field\InputField;
@@ -22,8 +23,25 @@ use Youshido\GraphQL\Type\Union\AbstractUnionType;
 
 class ResolveValidator implements ResolveValidatorInterface
 {
+    /** @var ExecutionContext */
+    private $executionContext;
+
+    /**
+     * ResolveValidator constructor.
+     *
+     * @param ExecutionContext $executionContext
+     */
+    public function __construct(ExecutionContext $executionContext)
+    {
+        $this->executionContext = $executionContext;
+    }
+
     public function assetTypeHasField(AbstractType $objectType, AstFieldInterface $ast)
     {
+        if ($this->executionContext->getField($objectType, $ast->getName()) !== null) {
+            return;
+        }
+
         /** @var AbstractObjectType $objectType */
         if (!(TypeService::isObjectType($objectType) || TypeService::isInputObjectType($objectType)) || !$objectType->hasField($ast->getName())) {
             $availableFieldNames = implode(', ', array_map(function (FieldInterface $field) {
