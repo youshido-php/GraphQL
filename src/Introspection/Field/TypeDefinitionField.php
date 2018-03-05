@@ -1,8 +1,17 @@
 <?php
 /**
- * Date: 03.12.15
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Portey Vasil <portey@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 03.12.15.
  */
 
 namespace Youshido\GraphQL\Introspection\Field;
@@ -19,10 +28,9 @@ use Youshido\GraphQL\Type\Scalar\StringType;
 
 class TypeDefinitionField extends AbstractField
 {
-
     use TypeCollectorTrait;
 
-    public function resolve($value = null, array $args, ResolveInfo $info)
+    public function resolve($value, array $args, ResolveInfo $info)
     {
         $schema = $info->getExecutionContext()->getSchema();
         $this->collectTypes($schema->getQueryType());
@@ -33,25 +41,22 @@ class TypeDefinitionField extends AbstractField
         }
 
         foreach ($this->types as $name => $info) {
-            if ($name == $args['name']) {
+            if ($name === $args['name']) {
                 return $info;
             }
         }
-
-        return null;
     }
 
-    public function build(FieldConfig $config)
+    public function build(FieldConfig $config): void
     {
         $config->addArgument(new InputField([
             'name' => 'name',
-            'type' => new NonNullType(new StringType())
+            'type' => new NonNullType(new StringType()),
         ]));
     }
 
-
     /**
-     * @return String type name
+     * @return string type name
      */
     public function getName()
     {

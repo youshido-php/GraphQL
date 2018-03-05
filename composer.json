@@ -1,7 +1,14 @@
 {
-  "name": "youshido/graphql",
-  "description": "Pure PHP GraphQL",
+  "name": "skyzyx/graphql",
+  "description": "GraphQL for PHP",
+  "keywords": [
+    "graphql",
+    "youshido"
+  ],
+  "type": "project",
   "license": "MIT",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "authors": [
     {
       "name": "Alexandr Viniychuk",
@@ -10,22 +17,51 @@
     {
       "name": "Portey Vasil",
       "email": "portey@gmail.com"
+    },
+    {
+      "name": "Ryan Parman",
+      "email": "ryan@ryanparman.com"
+    },
+    {
+      "name": "Ashley Hutson",
+      "email": "asheliahut@gmail.com"
     }
   ],
+  "repositories": [
+      {
+          "packagist": false
+      },
+      {
+          "type": "composer",
+          "url": "https://packagist.org/"
+      }
+  ],
   "require": {
-    "php": ">=5.5,<8.0-DEV"
+    "php": "^7.2"
   },
   "require-dev": {
-    "phpunit/phpunit": "^4.8"
+    "friendsofphp/php-cs-fixer": "^2.10",
+    "pdepend/pdepend": "^2.5",
+    "phploc/phploc": "^3.0",
+    "phpmetrics/phpmetrics": "^2.3",
+    "phpunit/phpunit": "^7.0",
+    "sebastian/phpcpd": "^2.0",
+    "skyzyx/phpunit-result-printer": "^3.0",
+    "squizlabs/php_codesniffer": "^3.0",
+    "wapmorgan/php-code-analyzer": "dev-master"
   },
   "autoload": {
     "psr-4": {
-      "Youshido\\GraphQL\\": "src"
+      "Youshido\\GraphQL\\": "src/"
     }
   },
   "autoload-dev": {
-    "classmap": [
-      "Tests/"
-    ]
+    "psr-4": {
+      "Youshido\\tests\\": "tests/"
+    }
+  },
+  "config": {
+    "bin-dir": "bin/",
+    "optimize-autoloader": true
   }
 }

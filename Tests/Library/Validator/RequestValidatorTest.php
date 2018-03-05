@@ -1,12 +1,20 @@
 <?php
 /**
- * Date: 27.10.16
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Portey Vasil <portey@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 27.10.16.
  */
 
 namespace Youshido\Tests\Library\Validator;
-
 
 use Youshido\GraphQL\Execution\Request;
 use Youshido\GraphQL\Parser\Ast\Argument;
@@ -21,15 +29,15 @@ use Youshido\GraphQL\Validator\RequestValidator\RequestValidator;
 
 class RequestValidatorTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
-     * @expectedException \Youshido\GraphQL\Exception\Parser\InvalidRequestException
      * @dataProvider invalidRequestProvider
      *
      * @param Request $request
      */
-    public function testInvalidRequests(Request $request)
+    public function testInvalidRequests(Request $request): void
     {
+        $this->expectException(\Youshido\GraphQL\Exception\Parser\InvalidRequestException::class);
+
         (new RequestValidator())->validate($request);
     }
 
@@ -42,90 +50,91 @@ class RequestValidatorTest extends \PHPUnit_Framework_TestCase
         return [
             [
                 new Request([
-                    'queries'            => [
-                        new Query('test', null, [], [
-                            new FragmentReference('reference', new Location(1, 1))
-                        ], [], new Location(1, 1))
-                    ],
-                    'fragmentReferences' => [
-                        new FragmentReference('reference', new Location(1, 1))
-                    ]
-                ])
-            ],
-            [
-                new Request([
-                    'queries'            => [
+                    'queries' => [
                         new Query('test', null, [], [
                             new FragmentReference('reference', new Location(1, 1)),
-                            new FragmentReference('reference2', new Location(1, 1)),
-                        ], [], new Location(1, 1))
-                    ],
-                    'fragments'          => [
-                        new Fragment('reference', 'TestType', [], [], new Location(1, 1))
+                        ], [], new Location(1, 1)),
                     ],
                     'fragmentReferences' => [
                         new FragmentReference('reference', new Location(1, 1)),
-                        new FragmentReference('reference2', new Location(1, 1))
-                    ]
-                ])
+                    ],
+                ]),
             ],
             [
                 new Request([
-                    'queries'            => [
+                    'queries' => [
                         new Query('test', null, [], [
                             new FragmentReference('reference', new Location(1, 1)),
-                        ], [], new Location(1, 1))
+                            new FragmentReference('reference2', new Location(1, 1)),
+                        ], [], new Location(1, 1)),
                     ],
-                    'fragments'          => [
+                    'fragments' => [
                         new Fragment('reference', 'TestType', [], [], new Location(1, 1)),
-                        new Fragment('reference2', 'TestType', [], [], new Location(1, 1))
                     ],
                     'fragmentReferences' => [
-                        new FragmentReference('reference', new Location(1, 1))
-                    ]
-                ])
+                        new FragmentReference('reference', new Location(1, 1)),
+                        new FragmentReference('reference2', new Location(1, 1)),
+                    ],
+                ]),
             ],
             [
                 new Request([
-                    'queries'            => [
-                        new Query('test', null,
+                    'queries' => [
+                        new Query('test', null, [], [
+                            new FragmentReference('reference', new Location(1, 1)),
+                        ], [], new Location(1, 1)),
+                    ],
+                    'fragments' => [
+                        new Fragment('reference', 'TestType', [], [], new Location(1, 1)),
+                        new Fragment('reference2', 'TestType', [], [], new Location(1, 1)),
+                    ],
+                    'fragmentReferences' => [
+                        new FragmentReference('reference', new Location(1, 1)),
+                    ],
+                ]),
+            ],
+            [
+                new Request([
+                    'queries' => [
+                        new Query(
+                            'test',
+                            null,
                             [
-                                new Argument('test', new VariableReference('test', null, new Location(1, 1)), new Location(1, 1))
+                                new Argument('test', new VariableReference('test', null, new Location(1, 1)), new Location(1, 1)),
                             ],
                             [
-                                new Field('test', null, [], [], new Location(1, 1))
+                                new Field('test', null, [], [], new Location(1, 1)),
                             ],
                             [],
                             new Location(1, 1)
-                        )
+                        ),
                     ],
                     'variableReferences' => [
-                        new VariableReference('test', null, new Location(1, 1))
-                    ]
-                ], ['test' => 1])
+                        new VariableReference('test', null, new Location(1, 1)),
+                    ],
+                ], ['test' => 1]),
             ],
             [
                 new Request([
-                    'queries'            => [
+                    'queries' => [
                         new Query('test', null, [
                             new Argument('test', new VariableReference('test', $variable1, new Location(1, 1)), new Location(1, 1)),
                             new Argument('test2', new VariableReference('test2', $variable2, new Location(1, 1)), new Location(1, 1)),
                         ], [
-                            new Field('test', null, [], [], new Location(1, 1))
-                        ], [], new Location(1,1))
+                            new Field('test', null, [], [], new Location(1, 1)),
+                        ], [], new Location(1, 1)),
                     ],
-                    'variables'          => [
+                    'variables' => [
                         $variable1,
                         $variable2,
-                        $variable3
+                        $variable3,
                     ],
                     'variableReferences' => [
                         new VariableReference('test', $variable1, new Location(1, 1)),
-                        new VariableReference('test2', $variable2, new Location(1, 1))
-                    ]
-                ], ['test' => 1, 'test2' => 2])
-            ]
+                        new VariableReference('test2', $variable2, new Location(1, 1)),
+                    ],
+                ], ['test' => 1, 'test2' => 2]),
+            ],
         ];
     }
-
 }

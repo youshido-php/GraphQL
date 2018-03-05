@@ -1,12 +1,20 @@
 <?php
 /**
- * Date: 3/17/17
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Volodymyr Rashchepkin <rashepkin@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 3/17/17.
  */
 
 namespace Youshido\GraphQL\Parser\Ast;
-
 
 use Youshido\GraphQL\Parser\Location;
 
@@ -16,7 +24,6 @@ class Directive extends AbstractAst
 
     /** @var string */
     private $name;
-
 
     /**
      * @param string   $name
@@ -42,9 +49,8 @@ class Directive extends AbstractAst
     /**
      * @param mixed $name
      */
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
-
 }

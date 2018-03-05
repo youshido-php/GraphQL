@@ -1,10 +1,21 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 /*
-* This file is a part of graphql-youshido project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 11/27/15 2:32 AM
-*/
+ * This file is a part of graphql-youshido project.
+ *
+ * @author Alexandr Viniychuk <a@viniychuk.com>
+ * created: 11/27/15 2:32 AM
+ */
 
 namespace Youshido\GraphQL\Config\Object;
 
@@ -15,14 +26,13 @@ use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\TypeService;
 
 /**
- * Class ObjectTypeConfig
- * @package Youshido\GraphQL\Config\Object
+ * Class ObjectTypeConfig.
+ *
  * @method setDescription(string $description)
  * @method string getDescription()
  */
 class ObjectTypeConfig extends AbstractConfig implements TypeConfigInterface
 {
-
     use FieldsAwareConfigTrait;
 
     public function getRules()
@@ -31,13 +41,8 @@ class ObjectTypeConfig extends AbstractConfig implements TypeConfigInterface
             'name'        => ['type' => TypeService::TYPE_STRING, 'required' => true],
             'description' => ['type' => TypeService::TYPE_STRING],
             'fields'      => ['type' => TypeService::TYPE_ARRAY_OF_FIELDS_CONFIG, 'final' => true],
-            'interfaces'  => ['type' => TypeService::TYPE_ARRAY_OF_INTERFACES]
+            'interfaces'  => ['type' => TypeService::TYPE_ARRAY_OF_INTERFACES],
         ];
-    }
-
-    protected function build()
-    {
-        $this->buildFields();
     }
 
     /**
@@ -48,4 +53,8 @@ class ObjectTypeConfig extends AbstractConfig implements TypeConfigInterface
         return $this->get('interfaces', []);
     }
 
+    protected function build(): void
+    {
+        $this->buildFields();
+    }
 }

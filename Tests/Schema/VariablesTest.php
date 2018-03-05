@@ -1,4 +1,15 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 
 namespace Youshido\Tests\Schema;
 
@@ -12,25 +23,24 @@ use Youshido\GraphQL\Type\Scalar\StringType;
 
 class VariablesTest extends \PHPUnit_Framework_TestCase
 {
-    public function testInvalidNullableList()
+    public function testInvalidNullableList(): void
     {
         $schema = new Schema([
             'query' => new ObjectType([
                 'name'   => 'RootQuery',
                 'fields' => [
                     'list' => [
-                        'type'    => new StringType(),
-                        'args'    => [
+                        'type' => new StringType(),
+                        'args' => [
                             'ids' => new ListType(new NonNullType(new IdType())),
                         ],
-                        'resolve' => function () {
+                        'resolve' => static function () {
                             return 'item';
                         },
                     ],
                 ],
             ]),
         ]);
-
 
         $processor = new Processor($schema);
         $processor->processPayload(
@@ -79,7 +89,8 @@ class VariablesTest extends \PHPUnit_Framework_TestCase
                     ],
                 ],
             ],
-            $processor->getResponseData());
+            $processor->getResponseData()
+        );
     }
 
     /**
@@ -89,19 +100,19 @@ class VariablesTest extends \PHPUnit_Framework_TestCase
      * @param $expected
      * @param $variables
      */
-    public function testVariables($query, $expected, $variables)
+    public function testVariables($query, $expected, $variables): void
     {
         $schema = new Schema([
             'query' => new ObjectType([
                 'name'   => 'RootQuery',
                 'fields' => [
                     'stringQuery' => [
-                        'type'    => new StringType(),
-                        'args'    => [
+                        'type' => new StringType(),
+                        'args' => [
                             'sortOrder' => new StringType(),
                         ],
-                        'resolve' => function ($args) {
-                            return sprintf('Result with %s order', empty($args['sortOrder']) ? 'default' : $args['sortOrder']);
+                        'resolve' => static function ($args) {
+                            return \sprintf('Result with %s order', empty($args['sortOrder']) ? 'default' : $args['sortOrder']);
                         },
                     ],
                 ],

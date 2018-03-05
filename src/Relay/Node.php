@@ -1,16 +1,23 @@
 <?php
 /**
- * Date: 10.05.16
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Portey Vasil <portey@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 10.05.16.
  */
 
 namespace Youshido\GraphQL\Relay;
 
-
 class Node
 {
-
     /**
      * @param $id
      *
@@ -18,8 +25,8 @@ class Node
      */
     public static function fromGlobalId($id)
     {
-        if ($decoded = base64_decode($id)) {
-            return explode(':', $decoded);
+        if ($decoded = \base64_decode($id, true)) {
+            return \explode(':', $decoded);
         }
 
         return [null, null];
@@ -33,6 +40,6 @@ class Node
      */
     public static function toGlobalId($typeName, $id)
     {
-        return base64_encode(implode(':', [$typeName, $id]));
+        return \base64_encode(\implode(':', [$typeName, $id]));
     }
 }

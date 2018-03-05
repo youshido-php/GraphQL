@@ -1,13 +1,23 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 /*
-* This file is a part of GraphQL project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 5/11/16 9:43 PM
-*/
+ * This file is a part of GraphQL project.
+ *
+ * @author Alexandr Viniychuk <a@viniychuk.com>
+ * created: 5/11/16 9:43 PM
+ */
 
 namespace Youshido\Tests\Library\Type;
-
 
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Type\Object\ObjectType;
@@ -20,61 +30,58 @@ use Youshido\Tests\DataProvider\TestObjectType;
 
 class ObjectTypeTest extends \PHPUnit_Framework_TestCase
 {
-
-    /**
-     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
-     */
-    public function testCreatingInvalidObject()
+    public function testCreatingInvalidObject(): void
     {
+        $this->expectException(\Youshido\GraphQL\Exception\ConfigurationException::class);
+
         new ObjectType([]);
     }
 
-    /**
-     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
-     */
-    public function testInvalidNameParam()
+
+    public function testInvalidNameParam(): void
     {
+        $this->expectException(\Youshido\GraphQL\Exception\ConfigurationException::class);
+
         $type = new ObjectType([
-            'name' => null
+            'name' => null,
         ]);
         ConfigValidator::getInstance()->assertValidConfig($type->getConfig());
     }
 
-    /**
-     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
-     */
-    public function testInvalidFieldsParam()
+
+    public function testInvalidFieldsParam(): void
     {
+        $this->expectException(\Youshido\GraphQL\Exception\ConfigurationException::class);
+
         $type = new ObjectType([
             'name'   => 'SomeName',
-            'fields' => []
+            'fields' => [],
         ]);
         ConfigValidator::getInstance()->assertValidConfig($type->getConfig());
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testSerialize()
+
+    public function testSerialize(): void
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         $object = new ObjectType([
             'name'   => 'SomeName',
             'fields' => [
-                'name' => new StringType()
-            ]
+                'name' => new StringType(),
+            ],
         ]);
         $object->serialize([]);
     }
 
-
-    public function testNormalCreatingParam()
+    public function testNormalCreatingParam(): void
     {
         $objectType = new ObjectType([
-            'name'        => 'Post',
-            'fields'      => [
-                'id' => new IntType()
+            'name'   => 'Post',
+            'fields' => [
+                'id' => new IntType(),
             ],
-            'description' => 'Post type description'
+            'description' => 'Post type description',
         ]);
         $this->assertEquals($objectType->getKind(), TypeMap::KIND_OBJECT);
         $this->assertEquals($objectType->getName(), 'Post');
@@ -89,21 +96,21 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Post type description', $objectType->getDescription());
     }
 
-    public function testFieldsTrait()
+    public function testFieldsTrait(): void
     {
-        $idField = new Field(['name' => 'id', 'type' => new IntType()]);
+        $idField   = new Field(['name' => 'id', 'type' => new IntType()]);
         $nameField = new Field(['name' => 'name', 'type' => new StringType()]);
 
         $objectType = new ObjectType([
-            'name'        => 'Post',
-            'fields'      => [
-                $idField
+            'name'   => 'Post',
+            'fields' => [
+                $idField,
             ],
-            'description' => 'Post type description'
+            'description' => 'Post type description',
         ]);
         $this->assertTrue($objectType->hasFields());
         $this->assertEquals([
-            'id' => $idField
+            'id' => $idField,
         ], $objectType->getFields());
 
         $objectType->addField($nameField);
@@ -113,7 +120,7 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
         ], $objectType->getFields());
     }
 
-    public function testExtendedClass()
+    public function testExtendedClass(): void
     {
         $objectType = new TestObjectType();
         $this->assertEquals($objectType->getName(), 'TestObject');
@@ -122,10 +129,9 @@ class ObjectTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($objectType->getDescription());
     }
 
-    public function testMutationObjectClass()
+    public function testMutationObjectClass(): void
     {
         $mutation = new TestMutationObjectType();
         $this->assertEquals(new StringType(), $mutation->getType());
     }
-
 }

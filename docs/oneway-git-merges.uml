@@ -1,0 +1,33 @@
+@startuml
+    !pragma horizontalLineBetweenDifferentPackageAllowed
+    !pragma verticalLineBetweenDifferentPackageAllowed
+
+    package "GitHub Enterprise" <<Cloud>> {
+        object "Remote Master Upstream" as RemoteMasterUpstream {
+            The remote upstream repository,\nmaster branch.
+        }
+
+        object "Remote Master Fork" as RemoteMasterFork {
+            Your fork of the remote upstream repository,\nmaster branch.
+        }
+
+        object "Remote Branch Fork" as RemoteBranchFork {
+            Your fork of the remote upstream repository,\nworking branch.
+        }
+    }
+
+    object "Local Master Fork" as LocalMasterFork {
+        Your fork of the remote upstream repository,\ncloned to your local machine to work on,\nmaster branch.
+    }
+
+    object "Local Branch Fork" as LocalBranchFork {
+        Your fork of the remote upstream repository,\ncloned to your local machine to work on,\nworking branch.
+    }
+
+    RemoteMasterUpstream -down[#blue]-> RemoteMasterFork: Fork (first)\nPull (subsequent)
+    RemoteMasterFork -down[#blue]-> LocalMasterFork: Clone (first)\nPull (subsequent)
+    RemoteMasterUpstream -down[#gray]-> LocalMasterFork: Fetch latest\nfrom upstream
+    LocalMasterFork -right[#black]-> LocalBranchFork: Branch (first)\nMerge (subsequent)
+    LocalBranchFork -up[#red]-> RemoteBranchFork: Push
+    RemoteBranchFork -up[#red]-> RemoteMasterUpstream: Pull Request
+@enduml

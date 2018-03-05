@@ -1,13 +1,23 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 /*
-* This file is a part of GraphQL project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 12/5/15 12:12 AM
-*/
+ * This file is a part of GraphQL project.
+ *
+ * @author Alexandr Viniychuk <a@viniychuk.com>
+ * created: 12/5/15 12:12 AM
+ */
 
 namespace Youshido\GraphQL\Type\InterfaceType;
-
 
 use Youshido\GraphQL\Config\Object\InterfaceTypeConfig;
 use Youshido\GraphQL\Type\AbstractType;
@@ -21,16 +31,6 @@ abstract class AbstractInterfaceType extends AbstractType
 
     protected $isBuilt = false;
 
-    public function getConfig()
-    {
-        if (!$this->isBuilt) {
-            $this->isBuilt = true;
-            $this->build($this->config);
-        }
-
-        return $this->config;
-    }
-
     /**
      * ObjectType constructor.
      *
@@ -43,6 +43,16 @@ abstract class AbstractInterfaceType extends AbstractType
         }
 
         $this->config = new InterfaceTypeConfig($config, $this);
+    }
+
+    public function getConfig()
+    {
+        if (!$this->isBuilt) {
+            $this->isBuilt = true;
+            $this->build($this->config);
+        }
+
+        return $this->config;
     }
 
     abstract public function resolveType($object);
@@ -64,7 +74,6 @@ abstract class AbstractInterfaceType extends AbstractType
 
     public function isValidValue($value)
     {
-        return is_array($value) || is_null($value) || is_object($value);
+        return \is_array($value) || null === $value || \is_object($value);
     }
-
 }

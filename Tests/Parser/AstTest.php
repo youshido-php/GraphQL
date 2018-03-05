@@ -1,12 +1,20 @@
 <?php
 /**
- * Date: 13.05.16
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Portey Vasil <portey@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 13.05.16.
  */
 
 namespace Youshido\Tests\Parser;
-
 
 use Youshido\GraphQL\Parser\Ast\Argument;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\InputList;
@@ -22,10 +30,9 @@ use Youshido\GraphQL\Parser\Location;
 
 class AstTest extends \PHPUnit_Framework_TestCase
 {
-
-    public function testArgument()
+    public function testArgument(): void
     {
-        $argument = new Argument('test', new Literal('test', new Location(1,1)), new Location(1,1));
+        $argument = new Argument('test', new Literal('test', new Location(1, 1)), new Location(1, 1));
 
         $this->assertNotNull($argument->getValue());
         $this->assertEquals($argument->getName(), 'test');
@@ -37,9 +44,9 @@ class AstTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($argument->getValue(), 'some value');
     }
 
-    public function testField()
+    public function testField(): void
     {
-        $field = new Field('field', null, [], [], new Location(1,1));
+        $field = new Field('field', null, [], [], new Location(1, 1));
 
         $this->assertEquals($field->getName(), 'field');
         $this->assertEmpty($field->getArguments());
@@ -50,18 +57,18 @@ class AstTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($field->getAlias(), 'alias');
         $this->assertEquals($field->getName(), 'alias');
 
-        $field->addArgument(new Argument('argument', new Literal('argument value', new Location(1,1)), new Location(1,1)));
+        $field->addArgument(new Argument('argument', new Literal('argument value', new Location(1, 1)), new Location(1, 1)));
         $this->assertTrue($field->hasArguments());
         $this->assertEquals(['argument' => 'argument value'], $field->getKeyValueArguments());
     }
 
-    public function testFragment()
+    public function testFragment(): void
     {
         $fields = [
-            new Field('field', null, [], [], new Location(1,1))
+            new Field('field', null, [], [], new Location(1, 1)),
         ];
 
-        $fragment = new Fragment('shipInfo', 'Ship', [], $fields, new Location(1,1));
+        $fragment = new Fragment('shipInfo', 'Ship', [], $fields, new Location(1, 1));
 
         $this->assertEquals('shipInfo', $fragment->getName());
         $this->assertEquals('Ship', $fragment->getModel());
@@ -74,7 +81,7 @@ class AstTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Boat', $fragment->getModel());
 
         $newField = [
-            new Field('id', null, [], [], new Location(1,1))
+            new Field('id', null, [], [], new Location(1, 1)),
         ];
         $fragment->setFields($newField);
         $this->assertEquals($newField, $fragment->getFields());
@@ -84,9 +91,9 @@ class AstTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($fragment->isUsed());
     }
 
-    public function testFragmentReference()
+    public function testFragmentReference(): void
     {
-        $reference = new FragmentReference('shipInfo', new Location(1,1));
+        $reference = new FragmentReference('shipInfo', new Location(1, 1));
 
         $this->assertEquals('shipInfo', $reference->getName());
 
@@ -94,13 +101,13 @@ class AstTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('largeShipInfo', $reference->getName());
     }
 
-    public function testTypedFragmentReference()
+    public function testTypedFragmentReference(): void
     {
         $fields = [
-            new Field('id', null, [], [], new Location(1,1))
+            new Field('id', null, [], [], new Location(1, 1)),
         ];
 
-        $reference = new TypedFragmentReference('Ship', $fields, [], new Location(1,1));
+        $reference = new TypedFragmentReference('Ship', $fields, [], new Location(1, 1));
 
         $this->assertEquals('Ship', $reference->getTypeName());
         $this->assertEquals($fields, $reference->getFields());
@@ -109,25 +116,25 @@ class AstTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('BigBoat', $reference->getTypeName());
 
         $newFields = [
-            new Field('name', null, [], [], new Location(1,1)),
-            new Field('id', null, [], [], new Location(1,1))
+            new Field('name', null, [], [], new Location(1, 1)),
+            new Field('id', null, [], [], new Location(1, 1)),
         ];
 
         $reference->setFields($newFields);
         $this->assertEquals($newFields, $reference->getFields());
     }
 
-    public function testQuery()
+    public function testQuery(): void
     {
         $arguments = [
-            new Argument('limit', new Literal('10', new Location(1,1)), new Location(1,1))
+            new Argument('limit', new Literal('10', new Location(1, 1)), new Location(1, 1)),
         ];
 
         $fields = [
-            new Field('id', null, [], [], new Location(1,1))
+            new Field('id', null, [], [], new Location(1, 1)),
         ];
 
-        $query = new Query('ships', 'lastShips', $arguments, $fields,[], new Location(1,1));
+        $query = new Query('ships', 'lastShips', $arguments, $fields, [], new Location(1, 1));
 
         $this->assertEquals('ships', $query->getName());
         $this->assertEquals('lastShips', $query->getAlias());
@@ -147,31 +154,31 @@ class AstTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($query->hasArguments());
         $this->assertFalse($query->hasFields());
 
-        $query->addArgument(new Argument('offset', new Literal(10, new Location(1,1)), new Location(1,1)));
+        $query->addArgument(new Argument('offset', new Literal(10, new Location(1, 1)), new Location(1, 1)));
         $this->assertTrue($query->hasArguments());
     }
 
-    public function testArgumentValues()
+    public function testArgumentValues(): void
     {
-        $list = new InputList(['a', 'b'], new Location(1,1));
+        $list = new InputList(['a', 'b'], new Location(1, 1));
         $this->assertEquals(['a', 'b'], $list->getValue());
         $list->setValue(['a']);
         $this->assertEquals(['a'], $list->getValue());
 
-        $inputObject = new InputObject(['a', 'b'], new Location(1,1));
+        $inputObject = new InputObject(['a', 'b'], new Location(1, 1));
         $this->assertEquals(['a', 'b'], $inputObject->getValue());
         $inputObject->setValue(['a']);
         $this->assertEquals(['a'], $inputObject->getValue());
 
-        $literal = new Literal('text', new Location(1,1));
+        $literal = new Literal('text', new Location(1, 1));
         $this->assertEquals('text', $literal->getValue());
         $literal->setValue('new text');
         $this->assertEquals('new text', $literal->getValue());
     }
 
-    public function testVariable()
+    public function testVariable(): void
     {
-        $variable = new Variable('id', 'int', false, false, true, new Location(1,1));
+        $variable = new Variable('id', 'int', false, false, true, new Location(1, 1));
 
         $this->assertEquals('id', $variable->getName());
         $this->assertEquals('int', $variable->getTypeName());
@@ -190,16 +197,16 @@ class AstTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($variable->isNullable());
         $this->assertTrue($variable->isArray());
 
-        $variable->setValue(new Literal('text', new Location(1,1)));
-        $this->assertEquals(new Literal('text', new Location(1,1)), $variable->getValue());
+        $variable->setValue(new Literal('text', new Location(1, 1)));
+        $this->assertEquals(new Literal('text', new Location(1, 1)), $variable->getValue());
     }
 
-    /**
-     * @expectedException \LogicException
-     */
-    public function testVariableLogicException()
+
+    public function testVariableLogicException(): void
     {
-        $variable = new Variable('id', 'int', false, false, true, new Location(1,1));
+        $this->expectException(\LogicException::class);
+
+        $variable = new Variable('id', 'int', false, false, true, new Location(1, 1));
         $variable->getValue();
     }
 }

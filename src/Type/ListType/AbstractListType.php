@@ -1,12 +1,20 @@
 <?php
 /**
- * Date: 03.12.15
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Portey Vasil <portey@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 03.12.15.
  */
 
 namespace Youshido\GraphQL\Type\ListType;
-
 
 use Youshido\GraphQL\Config\Object\ListTypeConfig;
 use Youshido\GraphQL\Type\CompositeTypeInterface;
@@ -45,30 +53,9 @@ abstract class AbstractListType extends AbstractObjectType implements CompositeT
     }
 
     /**
-     * @param $value
-     * @param bool $returnValue
-     *
-     * @return bool
+     * {@inheritdoc}
      */
-    protected function validList($value, $returnValue = false)
-    {
-        $itemType = $this->config->get('itemType');
-
-        if ($value && $itemType->isInputType()) {
-            foreach ($value as $item) {
-                if (!$itemType->isValidValue($item)) {
-                    return $returnValue ? $item : false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function build($config)
+    public function build($config): void
     {
     }
 
@@ -106,7 +93,29 @@ abstract class AbstractListType extends AbstractObjectType implements CompositeT
         if (!$this->isIterable($value)) {
             return 'The value is not an iterable.';
         }
+
         return $this->config->get('itemType')->getValidationError($this->validList($value, true));
+    }
+
+    /**
+     * @param $value
+     * @param bool $returnValue
+     *
+     * @return bool
+     */
+    protected function validList($value, $returnValue = false)
+    {
+        $itemType = $this->config->get('itemType');
+
+        if ($value && $itemType->isInputType()) {
+            foreach ($value as $item) {
+                if (!$itemType->isValidValue($item)) {
+                    return $returnValue ? $item : false;
+                }
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -116,6 +125,6 @@ abstract class AbstractListType extends AbstractObjectType implements CompositeT
      */
     protected function isIterable($value)
     {
-        return null === $value || is_array($value) || ($value instanceof \Traversable);
+        return null === $value || \is_array($value) || ($value instanceof \Traversable);
     }
 }

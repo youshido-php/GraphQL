@@ -1,11 +1,21 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 
 namespace Youshido\Tests\Issues\Issue116Test;
 
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\ListType\ListType;
-use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IdType;
 use Youshido\GraphQL\Type\Scalar\IntType;
@@ -13,14 +23,14 @@ use Youshido\GraphQL\Type\Scalar\StringType;
 
 class Issue149Test extends \PHPUnit_Framework_TestCase
 {
-    public function testInternalVariableArgument()
+    public function testInternalVariableArgument(): void
     {
-        $schema    = new Schema([
+        $schema = new Schema([
             'query' => new ObjectType([
                 'name'   => 'RootQuery',
                 'fields' => [
                     'user' => [
-                        'type'    => new ObjectType([
+                        'type' => new ObjectType([
                             'name'   => 'User',
                             'fields' => [
                                 'id'      => new IdType(),
@@ -36,7 +46,7 @@ class Issue149Test extends \PHPUnit_Framework_TestCase
                                 ])),
                             ],
                         ]),
-                        'resolve' => function () {
+                        'resolve' => static function () {
                             return [
                                 'id'      => 1,
                                 'name'    => 'John',
@@ -80,9 +90,9 @@ class Issue149Test extends \PHPUnit_Framework_TestCase
     }
 }')->getResponseData();
         $this->assertEquals(['data' => ['user' => [
-            'id'   => '1',
-            'name' => 'John',
-            'age'  => 30,
+            'id'      => '1',
+            'name'    => 'John',
+            'age'     => 30,
             'friends' => [
                 [
                     'id'   => 2,
@@ -94,7 +104,7 @@ class Issue149Test extends \PHPUnit_Framework_TestCase
                     'name' => 'Friend 2',
                     'age'  => 32,
                 ],
-            ]
+            ],
         ]]], $response);
     }
 }

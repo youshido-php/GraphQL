@@ -1,38 +1,43 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 
 namespace Youshido\Tests\Schema;
 
-use Youshido\GraphQL\Config\Object\InterfaceTypeConfig;
-use Youshido\GraphQL\Config\Object\ObjectTypeConfig;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
-use Youshido\GraphQL\Type\InterfaceType\InterfaceType;
 use Youshido\GraphQL\Type\ListType\ListType;
-use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IdType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
-
 class UserType extends AbstractObjectType
 {
-    public function build($config)
+    public function build($config): void
     {
         $config->addFields([
             'id'           => new IdType(),
             'fullName'     => new StringType(),
-            'reservations' => new ListType(new ReservationInterface())
+            'reservations' => new ListType(new ReservationInterface()),
         ]);
     }
 }
 
 class CourtReservation extends AbstractObjectType
 {
-
-    public function build($config)
+    public function build($config): void
     {
         $config->addFields([
             'id'      => new IdType(),
@@ -40,9 +45,9 @@ class CourtReservation extends AbstractObjectType
                 'name'   => 'Player',
                 'fields' => [
                     'id'   => new IdType(),
-                    'user' => new UserType()
-                ]
-            ]))
+                    'user' => new UserType(),
+                ],
+            ])),
         ]);
     }
 
@@ -50,16 +55,15 @@ class CourtReservation extends AbstractObjectType
     {
         return [new ReservationInterface()];
     }
-
 }
 
 class ClassReservation extends AbstractObjectType
 {
-    public function build($config)
+    public function build($config): void
     {
         $config->addFields([
             'id'   => new IdType(),
-            'user' => new UserType()
+            'user' => new UserType(),
         ]);
     }
 
@@ -73,21 +77,19 @@ class ReservationInterface extends AbstractInterfaceType
 {
     public function resolveType($object)
     {
-        return strpos($object['id'], 'cl') === false ? new CourtReservation() : new ClassReservation();
+        return false === \mb_strpos($object['id'], 'cl') ? new CourtReservation() : new ClassReservation();
     }
 
-    public function build($config)
+    public function build($config): void
     {
         $config->addFields([
-            'id' => new IdType()
+            'id' => new IdType(),
         ]);
     }
-
 }
 
 class FragmentsTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @dataProvider queries
      *
@@ -95,7 +97,7 @@ class FragmentsTest extends \PHPUnit_Framework_TestCase
      * @param $expected
      * @param $variables
      */
-    public function testVariables($query, $expected, $variables)
+    public function testVariables($query, $expected, $variables): void
     {
         $schema = new Schema([
             'query' => new ObjectType([
@@ -103,7 +105,7 @@ class FragmentsTest extends \PHPUnit_Framework_TestCase
                 'fields' => [
                     'user' => [
                         'type'    => new UserType(),
-                        'resolve' => function ($args) {
+                        'resolve' => static function ($args) {
                             return [
                                 'id'           => 'user-id-1',
                                 'fullName'     => 'Alex',
@@ -112,7 +114,7 @@ class FragmentsTest extends \PHPUnit_Framework_TestCase
                                         'id'   => 'cl-1',
                                         'user' => [
                                             'id'       => 'user-id-2',
-                                            'fullName' => 'User class1'
+                                            'fullName' => 'User class1',
                                         ],
                                     ],
                                     [
@@ -122,17 +124,17 @@ class FragmentsTest extends \PHPUnit_Framework_TestCase
                                                 'id'   => 'player-id-1',
                                                 'user' => [
                                                     'id'       => 'user-id-3',
-                                                    'fullName' => 'User court1'
-                                                ]
-                                            ]
-                                        ]
+                                                    'fullName' => 'User court1',
+                                                ],
+                                            ],
+                                        ],
                                     ],
-                                ]
+                                ],
                             ];
                         },
                     ],
-                ]
-            ])
+                ],
+            ]),
         ]);
 
         $processor = new Processor($schema);
@@ -184,8 +186,8 @@ class FragmentsTest extends \PHPUnit_Framework_TestCase
                                     'id'   => 'cl-1',
                                     'user' => [
                                         'id'       => 'user-id-2',
-                                        'fullName' => 'User class1'
-                                    ]
+                                        'fullName' => 'User class1',
+                                    ],
                                 ],
                                 [
                                     'id'      => 'court-1',
@@ -194,22 +196,22 @@ class FragmentsTest extends \PHPUnit_Framework_TestCase
                                             'id'   => 'player-id-1',
                                             'user' => [
                                                 'id'       => 'user-id-3',
-                                                'fullName' => 'User court1'
-                                            ]
-                                        ]
-                                    ]
+                                                'fullName' => 'User court1',
+                                            ],
+                                        ],
+                                    ],
                                 ],
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
                 ],
                 [
-                ]
+                ],
             ],
         ];
     }
 
-    public function testSimpleFragment()
+    public function testSimpleFragment(): void
     {
         $schema = new Schema([
             'query' => new ObjectType([
@@ -217,7 +219,7 @@ class FragmentsTest extends \PHPUnit_Framework_TestCase
                 'fields' => [
                     'user' => [
                         'type'    => new UserType(),
-                        'resolve' => function ($args) {
+                        'resolve' => static function ($args) {
                             return [
                                 'id'       => 'user-id-1',
                                 'fullName' => 'Alex',
@@ -225,10 +227,10 @@ class FragmentsTest extends \PHPUnit_Framework_TestCase
                         },
                         'args' => [
                             'id' => new IntType(),
-                        ]
+                        ],
                     ],
-                ]
-            ])
+                ],
+            ]),
         ]);
 
         $query = '
@@ -252,5 +254,4 @@ class FragmentsTest extends \PHPUnit_Framework_TestCase
         $expected = ['data' => ['User1' => ['fullName' => 'Alex'], 'User2' => ['fullName' => 'Alex']]];
         $this->assertEquals($expected, $result);
     }
-
 }

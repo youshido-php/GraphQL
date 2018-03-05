@@ -1,10 +1,21 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 /*
-* This file is a part of GraphQL project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 5/19/16 8:58 AM
-*/
+ * This file is a part of GraphQL project.
+ *
+ * @author Alexandr Viniychuk <a@viniychuk.com>
+ * created: 5/19/16 8:58 AM
+ */
 
 namespace Youshido\GraphQL\Execution;
 
@@ -16,7 +27,7 @@ use Youshido\GraphQL\Type\AbstractType;
 
 class ResolveInfo
 {
-    /** @var  FieldInterface */
+    /** @var FieldInterface */
     protected $field;
 
     /** @var Field[] */
@@ -28,9 +39,9 @@ class ResolveInfo
     /**
      * This property is to be used for DI in various scenario
      * Added to original class to keep backward compatibility
-     * because of the way AbstractField::resolve has been declared
+     * because of the way AbstractField::resolve has been declared.
      *
-     * @var mixed $container
+     * @var mixed
      */
     protected $container;
 
@@ -60,14 +71,16 @@ class ResolveInfo
     /**
      * @param string $fieldName
      *
-     * @return null|Query|Field
+     * @return Field|Query|null
      */
     public function getFieldAST($fieldName)
     {
         $field = null;
+
         foreach ($this->getFieldASTList() as $fieldAST) {
             if ($fieldAST->getName() === $fieldName) {
                 $field = $fieldAST;
+
                 break;
             }
         }
@@ -95,6 +108,4 @@ class ResolveInfo
     {
         return $this->executionContext->getContainer();
     }
-
-
 }

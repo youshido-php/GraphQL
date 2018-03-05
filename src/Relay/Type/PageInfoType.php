@@ -1,13 +1,20 @@
 <?php
 /**
- * This file is a part of GraphQL project.
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Alexandr Viniychuk <a@viniychuk.com>
- * created: 2/23/17 4:19 PM
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * This file is a part of GraphQL project.
  */
 
 namespace Youshido\GraphQL\Relay\Type;
-
 
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
@@ -16,31 +23,30 @@ use Youshido\GraphQL\Type\Scalar\StringType;
 
 class PageInfoType extends AbstractObjectType
 {
-    public function build($config)
+    public function build($config): void
     {
         $config->addFields([
-            'hasNextPage'     => [
+            'hasNextPage' => [
                 'type'        => new NonNullType(new BooleanType()),
-                'description' => 'When paginating forwards, are there more items?'
+                'description' => 'When paginating forwards, are there more items?',
             ],
             'hasPreviousPage' => [
                 'type'        => new NonNullType(new BooleanType()),
-                'description' => 'When paginating backwards, are there more items?'
+                'description' => 'When paginating backwards, are there more items?',
             ],
-            'startCursor'     => [
+            'startCursor' => [
                 'type'        => new StringType(),
-                'description' => 'When paginating backwards, the cursor to continue.'
+                'description' => 'When paginating backwards, the cursor to continue.',
             ],
-            'endCursor'       => [
+            'endCursor' => [
                 'type'        => new StringType(),
-                'description' => 'When paginating forwards, the cursor to continue.'
+                'description' => 'When paginating forwards, the cursor to continue.',
             ],
         ]);
     }
 
     public function getDescription()
     {
-        return "Information about pagination in a connection.";
+        return 'Information about pagination in a connection.';
     }
-
 }

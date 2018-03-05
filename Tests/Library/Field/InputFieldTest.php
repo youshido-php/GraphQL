@@ -1,4 +1,15 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 /*
  * This file is a part of GraphQL project.
  *
@@ -7,7 +18,6 @@
  */
 
 namespace Youshido\Tests\Library\Field;
-
 
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Field\InputField;
@@ -24,8 +34,7 @@ use Youshido\Tests\DataProvider\TestInputField;
 
 class InputFieldTest extends \PHPUnit_Framework_TestCase
 {
-
-    private $introspectionQuery = <<<TEXT
+    private $introspectionQuery = <<<'TEXT'
 
 query IntrospectionQuery {
                 __schema {
@@ -105,9 +114,9 @@ query IntrospectionQuery {
             }
 TEXT;
 
-    public function testFieldWithInputFieldArgument()
+    public function testFieldWithInputFieldArgument(): void
     {
-        $schema    = new Schema([
+        $schema = new Schema([
             'query' => new ObjectType([
                 'name'   => 'RootQuery',
                 'fields' => [
@@ -119,27 +128,27 @@ TEXT;
                                 'type' => new InputObjectType([
                                     'name'   => 'TestInput',
                                     'fields' => [
-                                        new InputField(['name' => 'clientMutationId', 'type' => new NonNullType(new StringType())])
-                                    ]
-                                ])
-                            ])
+                                        new InputField(['name' => 'clientMutationId', 'type' => new NonNullType(new StringType())]),
+                                    ],
+                                ]),
+                            ]),
                         ],
-                    ]
+                    ],
 
-                ]
-            ])
+                ],
+            ]),
         ]);
         $processor = new Processor($schema);
         $processor->processPayload($this->introspectionQuery);
     }
 
-    public function testInlineInputFieldCreation()
+    public function testInlineInputFieldCreation(): void
     {
         $field = new InputField([
             'name'         => 'id',
             'type'         => 'id',
             'description'  => 'description',
-            'defaultValue' => 123
+            'defaultValue' => 123,
         ]);
 
         $this->assertEquals('id', $field->getName());
@@ -148,8 +157,7 @@ TEXT;
         $this->assertSame(123, $field->getDefaultValue());
     }
 
-
-    public function testObjectInputFieldCreation()
+    public function testObjectInputFieldCreation(): void
     {
         $field = new TestInputField();
 
@@ -159,7 +167,7 @@ TEXT;
         $this->assertEquals('default', $field->getDefaultValue());
     }
 
-    public function testListAsInputField()
+    public function testListAsInputField(): void
     {
         new InputField([
             'name' => 'test',
@@ -169,10 +177,13 @@ TEXT;
 
     /**
      * @dataProvider invalidInputFieldProvider
-     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
+     *
+     * @param mixed $fieldConfig
      */
-    public function testInvalidInputFieldParams($fieldConfig)
+    public function testInvalidInputFieldParams($fieldConfig): void
     {
+        $this->expectException(\Youshido\GraphQL\Exception\ConfigurationException::class);
+
         $field = new InputField($fieldConfig);
         ConfigValidator::getInstance()->assertValidConfig($field->getConfig());
     }
@@ -183,8 +194,8 @@ TEXT;
             [
                 [
                     'name' => 'id',
-                    'type' => 'invalid type'
-                ]
+                    'type' => 'invalid type',
+                ],
             ],
             [
                 [
@@ -192,10 +203,10 @@ TEXT;
                     'type' => new ObjectType([
                         'name'   => 'test',
                         'fields' => [
-                            'id' => ['type' => 'int']
-                        ]
-                    ])
-                ]
+                            'id' => ['type' => 'int'],
+                        ],
+                    ]),
+                ],
             ],
         ];
     }

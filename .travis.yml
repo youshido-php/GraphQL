@@ -1,26 +1,58 @@
+# https://docs.travis-ci.com/user/languages/php/
+# https://docs.travis-ci.com/user/reference/trusty/
+# https://docs.travis-ci.com/user/build-environment-updates/
+# https://docs.travis-ci.com/user/docker/
+# https://docs.travis-ci.com/user/deployment/releases/
+# https://docs.travis-ci.com/user/deployment/pages/
+
 language: php
-
+dist: trusty
+group: edge
 php:
-  - 5.5
-  - 5.6
-  - 7
-  - 7.1
+  - 7.2
+  - nightly
 
-before_install:
-  - composer selfupdate
+cache:
+  directories:
+    - bin
+    - vendor
 
-install: composer update --prefer-dist --no-interaction
+matrix:
+  fast_finish: true
+  allow_failures:
+    - php: nightly
+
+before_script:
+  - 'travis_retry composer self-update'
+  - 'travis_retry composer install --ignore-platform-reqs --no-interaction --prefer-source -oa'
+  - 'wget https://scrutinizer-ci.com/ocular.phar'
+  - 'phpenv rehash'
 
 script:
-  - ./vendor/bin/phpunit --coverage-clover=coverage.clover
+  - 'mkdir -p tests/report'
+  - 'php bin/phpunit -c phpunit.xml.dist'
 
-after_script:
-  - wget https://scrutinizer-ci.com/ocular.phar && php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+# https://github.com/php-coveralls/php-coveralls#travis-ci
+# https://scrutinizer-ci.com/docs/tools/external-code-coverage/
+after_success:
+  - 'travis_retry php bin/php-coveralls -v'
+  - 'travis_retry php ocular.phar code-coverage:upload --format=php-clover tests/report/clover.xml'
+  - 'curl -o http://get.sensiolabs.org/sami.phar sami.phar'
+  # - 'git reset --hard HEAD'
+  # - 'travis_retry php sami.phar update --force docs/sami-config.php'
 
 notifications:
   email:
-    recipients:
-      - portey@gmail.com
-      - a@viniychuk.com
+    - 'ryan@ryanparman.com'
+    - 'asheliahut@gmail.com'
     on_success: change
     on_failure: always
+    on_start: never
+
+# https://docs.travis-ci.com/user/deployment/script/
+# https://github.com/steveklabnik/automatically_update_github_pages_with_travis_example
+# deploy:
+#   - provider: script
+#     script: make push-travis
+#     on:
+#       branch: master

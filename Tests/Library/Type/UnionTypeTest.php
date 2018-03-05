@@ -1,12 +1,20 @@
 <?php
 /**
- * Date: 13.05.16
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Portey Vasil <portey@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 13.05.16.
  */
 
 namespace Youshido\tests\Library\Type;
-
 
 use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
@@ -18,12 +26,11 @@ use Youshido\Tests\DataProvider\TestUnionType;
 
 class UnionTypeTest extends \PHPUnit_Framework_TestCase
 {
-
-    public function testInlineCreation()
+    public function testInlineCreation(): void
     {
         $object = new ObjectType([
-            'name' => 'TestObject',
-            'fields' => ['id' => ['type' => new IntType()]]
+            'name'   => 'TestObject',
+            'fields' => ['id' => ['type' => new IntType()]],
         ]);
 
         $type = new UnionType([
@@ -31,11 +38,11 @@ class UnionTypeTest extends \PHPUnit_Framework_TestCase
             'description' => 'Union collect cars types',
             'types'       => [
                 new TestObjectType(),
-                $object
+                $object,
             ],
-            'resolveType' => function ($type) {
+            'resolveType' => static function ($type) {
                 return $type;
-            }
+            },
         ]);
 
         $this->assertEquals('Car', $type->getName());
@@ -47,7 +54,7 @@ class UnionTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($type->isValidValue(true));
     }
 
-    public function testObjectCreation()
+    public function testObjectCreation(): void
     {
         $type = new TestUnionType();
 
@@ -57,38 +64,38 @@ class UnionTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('test', $type->resolveType('test'));
     }
 
-    /**
-     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
-     */
-    public function testInvalidTypesWithScalar()
+
+    public function testInvalidTypesWithScalar(): void
     {
+        $this->expectException(\Youshido\GraphQL\Exception\ConfigurationException::class);
+
         $type = new UnionType([
             'name'        => 'Car',
             'description' => 'Union collect cars types',
             'types'       => [
-                'test', new IntType()
+                'test', new IntType(),
             ],
-            'resolveType' => function ($type) {
+            'resolveType' => static function ($type) {
                 return $type;
-            }
+            },
         ]);
         ConfigValidator::getInstance()->assertValidConfig($type->getConfig());
     }
 
-    /**
-     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
-     */
-    public function testInvalidTypes()
+
+    public function testInvalidTypes(): void
     {
+        $this->expectException(\Youshido\GraphQL\Exception\ConfigurationException::class);
+
         $type = new UnionType([
             'name'        => 'Car',
             'description' => 'Union collect cars types',
             'types'       => [
-                new IntType()
+                new IntType(),
             ],
-            'resolveType' => function ($type) {
+            'resolveType' => static function ($type) {
                 return $type;
-            }
+            },
         ]);
         ConfigValidator::getInstance()->assertValidConfig($type->getConfig());
     }

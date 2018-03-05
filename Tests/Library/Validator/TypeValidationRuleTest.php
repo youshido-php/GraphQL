@@ -1,13 +1,23 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 /*
-* This file is a part of GraphQL project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 5/12/16 10:37 PM
-*/
+ * This file is a part of GraphQL project.
+ *
+ * @author Alexandr Viniychuk <a@viniychuk.com>
+ * created: 5/12/16 10:37 PM
+ */
 
 namespace Youshido\Tests\Library\Validator;
-
 
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Type\Scalar\StringType;
@@ -21,17 +31,15 @@ use Youshido\Tests\DataProvider\TestObjectType;
 
 class TypeValidationRuleTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @var TypeValidationRule
      */
     protected $rule;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->rule = new TypeValidationRule(ConfigValidator::getInstance());
     }
-
 
     /**
      * @param      $ruleInfo
@@ -40,7 +48,7 @@ class TypeValidationRuleTest extends \PHPUnit_Framework_TestCase
      *
      * @dataProvider simpleRulesProvider
      */
-    public function testSimpleRules($ruleInfo, $data, $isValid = true)
+    public function testSimpleRules($ruleInfo, $data, $isValid = true): void
     {
         $this->assertEquals($isValid, $this->rule->validate($data, $ruleInfo));
     }
@@ -48,14 +56,15 @@ class TypeValidationRuleTest extends \PHPUnit_Framework_TestCase
     public function simpleRulesProvider()
     {
         return [
-            [TypeService::TYPE_ARRAY_OF_FIELDS_CONFIG, ["fieldName" => new StringType()]],
+            [TypeService::TYPE_ARRAY_OF_FIELDS_CONFIG, ['fieldName' => new StringType()]],
 
             [TypeService::TYPE_ANY, null],
 
             [TypeService::TYPE_ANY_OBJECT, new StringType()],
             [TypeService::TYPE_ANY_OBJECT, null, false],
 
-            [TypeService::TYPE_CALLABLE, function () { }],
+            [TypeService::TYPE_CALLABLE, static function (): void {
+            }],
             [TypeService::TYPE_CALLABLE, null, false],
 
             [TypeService::TYPE_BOOLEAN, true],
@@ -68,7 +77,7 @@ class TypeValidationRuleTest extends \PHPUnit_Framework_TestCase
             [TypeService::TYPE_OBJECT_TYPE, new TestObjectType()],
             [TypeService::TYPE_OBJECT_TYPE, new StringType(), false],
 
-            [TypeService::TYPE_ARRAY_OF_FIELDS_CONFIG, ["fieldName" => TypeMap::TYPE_STRING]],
+            [TypeService::TYPE_ARRAY_OF_FIELDS_CONFIG, ['fieldName' => TypeMap::TYPE_STRING]],
             [TypeService::TYPE_ARRAY_OF_FIELDS_CONFIG, [new Field(['name' => 'id', 'type' => new StringType()])]],
             [TypeService::TYPE_ARRAY_OF_FIELDS_CONFIG, [], false],
 
@@ -84,7 +93,7 @@ class TypeValidationRuleTest extends \PHPUnit_Framework_TestCase
      *
      * @dataProvider complexRuleProvider
      */
-    public function testComplexRules($ruleInfo, $data, $isValid = true)
+    public function testComplexRules($ruleInfo, $data, $isValid = true): void
     {
         $this->assertEquals($isValid, $this->rule->validate($data, $ruleInfo));
     }
@@ -106,5 +115,4 @@ class TypeValidationRuleTest extends \PHPUnit_Framework_TestCase
 
         ];
     }
-
 }

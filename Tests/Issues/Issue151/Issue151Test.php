@@ -1,4 +1,15 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 
 namespace Youshido\Tests\Issues\Issue116Test;
 
@@ -12,7 +23,7 @@ use Youshido\GraphQL\Type\Union\UnionType;
 
 class Issue151Test extends \PHPUnit_Framework_TestCase
 {
-    public function testInternalVariableArgument()
+    public function testInternalVariableArgument(): void
     {
         $type1 = new ObjectType([
             'name'   => 'Type1',
@@ -32,7 +43,7 @@ class Issue151Test extends \PHPUnit_Framework_TestCase
         $unionType = new UnionType([
             'name'        => 'Union',
             'types'       => [$type1, $type2],
-            'resolveType' => function ($value) use ($type1, $type2) {
+            'resolveType' => static function ($value) use ($type1, $type2) {
                 if (isset($value['name'])) {
                     return $type1;
                 }
@@ -41,13 +52,13 @@ class Issue151Test extends \PHPUnit_Framework_TestCase
             },
         ]);
 
-        $schema    = new Schema([
+        $schema = new Schema([
             'query' => new ObjectType([
                 'name'   => 'RootQuery',
                 'fields' => [
                     'list' => [
                         'type'    => new ListType($unionType),
-                        'resolve' => function () {
+                        'resolve' => static function () {
                             return [
                                 [
                                     'id'   => 1,
@@ -84,6 +95,5 @@ fragment UnitFragment on Union {
     }
 }
         ')->getResponseData();
-
     }
 }

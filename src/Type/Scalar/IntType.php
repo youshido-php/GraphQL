@@ -1,17 +1,26 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 /*
-* This file is a part of graphql-youshido project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 11/27/15 1:22 AM
-*/
+ * This file is a part of graphql-youshido project.
+ *
+ * @author Alexandr Viniychuk <a@viniychuk.com>
+ * created: 11/27/15 1:22 AM
+ */
 
 namespace Youshido\GraphQL\Type\Scalar;
 
-
 class IntType extends AbstractScalarType
 {
-
     public function getName()
     {
         return 'Int';
@@ -19,22 +28,21 @@ class IntType extends AbstractScalarType
 
     public function serialize($value)
     {
-        if ($value === null) {
-            return null;
-        } else {
-            if (is_int($value)) {
-                return $value;
-            } else {
-                $value = (int)$value;
-
-                return $value != 0 ? $value : null;
-            }
+        if (null === $value) {
+            return;
         }
+
+        if (\is_int($value)) {
+            return $value;
+        }
+        $value = (int) $value;
+
+        return 0 !== $value ? $value : null;
     }
 
     public function isValidValue($value)
     {
-        return is_null($value) || is_int($value);
+        return null === $value || \is_int($value);
     }
 
     public function getDescription()
@@ -44,5 +52,4 @@ class IntType extends AbstractScalarType
                'represented in JSON as double-precision floating point numbers specified' .
                'by [IEEE 754](http://en.wikipedia.org/wiki/IEEE_floating_point).';
     }
-
 }

@@ -1,12 +1,20 @@
 <?php
 /**
- * Date: 10/24/16
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Portey Vasil <portey@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 10/24/16.
  */
 
 namespace Youshido\GraphQL\Parser\Ast\ArgumentValue;
-
 
 use Youshido\GraphQL\Parser\Ast\AbstractAst;
 use Youshido\GraphQL\Parser\Ast\Interfaces\ValueInterface;
@@ -14,14 +22,13 @@ use Youshido\GraphQL\Parser\Location;
 
 class VariableReference extends AbstractAst implements ValueInterface
 {
-
-    /** @var  string */
+    /** @var string */
     private $name;
 
-    /** @var  Variable */
+    /** @var Variable */
     private $variable;
 
-    /** @var  mixed */
+    /** @var mixed */
     private $value;
 
     /**
@@ -47,7 +54,7 @@ class VariableReference extends AbstractAst implements ValueInterface
         return $this->value;
     }
 
-    public function setValue($value)
+    public function setValue($value): void
     {
         $this->value = $value;
     }

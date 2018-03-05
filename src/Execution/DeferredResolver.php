@@ -1,21 +1,26 @@
 <?php
 /**
- * This file is a part of GraphQL project.
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Alexandr Viniychuk <a@viniychuk.com>
- * created: 4/24/17 11:50 PM
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * This file is a part of GraphQL project.
  */
 
 namespace Youshido\GraphQL\Execution;
 
-
 /**
- * Default implementation of DeferredResolverInterface
- *
- * @package Youshido\GraphQL\Execution
+ * Default implementation of DeferredResolverInterface.
  */
-class DeferredResolver implements DeferredResolverInterface {
-
+class DeferredResolver implements DeferredResolverInterface
+{
     /** @var callable */
     private $resolver;
 
@@ -24,7 +29,8 @@ class DeferredResolver implements DeferredResolverInterface {
         $this->resolver = $resolver;
     }
 
-    public function resolve() {
-      return call_user_func($this->resolver);
+    public function resolve()
+    {
+        return \call_user_func($this->resolver);
     }
 }

@@ -1,12 +1,20 @@
 <?php
 /**
- * Date: 07.11.16
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Portey Vasil <portey@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 07.11.16.
  */
 
 namespace Youshido\GraphQL\Execution;
-
 
 use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Execution\Visitor\AbstractQueryVisitor;
@@ -23,8 +31,7 @@ use Youshido\GraphQL\Type\Union\AbstractUnionType;
 
 class Reducer
 {
-
-    /** @var  ExecutionContextInterface */
+    /** @var ExecutionContextInterface */
     private $executionContext;
 
     /**
@@ -34,7 +41,7 @@ class Reducer
      * @param ExecutionContextInterface $executionContext
      * @param AbstractQueryVisitor[]    $reducers
      */
-    public function reduceQuery(ExecutionContextInterface $executionContext, array $reducers)
+    public function reduceQuery(ExecutionContextInterface $executionContext, array $reducers): void
     {
         $this->executionContext = $executionContext;
         $schema                 = $executionContext->getSchema();
@@ -54,24 +61,24 @@ class Reducer
      * @param AbstractType         $currentLevelSchema
      * @param AbstractQueryVisitor $reducer
      */
-    protected function doVisit(Query $query, $currentLevelSchema, $reducer)
+    protected function doVisit(Query $query, $currentLevelSchema, $reducer): void
     {
         if (!($currentLevelSchema instanceof AbstractObjectType) || !$currentLevelSchema->hasField($query->getName())) {
             return;
         }
 
         if ($operationField = $currentLevelSchema->getField($query->getName())) {
-
             $coroutine = $this->walkQuery($query, $operationField);
 
             if ($results = $coroutine->current()) {
                 $queryCost = 0;
+
                 while ($results) {
                     // initial values come from advancing the generator via ->current, subsequent values come from ->send()
-                    list($queryField, $astField, $childCost) = $results;
+                    [$queryField, $astField, $childCost] = $results;
 
                     /**
-                     * @var Query|FieldAst $queryField
+                     * @var FieldAst|Query
                      * @var Field          $astField
                      */
                     $cost = $reducer->visit($queryField->getKeyValueArguments(), $astField->getConfig(), $childCost);
@@ -84,7 +91,7 @@ class Reducer
 
     /**
      * Coroutine to walk the query and schema in DFS manner (see AbstractQueryVisitor docs for more info) and yield a
-     * tuple of (queryNode, schemaNode, childScore)
+     * tuple of (queryNode, schemaNode, childScore).
      *
      * childScore costs are accumulated via values sent into the coroutine.
      *
@@ -92,7 +99,7 @@ class Reducer
      * Fragments (anonymous and named), and Fields.  The core of the function is simple: recurse until we hit the base
      * case of a Field and yield that back up to the visitor up in `doVisit`.
      *
-     * @param Query|Field|\Youshido\GraphQL\Parser\Ast\Interfaces\FragmentInterface $queryNode
+     * @param Field|Query|\Youshido\GraphQL\Parser\Ast\Interfaces\FragmentInterface $queryNode
      * @param FieldInterface                                                        $currentLevelAST
      *
      * @return \Generator
@@ -100,6 +107,7 @@ class Reducer
     protected function walkQuery($queryNode, FieldInterface $currentLevelAST)
     {
         $childrenScore = 0;
+
         if (!($queryNode instanceof FieldAst)) {
             foreach ($queryNode->getFields() as $queryField) {
                 if ($queryField instanceof FragmentInterface) {
@@ -112,21 +120,24 @@ class Reducer
                     // made less verbose.
                     $gen  = $this->walkQuery($queryField, $currentLevelAST);
                     $next = $gen->current();
+
                     while ($next) {
                         $received = (yield $next);
-                        $childrenScore += (int)$received;
+                        $childrenScore += (int) $received;
                         $next = $gen->send($received);
                     }
                 } else {
                     $fieldType = $currentLevelAST->getType()->getNamedType();
+
                     if ($fieldType instanceof AbstractUnionType) {
                         foreach ($fieldType->getTypes() as $unionFieldType) {
                             if ($fieldAst = $unionFieldType->getField($queryField->getName())) {
                                 $gen  = $this->walkQuery($queryField, $fieldAst);
                                 $next = $gen->current();
+
                                 while ($next) {
                                     $received = (yield $next);
-                                    $childrenScore += (int)$received;
+                                    $childrenScore += (int) $received;
                                     $next = $gen->send($received);
                                 }
                             }
@@ -134,9 +145,10 @@ class Reducer
                     } elseif ($fieldType instanceof AbstractObjectType && $fieldAst = $fieldType->getField($queryField->getName())) {
                         $gen  = $this->walkQuery($queryField, $fieldAst);
                         $next = $gen->current();
+
                         while ($next) {
                             $received = (yield $next);
-                            $childrenScore += (int)$received;
+                            $childrenScore += (int) $received;
                             $next = $gen->send($received);
                         }
                     }
@@ -150,5 +162,4 @@ class Reducer
             yield [$queryNode, $currentLevelAST, $childrenScore];
         }
     }
-
 }

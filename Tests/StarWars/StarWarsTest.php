@@ -1,19 +1,26 @@
 <?php
 /**
- * Date: 07.12.15
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Portey Vasil <portey@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 07.12.15.
  */
 
 namespace Youshido\Tests\StarWars;
-
 
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\Tests\StarWars\Schema\StarWarsSchema;
 
 class StarWarsTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @param $query
      * @param $validResult
@@ -21,7 +28,7 @@ class StarWarsTest extends \PHPUnit_Framework_TestCase
      *
      * @dataProvider dataProvider
      */
-    public function testSchema($query, $validResult, $variables)
+    public function testSchema($query, $validResult, $variables): void
     {
         $processor = new Processor(new StarWarsSchema());
 
@@ -31,7 +38,7 @@ class StarWarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($validResult, $responseData);
     }
 
-    public function testInvalidVariableType()
+    public function testInvalidVariableType(): void
     {
         $processor = new Processor(new StarWarsSchema());
 
@@ -40,7 +47,8 @@ class StarWarsTest extends \PHPUnit_Framework_TestCase
                 human(id: $someId) {
                     name
                 }
-            }', ['someId' => 1]
+            }',
+            ['someId' => 1]
         );
 
         $data = $processor->getResponseData();
@@ -52,14 +60,13 @@ class StarWarsTest extends \PHPUnit_Framework_TestCase
                     'locations' => [
                         [
                             'line'   => 1,
-                            'column' => 7
-                        ]
-                    ]
-                ]
-            ]
+                            'column' => 7,
+                        ],
+                    ],
+                ],
+            ],
         ]);
     }
-
 
     public function dataProvider()
     {
@@ -75,11 +82,11 @@ class StarWarsTest extends \PHPUnit_Framework_TestCase
                     'data' => [
                         'hero' => [
                             '__typename' => 'Human',
-                            'name'       => 'Luke Skywalker'
+                            'name'       => 'Luke Skywalker',
                         ],
-                    ]
+                    ],
                 ],
-                []
+                [],
             ],
             [
                 'query {
@@ -89,10 +96,10 @@ class StarWarsTest extends \PHPUnit_Framework_TestCase
               }',
                 ['data' => [
                     'hero' => [
-                        'name' => 'R2-D2'
-                    ]
+                        'name' => 'R2-D2',
+                    ],
                 ]],
-                []
+                [],
             ],
             [
                 'query {
@@ -118,10 +125,10 @@ class StarWarsTest extends \PHPUnit_Framework_TestCase
                             [
                                 'name' => 'Leia Organa',
                             ],
-                        ]
-                    ]
+                        ],
+                    ],
                 ]],
-                []
+                [],
             ],
             [
                 '{
@@ -143,39 +150,38 @@ class StarWarsTest extends \PHPUnit_Framework_TestCase
                             'friends' => [
                                 [
                                     'name'      => 'Luke Skywalker',
-                                    'appearsIn' => ['NEWHOPE', 'EMPIRE', 'JEDI',],
+                                    'appearsIn' => ['NEWHOPE', 'EMPIRE', 'JEDI'],
                                     'friends'   => [
-                                        ['name' => 'Han Solo',],
-                                        ['name' => 'Leia Organa',],
-                                        ['name' => 'C-3PO',],
-                                        ['name' => 'R2-D2',],
+                                        ['name' => 'Han Solo'],
+                                        ['name' => 'Leia Organa'],
+                                        ['name' => 'C-3PO'],
+                                        ['name' => 'R2-D2'],
                                     ],
                                 ],
                                 [
                                     'name'      => 'Han Solo',
                                     'appearsIn' => ['NEWHOPE', 'EMPIRE', 'JEDI'],
                                     'friends'   => [
-                                        ['name' => 'Luke Skywalker',],
+                                        ['name' => 'Luke Skywalker'],
                                         ['name' => 'Leia Organa'],
-                                        ['name' => 'R2-D2',],
-                                    ]
+                                        ['name' => 'R2-D2'],
+                                    ],
                                 ],
                                 [
                                     'name'      => 'Leia Organa',
                                     'appearsIn' => ['NEWHOPE', 'EMPIRE', 'JEDI'],
-                                    'friends'   =>
-                                        [
-                                            ['name' => 'Luke Skywalker',],
-                                            ['name' => 'Han Solo',],
-                                            ['name' => 'C-3PO',],
-                                            ['name' => 'R2-D2',],
+                                    'friends'   => [
+                                            ['name' => 'Luke Skywalker'],
+                                            ['name' => 'Han Solo'],
+                                            ['name' => 'C-3PO'],
+                                            ['name' => 'R2-D2'],
                                         ],
                                 ],
                             ],
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
-                []
+                [],
             ],
             [
                 '{
@@ -186,11 +192,11 @@ class StarWarsTest extends \PHPUnit_Framework_TestCase
                 [
                     'data' => [
                         'human' => [
-                            'name' => 'Luke Skywalker'
-                        ]
-                    ]
+                            'name' => 'Luke Skywalker',
+                        ],
+                    ],
                 ],
-                []
+                [],
             ],
             [
                 'query($someId: ID){
@@ -201,14 +207,14 @@ class StarWarsTest extends \PHPUnit_Framework_TestCase
                 [
                     'data' => [
                         'human' => [
-                            'name' => 'Luke Skywalker'
-                        ]
-                    ]
+                            'name' => 'Luke Skywalker',
+                        ],
+                    ],
                 ],
                 [
-                    'someId' => '1000'
-                ]
-            ]
+                    'someId' => '1000',
+                ],
+            ],
         ];
     }
 }

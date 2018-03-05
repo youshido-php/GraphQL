@@ -1,13 +1,23 @@
 <?php
+/**
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
+ *
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
 /*
-* This file is a part of GraphQL project.
-*
-* @author Alexandr Viniychuk <a@viniychuk.com>
-* created: 5/11/16 9:31 PM
-*/
+ * This file is a part of GraphQL project.
+ *
+ * @author Alexandr Viniychuk <a@viniychuk.com>
+ * created: 5/11/16 9:31 PM
+ */
 
 namespace Youshido\Tests\Library\Type;
-
 
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Scalar\StringType;
@@ -16,16 +26,14 @@ use Youshido\GraphQL\Type\TypeService;
 
 class NonNullTypeTest extends \PHPUnit_Framework_TestCase
 {
-
-    /**
-     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
-     */
-    public function testInvalidParams()
+    public function testInvalidParams(): void
     {
+        $this->expectException(\Youshido\GraphQL\Exception\ConfigurationException::class);
+
         new NonNullType('invalid param');
     }
 
-    public function testNonNullType()
+    public function testNonNullType(): void
     {
         $stringType      = new StringType();
         $nonNullType     = new NonNullType(new StringType());
@@ -47,5 +55,4 @@ class NonNullTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($nonNullType->parseValue($testArray), '');
         $this->assertEquals($nonNullType->resolve($testArray), $testArray);
     }
-
 }

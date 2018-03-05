@@ -1,8 +1,17 @@
 <?php
 /**
- * Date: 13.05.16
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Portey Vasil <portey@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 13.05.16.
  */
 
 namespace Youshido\GraphQL\Field;
@@ -18,30 +27,31 @@ use Youshido\GraphQL\Type\TypeService;
 
 abstract class AbstractField implements FieldInterface
 {
-
     use FieldsArgumentsAwareObjectTrait;
     use ResolvableObjectTrait;
     use AutoNameTrait {
         getName as getAutoName;
     }
+
     protected $isFinal = false;
 
-    private $nameCache            = null;
+    private $nameCache;
 
     public function __construct(array $config = [])
     {
         if (empty($config['type'])) {
             $config['type'] = $this->getType();
             $config['name'] = $this->getName();
+
             if (empty($config['name'])) {
-                $config['name'] =$this->getAutoName();
+                $config['name'] = $this->getAutoName();
             }
         }
 
         if (TypeService::isScalarType($config['type'])) {
             $config['type'] = TypeFactory::getScalarType($config['type']);
         }
-        $this->nameCache = isset($config['name']) ? $config['name'] : $this->getAutoName();
+        $this->nameCache = $config['name'] ?? $this->getAutoName();
 
         $this->config = new FieldConfig($config, $this, $this->isFinal);
         $this->build($this->config);
@@ -52,11 +62,11 @@ abstract class AbstractField implements FieldInterface
      */
     abstract public function getType();
 
-    public function build(FieldConfig $config)
+    public function build(FieldConfig $config): void
     {
     }
 
-    public function setType($type)
+    public function setType($type): void
     {
         $this->getConfig()->set('type', $type);
     }

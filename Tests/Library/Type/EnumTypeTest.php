@@ -1,12 +1,20 @@
 <?php
 /**
- * Date: 12.05.16
+ * Copyright (c) 2015–2018 Alexandr Viniychuk <http://youshido.com>.
+ * Copyright (c) 2015–2018 Portey Vasil <https://github.com/portey>.
+ * Copyright (c) 2018 Ryan Parman <https://github.com/skyzyx>.
+ * Copyright (c) 2018 Ashley Hutson <https://github.com/asheliahut>.
+ * Copyright (c) 2015–2018 Contributors.
  *
- * @author Portey Vasil <portey@gmail.com>
+ * http://opensource.org/licenses/MIT
+ */
+
+declare(strict_types=1);
+/**
+ * Date: 12.05.16.
  */
 
 namespace Youshido\Tests\Library\Type;
-
 
 use Youshido\GraphQL\Type\Enum\EnumType;
 use Youshido\GraphQL\Type\TypeMap;
@@ -15,103 +23,100 @@ use Youshido\Tests\DataProvider\TestEnumType;
 
 class EnumTypeTest extends \PHPUnit_Framework_TestCase
 {
-
-    /**
-     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
-     */
-    public function testInvalidInlineCreation()
+    public function testInvalidInlineCreation(): void
     {
+        $this->expectException(\Youshido\GraphQL\Exception\ConfigurationException::class);
+
         new EnumType([]);
     }
 
-    /**
-     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
-     */
-    public function testInvalidEmptyParams()
+
+    public function testInvalidEmptyParams(): void
     {
+        $this->expectException(\Youshido\GraphQL\Exception\ConfigurationException::class);
+
         $enumField = new EnumType([
-            'values' => []
+            'values' => [],
         ]);
         ConfigValidator::getInstance()->assertValidConfig($enumField->getConfig());
-
     }
 
-    /**
-     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
-     */
-    public function testInvalidValueParams()
+
+    public function testInvalidValueParams(): void
     {
+        $this->expectException(\Youshido\GraphQL\Exception\ConfigurationException::class);
+
         $enumField = new EnumType([
             'values' => [
                 'test'  => 'asd',
-                'value' => 'asdasd'
-            ]
+                'value' => 'asdasd',
+            ],
         ]);
         ConfigValidator::getInstance()->assertValidConfig($enumField->getConfig());
     }
 
-    /**
-     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
-     */
-    public function testExistingNameParams()
+
+    public function testExistingNameParams(): void
     {
+        $this->expectException(\Youshido\GraphQL\Exception\ConfigurationException::class);
+
         $enumField = new EnumType([
             'values' => [
                 [
                     'test'  => 'asd',
-                    'value' => 'asdasd'
-                ]
-            ]
+                    'value' => 'asdasd',
+                ],
+            ],
         ]);
         ConfigValidator::getInstance()->assertValidConfig($enumField->getConfig());
     }
 
-    /**
-     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
-     */
-    public function testInvalidNameParams()
+
+    public function testInvalidNameParams(): void
     {
+        $this->expectException(\Youshido\GraphQL\Exception\ConfigurationException::class);
+
         $enumField = new EnumType([
             'values' => [
                 [
                     'name'  => false,
-                    'value' => 'asdasd'
-                ]
-            ]
+                    'value' => 'asdasd',
+                ],
+            ],
         ]);
         ConfigValidator::getInstance()->assertValidConfig($enumField->getConfig());
     }
 
-    /**
-     * @expectedException Youshido\GraphQL\Exception\ConfigurationException
-     */
-    public function testWithoutValueParams()
+
+    public function testWithoutValueParams(): void
     {
+        $this->expectException(\Youshido\GraphQL\Exception\ConfigurationException::class);
+
         $enumField = new EnumType([
             'values' => [
                 [
                     'name' => 'TEST_ENUM',
-                ]
-            ]
+                ],
+            ],
         ]);
         ConfigValidator::getInstance()->assertValidConfig($enumField->getConfig());
     }
 
-    public function testNormalCreatingParams()
+    public function testNormalCreatingParams(): void
     {
         $valuesData = [
             [
                 'name'  => 'ENABLE',
-                'value' => true
+                'value' => true,
             ],
             [
                 'name'  => 'DISABLE',
-                'value' => 'disable'
-            ]
+                'value' => 'disable',
+            ],
         ];
-        $enumType   = new EnumType([
+        $enumType = new EnumType([
             'name'   => 'BoolEnum',
-            'values' => $valuesData
+            'values' => $valuesData,
         ]);
 
         $this->assertEquals($enumType->getKind(), TypeMap::KIND_ENUM);
@@ -132,10 +137,9 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($valuesData, $enumType->getValues());
     }
 
-    public function testExtendedObject()
+    public function testExtendedObject(): void
     {
         $testEnumType = new TestEnumType();
         $this->assertEquals('TestEnum', $testEnumType->getName());
     }
-
 }
