@@ -13,6 +13,7 @@ use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\ObjectType;
+use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\TypeMap;
 
 class Connection
@@ -56,6 +57,11 @@ class Connection
             'name'        => $name . 'Edge',
             'description' => 'An edge in a connection.',
             'fields'      => array_merge([
+                'totalCount' => [
+                    'type'        => new NonNullType(new IntType()),
+                    'description' => 'How many nodes.',
+                    'resolve'     => [__CLASS__, 'getTotalCount'],
+                ],
                 'node'   => [
                     'type'        => $type,
                     'description' => 'The item at the end of the edge',
@@ -102,6 +108,11 @@ class Connection
         ]);
 
         return $connectionType;
+    }
+
+    public static function getTotalCount($value)
+    {
+        return isset($value['totalCount']) ? $value['totalCount'] : -1;
     }
 
     public static function getEdges($value)
