@@ -393,7 +393,10 @@ class Processor
      */
     protected function deferredResolve($resolvedValue, FieldInterface $field, callable $callback) {
         if ($resolvedValue instanceof DeferredResolverInterface) {
-            $deferredResult = new DeferredResult($resolvedValue, $callback);
+            $deferredResult = new DeferredResult($resolvedValue, function ($resolvedValue) use ($field, $callback) {
+                // Allow nested deferred resolvers.
+                return $this->deferredResolve($resolvedValue, $field, $callback);
+            });
 
             // Whenever we stumble upon a deferred resolver, add it to the queue
             // to be resolved later.
