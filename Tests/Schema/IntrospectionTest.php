@@ -9,11 +9,16 @@
 namespace Youshido\Tests\Schema;
 
 
+use Youshido\GraphQL\Directive\Directive;
+use Youshido\GraphQL\Directive\DirectiveLocation;
 use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Field\Field;
+use Youshido\GraphQL\Field\InputField;
 use Youshido\GraphQL\Type\Enum\EnumType;
 use Youshido\GraphQL\Type\InterfaceType\InterfaceType;
+use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\ObjectType;
+use Youshido\GraphQL\Type\Scalar\BooleanType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\Union\UnionType;
@@ -33,12 +38,10 @@ query IntrospectionQuery {
                     directives {
                         name
                         description
+                        locations
                         args {
                             ...InputValue
                         }
-                        onOperation
-                        onFragment
-                        onField
                     }
                 }
             }
@@ -368,6 +371,65 @@ TEXT;
         $responseData = $processor->getResponseData();
 
         /** strange that this test got broken after I fixed the field resolve behavior */
+        $this->assertArrayNotHasKey('errors', $responseData);
+    }
+
+    public function testCanIntrospectDirectives()
+    {
+        $schema = new TestSchema();
+        $schema->getDirectiveList()->addDirectives([
+            new Directive([
+                'name' => 'skip',
+                'args' => [
+                    new InputField([
+                        'name' => 'if',
+                        'type' => new NonNullType(new BooleanType()),
+                        'description' => 'Skipped when true.',
+                    ])
+                ],
+                'description' => 'skip',
+                'locations' => [
+                    DirectiveLocation::FIELD,
+                    DirectiveLocation::FRAGMENT_SPREAD,
+                    DirectiveLocation::INLINE_FRAGMENT
+                ]
+            ]),
+            new Directive([
+                'name' => 'include',
+                'args' => [
+                    new InputField([
+                        'name' => 'if',
+                        'type' => new NonNullType(new BooleanType()),
+                        'description' => 'Included when true.',
+                    ])
+                ],
+                'description' => 'include',
+                'locations' => [
+                    DirectiveLocation::FIELD,
+                    DirectiveLocation::FRAGMENT_SPREAD,
+                    DirectiveLocation::INLINE_FRAGMENT
+                ]
+            ]),
+            new Directive([
+                'name' => 'deprecated',
+                'args' => [
+                    new InputField([
+                        'name' => 'reason',
+                        'type' => 'string',
+                        'description' => 'Explains why this element was deprecated, usually also including a suggestion for how to access supported similar data. Formatted in [Markdown](https://daringfireball.net/projects/markdown/).',
+                    ])
+                ],
+                'description' => 'deprecated',
+                'locations' => [
+                    DirectiveLocation::FIELD_DEFINITION,
+                    DirectiveLocation::ENUM_VALUE
+                ]
+            ])
+        ]);
+        $processor = new Processor($schema);
+
+        $processor->processPayload($this->introspectionQuery);
+        $responseData = $processor->getResponseData();
         $this->assertArrayNotHasKey('errors', $responseData);
     }
 
