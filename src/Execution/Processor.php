@@ -364,7 +364,7 @@ class Processor
                     $astFragmentModel = $astFragment->getModel();
                     $typeName         = $type->getName();
 
-                    if ($typeName !== $astFragmentModel && $type->getInterfaces()) {
+                    if ($typeName !== $astFragmentModel) {
                         foreach ($type->getInterfaces() as $interface) {
                             if ($interface->getName() === $astFragmentModel) {
                                 $result = array_replace_recursive($result, $this->collectResult($field, $type, $astFragment, $resolvedValue));
