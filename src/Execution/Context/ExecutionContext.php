@@ -11,9 +11,11 @@ namespace Youshido\GraphQL\Execution\Context;
 
 use Youshido\GraphQL\Execution\Container\ContainerInterface;
 use Youshido\GraphQL\Execution\Request;
+use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Introspection\Field\SchemaField;
 use Youshido\GraphQL\Introspection\Field\TypeDefinitionField;
 use Youshido\GraphQL\Schema\AbstractSchema;
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
 use Youshido\GraphQL\Validator\SchemaValidator\SchemaValidator;
 
@@ -31,6 +33,9 @@ class ExecutionContext implements ExecutionContextInterface
     /** @var ContainerInterface */
     private $container;
 
+    /** @var array */
+    private $typeFieldLookupTable;
+
     /**
      * ExecutionContext constructor.
      *
@@ -42,6 +47,29 @@ class ExecutionContext implements ExecutionContextInterface
         $this->validateSchema();
 
         $this->introduceIntrospectionFields();
+
+        $this->typeFieldLookupTable = [];
+    }
+
+    /**
+     * @param AbstractObjectType $type
+     * @param string             $fieldName
+     * 
+     * @return Field
+     */
+    public function getField(AbstractObjectType $type, $fieldName)
+    {
+        $typeName = $type->getName();
+
+        if (!array_key_exists($typeName, $this->typeFieldLookupTable)) {
+            $this->typeFieldLookupTable[$typeName] = [];
+        }
+
+        if (!array_key_exists($fieldName, $this->typeFieldLookupTable[$typeName])) {
+            $this->typeFieldLookupTable[$typeName][$fieldName] = $type->getField($fieldName);
+        }
+
+        return $this->typeFieldLookupTable[$typeName][$fieldName];
     }
 
     protected function validateSchema()
