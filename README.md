@@ -1,3 +1,11 @@
+# Looking for Maintainers!
+
+Unfortunatelly, we cannot longer support this package and are looking for someone to take the ownership.
+Currently Only PRs with bugfixes and not breaking BC are being merged.
+It's very sad to acknowledge this, but we hope that someone can take it further with the community.
+
+Please, PM @viniychuk if you are interested in taking over.
+
 # GraphQL
 
 [![Join the chat at https://gitter.im/Youshido/GraphQL](https://badges.gitter.im/Youshido/GraphQL.svg)](https://gitter.im/Youshido/GraphQL?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
