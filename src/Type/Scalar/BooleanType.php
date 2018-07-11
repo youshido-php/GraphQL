@@ -18,6 +18,9 @@ class BooleanType extends AbstractScalarType
 
     public function serialize($value)
     {
+        if ($value === null) {
+            return null;
+        }
         if ($value === 'true') {
             return true;
         }
