@@ -129,7 +129,7 @@ class ArrayConnection
         $upperBound = $before ? $beforeOffset : $arrayLength;
 
         return [
-            'totalCount' => count($data),
+            'totalCount' => $arrayLength,
             'edges'      => $edges,
             'pageInfo'   => [
                 'startCursor'     => $firstEdge ? $firstEdge['cursor'] : null,
