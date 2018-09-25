@@ -57,11 +57,6 @@ class Connection
             'name'        => $name . 'Edge',
             'description' => 'An edge in a connection.',
             'fields'      => array_merge([
-                'totalCount' => [
-                    'type'        => new NonNullType(new IntType()),
-                    'description' => 'How many nodes.',
-                    'resolve'     => [__CLASS__, 'getTotalCount'],
-                ],
                 'node'   => [
                     'type'        => $type,
                     'description' => 'The item at the end of the edge',
@@ -94,6 +89,11 @@ class Connection
             'name'        => $name . 'Connection',
             'description' => 'A connection to a list of items.',
             'fields'      => array_merge([
+                'totalCount' => [
+                    'type'        => new NonNullType(new IntType()),
+                    'description' => 'How many nodes.',
+                    'resolve'     => [__CLASS__, 'getTotalCount'],
+                ],
                 'pageInfo' => [
                     'type'        => new NonNullType(new PageInfoType()),
                     'description' => 'Information to aid in pagination.',
