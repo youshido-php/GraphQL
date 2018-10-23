@@ -23,7 +23,7 @@ class Node
             throw new \InvalidArgumentException('ID must be a valid base 64 string');
         }
         $decodedParts = explode(':', $decoded, 2);
-        if (count($decodedParts) != 2) {
+        if (count($decodedParts) !== 2) {
             throw new \InvalidArgumentException('ID was not correctly formed');
         }
         return $decodedParts;
