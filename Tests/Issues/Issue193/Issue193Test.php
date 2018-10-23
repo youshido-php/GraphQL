@@ -25,8 +25,24 @@ class Issue193Test extends \PHPUnit_Framework_TestCase
             return $type['name'];
         }, $resp['data']['__schema']['types']);
 
+        // Check that all types are discovered
         $this->assertContains('ContentBlockInterface', $typeNames);
         $this->assertContains('Post', $typeNames);
+
+        // Check that possibleTypes for interfaces are discovered
+        $contentBlockInterfaceType = null;
+
+        foreach ($resp['data']['__schema']['types'] as $type) {
+            if ($type['name'] === 'ContentBlockInterface') {
+                $contentBlockInterfaceType = $type;
+                break;
+            }
+        }
+
+        $this->assertNotNull($contentBlockInterfaceType);
+        $this->assertEquals([
+            ['name' => 'Post'],
+        ], $contentBlockInterfaceType['possibleTypes']);
     }
 
     private function getIntrospectionQuery()
@@ -37,6 +53,9 @@ query IntrospectionQuery {
         types {
             kind
           	name
+          	possibleTypes {
+          	    name
+          	}
         }
     }
 }
