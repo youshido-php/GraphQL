@@ -51,7 +51,7 @@ class Issue193Schema extends AbstractSchema
         $config->getQuery()->addField(
             'post',
             [
-                'type' => new ContentBlockInterface(),
+                'type' => new PostType(),
             ]
         );
     }
