@@ -9,6 +9,7 @@
 namespace Youshido\Tests\Library\Relay;
 
 
+use InvalidArgumentException;
 use Youshido\GraphQL\Relay\Node;
 
 class NodeTest extends \PHPUnit_Framework_TestCase
@@ -20,6 +21,23 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('user', $fromGlobal[0]);
         $this->assertEquals(1, $fromGlobal[1]);
-        $this->assertEquals([null, null], Node::fromGlobalId(null));
+    }
+
+    public function malformedIdProvider()
+    {
+        return [
+            [''],
+            [base64_encode('I have no colon')],
+            [null],
+        ];
+    }
+
+    /**
+     * @dataProvider malformedIdProvider
+     */
+    public function testFromGlobalIdThrowsExceptionIfGivenMalformedId($idToCheck)
+    {
+        $this->setExpectedException(InvalidArgumentException::class);
+        Node::fromGlobalId($idToCheck);
     }
 }
