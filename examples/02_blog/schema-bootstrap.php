@@ -2,7 +2,12 @@
 
 namespace BlogTest;
 
-require_once __DIR__ . '/../../../../../vendor/autoload.php';
+if(file_exists(__DIR__ . '/../../../../../vendor/autoload.php')) {
+    require_once __DIR__ . '/../../../../../vendor/autoload.php';
+} else {
+    require_once realpath(__DIR__ . '/../..') . '/vendor/autoload.php';
+}
+
 require_once __DIR__ . '/Schema/DataProvider.php';
 require_once __DIR__ . '/Schema/PostType.php';
 require_once __DIR__ . '/Schema/PostStatus.php';

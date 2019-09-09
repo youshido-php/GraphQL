@@ -6,8 +6,12 @@ use Youshido\GraphQL\Execution\Processor;
 use Youshido\GraphQL\Schema\Schema;
 use Youshido\GraphQL\Type\Object\ObjectType;
 
+if(file_exists(__DIR__ . '/../../../../../vendor/autoload.php')) {
+    require_once __DIR__ . '/../../../../../vendor/autoload.php';
+} else {
+    require_once realpath(__DIR__ . '/../..') . '/vendor/autoload.php';
+}
 
-require_once __DIR__ . '/../../../../../vendor/autoload.php';
 require_once __DIR__ . '/inline-schema.php';
 /** @var ObjectType $rootQueryType */
 

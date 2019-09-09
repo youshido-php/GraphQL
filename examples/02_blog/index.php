@@ -11,10 +11,10 @@ require_once __DIR__ . '/schema-bootstrap.php';
 $schema = new BlogSchema();
 
 $processor = new Processor($schema);
-$payload = 'mutation { likePost(id:5) { title(truncated: false), status, likeCount } }';
-$payload = '{ latestPost { title, status, likeCount } }';
-$payload = '{ pageContentUnion { ... on Post { title, summary } ... on Banner { title, imageLink } } }';
-$payload = '{ pageContentInterface { title} }';
+// $payload = 'mutation { likePost(id:5) { title(truncated: false), status, likeCount } }';
+// $payload = '{ latestPost { title, status, likeCount } }';
+// $payload = '{ pageContentUnion { ... on Post { title, summary } ... on Banner { title, imageLink } } }';
+// $payload = '{ pageContentInterface { title} }';
 $payload = 'mutation { createPost(author: "Alex", post: {title: "Hey, this is my new post", summary: "my post" }) { title } }';
 
 $processor->processPayload($payload);

@@ -13,6 +13,10 @@ use Youshido\GraphQL\Type\Scalar\StringType;
 
 class PostType extends AbstractObjectType
 {
+    /**
+     * @param \Youshido\GraphQL\Config\Object\ObjectTypeConfig $config
+     * @throws \Youshido\GraphQL\Exception\ConfigurationException
+     */
     public function build($config)
     {
         $config
@@ -28,7 +32,13 @@ class PostType extends AbstractObjectType
                     return (!empty($args['truncated'])) ? explode(' ', $value)[0] . '...' : $value;
                 }
             ])
-            ->addField('title', new NonNullType(new StringType()))
+            ->addField(
+                'title', [
+                    'type'  => new NonNullType(new StringType()),
+                    'args'  => [
+                        'truncated' => new BooleanType()
+                    ],
+                ])
             ->addField('status', new PostStatus())
             ->addField('summary', new StringType())
             ->addField('likeCount', new IntType());

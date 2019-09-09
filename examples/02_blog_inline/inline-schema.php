@@ -26,7 +26,7 @@ $rootQueryType = new ObjectType([
                         ],
                         'resolve'           => function ($value, $args) {
                             // used argument to modify a field value
-                            return (!empty($args['truncated'])) ? explode(' ', $value)[0] . '...' : $value;
+                            return (!empty($args['truncated'])) ? explode(' ', $value['title'])[0] . '...' : $value['title'];
                         }
                     ],
                     // if field just has a type, you can use a short declaration syntax like this
