@@ -23,7 +23,7 @@ trait ResolvableObjectTrait
                 return $value[$this->getName()];
             } elseif (is_object($value)) {
                 return TypeService::getPropertyValue($value, $this->getName());
-            } elseif ($this->getType()->getNamedType()->getKind() == TypeMap::KIND_SCALAR) {
+            } elseif ($this->getType()->getKind() !== TypeMap::KIND_NON_NULL) {
                 return null;
             } else {
                 throw new \Exception(sprintf('Property "%s" not found in resolve result', $this->getName()));
