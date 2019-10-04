@@ -14,7 +14,6 @@ use Youshido\GraphQL\Type\TypeMap;
 use Youshido\GraphQL\Type\TypeService;
 use Youshido\Tests\DataProvider\TestInterfaceType;
 use Youshido\Tests\DataProvider\TestObjectType;
-use Youshido\Tests\Library\Type\ObjectTypeTest;
 
 class TypeUtilitiesTest extends \PHPUnit_Framework_TestCase
 {
@@ -60,7 +59,44 @@ class TypeUtilitiesTest extends \PHPUnit_Framework_TestCase
     public function testGetPropertyValue() {
         $arrayData = (new TestObjectType())->getData();
 
+        // Test with arrays
         $this->assertEquals('John', TypeService::getPropertyValue($arrayData, 'name'));
         $this->assertEquals('John', TypeService::getPropertyValue((object) $arrayData, 'name'));
+
+        // Test with objects with getters
+        $object = new ObjectWithVariousGetters();
+
+        $this->assertEquals('John', TypeService::getPropertyValue($object, 'name'));
+        $this->assertEquals('John Doe', TypeService::getPropertyValue($object, 'namedAfter'));
+        $this->assertTrue(TypeService::getPropertyValue($object, 'true'));
+        $this->assertFalse(TypeService::getPropertyValue($object, 'false'));
+        $this->assertNull(TypeService::getPropertyValue($arrayData, 'doesntExist'));
+        $this->assertNull(TypeService::getPropertyValue($object, 'doesntExist'));
+    }
+}
+
+/**
+ * Dummy class for testing getPropertyValue()
+ */
+class ObjectWithVariousGetters
+{
+    public function getName()
+    {
+        return 'John';
+    }
+
+    public function getNamedAfter()
+    {
+        return 'John Doe';
+    }
+
+    public function isTrue()
+    {
+        return true;
+    }
+
+    public function isFalse()
+    {
+        return false;
     }
 }

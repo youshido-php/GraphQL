@@ -13,7 +13,9 @@
     }
   ],
   "require": {
-    "php": ">=5.5,<8.0-DEV"
+    "php": ">=5.5,<8.0-DEV",
+    "ext-mbstring": "*",
+    "symfony/property-access": "^2.8"
   },
   "require-dev": {
     "phpunit/phpunit": "^4.8"
@@ -24,8 +26,13 @@
     }
   },
   "autoload-dev": {
-    "classmap": [
-      "Tests/"
-    ]
+    "psr-4": {
+      "Youshido\\Tests\\": "Tests"
+    }
+  },
+  "config": {
+    "platform": {
+      "php": "5.5"
+    }
   }
 }

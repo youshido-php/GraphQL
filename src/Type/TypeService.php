@@ -9,6 +9,7 @@
 namespace Youshido\GraphQL\Type;
 
 
+use Symfony\Component\PropertyAccess\PropertyAccess;
 use Youshido\GraphQL\Type\Enum\AbstractEnumType;
 use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
 use Youshido\GraphQL\Type\ListType\AbstractListType;
@@ -124,37 +125,29 @@ class TypeService
         return $type instanceof AbstractInputObjectType;
     }
 
-    public static function getPropertyValue($data, $path)
+    /**
+     * @param object|array $data
+     * @param string       $path
+     * @param bool         $enableMagicCall whether to attempt to resolve properties using __call()
+     *
+     * @return mixed|null
+     */
+    public static function getPropertyValue($data, $path, $enableMagicCall = false)
     {
-        if (is_object($data)) {
-            $getter = $path;
-            if (substr($path, 0, 2) != 'is') {
-                $getter = 'get' . self::classify($path);
-                if (!is_callable([$data, $getter])) {
-                    $getter = 'is' . self::classify($path);
-                }
-                if (!is_callable([$data, $getter])) {
-                    $getter = self::classify($path);
-                }
-            }
-
-            return is_callable([$data, $getter]) ? $data->$getter() : (isset($data->$path) ? $data->$path : null);
-        } elseif (is_array($data)) {
-            return array_key_exists($path, $data) ? $data[$path] : null;
+        // Normalize the path
+        if (is_array($data)) {
+            $path = "[$path]";
         }
 
-        return null;
-    }
+        // Optionally enable __call() support
+        $propertyAccessorBuilder = PropertyAccess::createPropertyAccessorBuilder();
 
-    protected static function classify($text)
-    {
-        $text       = explode(' ', str_replace(['_', '/', '-', '.'], ' ', $text));
-        $textLength = count($text);
-        for ($i = 0; $i < $textLength; $i++) {
-            $text[$i] = ucfirst($text[$i]);
+        if ($enableMagicCall) {
+            $propertyAccessorBuilder->enableMagicCall();
         }
-        $text = ucfirst(implode('', $text));
 
-        return $text;
+        $propertyAccessor = $propertyAccessorBuilder->getPropertyAccessor();
+
+        return $propertyAccessor->isReadable($data, $path) ? $propertyAccessor->getValue($data, $path) : null;
     }
 }
