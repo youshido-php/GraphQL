@@ -24,8 +24,8 @@
     }
   },
   "autoload-dev": {
-    "classmap": [
-      "Tests/"
-    ]
+    "psr-4": {
+      "Youshido\\Tests\\": "Tests"
+    }
   }
 }
