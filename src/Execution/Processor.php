@@ -402,9 +402,9 @@ class Processor
             // to be resolved later.
             $type = $field->getType()->getNamedType();
             if ($type instanceof AbstractScalarType || $type instanceof AbstractEnumType) {
-                array_push($this->deferredResultsLeaf, $deferredResult);
+                $this->deferredResultsLeaf[] = $deferredResult;
             } else {
-                array_push($this->deferredResultsComplex, $deferredResult);
+                $this->deferredResultsComplex[] = $deferredResult;
             }
 
             return $deferredResult;
