@@ -17,7 +17,7 @@ final class UnionType extends AbstractUnionType
     {
         $callable = $this->getConfigValue('resolveType');
 
-        return call_user_func_array($callable, [$object]);
+        return $callable($object);
     }
 
     public function getTypes()
