@@ -605,7 +605,7 @@ class Processor
 
             $values[$argument->getName()] = $argumentType->parseValue($astArgument->getValue());
 
-            if (isset($defaults[$argument->getName()])) {
+            if (array_key_exists($argument->getName(), $defaults)) {
                 unset($defaults[$argument->getName()]);
             }
         }
