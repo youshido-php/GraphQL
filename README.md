@@ -9,6 +9,7 @@ Please, PM @viniychuk if you are interested in taking over.
 # GraphQL
 
 [![Join the chat at https://gitter.im/Youshido/GraphQL](https://badges.gitter.im/Youshido/GraphQL.svg)](https://gitter.im/Youshido/GraphQL?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Latest Stable Version](https://poser.pugx.org/youshido/graphql/v/stable)](https://packagist.org/packages/youshido/graphql)
 [![Build Status](https://travis-ci.org/youshido-php/GraphQL.svg?branch=master)](https://travis-ci.org/youshido-php/GraphQL)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Youshido/GraphQL/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Youshido/GraphQL/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/Youshido/GraphQL/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Youshido/GraphQL/?branch=master)
