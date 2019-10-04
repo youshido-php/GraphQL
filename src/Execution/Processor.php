@@ -88,12 +88,17 @@ class Processor
                 $reducer = new Reducer();
                 $reducer->reduceQuery($this->executionContext, $reducers);
             }
+            
+            // Resolve all queries/operations and merge their data at the end
+            $operationResults = [];
 
             foreach ($this->executionContext->getRequest()->getAllOperations() as $query) {
                 if ($operationResult = $this->resolveQuery($query)) {
-                    $this->data = array_replace_recursive($this->data, $operationResult);
-                };
+                    $operationResults[] = $operationResult;
+                }
             }
+            
+            $this->data = $this->combineResults($operationResults);
 
             // If the processor found any deferred results, resolve them now.
             if (!empty($this->data) && (!empty($this->deferredResultsLeaf) || !empty($this->deferredResultsComplex))) {
@@ -335,7 +340,7 @@ class Processor
      */
     private function collectResult(FieldInterface $field, AbstractObjectType $type, $ast, $resolvedValue)
     {
-        $result = [];
+        $results = [];
 
         foreach ($ast->getFields() as $astField) {
             switch (true) {
@@ -346,7 +351,7 @@ class Processor
                     if ($typeName !== $astName) {
                         foreach ($type->getInterfaces() as $interface) {
                             if ($interface->getName() === $astName) {
-                                $result = array_replace_recursive($result, $this->collectResult($field, $type, $astField, $resolvedValue));
+                                $results[] = $this->collectResult($field, $type, $astField, $resolvedValue);
 
                                 break;
                             }
@@ -355,7 +360,7 @@ class Processor
                         continue 2;
                     }
 
-                    $result = array_replace_recursive($result, $this->collectResult($field, $type, $astField, $resolvedValue));
+                    $results[] = $this->collectResult($field, $type, $astField, $resolvedValue);
 
                     break;
 
@@ -367,7 +372,7 @@ class Processor
                     if ($typeName !== $astFragmentModel) {
                         foreach ($type->getInterfaces() as $interface) {
                             if ($interface->getName() === $astFragmentModel) {
-                                $result = array_replace_recursive($result, $this->collectResult($field, $type, $astFragment, $resolvedValue));
+                                $results[] = $this->collectResult($field, $type, $astFragment, $resolvedValue);
 
                                 break;
                             }
@@ -376,16 +381,16 @@ class Processor
                         continue 2;
                     }
 
-                    $result = array_replace_recursive($result, $this->collectResult($field, $type, $astFragment, $resolvedValue));
+                    $results[] = $this->collectResult($field, $type, $astFragment, $resolvedValue);
 
                     break;
 
                 default:
-                    $result = array_replace_recursive($result, [$this->getAlias($astField) => $this->resolveField($field, $astField, $resolvedValue, true)]);
+                    $results[] = [$this->getAlias($astField) => $this->resolveField($field, $astField, $resolvedValue, true)];
             }
         }
 
-        return $result;
+        return $this->combineResults($results);
     }
 
     /**
@@ -402,9 +407,9 @@ class Processor
             // to be resolved later.
             $type = $field->getType()->getNamedType();
             if ($type instanceof AbstractScalarType || $type instanceof AbstractEnumType) {
-                array_push($this->deferredResultsLeaf, $deferredResult);
+                $this->deferredResultsLeaf[] = $deferredResult;
             } else {
-                array_push($this->deferredResultsComplex, $deferredResult);
+                $this->deferredResultsComplex[] = $deferredResult;
             }
 
             return $deferredResult;
@@ -618,6 +623,21 @@ class Processor
         return new ResolveInfo($field, $astFields, $this->executionContext);
     }
 
+    /**
+     * Combines the specified results using array_replace_recursive, including graceful handling for empty arrays
+     *
+     * @param array $results
+     *
+     * @return array
+     */
+    protected function combineResults(array $results)
+    {
+        if (count($results) > 0) {
+            return call_user_func_array('array_replace_recursive', $results);
+        }
+
+        return [];
+    }
 
     /**
      * You can access ExecutionContext to check errors and inject dependencies
