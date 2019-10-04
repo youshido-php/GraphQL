@@ -125,14 +125,28 @@ class TypeService
         return $type instanceof AbstractInputObjectType;
     }
 
-    public static function getPropertyValue($data, $path)
+    /**
+     * @param object|array $data
+     * @param string       $path
+     * @param bool         $enableMagicCall whether to attempt to resolve properties using __call()
+     *
+     * @return mixed|null
+     */
+    public static function getPropertyValue($data, $path, $enableMagicCall = false)
     {
         // Normalize the path
         if (is_array($data)) {
             $path = "[$path]";
         }
 
-        $propertyAccessor = PropertyAccess::createPropertyAccessor();
+        // Optionally enable __call() support
+        $propertyAccessorBuilder = PropertyAccess::createPropertyAccessorBuilder();
+
+        if ($enableMagicCall) {
+            $propertyAccessorBuilder->enableMagicCall();
+        }
+
+        $propertyAccessor = $propertyAccessorBuilder->getPropertyAccessor();
 
         return $propertyAccessor->isReadable($data, $path) ? $propertyAccessor->getValue($data, $path) : null;
     }
