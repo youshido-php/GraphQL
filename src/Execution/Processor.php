@@ -11,6 +11,8 @@ namespace Youshido\GraphQL\Execution;
 use Youshido\GraphQL\Exception\ResolveException;
 use Youshido\GraphQL\Execution\Container\Container;
 use Youshido\GraphQL\Execution\Context\ExecutionContext;
+use Youshido\GraphQL\Execution\ErrorHandler\ErrorHandler;
+use Youshido\GraphQL\Execution\ErrorHandler\Plugin\DefaultErrorHandler;
 use Youshido\GraphQL\Execution\Visitor\MaxComplexityQueryVisitor;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\FieldInterface;
@@ -57,13 +59,16 @@ class Processor
     /** @var int */
     protected $maxComplexity;
 
+    /** @var ErrorHandler  */
+    protected $errorHandler;
+
     /** @var array DeferredResult[] */
     protected $deferredResultsLeaf = [];
 
     /** @var array DeferredResult[] */
     protected $deferredResultsComplex = [];
 
-    public function __construct(AbstractSchema $schema)
+    public function __construct(AbstractSchema $schema, ErrorHandler $errorHandler = null)
     {
         if (empty($this->executionContext)) {
             $this->executionContext = new ExecutionContext($schema);
@@ -71,6 +76,13 @@ class Processor
         }
 
         $this->resolveValidator = new ResolveValidator($this->executionContext);
+
+        if (null === $errorHandler) {
+            $errorHandler = new ErrorHandler([
+                new DefaultErrorHandler()
+            ]);
+        }
+        $this->errorHandler = $errorHandler;
     }
 
     public function processPayload($payload, $variables = [], $reducers = [])
@@ -115,7 +127,7 @@ class Processor
             }
 
         } catch (\Exception $e) {
-            $this->executionContext->addError($e);
+            $this->errorHandler->handle($e, $this->executionContext);
         }
 
         return $this;
@@ -214,7 +226,7 @@ class Processor
                     throw new ResolveException(sprintf('Resolving type with kind "%s" not supported', $kind));
             }
         } catch (\Exception $e) {
-            $this->executionContext->addError($e);
+            $this->errorHandler->handle($e, $this->executionContext);
 
             if ($fromObject) {
                 throw $e;
@@ -483,11 +495,9 @@ class Processor
                             $value = null;
                     }
                 } catch (\Exception $e) {
-                    $this->executionContext->addError($e);
-
+                    $this->errorHandler->handle($e, $this->executionContext);
                     $value = null;
                 }
-
                 $result[] = $value;
             }
 
