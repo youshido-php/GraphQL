@@ -876,6 +876,7 @@ GRAPHQL;
 
     public function testVariableDefaultValue()
     {
+        // Test with non-null default value
         $parser          = new Parser();
         $parsedStructure = $parser->parse('
             query ($format: String = "small"){
@@ -889,6 +890,21 @@ GRAPHQL;
         $this->assertTrue($var->hasDefaultValue());
         $this->assertEquals('small', $var->getDefaultValue()->getValue());
         $this->assertEquals('small', $var->getValue()->getValue());
+
+        // Test with null default value
+        $parser          = new Parser();
+        $parsedStructure = $parser->parse('
+            query ($format: String = null){
+              user {
+                avatar(format: $format)
+              }
+            }
+        ');
+        /** @var Variable $var */
+        $var = $parsedStructure['variables'][0];
+        $this->assertTrue($var->hasDefaultValue());
+        $this->assertNull($var->getDefaultValue()->getValue());
+        $this->assertNull($var->getValue()->getValue());
     }
 
 }
