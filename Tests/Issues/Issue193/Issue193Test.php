@@ -119,4 +119,12 @@ class ContentBlockInterface extends AbstractInterfaceType
 
         return new UndiscoveredType();
     }
+
+    public function getImplementations()
+    {
+        return [
+            new PostType(),
+            new UndiscoveredType(),
+        ];
+    }
 }

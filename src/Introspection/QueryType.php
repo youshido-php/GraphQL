@@ -14,6 +14,7 @@ use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\CompositeTypeInterface;
 use Youshido\GraphQL\Type\Enum\AbstractEnumType;
 use Youshido\GraphQL\Type\InputObject\AbstractInputObjectType;
+use Youshido\GraphQL\Type\InterfaceType\AbstractInterfaceType;
 use Youshido\GraphQL\Type\ListType\ListType;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
@@ -134,12 +135,18 @@ class QueryType extends AbstractObjectType
                             if ($interface->getName() == $value->getName()) {
                                 $possibleTypes[] = $type;
                             }
+
+                            if ($interface instanceof AbstractInterfaceType) {
+                                foreach ($interface->getImplementations() as $implementationType) {
+                                    $possibleTypes[] = $implementationType;
+                                }
+                            }
                         }
                     }
                 }
             }
 
-            return $possibleTypes;
+            return \array_unique($possibleTypes);
         } elseif ($value->getKind() == TypeMap::KIND_UNION) {
             /** @var $value AbstractUnionType */
             return $value->getTypes();
