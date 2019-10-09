@@ -8,9 +8,7 @@
 
 namespace Youshido\Tests\Library\Utilities;
 
-
 use Youshido\GraphQL\Exception\ConfigurationException;
-use Youshido\GraphQL\Exception\DatableResolveException;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerInterface;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
 
@@ -32,12 +30,6 @@ class ErrorContainerTraitTest extends \PHPUnit_Framework_TestCase implements Err
 
         $this->mergeErrors($this);
         $this->assertEquals([$error, $error], $this->getErrors());
-
-        $this->clearErrors();
-        $this->addError(new DatableResolveException('Wrong data', 412, ['user_id' => '1']));
-        $this->assertEquals([
-            ['message' => 'Wrong data', 'code' => 412, 'user_id' => '1'],
-        ], $this->getErrorsArray());
 
         $this->clearErrors();
         $this->addError(new ConfigurationException('Invalid name'));

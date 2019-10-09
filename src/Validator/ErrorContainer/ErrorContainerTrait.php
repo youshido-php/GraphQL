@@ -7,8 +7,6 @@
 
 namespace Youshido\GraphQL\Validator\ErrorContainer;
 
-
-use Youshido\GraphQL\Exception\Interfaces\DatableExceptionInterface;
 use Youshido\GraphQL\Exception\Interfaces\LocationableExceptionInterface;
 
 trait ErrorContainerTrait
@@ -26,7 +24,7 @@ trait ErrorContainerTrait
 
     public function hasErrors()
     {
-        return !empty($this->errors);
+        return ! empty($this->errors);
     }
 
     public function getErrors()
@@ -51,13 +49,7 @@ trait ErrorContainerTrait
 
         foreach ($this->errors as $error) {
             if ($inGraphQLStyle) {
-                if ($error instanceof DatableExceptionInterface) {
-                    $errors[] = array_merge(
-                        ['message' => $error->getMessage()],
-                        $error->getData() ?: [],
-                        $error->getCode() ? ['code' => $error->getCode()] : []
-                    );
-                } elseif ($error instanceof LocationableExceptionInterface) {
+                if ($error instanceof LocationableExceptionInterface) {
                     $errors[] = array_merge(
                         ['message' => $error->getMessage()],
                         $error->getLocation() ? ['locations' => [$error->getLocation()->toArray()]] : [],
