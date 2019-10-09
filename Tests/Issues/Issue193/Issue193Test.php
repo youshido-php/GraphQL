@@ -28,6 +28,7 @@ class Issue193Test extends \PHPUnit_Framework_TestCase
         // Check that all types are discovered
         $this->assertContains('ContentBlockInterface', $typeNames);
         $this->assertContains('Post', $typeNames);
+        $this->assertContains('Undiscovered', $typeNames);
 
         // Check that possibleTypes for interfaces are discovered
         $contentBlockInterfaceType = null;
@@ -42,6 +43,7 @@ class Issue193Test extends \PHPUnit_Framework_TestCase
         $this->assertNotNull($contentBlockInterfaceType);
         $this->assertEquals([
             ['name' => 'Post'],
+            ['name' => 'Undiscovered'],
         ], $contentBlockInterfaceType['possibleTypes']);
     }
 
@@ -93,6 +95,14 @@ class PostType extends AbstractObjectType
     }
 }
 
+class UndiscoveredType extends AbstractObjectType
+{
+    public function build($config)
+    {
+        $config->applyInterface(new ContentBlockInterface());
+    }
+}
+
 class ContentBlockInterface extends AbstractInterfaceType
 {
     public function build($config)
@@ -103,7 +113,10 @@ class ContentBlockInterface extends AbstractInterfaceType
 
     public function resolveType($object)
     {
-        // since there's only one type right now this interface will always resolve PostType
-        return new PostType();
+        if (isset($object['title'])) {
+            return new PostType();
+        }
+
+        return new UndiscoveredType();
     }
 }
