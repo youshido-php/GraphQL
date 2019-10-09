@@ -8,15 +8,22 @@
 
 namespace Youshido\Tests\Library\Utilities;
 
-use Youshido\GraphQL\Exception\ConfigurationException;
+use Youshido\GraphQL\Exception\Parser\SyntaxErrorException;
+use Youshido\GraphQL\Parser\Location;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerInterface;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
 
 class ErrorContainerTraitTest extends \PHPUnit_Framework_TestCase implements ErrorContainerInterface
 {
+
     use ErrorContainerTrait;
 
-    public function testAdding()
+    protected function setUp()
+    {
+        $this->clearErrors();
+    }
+
+    public function testAddHasClearMergeErrors()
     {
         $error = new \Exception('Error');
         $this->addError($error);
@@ -30,12 +37,43 @@ class ErrorContainerTraitTest extends \PHPUnit_Framework_TestCase implements Err
 
         $this->mergeErrors($this);
         $this->assertEquals([$error, $error], $this->getErrors());
+    }
 
-        $this->clearErrors();
-        $this->addError(new ConfigurationException('Invalid name'));
+    public function testGetErrorsAsArrayGenericExceptionWithoutCode()
+    {
+        // Code is zero by default
+        $this->addError(new \Exception('Generic exception'));
         $this->assertEquals([
-            ['message' => 'Invalid name'],
+            [
+                'message' => 'Generic exception',
+            ],
         ], $this->getErrorsArray());
+    }
 
+    public function testGetErrorsAsArrayGenericExceptionWithCode()
+    {
+        $this->addError(new \Exception('Generic exception with code', 4));
+        $this->assertEquals([
+            [
+                'message' => 'Generic exception with code',
+                'code'    => 4,
+            ],
+        ], $this->getErrorsArray());
+    }
+
+    public function testGetErrorsAsArrayLocationableException()
+    {
+        $this->addError(new SyntaxErrorException('Syntax error', new Location(5, 88)));
+        $this->assertEquals([
+            [
+                'message'   => 'Syntax error',
+                'locations' => [
+                    [
+                        'line'   => 5,
+                        'column' => 88,
+                    ],
+                ],
+            ],
+        ], $this->getErrorsArray());
     }
 }
