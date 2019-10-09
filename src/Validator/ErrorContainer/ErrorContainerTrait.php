@@ -7,6 +7,7 @@
 
 namespace Youshido\GraphQL\Validator\ErrorContainer;
 
+use Youshido\GraphQL\Exception\Interfaces\ExtendedExceptionInterface;
 use Youshido\GraphQL\Exception\Interfaces\LocationableExceptionInterface;
 
 trait ErrorContainerTrait
@@ -62,6 +63,11 @@ trait ErrorContainerTrait
                 // Add location data when available
                 if ($error instanceof LocationableExceptionInterface && $error->getLocation()) {
                     $graphQLError['locations'] = [$error->getLocation()->toArray()];
+                }
+
+                // Add extensions when available
+                if ($error instanceof ExtendedExceptionInterface && $error->getExtensions()) {
+                    $graphQLError['extensions'] = $error->getExtensions();
                 }
 
                 $errors[] = $graphQLError;

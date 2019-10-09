@@ -8,6 +8,8 @@
 
 namespace Youshido\Tests\Library\Utilities;
 
+use Youshido\GraphQL\Exception\Interfaces\ExtendedExceptionInterface;
+use Youshido\GraphQL\Exception\Interfaces\LocationableExceptionInterface;
 use Youshido\GraphQL\Exception\Parser\SyntaxErrorException;
 use Youshido\GraphQL\Parser\Location;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerInterface;
@@ -75,5 +77,67 @@ class ErrorContainerTraitTest extends \PHPUnit_Framework_TestCase implements Err
                 ],
             ],
         ], $this->getErrorsArray());
+    }
+
+    public function testGetErrorsAsArrayExtendedException()
+    {
+        $this->addError(new ExtendedException('Extended exception'));
+        $this->assertEquals([
+            [
+                'message'    => 'Extended exception',
+                'extensions' => [
+                    'foo' => 'foo',
+                    'bar' => 'bar',
+                ],
+            ],
+        ], $this->getErrorsArray());
+    }
+
+    public function testGetErrorsAsArrayExceptionWithEverything()
+    {
+        $this->addError(new SuperException('Super exception', 3));
+        $this->assertEquals([
+            [
+                'message'    => 'Super exception',
+                'code'       => 3,
+                'locations'  => [
+                    [
+                        'line'   => 6,
+                        'column' => 10,
+                    ],
+                ],
+                'extensions' => [
+                    'foo' => 'foo',
+                    'bar' => 'bar',
+                ],
+            ],
+        ], $this->getErrorsArray());
+    }
+}
+
+class ExtendedException extends \Exception implements ExtendedExceptionInterface
+{
+    public function getExtensions()
+    {
+        return [
+            'foo' => 'foo',
+            'bar' => 'bar',
+        ];
+    }
+}
+
+class SuperException extends \Exception implements LocationableExceptionInterface, ExtendedExceptionInterface
+{
+    public function getExtensions()
+    {
+        return [
+            'foo' => 'foo',
+            'bar' => 'bar',
+        ];
+    }
+
+    public function getLocation()
+    {
+        return new Location(6, 10);
     }
 }
