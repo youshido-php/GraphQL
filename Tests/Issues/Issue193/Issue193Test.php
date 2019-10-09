@@ -83,8 +83,6 @@ class PostType extends AbstractObjectType
     {
         $config->applyInterface(new ContentBlockInterface());
         $config->addFields([
-            'title'      => new NonNullType(new StringType()),
-            'summary'    => new StringType(),
             'likesCount' => new IntType(),
         ]);
     }
