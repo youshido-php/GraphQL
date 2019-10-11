@@ -421,7 +421,7 @@ class Processor
     protected function resolveScalar(FieldInterface $field, AstFieldInterface $ast, $parentValue)
     {
         $resolvedValue = $this->doResolve($field, $ast, $parentValue);
-        return $this->deferredResolve($resolvedValue, $field, function($resolvedValue) use ($field, $ast, $parentValue) {
+        return $this->deferredResolve($resolvedValue, $field, function($resolvedValue) use ($field) {
             $this->resolveValidator->assertValidResolvedValueForField($field, $resolvedValue);
 
             /** @var AbstractScalarType $type */
@@ -436,7 +436,7 @@ class Processor
         /** @var AstQuery $ast */
         $resolvedValue = $this->doResolve($field, $ast, $parentValue);
 
-        return $this->deferredResolve($resolvedValue, $field, function ($resolvedValue) use ($field, $ast, $parentValue) {
+        return $this->deferredResolve($resolvedValue, $field, function ($resolvedValue) use ($field, $ast) {
             $this->resolveValidator->assertValidResolvedValueForField($field, $resolvedValue);
 
             if (null === $resolvedValue) {
@@ -507,7 +507,7 @@ class Processor
             $resolvedValue = $this->doResolve($field, $ast, $parentValue);
         }
 
-        return $this->deferredResolve($resolvedValue, $field, function ($resolvedValue) use ($field, $ast, $parentValue) {
+        return $this->deferredResolve($resolvedValue, $field, function ($resolvedValue) use ($field, $ast) {
             $this->resolveValidator->assertValidResolvedValueForField($field, $resolvedValue);
 
             if (null === $resolvedValue) {
@@ -528,7 +528,7 @@ class Processor
     {
         /** @var AstQuery $ast */
         $resolvedValue = $this->doResolve($field, $ast, $parentValue);
-        return $this->deferredResolve($resolvedValue, $field, function ($resolvedValue) use ($field, $ast, $parentValue) {
+        return $this->deferredResolve($resolvedValue, $field, function ($resolvedValue) use ($field, $ast) {
             $this->resolveValidator->assertValidResolvedValueForField($field, $resolvedValue);
 
             if (null === $resolvedValue) {

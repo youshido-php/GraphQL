@@ -18,7 +18,7 @@ script:
   - |
     if [[ $STATIC_ANALYSIS == true ]]; then
       composer require --ignore-platform-reqs --dev phpstan/phpstan
-      vendor/bin/phpstan analyze src --level max
+      vendor/bin/phpstan analyze src -c phpstan.neon -l 1
     fi
 
 after_script:
