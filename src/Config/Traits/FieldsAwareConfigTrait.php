@@ -9,6 +9,8 @@
 namespace Youshido\GraphQL\Config\Traits;
 
 
+use Youshido\GraphQL\Exception\ConfigurationException;
+use Youshido\GraphQL\Exception\ValidationException;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Field\InputFieldInterface;
@@ -65,8 +67,11 @@ trait FieldsAwareConfigTrait
 
     /**
      * @param FieldInterface|string $field     Field name or Field Object
-     * @param mixed                $fieldInfo Field Type or Field Config array
+     * @param mixed                 $fieldInfo Field Type or Field Config array
+     *
      * @return $this
+     *
+     * @throws ConfigurationException
      */
     public function addField($field, $fieldInfo = null)
     {
@@ -74,6 +79,10 @@ trait FieldsAwareConfigTrait
             $field = new Field($this->buildFieldConfig($field, $fieldInfo));
         }
 
+        if ($this->hasField($field->getName())) {
+            throw new ConfigurationException(sprintf('Type "%s" was defined more than once', $field->getName()));
+        }
+        
         $this->fields[$field->getName()] = $field;
 
         return $this;

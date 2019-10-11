@@ -671,7 +671,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $container = new Container();
         $container->set('user', ['name' => 'Alex']);
 
-        $executionContext = new ExecutionContext(new Schema([
+        $schema           = new Schema([
             'query' => new ObjectType([
                 'name'   => 'RootQuery',
                 'fields' => [
@@ -683,12 +683,11 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                     ]
                 ]
             ])
-        ]));
-        $executionContext->setContainer($container);
-        $this->assertNotNull($executionContext->getContainer());
-
-        $processor = new Processor($executionContext->getSchema());
+        ]);
+        
+        $processor = new Processor($schema);
         $processor->getExecutionContext()->setContainer($container);
+        $this->assertNotNull($processor->getExecutionContext()->getContainer());
 
         $this->assertEquals(['data' => ['currentUser' => 'Alex']], $processor->processPayload('{ currentUser }')->getResponseData());
     }
