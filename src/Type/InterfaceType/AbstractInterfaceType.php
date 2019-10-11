@@ -13,6 +13,7 @@ use Youshido\GraphQL\Config\Object\InterfaceTypeConfig;
 use Youshido\GraphQL\Type\AbstractType;
 use Youshido\GraphQL\Type\Traits\AutoNameTrait;
 use Youshido\GraphQL\Type\Traits\FieldsAwareObjectTrait;
+use Youshido\GraphQL\Type\TypeInterface;
 use Youshido\GraphQL\Type\TypeMap;
 
 abstract class AbstractInterfaceType extends AbstractType
@@ -67,4 +68,12 @@ abstract class AbstractInterfaceType extends AbstractType
         return is_array($value) || is_null($value) || is_object($value);
     }
 
+    /**
+     * @return TypeInterface[] an array of types that implement this interface. Used mainly for introspection and 
+     *                         documentation generation.
+     */
+    public function getImplementations()
+    {
+        return [];
+    }
 }

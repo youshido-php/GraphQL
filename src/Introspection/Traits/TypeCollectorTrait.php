@@ -64,8 +64,13 @@ trait TypeCollectorTrait
     private function checkAndInsertInterfaces($type)
     {
         foreach ((array)$type->getConfig()->getInterfaces() as $interface) {
-            /** @var AbstractInterfaceType $interface */
             $this->insertType($interface->getName(), $interface);
+
+            if ($interface instanceof AbstractInterfaceType) {
+                foreach ($interface->getImplementations() as $implementation) {
+                    $this->insertType($implementation->getName(), $implementation);
+                }
+            }
         }
     }
 
