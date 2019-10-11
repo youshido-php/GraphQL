@@ -8,17 +8,24 @@
 
 namespace Youshido\Tests\Library\Utilities;
 
-
-use Youshido\GraphQL\Exception\ConfigurationException;
-use Youshido\GraphQL\Exception\DatableResolveException;
+use Youshido\GraphQL\Exception\Interfaces\ExtendedExceptionInterface;
+use Youshido\GraphQL\Exception\Interfaces\LocationableExceptionInterface;
+use Youshido\GraphQL\Exception\Parser\SyntaxErrorException;
+use Youshido\GraphQL\Parser\Location;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerInterface;
 use Youshido\GraphQL\Validator\ErrorContainer\ErrorContainerTrait;
 
 class ErrorContainerTraitTest extends \PHPUnit_Framework_TestCase implements ErrorContainerInterface
 {
+
     use ErrorContainerTrait;
 
-    public function testAdding()
+    protected function setUp()
+    {
+        $this->clearErrors();
+    }
+
+    public function testAddHasClearMergeErrors()
     {
         $error = new \Exception('Error');
         $this->addError($error);
@@ -32,18 +39,105 @@ class ErrorContainerTraitTest extends \PHPUnit_Framework_TestCase implements Err
 
         $this->mergeErrors($this);
         $this->assertEquals([$error, $error], $this->getErrors());
+    }
 
-        $this->clearErrors();
-        $this->addError(new DatableResolveException('Wrong data', 412, ['user_id' => '1']));
+    public function testGetErrorsAsArrayGenericExceptionWithoutCode()
+    {
+        // Code is zero by default
+        $this->addError(new \Exception('Generic exception'));
         $this->assertEquals([
-            ['message' => 'Wrong data', 'code' => 412, 'user_id' => '1'],
+            [
+                'message' => 'Generic exception',
+            ],
         ], $this->getErrorsArray());
+    }
 
-        $this->clearErrors();
-        $this->addError(new ConfigurationException('Invalid name'));
+    public function testGetErrorsAsArrayGenericExceptionWithCode()
+    {
+        $this->addError(new \Exception('Generic exception with code', 4));
         $this->assertEquals([
-            ['message' => 'Invalid name'],
+            [
+                'message' => 'Generic exception with code',
+                'code'    => 4,
+            ],
         ], $this->getErrorsArray());
+    }
 
+    public function testGetErrorsAsArrayLocationableException()
+    {
+        $this->addError(new SyntaxErrorException('Syntax error', new Location(5, 88)));
+        $this->assertEquals([
+            [
+                'message'   => 'Syntax error',
+                'locations' => [
+                    [
+                        'line'   => 5,
+                        'column' => 88,
+                    ],
+                ],
+            ],
+        ], $this->getErrorsArray());
+    }
+
+    public function testGetErrorsAsArrayExtendedException()
+    {
+        $this->addError(new ExtendedException('Extended exception'));
+        $this->assertEquals([
+            [
+                'message'    => 'Extended exception',
+                'extensions' => [
+                    'foo' => 'foo',
+                    'bar' => 'bar',
+                ],
+            ],
+        ], $this->getErrorsArray());
+    }
+
+    public function testGetErrorsAsArrayExceptionWithEverything()
+    {
+        $this->addError(new SuperException('Super exception', 3));
+        $this->assertEquals([
+            [
+                'message'    => 'Super exception',
+                'code'       => 3,
+                'locations'  => [
+                    [
+                        'line'   => 6,
+                        'column' => 10,
+                    ],
+                ],
+                'extensions' => [
+                    'foo' => 'foo',
+                    'bar' => 'bar',
+                ],
+            ],
+        ], $this->getErrorsArray());
+    }
+}
+
+class ExtendedException extends \Exception implements ExtendedExceptionInterface
+{
+    public function getExtensions()
+    {
+        return [
+            'foo' => 'foo',
+            'bar' => 'bar',
+        ];
+    }
+}
+
+class SuperException extends \Exception implements LocationableExceptionInterface, ExtendedExceptionInterface
+{
+    public function getExtensions()
+    {
+        return [
+            'foo' => 'foo',
+            'bar' => 'bar',
+        ];
+    }
+
+    public function getLocation()
+    {
+        return new Location(6, 10);
     }
 }

@@ -7,8 +7,7 @@
 
 namespace Youshido\GraphQL\Validator\ErrorContainer;
 
-
-use Youshido\GraphQL\Exception\Interfaces\DatableExceptionInterface;
+use Youshido\GraphQL\Exception\Interfaces\ExtendedExceptionInterface;
 use Youshido\GraphQL\Exception\Interfaces\LocationableExceptionInterface;
 
 trait ErrorContainerTrait
@@ -26,7 +25,7 @@ trait ErrorContainerTrait
 
     public function hasErrors()
     {
-        return !empty($this->errors);
+        return ! empty($this->errors);
     }
 
     public function getErrors()
@@ -51,24 +50,27 @@ trait ErrorContainerTrait
 
         foreach ($this->errors as $error) {
             if ($inGraphQLStyle) {
-                if ($error instanceof DatableExceptionInterface) {
-                    $errors[] = array_merge(
-                        ['message' => $error->getMessage()],
-                        $error->getData() ?: [],
-                        $error->getCode() ? ['code' => $error->getCode()] : []
-                    );
-                } elseif ($error instanceof LocationableExceptionInterface) {
-                    $errors[] = array_merge(
-                        ['message' => $error->getMessage()],
-                        $error->getLocation() ? ['locations' => [$error->getLocation()->toArray()]] : [],
-                        $error->getCode() ? ['code' => $error->getCode()] : []
-                    );
-                } else {
-                    $errors[] = array_merge(
-                        ['message' => $error->getMessage()],
-                        $error->getCode() ? ['code' => $error->getCode()] : []
-                    );
+                // All errors have a message
+                $graphQLError = [
+                    'message' => $error->getMessage(),
+                ];
+
+                // Add code if it's non-zero
+                if ($error->getCode()) {
+                    $graphQLError['code'] = $error->getCode();
                 }
+
+                // Add location data when available
+                if ($error instanceof LocationableExceptionInterface && $error->getLocation()) {
+                    $graphQLError['locations'] = [$error->getLocation()->toArray()];
+                }
+
+                // Add extensions when available
+                if ($error instanceof ExtendedExceptionInterface && $error->getExtensions()) {
+                    $graphQLError['extensions'] = $error->getExtensions();
+                }
+
+                $errors[] = $graphQLError;
             } else {
                 $errors[] = $error->getMessage();
             }
