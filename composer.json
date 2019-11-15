@@ -27,7 +27,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Youshido\\Tests\\": "Tests"
+      "Youshido\\Tests\\": "tests"
     }
   },
   "config": {
