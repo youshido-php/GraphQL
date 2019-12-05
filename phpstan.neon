@@ -1,3 +1,1 @@
-parameters:
-  ignoreErrors:
-    - '#does not call parent constructor from#'
+# nothing here for now
