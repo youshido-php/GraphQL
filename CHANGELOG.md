@@ -2,7 +2,7 @@
 
 Please update this file right before tagging a new release
 
-## Unreleased
+## v1.7.0
 
 * fix some README badges
 * add a more robust implementation for `TypeService::getPropertyValue()`
