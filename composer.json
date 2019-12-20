@@ -13,7 +13,7 @@
     }
   ],
   "require": {
-    "php": ">=5.5,<8.0-DEV",
+    "php": ">=5.5",
     "ext-mbstring": "*",
     "symfony/property-access": "^2.8"
   },
