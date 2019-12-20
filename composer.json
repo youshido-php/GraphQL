@@ -29,10 +29,5 @@
     "psr-4": {
       "Youshido\\Tests\\": "tests"
     }
-  },
-  "config": {
-    "platform": {
-      "php": "5.5"
-    }
   }
 }
