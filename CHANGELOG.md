@@ -2,6 +2,10 @@
 
 Please update this file right before tagging a new release
 
+## v1.7.1
+
+* relaxed symfony/property-accessor version constraints so the package can be installed in Symfony 4.x projects
+
 ## v1.7.0
 
 * fix some README badges
