@@ -14,6 +14,11 @@ use Youshido\GraphQL\Execution\Request;
 class RequestValidator implements RequestValidatorInterface
 {
 
+    /**
+     * @param Request $request
+     *
+     * @throws InvalidRequestException
+     */
     public function validate(Request $request)
     {
         $this->assertFragmentReferencesValid($request);
@@ -22,6 +27,11 @@ class RequestValidator implements RequestValidatorInterface
         $this->assertAllVariablesUsed($request);
     }
 
+    /**
+     * @param Request $request
+     *
+     * @throws InvalidRequestException
+     */
     private function assetFragmentsUsed(Request $request)
     {
         foreach ($request->getFragmentReferences() as $fragmentReference) {
@@ -35,6 +45,11 @@ class RequestValidator implements RequestValidatorInterface
         }
     }
 
+    /**
+     * @param Request $request
+     *
+     * @throws InvalidRequestException
+     */
     private function assertFragmentReferencesValid(Request $request)
     {
         foreach ($request->getFragmentReferences() as $fragmentReference) {
@@ -44,6 +59,11 @@ class RequestValidator implements RequestValidatorInterface
         }
     }
 
+    /**
+     * @param Request $request
+     *
+     * @throws InvalidRequestException
+     */
     private function assertAllVariablesExists(Request $request)
     {
         foreach ($request->getVariableReferences() as $variableReference) {
@@ -53,6 +73,11 @@ class RequestValidator implements RequestValidatorInterface
         }
     }
 
+    /**
+     * @param Request $request
+     *
+     * @throws InvalidRequestException
+     */
     private function assertAllVariablesUsed(Request $request)
     {
         foreach ($request->getQueryVariables() as $queryVariable) {
