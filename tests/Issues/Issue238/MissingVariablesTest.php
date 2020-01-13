@@ -31,7 +31,7 @@ GQL;
         $this->assertEquals([
             'errors' => [
                 [
-                    'message' => 'Variable "episode" not exists',
+                    'message' => 'Variable "episode" does not exists',
                     'locations' => [
                         [
                             'line' => 2,

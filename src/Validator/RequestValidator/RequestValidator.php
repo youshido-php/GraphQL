@@ -22,7 +22,7 @@ class RequestValidator implements RequestValidatorInterface
     public function validate(Request $request)
     {
         $this->assertFragmentReferencesValid($request);
-        $this->assetFragmentsUsed($request);
+        $this->assertFragmentsUsed($request);
         $this->assertAllVariablesExists($request);
         $this->assertAllVariablesUsed($request);
     }
@@ -32,7 +32,7 @@ class RequestValidator implements RequestValidatorInterface
      *
      * @throws InvalidRequestException
      */
-    private function assetFragmentsUsed(Request $request)
+    private function assertFragmentsUsed(Request $request)
     {
         foreach ($request->getFragmentReferences() as $fragmentReference) {
             $request->getFragment($fragmentReference->getName())->setUsed(true);
@@ -40,7 +40,7 @@ class RequestValidator implements RequestValidatorInterface
 
         foreach ($request->getFragments() as $fragment) {
             if (!$fragment->isUsed()) {
-                throw new InvalidRequestException(sprintf('Fragment "%s" not used', $fragment->getName()), $fragment->getLocation());
+                throw new InvalidRequestException(sprintf('Fragment "%s" is not used', $fragment->getName()), $fragment->getLocation());
             }
         }
     }
@@ -54,7 +54,7 @@ class RequestValidator implements RequestValidatorInterface
     {
         foreach ($request->getFragmentReferences() as $fragmentReference) {
             if (!$request->getFragment($fragmentReference->getName())) {
-                throw new InvalidRequestException(sprintf('Fragment "%s" not defined in query', $fragmentReference->getName()), $fragmentReference->getLocation());
+                throw new InvalidRequestException(sprintf('Fragment "%s" is not defined in query', $fragmentReference->getName()), $fragmentReference->getLocation());
             }
         }
     }
@@ -68,7 +68,7 @@ class RequestValidator implements RequestValidatorInterface
     {
         foreach ($request->getVariableReferences() as $variableReference) {
             if (!$variableReference->getVariable()) {
-                throw new InvalidRequestException(sprintf('Variable "%s" not exists', $variableReference->getName()), $variableReference->getLocation());
+                throw new InvalidRequestException(sprintf('Variable "%s" does not exists', $variableReference->getName()), $variableReference->getLocation());
             }
         }
     }
@@ -82,7 +82,7 @@ class RequestValidator implements RequestValidatorInterface
     {
         foreach ($request->getQueryVariables() as $queryVariable) {
             if (!$queryVariable->isUsed()) {
-                throw new InvalidRequestException(sprintf('Variable "%s" not used', $queryVariable->getName()), $queryVariable->getLocation());
+                throw new InvalidRequestException(sprintf('Variable "%s" is not used', $queryVariable->getName()), $queryVariable->getLocation());
             }
         }
     }
