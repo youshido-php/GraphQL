@@ -1,6 +1,6 @@
 <?php
 
-namespace Youshido\Tests\Issue194;
+namespace Youshido\Tests\Issue242;
 
 use PHPUnit\Framework\TestCase;
 use Youshido\GraphQL\Parser\Parser;
