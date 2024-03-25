@@ -18,7 +18,7 @@
     "babel-preset-stage-0": "6.5.0",
     "babel-relay-plugin": "0.8.1",
     "classnames": "2.2.4",
-    "express": "4.13.4",
+    "express": "4.19.2",
     "express-graphql": "0.5.1",
     "graphql": "0.5.0",
     "graphql-relay": "0.4.1",
